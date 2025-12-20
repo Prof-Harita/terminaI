@@ -1,4 +1,4 @@
-# TermAI (formerly Gemini CLI)
+# TermAI
 
 [![TermAI CI](https://github.com/Prof-Harita/termAI/actions/workflows/ci.yml/badge.svg)](https://github.com/Prof-Harita/termAI/actions/workflows/ci.yml)
 
@@ -10,6 +10,8 @@ excels at coding, it is **not just a coding agent**.
 It is a bridge between natural language and the unlimited power of the command
 line, designed for **everyone**—from the layman asking about the weather to the
 sysadmin managing a server fleet.
+
+Forked and upgraded from Gemini CLI.
 
 ## 🚀 Why TermAI?
 
