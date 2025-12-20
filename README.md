@@ -26,6 +26,17 @@ TermAI is the "Unshackled" version of the terminal assistant.
   robust context of the upstream project.
 - **🛡️ Open Source**: Apache 2.0 licensed.
 
+## ✊ Our Mission
+
+We are committed to building the most extensible natural language terminal
+superpower known to mankind.
+
+1.  **Always Free & Open Source**: No gatekeeping. No paid binaries.
+2.  **For Users, By Power Users**: Built by developers who live in the terminal,
+    for everyone.
+3.  **Maximum Extensibility**: If you can dream it (or script it), TermAI should
+    be able to do it.
+
 ## 📦 Installation
 
 ### From Source (Recommended for now)
