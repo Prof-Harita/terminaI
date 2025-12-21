@@ -1,11 +1,12 @@
-# TermAI
+# terminaI
 
-[![TermAI CI](https://github.com/Prof-Harita/termAI/actions/workflows/ci.yml/badge.svg)](https://github.com/Prof-Harita/termAI/actions/workflows/ci.yml)
+[![terminaI CI](https://github.com/Prof-Harita/termAI/actions/workflows/ci.yml/badge.svg)](https://github.com/Prof-Harita/termAI/actions/workflows/ci.yml)
+![Stable Core](https://img.shields.io/badge/Stable%20Core-v0.21.0-blue)
 
 > **The Universal Translator between Human Intent and System Action.**
 >
 > While coding agents exploded (Cursor, Claude Code, Copilot), the terminal
-> remained untouched. TermAI fills that gap — an AI-powered terminal agent for
+> remained untouched. terminaI fills that gap — an AI-powered terminal agent for
 > **everyone**, from laymen to sysadmins.
 
 ---
@@ -19,20 +20,16 @@
 
 There's no "Cursor for your computer." Until now.
 
-**TermAI lets anyone say:**
+**terminaI lets anyone say:**
 
 - _"Why is my laptop slow? Fix it."_
 - _"Back up my important files before I format."_
 - _"What's eating my disk space? Clean it up safely."_
 - _"Start the dev server, watch logs, ping me if it crashes."_
 
----
+## 🚀 Why terminaI?
 
-Forked and upgraded from Gemini CLI.
-
-## 🚀 Why TermAI?
-
-| Feature              | TermAI                          | Warp        | GitHub Copilot CLI | Open Interpreter   |
+| Feature              | terminaI                          | Warp        | GitHub Copilot CLI | Open Interpreter   |
 | -------------------- | ------------------------------- | ----------- | ------------------ | ------------------ |
 | **Primary Focus**    | **Universal System Operator**   | Terminal UI | Command Suggestion | Desktop Automation |
 | **License**          | **Open Source (Apache 2.0)**    | Proprietary | Proprietary        | Open Source        |
@@ -76,7 +73,7 @@ termai
 
 ## 🔐 Authentication
 
-TermAI uses Gemini models via Google OAuth. Choose your method:
+terminaI uses Gemini models via Google OAuth. Choose your method:
 
 ### Option 1: Login with Google (Recommended)
 
@@ -146,7 +143,7 @@ Press `space` or `ctrl+space` to activate Push-to-Talk.
 
 ## 🎯 Who Is This For?
 
-| Persona                  | Pain Point                                     | TermAI Value                            |
+| Persona                  | Pain Point                                     | terminaI Value                            |
 | ------------------------ | ---------------------------------------------- | --------------------------------------- |
 | **Junior Developer**     | Scared of `rm -rf`, doesn't know syntax        | Safety net: preview + explain           |
 | **SRE / DevOps**         | Copilot hallucinates flags, hates latency      | Local-first, auditable, scriptable      |
@@ -195,35 +192,20 @@ Press `space` or `ctrl+space` to activate Push-to-Talk.
 
 ### Getting Started
 
-- [**Quickstart Guide**](./docs/get-started/index.md)
-- [**Operator Recipes**](./docs/termai-operator-recipes.md) — Safe prompts for
-  common tasks
-- [**Authentication Setup**](./docs/get-started/authentication.md)
-- [**Configuration Guide**](./docs/get-started/configuration.md)
-- [**Keyboard Shortcuts**](./docs/cli/keyboard-shortcuts.md)
+- [**terminaI Documentation Hub**](./docs-terminai/index.md) - Start here
+- [**Quickstart Guide**](./docs-terminai/quickstart.md) - Get running in 5 minutes
+- [**Voice Mode Guide**](./docs-terminai/voice.md) - Push-to-talk and voice commands
+- [**Web Remote Guide**](./docs-terminai/web-remote.md) - Access from browser
 
-### Core Features
+### Gemini CLI Features (Inherited)
 
-- [**Commands Reference**](./docs/cli/commands.md) — Slash commands (`/help`,
-  `/sessions`)
-- [**Context Files (GEMINI.md)**](./docs/cli/gemini-md.md) — Persistent project
-  context
-- [**Checkpointing**](./docs/cli/checkpointing.md) — Save and resume
-  conversations
-- [**Trusted Folders**](./docs/cli/trusted-folders.md) — Execution policies
+For features from the upstream Gemini CLI:
 
-### Tools & Extensions
-
-- [**Built-in Tools**](./docs/tools/index.md) — File system, shell, web
-- [**MCP Integration**](./docs/tools/mcp-server.md) — External capabilities
-- [**Custom Extensions**](./docs/extensions/index.md) — Build your own
-
-### Advanced
-
-- [**Headless Mode**](./docs/cli/headless.md) — Scripting and CI/CD
-- [**Architecture**](./docs/architecture.md) — How TermAI works
-- [**Sandboxing & Security**](./docs/cli/sandbox.md)
-- [**Enterprise Guide**](./docs/cli/enterprise.md)
+- [**Authentication**](./docs/get-started/authentication.md) - OAuth and API keys
+- [**Configuration**](./docs/get-started/configuration.md) - Settings and customization
+- [**Commands Reference**](./docs/cli/commands.md) - Slash commands
+- [**MCP Integration**](./docs/tools/mcp-server.md) - External capabilities
+- [**Troubleshooting**](./docs/troubleshooting.md) - Common issues
 
 ---
 
@@ -233,13 +215,13 @@ See our comprehensive [**Product Roadmap**](./futureroadmap_opus.md) for:
 
 - **Horizon 1** (Now — Q1 2025): Foundation, Voice MVP, Web-Remote v1
 - **Horizon 2** (2025): Novice UX, Workflow Engine, MCP Ecosystem
-- **Horizon 3** (2026+): Fleet Orchestration, Terminal Apps, TermAI Cloud
+- **Horizon 3** (2026+): Fleet Orchestration, Terminal Apps, terminaI Cloud
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions! TermAI is fully open source (Apache 2.0).
+We welcome contributions! terminaI is fully open source (Apache 2.0).
 
 - Report bugs and suggest features
 - Improve documentation
@@ -252,32 +234,36 @@ See [Contributing Guide](./CONTRIBUTING.md) for development setup.
 
 ## 🏗️ Fork Lineage
 
-TermAI is a fork of
+terminaI is a fork of
 [Google's Gemini CLI](https://github.com/google-gemini/gemini-cli), transformed
 from a coding-focused agent into a **general-purpose terminal operator**.
+
+**Running on:** Stable Core v0.21.0 (frozen)
 
 **What we changed:**
 
 - Repositioned from "coding agent" to "universal terminal agent"
 - Added system awareness (CPU, disk, processes)
 - Added process orchestration (`/sessions`)
-- Building voice-first interactions
-- Building web-remote access
+- Added voice-first interactions (push-to-talk)
+- Added web-remote access (A2A server POC)
 
-**What we keep in sync:**
+**What we keep:**
 
 - Core architecture and tool infrastructure
 - Authentication mechanisms
 - Security primitives
 
-See [Sync Upstream Guide](./docs/sync-upstream.md) for merge workflow.
+**Upstream Sync Policy:**
+
+We do **not** sync with upstream for 30 days (until 100 Stars milestone). This ensures stability and prevents breaking changes. See [`.local/MAINTAINERS_POLICY.md`](.local/MAINTAINERS_POLICY.md) for details.
 
 ---
 
 ## 📖 Resources
 
+- **[terminaI Changelog](./docs-terminai/changelog.md)** — terminaI-specific changes
 - **[Product Roadmap](./futureroadmap_opus.md)** — Strategic direction
-- **[Changelog](./docs/changelogs/index.md)** — Recent updates
 - **[GitHub Issues](https://github.com/Prof-Harita/termAI/issues)** — Bugs &
   features
 - **[Troubleshooting](./docs/troubleshooting.md)** — Common issues
@@ -293,6 +279,6 @@ See [Sync Upstream Guide](./docs/sync-upstream.md) for merge workflow.
 ---
 
 <p align="center">
-  <strong>TermAI</strong> — The Universal Translator for Your Computer<br/>
+  <strong>terminaI</strong> — The Universal Translator for Your Computer<br/>
   Built with ❤️ by Prof-Harita • Forked from Google Gemini CLI
 </p>

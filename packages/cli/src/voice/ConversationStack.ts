@@ -41,7 +41,10 @@ export class ConversationStack {
       return { type: 'CORRECTION', newContext: replacement.trim() };
     }
 
-    if (/^(what|huh|repeat|say that again)\b/.test(lower)) {
+    if (
+      /^(huh|repeat|say that again)\b/.test(lower) ||
+      /^(what|pardon)\W*$/.test(lower)
+    ) {
       return { type: 'REPEAT_LAST' };
     }
 

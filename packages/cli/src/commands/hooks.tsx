@@ -11,7 +11,7 @@ import { initializeOutputListenersAndFlush } from '../gemini.js';
 export const hooksCommand: CommandModule = {
   command: 'hooks <command>',
   aliases: ['hook'],
-  describe: 'Manage Gemini CLI hooks.',
+  describe: 'Manage terminaI hooks.',
   builder: (yargs) =>
     yargs
       .middleware(() => initializeOutputListenersAndFlush())

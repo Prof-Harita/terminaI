@@ -229,18 +229,18 @@ function resolveVoiceConfig(
     DEFAULT_VOICE_CONFIG.enabled;
   const pttKey = normalizePttKey(
     overrides?.pttKey ??
-      settingsVoice?.pushToTalk?.key ??
-      DEFAULT_VOICE_CONFIG.pttKey,
+    settingsVoice?.pushToTalk?.key ??
+    DEFAULT_VOICE_CONFIG.pttKey,
   );
   const sttProvider = normalizeSttProvider(
     overrides?.sttProvider ??
-      settingsVoice?.stt?.provider ??
-      DEFAULT_VOICE_CONFIG.sttProvider,
+    settingsVoice?.stt?.provider ??
+    DEFAULT_VOICE_CONFIG.sttProvider,
   );
   const ttsProvider = normalizeTtsProvider(
     overrides?.ttsProvider ??
-      settingsVoice?.tts?.provider ??
-      DEFAULT_VOICE_CONFIG.ttsProvider,
+    settingsVoice?.tts?.provider ??
+    DEFAULT_VOICE_CONFIG.ttsProvider,
   );
   const maxWords =
     overrides?.maxWords ??
@@ -746,7 +746,7 @@ export const AppContainer = (props: AppContainerProps) => {
           await runExitCleanup();
           writeToStdout(`
 ----------------------------------------------------------------
-Logging in with Google... Restarting Gemini CLI to continue.
+Logging in with Google... Restarting terminaI to continue.
 ----------------------------------------------------------------
           `);
           process.exit(RELAUNCH_EXIT_CODE);
@@ -800,7 +800,7 @@ Logging in with Google... Restarting Gemini CLI to continue.
       settings.merged.security?.auth?.enforcedType &&
       settings.merged.security?.auth.selectedType &&
       settings.merged.security?.auth.enforcedType !==
-        settings.merged.security?.auth.selectedType
+      settings.merged.security?.auth.selectedType
     ) {
       onAuthError(
         `Authentication is enforced to be ${settings.merged.security?.auth.enforcedType}, but you are currently using ${settings.merged.security?.auth.selectedType}.`,
@@ -925,11 +925,10 @@ Logging in with Google... Restarting Gemini CLI to continue.
       historyManager.addItem(
         {
           type: MessageType.INFO,
-          text: `Memory refreshed successfully. ${
-            memoryContent.length > 0
+          text: `Memory refreshed successfully. ${memoryContent.length > 0
               ? `Loaded ${memoryContent.length} characters from ${fileCount} file(s).`
               : 'No memory content found.'
-          }`,
+            }`,
         },
         Date.now(),
       );
@@ -955,7 +954,7 @@ Logging in with Google... Restarting Gemini CLI to continue.
   }, [config, historyManager]);
 
   const cancelHandlerRef = useRef<(shouldRestorePrompt?: boolean) => void>(
-    () => {},
+    () => { },
   );
 
   const getPreferredEditor = useCallback(
@@ -1369,9 +1368,9 @@ Logging in with Google... Restarting Gemini CLI to continue.
   }, []);
   const shouldShowIdePrompt = Boolean(
     currentIDE &&
-      !config.getIdeMode() &&
-      !settings.merged.ide?.hasSeenNudge &&
-      !idePromptAnswered,
+    !config.getIdeMode() &&
+    !settings.merged.ide?.hasSeenNudge &&
+    !idePromptAnswered,
   );
 
   const [showErrorDetails, setShowErrorDetails] = useState<boolean>(false);

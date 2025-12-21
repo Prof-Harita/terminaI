@@ -1,6 +1,6 @@
-# TermAI Deployment & Testing Guide
+# terminaI Deployment & Testing Guide
 
-This guide describes how to build, run, and test the TermAI application locally.
+This guide describes how to build, run, and test the terminaI application locally.
 
 ## Prerequisites
 
@@ -22,7 +22,7 @@ npm run build
 
 ## 2. Run Locally (Development)
 
-To run the TermAI CLI directly from the source without installing it globally:
+To run the terminaI CLI directly from the source without installing it globally:
 
 ```bash
 npm run start
@@ -65,7 +65,7 @@ npm install -g .
 
 ## 4. Running Tests
 
-TermAI uses `vitest` for unit and integration testing.
+terminaI uses `vitest` for unit and integration testing.
 
 ### Run All Tests (CI Mode)
 
@@ -78,7 +78,7 @@ npm run test:ci
 
 ### Run Tests for Core Logic Only
 
-If you are only working on the core logic (where most TermAI features live):
+If you are only working on the core logic (where most terminaI features live):
 
 ```bash
 npm run test:ci --workspace @google/gemini-cli-core

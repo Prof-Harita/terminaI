@@ -1,6 +1,6 @@
-# TermAI Process Manager — Manual Verification
+# terminaI Process Manager — Manual Verification
 
-This page documents the manual verification flow for TermAI's process
+This page documents the manual verification flow for terminaI's process
 orchestration capabilities. These checks ensure that long-running sessions can
 be started, observed, and stopped safely.
 
@@ -20,7 +20,7 @@ be started, observed, and stopped safely.
    ```
 
    Expected:
-   - TermAI starts a named session `devserver`.
+   - terminaI starts a named session `devserver`.
    - Output is streamed or summarized.
    - Readiness is acknowledged based on output text.
 
@@ -33,7 +33,7 @@ be started, observed, and stopped safely.
    ```
 
    Expected:
-   - TermAI returns the last 50 lines from the session buffer.
+   - terminaI returns the last 50 lines from the session buffer.
    - Output is bounded and does not dump the full log.
 
 3. **Stop the session safely**
@@ -45,7 +45,7 @@ be started, observed, and stopped safely.
    ```
 
    Expected:
-   - TermAI sends SIGINT (or PTY input) to the process.
+   - terminaI sends SIGINT (or PTY input) to the process.
    - If a confirmation prompt appears, approve it.
    - The session stops cleanly.
 
@@ -58,7 +58,7 @@ be started, observed, and stopped safely.
    ```
 
    Expected:
-   - TermAI lists known sessions.
+   - terminaI lists known sessions.
    - `devserver` is marked exited/stopped if it was terminated.
 
 ## Notes

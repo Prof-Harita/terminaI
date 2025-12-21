@@ -5,13 +5,13 @@
  */
 
 /**
- * Computes the window title for the Gemini CLI application.
+ * Computes the window title for the terminaI application.
  *
  * @param folderName - The name of the current folder/workspace to display in the title
  * @returns The computed window title, either from CLI_TITLE environment variable or the default Gemini title
  */
 export function computeWindowTitle(folderName: string): string {
-  const title = process.env['CLI_TITLE'] || `TermAI - ${folderName}`;
+  const title = process.env['CLI_TITLE'] || `terminaI - ${folderName}`;
 
   // Remove control characters that could cause issues in terminal titles
   return title.replace(

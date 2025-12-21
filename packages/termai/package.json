@@ -1,6 +1,6 @@
 {
   "name": "termai",
-  "version": "0.1.0",
+  "version": "0.21.0",
   "description": "terminaI CLI wrapper for Gemini CLI",
   "license": "Apache-2.0",
   "repository": {
@@ -10,7 +10,7 @@
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "termai": "dist/index.js"
+    "terminai": "dist/index.js"
   },
   "scripts": {
     "build": "node ../../scripts/build_package.js && cp system.md dist/system.md",

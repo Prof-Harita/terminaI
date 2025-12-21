@@ -15,7 +15,7 @@ import { MessageType } from '../types.js';
 
 export const docsCommand: SlashCommand = {
   name: 'docs',
-  description: 'Open full Gemini CLI documentation in your browser',
+  description: 'Open full terminaI documentation in your browser',
   kind: CommandKind.BUILT_IN,
   autoExecute: true,
   action: async (context: CommandContext): Promise<void> => {

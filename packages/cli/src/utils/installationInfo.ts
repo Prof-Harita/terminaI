@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { debugLogger, isGitRepository } from '@google/gemini-cli-core';
+import { debugLogger } from '@google/gemini-cli-core';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as childProcess from 'node:child_process';
@@ -44,22 +44,9 @@ export function getInstallationInfo(
     // Normalize path separators to forward slashes for consistent matching.
     const realPath = fs.realpathSync(cliPath).replace(/\\/g, '/');
     const normalizedProjectRoot = projectRoot?.replace(/\\/g, '/');
-    const isGit = isGitRepository(process.cwd());
 
-    // Check for local git clone first
-    if (
-      isGit &&
-      normalizedProjectRoot &&
-      realPath.startsWith(normalizedProjectRoot) &&
-      !realPath.includes('/node_modules/')
-    ) {
-      return {
-        packageManager: PackageManager.UNKNOWN, // Not managed by a package manager in this sense
-        isGlobal: false,
-        updateMessage:
-          'Running from a local git clone. Please update with "git pull".',
-      };
-    }
+    // Check for local git clone - disabled for Stable Core v0.21
+    // (removed warning message as part of freeze policy)
 
     // Check for npx/pnpx
     if (realPath.includes('/.npm/_npx') || realPath.includes('/npm/_npx')) {

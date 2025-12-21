@@ -48,7 +48,7 @@ import {
   coreEvents,
   CoreEvent,
   createWorkingStdio,
-  patchStdio,
+  // patchStdio,
   writeToStdout,
   writeToStderr,
   disableMouseEvents,
@@ -165,13 +165,12 @@ export function setupUnhandledRejectionHandler() {
 This is an unexpected error. Please file a bug report using the /bug tool.
 CRITICAL: Unhandled Promise Rejection!
 =========================================
-Reason: ${reason}${
-      reason instanceof Error && reason.stack
+Reason: ${reason}${reason instanceof Error && reason.stack
         ? `
 Stack trace:
 ${reason.stack}`
         : ''
-    }`;
+      }`;
     debugLogger.error(errorMessage);
     if (!unhandledRejectionOccurred) {
       unhandledRejectionOccurred = true;
@@ -297,8 +296,10 @@ export async function startInteractiveUI(
 }
 
 export async function main() {
+  console.log('[DEBUG] CLI: main() called');
   const cliStartupHandle = startupProfiler.start('cli_startup');
-  const cleanupStdio = patchStdio();
+  // const cleanupStdio = patchStdio(); // Disabled to fix TermAI output swallowing
+  const cleanupStdio = () => { };
   registerSyncCleanup(() => {
     // This is needed to ensure we don't lose any buffered output.
     initializeOutputListenersAndFlush();
@@ -655,7 +656,7 @@ export async function main() {
 
     if (
       settings.merged.security?.auth?.selectedType ===
-        AuthType.LOGIN_WITH_GOOGLE &&
+      AuthType.LOGIN_WITH_GOOGLE &&
       config.isBrowserLaunchSuppressed()
     ) {
       // Do oauth before app renders to make copying the link possible.
@@ -697,17 +698,17 @@ export async function main() {
     cliStartupHandle?.end();
     let voiceOverrides: VoiceOverrides | undefined =
       argv.voice !== undefined ||
-      argv.voicePttKey !== undefined ||
-      argv.voiceStt !== undefined ||
-      argv.voiceTts !== undefined ||
-      argv.voiceMaxWords !== undefined
+        argv.voicePttKey !== undefined ||
+        argv.voiceStt !== undefined ||
+        argv.voiceTts !== undefined ||
+        argv.voiceMaxWords !== undefined
         ? {
-            enabled: argv.voice,
-            pttKey: argv.voicePttKey,
-            sttProvider: argv.voiceStt,
-            ttsProvider: argv.voiceTts,
-            maxWords: argv.voiceMaxWords,
-          }
+          enabled: argv.voice,
+          pttKey: argv.voicePttKey,
+          sttProvider: argv.voiceStt,
+          ttsProvider: argv.voiceTts,
+          maxWords: argv.voiceMaxWords,
+        }
         : undefined;
     if (!voiceOverrides && onboardingVoiceOverrides) {
       voiceOverrides = onboardingVoiceOverrides;

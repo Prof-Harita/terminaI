@@ -1,10 +1,10 @@
-# TermAI Maintainer Guide
+# terminaI Maintainer Guide
 
-This document explains how to maintain the **TermAI** fork of `gemini-cli`.
+This document explains how to maintain the **terminaI** fork of `gemini-cli`.
 
 ## 1. Philosophies
 
-- **TermAI** is the "Community/Pro" edition.
+- **terminaI** is the "Community/Pro" edition.
 - We support features that Google cannot or will not support (e.g., local
   models, autonomous "YOLO" agents, deeper integration).
 - We maintain compatibility with `gemini-cli` where possible to allow easy
@@ -34,5 +34,5 @@ to pull in their bug fixes and features regularly.
 ## 3. Releases
 
 - Our releases are independent of Google's.
-- When we have a stable build with new TermAI features (like Voice or Web
+- When we have a stable build with new terminaI features (like Voice or Web
   Remote), we create a new release on GitHub.

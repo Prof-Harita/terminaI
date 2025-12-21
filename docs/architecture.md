@@ -79,9 +79,9 @@ A typical interaction with the Gemini CLI follows this flow:
 - **User experience:** The CLI focuses on providing a rich and interactive
   terminal experience.
 
-## TermAI extensions in this repo
+## terminaI extensions in this repo
 
-This fork includes additional TermAI-focused components and tools:
+This fork includes additional terminaI-focused components and tools:
 
 - **Distribution wrapper:** `packages/termai` ships a `termai` binary that
   launches the core CLI with a bundled `system.md`.

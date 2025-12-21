@@ -57,11 +57,11 @@ run-npx:
 
 create-alias:
 	scripts/create_alias.sh
-You are working on TermAI, a fork of gemini-cli located at /home/profharita/Code/termAI.
+You are working on terminaI, a fork of gemini-cli located at /home/profharita/Code/termAI.
 
 ## What's Already Done (MVP)
 Per tasks.md section "1. Current State":
-- TermAI identity and "General Terminal Tasks" workflows in prompts.ts
+- terminaI identity and "General Terminal Tasks" workflows in prompts.ts
 - Node-derived system snapshot in environmentContext.ts
 - Process Manager Tool implemented with full API (start/list/status/read/send/signal/stop)
 - Unit tests for process-manager.ts

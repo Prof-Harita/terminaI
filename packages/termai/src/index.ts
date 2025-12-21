@@ -17,6 +17,9 @@ if (!process.env['GEMINI_SYSTEM_MD']) {
   process.env['GEMINI_SYSTEM_MD'] = systemPath;
 }
 
+// Disable CLI auto-relaunch to fix startup hang in wrapper mode
+process.env['GEMINI_CLI_NO_RELAUNCH'] = 'true';
+
 const require = createRequire(import.meta.url);
 const cliEntry = require.resolve('@google/gemini-cli/dist/index.js');
 
