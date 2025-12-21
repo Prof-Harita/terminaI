@@ -39,6 +39,7 @@ export * from './core/nonInteractiveToolExecutor.js';
 export * from './core/recordingContentGenerator.js';
 
 export * from './fallback/types.js';
+export * from './brain/index.js';
 
 export * from './code_assist/codeAssist.js';
 export * from './code_assist/oauth2.js';
@@ -130,6 +131,7 @@ export * from './tools/read-many-files.js';
 export * from './tools/mcp-client.js';
 export * from './tools/mcp-tool.js';
 export * from './tools/write-todos.js';
+export * from './tools/process-notifications.js';
 
 // MCP OAuth
 export { MCPOAuthProvider } from './mcp/oauth-provider.js';

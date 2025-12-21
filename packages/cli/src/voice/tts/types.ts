@@ -6,6 +6,7 @@
 
 export type SpeakOptions = {
   signal?: AbortSignal;
+  volume?: number;
 };
 
 export type TtsProvider = {

@@ -27,6 +27,7 @@ describe('FileOpsTool', () => {
       getWorkspaceContext: () => createMockWorkspaceContext(tempRootDir),
       getFileService: () => new FileDiscoveryService(tempRootDir),
       getFileFilteringOptions: () => DEFAULT_FILE_FILTERING_OPTIONS,
+      getPreviewMode: () => false,
     } as unknown as Config;
     tool = new FileOpsTool(mockConfig);
   });
@@ -148,5 +149,19 @@ describe('FileOpsTool', () => {
       path: '/etc',
     };
     expect(() => tool.build(params)).toThrow('not within the workspace');
+  });
+
+  it('returns preview output without touching the file system', async () => {
+    (mockConfig as unknown as { getPreviewMode: () => boolean }).getPreviewMode =
+      () => true;
+    tool = new FileOpsTool(mockConfig);
+    const params: FileOpsToolParams = {
+      operation: 'mkdir',
+      path: 'preview-dir',
+    };
+    const invocation = tool.build(params);
+    const result = await invocation.execute(new AbortController().signal);
+    expect(result.returnDisplay).toContain('[PREVIEW]');
+    await expect(fs.stat(path.join(tempRootDir, 'preview-dir'))).rejects.toThrow();
   });
 });

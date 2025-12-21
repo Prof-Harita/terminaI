@@ -15,6 +15,7 @@ import {
 } from '@google/gemini-cli-a2a-server';
 import crypto from 'node:crypto';
 import net from 'node:net';
+import path from 'node:path';
 
 export type WebRemoteServerOptions = {
   host: string;
@@ -81,7 +82,7 @@ export async function ensureWebRemoteAuth(
 
 export async function startWebRemoteServer(
   options: WebRemoteServerOptions,
-): Promise<{ server: Server; port: number }> {
+): Promise<{ server: Server; port: number; url: string }> {
   if (options.allowedOrigins.length > 0) {
     process.env['GEMINI_WEB_REMOTE_ALLOWED_ORIGINS'] =
       options.allowedOrigins.join(',');
@@ -93,5 +94,33 @@ export async function startWebRemoteServer(
   const actualPort =
     typeof address === 'string' || !address ? options.port : address.port;
   updateCoderAgentCardUrl(actualPort, options.host);
-  return { server, port: actualPort };
+
+  // Build the user-facing URL (include token if present)
+  const authState = await loadRemoteAuthState();
+  const token =
+    options.tokenOverride ??
+    process.env['GEMINI_WEB_REMOTE_TOKEN'] ??
+    authState?.token ??
+    null;
+  const url = `http://${options.host}:${actualPort}/ui${
+    token ? `?token=${encodeURIComponent(token)}` : ''
+  }`;
+
+  // Render QR code if the dependency is available, otherwise fall back to text.
+  try {
+    const module = await import('qrcode-terminal');
+    const qrcode = module?.default ?? (module as { generate?: unknown });
+    if (qrcode && typeof qrcode.generate === 'function') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (qrcode as any).generate(url, { small: true });
+    }
+  } catch {
+    // Ignore missing dependency; QR is optional.
+  }
+
+  process.stdout.write(
+    `\n🌐 Web Remote available at: ${url}\n` +
+      `   (assets served from ${path.join(process.cwd(), 'packages/web-client')})\n`,
+  );
+  return { server, port: actualPort, url };
 }

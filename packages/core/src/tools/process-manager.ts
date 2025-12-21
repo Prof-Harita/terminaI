@@ -34,6 +34,7 @@ import type {
 import { BaseDeclarativeTool, BaseToolInvocation, Kind } from './tools.js';
 import { ToolErrorType } from './tool-error.js';
 import { PROCESS_MANAGER_TOOL_NAME } from './tool-names.js';
+import { sessionNotifier, type SessionEventType } from './process-notifications.js';
 
 const MAX_OUTPUT_LINES = 1000;
 const DEFAULT_READ_LINES = 50;
@@ -52,7 +53,8 @@ export type ProcessManagerOperation =
   | 'send'
   | 'signal'
   | 'stop'
-  | 'restart';
+  | 'restart'
+  | 'summarize';
 
 export type ProcessManagerSignal = 'SIGINT' | 'SIGTERM' | 'SIGKILL';
 
@@ -323,6 +325,7 @@ export class ProcessManager {
     };
 
     this.state.sessions.set(name, session);
+    this.notify('started', session, `Session "${name}" started.`);
 
     try {
       const commandToExecute = params.env
@@ -350,12 +353,24 @@ export class ProcessManager {
           if (!session.hasOutput && result.output) {
             this.appendTextOutput(session, result.output);
           }
+          this.notify(
+            result.error ? 'crashed' : 'finished',
+            session,
+            result.error
+              ? `Session "${session.name}" crashed (exit ${result.exitCode ?? 'unknown'}).`
+              : `Session "${session.name}" finished with code ${result.exitCode ?? 0}.`,
+          );
         })
         .catch((error) => {
           session.status = 'error';
           this.appendTextOutput(
             session,
             `Process error: ${getErrorMessage(error)}`,
+          );
+          this.notify(
+            'crashed',
+            session,
+            `Session "${session.name}" crashed: ${getErrorMessage(error)}`,
           );
         });
 
@@ -407,8 +422,8 @@ export class ProcessManager {
       return this.errorResult(`Session "${name}" does not exist.`);
     }
 
-    const requestedLines = Math.max(1, Math.floor(lines ?? DEFAULT_READ_LINES));
-    const linesToRead = Math.min(requestedLines, MAX_OUTPUT_LINES);
+    const lineCount = Math.max(1, Math.floor(lines ?? DEFAULT_READ_LINES));
+    const linesToRead = Math.min(lineCount, MAX_OUTPUT_LINES);
     const outputLines = session.pendingLine
       ? session.outputLines.concat(session.pendingLine)
       : session.outputLines;
@@ -424,6 +439,35 @@ export class ProcessManager {
     return {
       llmContent: output,
       returnDisplay: output,
+    };
+  }
+
+  summarizeOutput(name: string, lines?: number): ToolResult {
+    const session = this.state.sessions.get(name.trim());
+    if (!session) {
+      return this.errorResult(`Session "${name}" does not exist.`);
+    }
+
+    const requestedLines = Math.max(1, Math.floor(lines ?? DEFAULT_READ_LINES));
+    const linesToRead = Math.min(requestedLines, MAX_OUTPUT_LINES);
+    const outputLines = session.pendingLine
+      ? session.outputLines.concat(session.pendingLine)
+      : session.outputLines;
+    const normalized = normalizeLines(outputLines, linesToRead);
+    const finalLines =
+      normalized.length === 0 && outputLines.length > 0
+        ? outputLines.slice(-linesToRead)
+        : normalized;
+    const outputText =
+      finalLines.join('\n') || outputLines.join('\n') || 'No output captured.';
+    const returnDisplayText =
+      finalLines.slice(-5).filter(Boolean).join('\n') ||
+      outputLines.slice(-5).filter(Boolean).join('\n') ||
+      'No output captured.';
+
+    return {
+      llmContent: `Session "${name}" — last ${requestedLines} lines:\n\n${outputText}\n\nSummarize key events, errors, readiness signals, and current state in 3-5 bullet points.`,
+      returnDisplay: returnDisplayText,
     };
   }
 
@@ -552,6 +596,15 @@ export class ProcessManager {
       env: session.env,
     });
   }
+
+  private notify(type: SessionEventType, session: ProcessSession, message: string) {
+    sessionNotifier.notify({
+      type,
+      sessionName: session.name,
+      message,
+      timestamp: Date.now(),
+    });
+  }
 }
 
 class ProcessManagerToolInvocation extends BaseToolInvocation<
@@ -586,6 +639,8 @@ class ProcessManagerToolInvocation extends BaseToolInvocation<
         return `Stop session "${this.params.name}"`;
       case 'restart':
         return `Restart session "${this.params.name}"`;
+      case 'summarize':
+        return `Summarize recent output for session "${this.params.name}"`;
       default:
         return 'Manage process sessions';
     }
@@ -661,6 +716,11 @@ class ProcessManagerToolInvocation extends BaseToolInvocation<
           (this.params.name ?? '').trim(),
           this.params.signal ?? 'SIGTERM',
         );
+      case 'summarize':
+        return this.processManager.summarizeOutput(
+          (this.params.name ?? '').trim(),
+          this.params.lines,
+        );
       default:
         return {
           llmContent: `Error: Unsupported operation: ${this.params.operation}`,
@@ -690,7 +750,7 @@ export class ProcessManagerTool extends BaseDeclarativeTool<
     super(
       ProcessManagerTool.Name,
       'ProcessManager',
-      'Manage named process sessions (start/list/status/read/send/signal/stop/restart). Start requires background=true.',
+      'Manage named process sessions (start/list/status/read/send/signal/stop/restart/summarize). Start requires background=true.',
       Kind.Execute,
       {
         type: 'object',
@@ -706,6 +766,7 @@ export class ProcessManagerTool extends BaseDeclarativeTool<
               'signal',
               'stop',
               'restart',
+              'summarize',
             ],
             description: 'The process manager operation to perform.',
           },
@@ -806,7 +867,10 @@ export class ProcessManagerTool extends BaseDeclarativeTool<
       }
     }
 
-    if (operation === 'read' && params.lines !== undefined) {
+    if (
+      (operation === 'read' || operation === 'summarize') &&
+      params.lines !== undefined
+    ) {
       if (!Number.isFinite(params.lines) || params.lines <= 0) {
         return "The 'lines' parameter must be a positive integer.";
       }

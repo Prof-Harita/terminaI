@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TermAI Remote</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <div>
+          <p class="eyebrow">TermAI Remote</p>
+          <h1>Stay in flow from your phone</h1>
+          <p class="lede">
+            Send quick prompts, watch responses stream, and keep the terminal
+            in sync.
+          </p>
+        </div>
+        <div class="status">
+          <span class="dot" id="status-dot"></span>
+          <span id="status-text">Connecting…</span>
+        </div>
+      </header>
+
+      <main id="chat"></main>
+
+      <footer>
+        <label for="input">Ask TermAI</label>
+        <textarea
+          id="input"
+          placeholder="Run tests, summarize logs, or ask for a quick fix…"
+          rows="3"
+        ></textarea>
+        <div class="actions">
+          <button id="send">Send</button>
+          <small>Press Ctrl/Cmd+Enter to send</small>
+        </div>
+      </footer>
+    </div>
+    <script src="app.js" type="module"></script>
+  </body>
+</html>

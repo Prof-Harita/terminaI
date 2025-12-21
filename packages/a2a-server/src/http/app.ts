@@ -5,6 +5,8 @@
  */
 
 import express from 'express';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import type { AgentCard, Message } from '@a2a-js/sdk';
 import type { TaskStore } from '@a2a-js/sdk/server';
@@ -229,6 +231,11 @@ export async function createApp() {
       }),
     );
     expressApp.use(createReplayProtection());
+    const webClientPath = path.join(
+      path.dirname(fileURLToPath(import.meta.url)),
+      '../../web-client',
+    );
+    expressApp.use('/ui', express.static(webClientPath));
 
     const appBuilder = new A2AExpressApp(requestHandler);
     expressApp = appBuilder.setupRoutes(expressApp, '');
