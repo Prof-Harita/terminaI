@@ -132,6 +132,8 @@ export default tseslint.config(
             'memfs/lib/volume.js',
             'yargs/**',
             'msw/node',
+            '@tauri-apps/**',
+            '@xterm/**',
           ],
         },
       ],
@@ -274,6 +276,19 @@ export default tseslint.config(
     rules: {
       'no-restricted-syntax': 'off',
       '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
+  {
+    files: ['packages/desktop/src/**/*.{ts,tsx}'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.es2021,
+      },
+    },
+    rules: {
+      'no-restricted-globals': 'off', // Allow local overrides
+      '@typescript-eslint/no-floating-promises': 'off', // Too many in UI code
     },
   },
   // Prettier config must be last

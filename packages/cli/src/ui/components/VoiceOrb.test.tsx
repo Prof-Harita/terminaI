@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+// React imported implicitly via JSX transform
 import { describe, expect, it } from 'vitest';
 import { render } from 'ink-testing-library';
 import { VoiceOrb } from './VoiceOrb.js';

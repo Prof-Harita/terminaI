@@ -4,8 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { GenerativeModel } from '@google/genai';
-import { assessRisk, type RiskAssessment } from './riskAssessor.js';
+import {
+  assessRisk,
+  type GenerativeModelAdapter,
+  type RiskAssessment,
+} from './riskAssessor.js';
 
 export interface TaskStep {
   id: string;
@@ -65,7 +68,7 @@ function parseResponseText(result: unknown): DecompositionResponse {
 
 export async function decomposeTask(
   request: string,
-  model: Pick<GenerativeModel, 'generateContent'>,
+  model: GenerativeModelAdapter,
 ): Promise<DecomposedTask> {
   const atomicPatterns = [
     /^(what|show|list|check|find|get|tell me)\b/i,
@@ -110,7 +113,7 @@ export interface AssessedTask extends DecomposedTask {
 export async function assessDecomposedTask(
   task: DecomposedTask,
   systemContext: string,
-  model: Pick<GenerativeModel, 'generateContent'>,
+  model: GenerativeModelAdapter,
 ): Promise<AssessedTask> {
   const assessedSteps: AssessedStep[] = [];
 

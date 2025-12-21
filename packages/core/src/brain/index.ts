@@ -10,6 +10,7 @@ export {
   assessRiskWithLLM,
   calculateOverallRisk,
   selectStrategy,
+  type GenerativeModelAdapter,
   type RiskAssessment,
   type RiskDimensions,
 } from './riskAssessor.js';

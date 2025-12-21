@@ -54,6 +54,13 @@ export function routeExecution(
         shouldWarn: true,
         warningMessage: `🔴 CRITICAL: ${reasoning}`,
       };
+    default:
+      return {
+        strategy: { type: 'iterate', maxRetries: 1 },
+        requiresConfirmation: true,
+        shouldWarn: true,
+        warningMessage: '⚠️ Unknown risk level',
+      };
   }
 }
 

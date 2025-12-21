@@ -358,7 +358,7 @@ export class Config {
   private workspaceContext: WorkspaceContext;
   private readonly debugMode: boolean;
   private readonly question: string | undefined;
-  private readonly previewMode: boolean;
+  private previewMode: boolean;
 
   private readonly coreTools: string[] | undefined;
   private readonly allowedTools: string[] | undefined;

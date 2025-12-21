@@ -100,7 +100,7 @@ export async function startWebRemoteServer(
   const token =
     options.tokenOverride ??
     process.env['GEMINI_WEB_REMOTE_TOKEN'] ??
-    authState?.token ??
+    authState?.tokenId ??
     null;
   const url = `http://${options.host}:${actualPort}/ui${
     token ? `?token=${encodeURIComponent(token)}` : ''

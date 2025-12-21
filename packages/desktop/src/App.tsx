@@ -52,7 +52,7 @@ function App() {
 
   const handleCommandSelect = useCallback(async (command: Command) => {
     try {
-      await invoke('send_to_cli', { message: command.action });
+      void invoke('send_to_cli', { message: command.action });
     } catch (err) {
       console.error('Failed to execute command:', err);
     }

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { StreamingWhisper } from './StreamingWhisper.js';
+// StreamingWhisper imported dynamically in tests below
 import { EventEmitter } from 'node:events';
 
 describe('StreamingWhisper', () => {

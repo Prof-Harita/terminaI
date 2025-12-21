@@ -1,12 +1,12 @@
-# TermAI — Product & Strategic Roadmap
+# terminaI — Product & Strategic Roadmap
 
-> **The Mission:** TermAI is not a better terminal. It is the **Universal
+> **The Mission:** terminaI is not a better terminal. It is the **Universal
 > Translator between Human Intent and System Action**. We compress the time from
 > "I need to..." to "Done." — for everyone from laymen to power users.
 
 ---
 
-## Why Now? The Market Inflection Point
+## Why Now? The Architecture Inflection Point
 
 The "Vibe Coding" revolution has exploded — Cursor, Claude Code, Copilot, Aider.
 But this revolution has **only happened for coding**. The parallel universe for
@@ -14,7 +14,7 @@ But this revolution has **only happened for coding**. The parallel universe for
 
 | Domain                      | For Developers                                       | For Everyone Else |
 | --------------------------- | ---------------------------------------------------- | ----------------- |
-| **Coding**                  | Cursor, Claude Code, Copilot (~$100B market by 2030) | Replit, Bolt, v0  |
+| **Coding**                  | Cursor, Claude Code, Copilot (High Demand)           | Replit, Bolt, v0  |
 | **Terminal / OS Operation** | Claude Code, Codex CLI                               | **❌ NOTHING**    |
 
 **The Gap:** There is no "Cursor for your computer." No tool that lets a layman
@@ -25,14 +25,14 @@ say:
 - _"The shop screen is black. Restart the display software."_
 - _"Merge these 50 CSVs and summarize the errors"_
 
-This is TermAI's whitespace. A $36.3B AI productivity market with no dominant
+This is terminaI's whitespace. A massive AI productivity gap with no dominant
 player for terminal/OS automation.
 
 ---
 
 ## Competitive Positioning: The "Operator Layer" Gap
 
-| Feature              | TermAI                        | Warp           | Aider          | GitHub Copilot CLI | Open Interpreter   |
+| Feature              | terminaI                        | Warp           | Aider          | GitHub Copilot CLI | Open Interpreter   |
 | -------------------- | ----------------------------- | -------------- | -------------- | ------------------ | ------------------ |
 | **Primary Focus**    | **Universal System Operator** | Terminal UI/UX | Code Editing   | Command Suggestion | Desktop Automation |
 | **License**          | **Open Source**               | Proprietary    | Open Source    | Proprietary        | Open Source        |
@@ -42,7 +42,7 @@ player for terminal/OS automation.
 | **Extensibility**    | **MCP Protocol**              | Proprietary    | Limited        | None               | Custom scripts     |
 | **Model Agnostic**   | **✅ (Ollama, Claude, GPT)**  | N/A            | ✅             | ❌ OpenAI only     | ✅                 |
 
-**TermAI's Moat:**
+**terminaI's Differentiators:**
 
 1. **Open Source + Model Agnostic** — No vendor lock-in, user owns data
 2. **Voice-First** — Captures "AFK" users (cooking, driving, accessibility)
@@ -52,7 +52,7 @@ player for terminal/OS automation.
 
 ---
 
-## Target Personas: Who Needs TermAI?
+## Target Personas: Who Needs terminaI?
 
 ### Persona 1: The Reluctant Operator
 
@@ -61,7 +61,7 @@ _Junior developers, data scientists terrified of `rm -rf`_
 > **Pain:** "I know I need to kill the process on port 8080, but I can't
 > remember the syntax and I'm scared I'll break something."
 
-**TermAI Value:** The Safety Net. Preview before execute. Explain why.
+**terminaI Value:** The Safety Net. Preview before execute. Explain why.
 
 ### Persona 2: The Grizzled SRE
 
@@ -70,7 +70,7 @@ _10+ years experience, manages fleets, hates latency_
 > **Pain:** "Copilot hallucinated a non-existent AWS flag. Cost me 3 hours
 > debugging."
 
-**TermAI Value:** Local-first (Ollama), scriptable, auditable.
+**terminaI Value:** Local-first (Ollama), scriptable, auditable.
 Generate-then-verify workflow.
 
 ### Persona 3: The Involuntary Sysadmin
@@ -79,7 +79,7 @@ _Small business owner managing Shopify + Raspberry Pi signage_
 
 > **Pain:** "The digital menu screen is black. I don't know what Nginx is."
 
-**TermAI Value:** Intent-based operation. "Connect to shop screen. Restart the
+**terminaI Value:** Intent-based operation. "Connect to shop screen. Restart the
 display."
 
 ### Persona 4: The Shadow Analyst
@@ -89,7 +89,7 @@ _Marketing manager parsing 50 CSVs for the board meeting_
 > **Pain:** "Excel crashes. Engineering says it'll take a week. ChatGPT requires
 > uploading sensitive data to the cloud."
 
-**TermAI Value:** Local pandas-power via natural language. Data never leaves
+**terminaI Value:** Local pandas-power via natural language. Data never leaves
 machine.
 
 ### Persona 5: The Accessibility User
@@ -98,7 +98,7 @@ _Motor/vision impairments, GUIs are hostile_
 
 > **Pain:** "I need to change privacy settings but I can't find the menu."
 
-**TermAI Value:** Voice-first universal interface to system configuration.
+**terminaI Value:** Voice-first universal interface to system configuration.
 
 ---
 
@@ -135,7 +135,7 @@ early adopter.
 
 **Success Metrics:**
 
-- 10K GitHub stars (community validation)
+- Strong community growth
 - 100 daily active users (retention signal)
 - Zero data-loss incidents (safety validation)
 - 3 community-contributed MCP tools (ecosystem health)
@@ -155,15 +155,15 @@ _"The universal translator for computing"_
 | **Web-Remote as Product** | Multi-device sessions, remote approval mode, mobile-optimized UI                       | Phone as secure window into your terminal.                       |
 | **Workflow Engine**       | Shareable workflows, workflow templates, replay-with-preview                           | The "Terminal App" primitive. User-generated automation.         |
 | **MCP Ecosystem**         | `termai install @slack`, community registry, app security review                       | Shift value from "chatting" to "doing." This is the moat.        |
-| **Enterprise Readiness**  | Immutable audit logs, SSO stub, compliance docs (SOC2 path)                            | Enterprise is where the revenue is. Plant seeds now.             |
+| **Organizational Scale**  | Immutable audit logs, SSO stub, compliance docs (SOC2 path)                            | Enterprises need stability and control.                          |
 
 **Success Metrics:**
 
-- 50K stars (mainstream visibility)
-- 1K daily active users
-- 50 MCP tools in registry
-- 3 enterprise pilots
-- First revenue (support contracts or hosted relay)
+- Strong community growth
+- 100 daily active users (retention signal)
+- Zero data-loss incidents (safety validation)
+- 3 community-contributed MCP tools (ecosystem health)
+- Sustainable funding model
 
 ---
 
@@ -171,23 +171,23 @@ _"The universal translator for computing"_
 
 _"The operating system is the new browser"_
 
-**Goal:** Become the default "operator layer" for computers. Build a business.
+**Goal:** Become the default "operator layer" for computers. Build a standard.
 
 | Theme                       | Key Deliverables                                                            | Why It Matters                                                |
 | --------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| **Fleet Orchestration**     | Multi-machine execution, policy-as-code approvals, org dashboards           | Enterprise ITOps market ($10B+).                              |
+| **Fleet Orchestration**     | Multi-machine execution, policy-as-code approvals, org dashboards           | Enterprise ITOps.                                             |
 | **Terminal Apps Ecosystem** | App manifest schema, sandboxed execution, curated app store                 | Become a platform, not just a tool.                           |
 | **Intent Language**         | Portable workflow format, cross-platform compilation                        | "Write once, run anywhere" for automation.                    |
-| **TermAI Cloud**            | Team sync, hosted agents, managed LLM gateway                               | Sustainability. Fund open-source without crippling free tier. |
+| **terminaI Cloud**            | Team sync, hosted agents, managed LLM gateway                               | Sustainability. Fund open-source without crippling free tier. |
 | **IDE Integrations**        | VS Code extension, Neovim plugin, JetBrains                                 | Meet developers where they are.                               |
 | **Moonshots**               | Undo for more operations, reversible playbooks, proving what AI did and why | The "trust endgame."                                          |
 
 **Success Metrics:**
 
 - Industry standard for terminal AI
-- $1M ARR (sustainability)
-- 100+ enterprise customers
-- TermAI-native companies (equivalent of "Cloud-native")
+- Project sustainability
+- Widespread organizational adoption
+- terminaI-native companies (equivalent of "Cloud-native")
 
 ---
 
@@ -198,7 +198,7 @@ _"The operating system is the new browser"_
 | **Big Tech Entrenchment** | 🔴 High   | Move faster. Ship features Google/Microsoft won't (local models, competitor APIs). Stay model-agnostic. |
 | **Security Incident**     | 🔴 High   | Build safety into the core. Engage security researchers early. Bug bounty program.                      |
 | **Model Quality Gap**     | 🟡 Medium | Abstract model provider. Allow user to upgrade. Tune for efficiency not just accuracy.                  |
-| **Community Burnout**     | 🟡 Medium | Plan business model from day 1. Foundation governance. Clear contribution paths.                        |
+| **Community Burnout**     | 🟡 Medium | Plan sustainability from day 1. Foundation governance. Clear contribution paths.                        |
 | **User Trust Barrier**    | 🟡 Medium | Gradual trust building. Training mode. Showcased success stories. Audit trails.                         |
 | **Regulatory Changes**    | 🟡 Medium | Build compliance primitives (logging, explicability) now. Stay ahead of EU AI Act.                      |
 
@@ -217,26 +217,25 @@ _"The operating system is the new browser"_
 
 ---
 
-## Commercialization Strategy (Open Core)
+## Sustainability Strategy (Open Core)
 
 Following Supabase/GitLab/PostHog precedent:
 
-| Tier                   | What's Included                                                | Price       |
+| Tier                   | What's Included                                                | Model       |
 | ---------------------- | -------------------------------------------------------------- | ----------- |
-| **Free (Open Source)** | Full agent, voice, local models, MCP, web-remote (self-hosted) | $0          |
-| **Pro (Individual)**   | Managed web-remote relay, priority model routing, cloud sync   | $10-20/mo   |
-| **Team**               | Shared context ("What did Bob do last week?"), team audit logs | $50/user/mo |
-| **Enterprise**         | SSO, centralized policies, fleet orchestration, SLA            | Custom      |
+| **Free (Open Source)** | Full agent, voice, local models, MCP, web-remote (self-hosted) | Free        |
+| **Pro (Individual)**   | Managed web-remote relay, priority model routing, cloud sync   | Sponsorship |
+| **Team**               | Shared context ("What did Bob do last week?"), team audit logs | Managed     |
+| **Enterprise**         | SSO, centralized policies, fleet orchestration, SLA            | Commercial  |
 
-**Revenue Thesis:** Individual developers will pay for convenience (managed
-relay). Teams will pay for shared intelligence. Enterprises will pay for control
-and compliance.
+**Sustainability Thesis:** Users may support managed services for convenience. Teams will need shared intelligence.
+Enterprises will need control and compliance.
 
 ---
 
 ## The Vision: What Terminal AI Becomes
 
-In 3-5 years, TermAI is not a product. It's a paradigm shift.
+In 3-5 years, terminaI is not a product. It's a paradigm shift.
 
 > **A world where "I need to deploy" is a verified workflow with previews and
 > rollback.**
@@ -251,7 +250,7 @@ In 3-5 years, TermAI is not a product. It's a paradigm shift.
 >
 > **A world where power users run fleets with policy-as-code approvals.**
 >
-> **A world where TermAI can prove what it did (audit trails) and why it did
+> **A world where terminaI can prove what it did (audit trails) and why it did
 > it.**
 
 This is not science fiction. The components exist. We're assembling them.
@@ -262,7 +261,7 @@ This is not science fiction. The components exist. We're assembling them.
 
 This roadmap synthesizes:
 
-1. **Original TermAI Roadmap** — 400+ line technical execution plan
+1. **Original terminaI Roadmap** — 400+ line technical execution plan
 2. **Market Research** — Competitive landscape, $100B market sizing, user
    personas
 3. **Gap Analysis** — Why "Cursor for computing" doesn't exist yet
@@ -320,9 +319,9 @@ _Last Updated: December 2025_ _Version: Opus 1.0_
 
 | Item                                                                                 | Ease | Upside |
 | ------------------------------------------------------------------------------------ | ---- | ------ |
-| Add a single `docs/termai.md`: "what TermAI is", "how to stay safe", "how to extend" | H    | M      |
+| Add a single `docs/termai.md`: "what terminaI is", "how to stay safe", "how to extend" | H    | M      |
 | Publish a "demo script" doc: 10 copy-paste demos that reliably impress               | H    | M      |
-| Add CI smoke tests for TermAI-branded prompt invariants                              | H    | H      |
+| Add CI smoke tests for terminaI-branded prompt invariants                              | H    | H      |
 | Add a lightweight "compatibility policy" doc for upstream merges                     | H    | M      |
 | Add a "security posture" doc (threat model summary, esp. for web-remote)             | H    | H      |
 | Add a "support matrix" doc (macOS/Linux/Windows/WSL status)                          | H    | M      |
@@ -382,7 +381,7 @@ _Last Updated: December 2025_ _Version: Opus 1.0_
 | Add "agent streaming attribution" (who said what)                | M    | M      |
 | Add "agent result artifacts" (patch, diff, logs)                 | M    | M      |
 | Add "agent conflict resolution" (require review for file edits)  | M    | H      |
-| Add "compose agents" (TermAI as supervisor, bounded parallelism) | L    | H      |
+| Add "compose agents" (terminaI as supervisor, bounded parallelism) | L    | H      |
 | Add "task queue" (run agent tasks sequentially with checkpoints) | L    | H      |
 | Add "retry policy" (recoverable vs hard failures)                | M    | M      |
 | Add "budget enforcement" (time, tokens, tool calls) per agent    | L    | H      |
@@ -650,11 +649,11 @@ _Last Updated: December 2025_ _Version: Opus 1.0_
 | Extensions safer than copy-pasted shell scripts                   | Permissioned, signed extensions with provenance and audit logs           |
 | New users learn terminal by doing, with guardrails                | Tutorial flows, reversible playbooks, explanations                       |
 | Power users run fleets with policy-as-code                        | Remote orchestration, org policies, role-based approvals                 |
-| TermAI can prove what it did and why                              | Provenance and audit logging as core primitive                           |
+| terminaI can prove what it did and why                              | Provenance and audit logging as core primitive                           |
 | "Undo" exists for more operations                                 | Reversible operations, capture "before" state, `/undo` UX                |
 | Workflows are shareable, signed, reproducible                     | Signed packages, deterministic runners, artifact capture                 |
 | Local models handle private tasks offline                         | Local model providers, offline-first tool behavior                       |
-| TermAI = de facto standard client for MCP                         | Excellent discovery, management, permissions, UX                         |
+| terminaI = de facto standard client for MCP                         | Excellent discovery, management, permissions, UX                         |
 
 ---
 
