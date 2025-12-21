@@ -2,65 +2,58 @@
 
 [![TermAI CI](https://github.com/Prof-Harita/termAI/actions/workflows/ci.yml/badge.svg)](https://github.com/Prof-Harita/termAI/actions/workflows/ci.yml)
 
-![TermAI Banner](./docs/assets/termai-banner.png)
+> **The Universal Translator between Human Intent and System Action.**
+>
+> While coding agents exploded (Cursor, Claude Code, Copilot), the terminal
+> remained untouched. TermAI fills that gap — an AI-powered terminal agent for
+> **everyone**, from laymen to sysadmins.
 
-![TermAI Demo](./docs/assets/termai-demo.gif)
+---
 
-**TermAI** is the next-generation, general-purpose terminal agent. While it
-excels at coding, it is **not just a coding agent**.
+## The Problem We're Solving
 
-It is a bridge between natural language and the unlimited power of the command
-line, designed for **everyone**—from the layman asking about the weather to the
-sysadmin managing a server fleet.
+| Domain                      | For Developers             | For Everyone Else |
+| --------------------------- | -------------------------- | ----------------- |
+| **Coding**                  | Cursor, Claude Code, Aider | Replit, Bolt, v0  |
+| **Terminal / OS Operation** | Claude Code, Codex CLI     | **❌ NOTHING**    |
+
+There's no "Cursor for your computer." Until now.
+
+**TermAI lets anyone say:**
+
+- _"Why is my laptop slow? Fix it."_
+- _"Back up my important files before I format."_
+- _"What's eating my disk space? Clean it up safely."_
+- _"Start the dev server, watch logs, ping me if it crashes."_
+
+---
 
 Forked and upgraded from Gemini CLI.
 
 ## 🚀 Why TermAI?
 
-Most "agents" (like OpenCode or Claude Code) act like senior engineers. **TermAI
-acts like a universal translator for your computer.**
+| Feature              | TermAI                          | Warp        | GitHub Copilot CLI | Open Interpreter   |
+| -------------------- | ------------------------------- | ----------- | ------------------ | ------------------ |
+| **Primary Focus**    | **Universal System Operator**   | Terminal UI | Command Suggestion | Desktop Automation |
+| **License**          | **Open Source (Apache 2.0)**    | Proprietary | Proprietary        | Open Source        |
+| **Voice Control**    | **✅ Push-to-Talk**             | ❌          | ❌                 | ❌                 |
+| **Execution Safety** | **Confirmed + Sandbox**         | User runs   | User runs          | ⚠️ High risk       |
+| **Web Remote**       | **✅ Control from phone/iPad**  | ❌          | ❌                 | ❌                 |
+| **Model Agnostic**   | **✅ (Gemini, Ollama, Claude)** | N/A         | OpenAI only        | ✅                 |
 
-- **🌍 For Everyone**:
-  - _Layman:_ "What is the weather in Tokyo?" -> Fetches real-time data.
-  - _Business User:_ "Send an email to the team with these meeting notes." ->
-    Automates communication.
-  - _Power User:_ "Find all large files >1GB and compress them." -> Orchestrates
-    system operations.
-- **🗣️ Voice-First**: Hands-free interactions with `space` or `ctrl+space`
-  Push-to-Talk.
-- **⚡ YOLO Mode**: Autonomous execution. "Fix the build" or "Organize my
-  downloads folder" without nagging.
-- **🌐 Web Remote**: Control your terminal from a browser/iPad.
-- **🔧 Extensible**: Built on MCP (Model Context Protocol). If you can script
-  it, TermAI can use it.
+**Our Moat:**
 
-## ✊ Our Mission
+1. **🔓 Open Source + Model Agnostic** — No vendor lock-in
+2. **🗣️ Voice-First** — Hands-free terminal (Push-to-Talk with `space`)
+3. **🌐 Web-Remote** — Control your terminal from anywhere
+4. **🔧 MCP Ecosystem** — Extensible like an app store
+5. **🛡️ Safety Architecture** — Preview before execute, trust boundaries
 
-We are committed to building the most extensible natural language terminal
-superpower known to mankind.
-
-1.  **Always Free & Open Source**: No gatekeeping. No paid binaries.
-2.  **For Users, By Power Users**: Built by developers who live in the terminal,
-    for everyone.
-3.  **Maximum Extensibility**: If you can dream it (or script it), TermAI should
-    be able to do it.
+---
 
 ## 📦 Installation
 
-### Quickstart (npx)
-
-```bash
-npx termai
-```
-
-### Global install (npm)
-
-```bash
-npm install -g termai
-termai
-```
-
-### From Source (Recommended for now)
+### From Source (Recommended)
 
 ```bash
 git clone https://github.com/Prof-Harita/termAI.git
@@ -68,336 +61,228 @@ cd termAI
 npm ci
 npm run build
 npm link --workspace packages/termai
+
+# Run it
+termai
 ```
 
-You can now run `termai` locally. For prompt overrides, see
-[`docs/termai-system.md`](./docs/termai-system.md).
-
-### Optional install script
-
-```bash
-./scripts/termai-install.sh --dry-run
-```
-
-To install and add a `gemini` alias:
+### Optional: Add `gemini` Alias (for muscle memory)
 
 ```bash
 ./scripts/termai-install.sh --alias-gemini
 ```
 
-## Release Cadence and Tags
+---
 
-See [Releases](./docs/releases.md) for more details.
+## 🔐 Authentication
 
-### Preview
+TermAI uses Gemini models via Google OAuth. Choose your method:
 
-New preview releases will be published each week at UTC 2359 on Tuesdays. These
-releases will not have been fully vetted and may contain regressions or other
-outstanding issues. Please help us test and install with `preview` tag.
-
-```bash
-npm install -g @google/gemini-cli@preview
-```
-
-### Stable
-
-- New stable releases will be published each week at UTC 2000 on Tuesdays, this
-  will be the full promotion of last week's `preview` release + any bug fixes
-  and validations. Use `latest` tag.
-
-```bash
-npm install -g @google/gemini-cli@latest
-```
-
-### Nightly
-
-- New releases will be published each day at UTC 0000. This will be all changes
-  from the main branch as represented at time of release. It should be assumed
-  there are pending validations and issues. Use `nightly` tag.
-
-```bash
-npm install -g @google/gemini-cli@nightly
-```
-
-## 📋 Key Features
-
-### Code Understanding & Generation
-
-- Query and edit large codebases
-- Generate new apps from PDFs, images, or sketches using multimodal capabilities
-- Debug issues and troubleshoot with natural language
-
-### Automation & Integration
-
-- Automate operational tasks like querying pull requests or handling complex
-  rebases
-- Use MCP servers to connect new capabilities, including
-  [media generation with Imagen, Veo or Lyria](https://github.com/GoogleCloudPlatform/vertex-ai-creative-studio/tree/main/experiments/mcp-genmedia)
-- Run non-interactively in scripts for workflow automation
-
-### Advanced Capabilities
-
-- Ground your queries with built-in
-  [Google Search](https://ai.google.dev/gemini-api/docs/grounding) for real-time
-  information
-- Conversation checkpointing to save and resume complex sessions
-- Custom context files (GEMINI.md) to tailor behavior for your projects
-
-### GitHub Integration
-
-Integrate Gemini CLI directly into your GitHub workflows with
-[**Gemini CLI GitHub Action**](https://github.com/google-github-actions/run-gemini-cli):
-
-- **Pull Request Reviews**: Automated code review with contextual feedback and
-  suggestions
-- **Issue Triage**: Automated labeling and prioritization of GitHub issues based
-  on content analysis
-- **On-demand Assistance**: Mention `@gemini-cli` in issues and pull requests
-  for help with debugging, explanations, or task delegation
-- **Custom Workflows**: Build automated, scheduled and on-demand workflows
-  tailored to your team's needs
-
-## 🔐 Authentication Options
-
-Choose the authentication method that best fits your needs:
-
-### Option 1: Login with Google (OAuth login using your Google Account)
-
-**✨ Best for:** Individual developers as well as anyone who has a Gemini Code
-Assist License. (see
-[quota limits and terms of service](https://cloud.google.com/gemini/docs/quotas)
-for details)
-
-**Benefits:**
-
-- **Free tier**: 60 requests/min and 1,000 requests/day
-- **Gemini 2.5 Pro** with 1M token context window
-- **No API key management** - just sign in with your Google account
-- **Automatic updates** to latest models
-
-#### Start Gemini CLI, then choose _Login with Google_ and follow the browser authentication flow when prompted
-
-```bash
-gemini
-```
-
-#### If you are using a paid Code Assist License from your organization, remember to set the Google Cloud Project
-
-```bash
-# Set your Google Cloud Project
-export GOOGLE_CLOUD_PROJECT="YOUR_PROJECT_ID"
-gemini
-```
-
-### Option 2: Gemini API Key
-
-**✨ Best for:** Developers who need specific model control or paid tier access
-
-**Benefits:**
-
-- **Free tier**: 100 requests/day with Gemini 2.5 Pro
-- **Model selection**: Choose specific Gemini models
-- **Usage-based billing**: Upgrade for higher limits when needed
-
-```bash
-# Get your key from https://aistudio.google.com/apikey
-export GEMINI_API_KEY="YOUR_API_KEY"
-gemini
-```
-
-### Option 3: Vertex AI
-
-**✨ Best for:** Enterprise teams and production workloads
-
-**Benefits:**
-
-- **Enterprise features**: Advanced security and compliance
-- **Scalable**: Higher rate limits with billing account
-- **Integration**: Works with existing Google Cloud infrastructure
-
-```bash
-# Get your key from Google Cloud Console
-export GOOGLE_API_KEY="YOUR_API_KEY"
-export GOOGLE_GENAI_USE_VERTEXAI=true
-gemini
-```
-
-For Google Workspace accounts and other authentication methods, see the
-[authentication guide](./docs/get-started/authentication.md).
-
-## 🚀 Getting Started
-
-### Basic Usage
-
-#### Start in current directory
+### Option 1: Login with Google (Recommended)
 
 ```bash
 termai
+# Follow the browser authentication flow
 ```
 
-#### Include multiple directories
+**Free tier:** 60 requests/min, 1,000 requests/day, Gemini 2.5 Pro
+
+### Option 2: Gemini API Key
 
 ```bash
-termai --include-directories ../lib,../docs
+export GEMINI_API_KEY="YOUR_API_KEY"  # from https://aistudio.google.com/apikey
+termai
 ```
 
-#### Use specific model
+### Option 3: Vertex AI (Enterprise)
 
 ```bash
-termai -m gemini-2.5-flash
+export GOOGLE_API_KEY="YOUR_API_KEY"
+export GOOGLE_GENAI_USE_VERTEXAI=true
+termai
 ```
 
-#### Non-interactive mode for scripts
+See [Authentication Guide](./docs/get-started/authentication.md) for more
+options.
 
-Get a simple text response:
+---
+
+## ⚡ Quick Examples
+
+### Everyday Tasks (Not Just Coding)
 
 ```bash
-termai -p "Explain the architecture of this codebase"
+termai
+> What's using all my disk space?
+> Find large files over 1GB and show me which I can delete safely
+
+> What processes are eating my CPU right now?
+
+> Back up my Documents folder to an external drive
 ```
 
-For more advanced scripting, including how to parse JSON and handle errors, use
-the `--output-format json` flag to get structured output:
+### Developer Workflows
 
 ```bash
-termai -p "Explain the architecture of this codebase" --output-format json
+termai
+> Start the dev server in the background and watch the logs
+> If it crashes, restart it and notify me
+
+> Run the test suite, fix any failures, and commit the fix
+
+> Explain the architecture of this codebase
 ```
 
-For real-time event streaming (useful for monitoring long-running operations),
-use `--output-format stream-json` to get newline-delimited JSON events:
+### Voice Control
 
-```bash
-gemini -p "Run tests and deploy" --output-format stream-json
+Press `space` or `ctrl+space` to activate Push-to-Talk.
+
+```
+🎤 "Start the build and tell me when it's done"
+🎤 "What's the status of my running processes?"
 ```
 
-### Quick Examples
+---
 
-#### Start a new project
+## 🎯 Who Is This For?
 
-```bash
-cd new-project/
-gemini
-> Write me a Discord bot that answers questions using a FAQ.md file I will provide
-```
+| Persona                  | Pain Point                                     | TermAI Value                            |
+| ------------------------ | ---------------------------------------------- | --------------------------------------- |
+| **Junior Developer**     | Scared of `rm -rf`, doesn't know syntax        | Safety net: preview + explain           |
+| **SRE / DevOps**         | Copilot hallucinates flags, hates latency      | Local-first, auditable, scriptable      |
+| **Small Business Owner** | "The shop screen is black. I don't know Nginx" | Intent-based: "Restart the display"     |
+| **Data Analyst**         | Excel crashes on 50 CSVs, can't use pandas     | Local pandas-power via natural language |
+| **Accessibility User**   | GUIs are hostile, menus are nested             | Voice-first universal interface         |
 
-#### Analyze existing code
+---
 
-```bash
-git clone https://github.com/google-gemini/gemini-cli
-cd gemini-cli
-gemini
-> Give me a summary of all of the changes that went in yesterday
-```
+## 📋 Key Features
+
+### 🔧 Process Orchestration
+
+- Start/stop/monitor long-running processes (`/sessions`)
+- Tail logs with AI-powered summaries
+- Background notifications when builds finish
+
+### 🗣️ Voice Mode
+
+- Push-to-Talk: `space` or `ctrl+space`
+- Local STT (privacy-first)
+- Spoken confirmations for risky operations
+
+### 🌐 Web Remote (Coming Soon)
+
+- Control your terminal from phone/iPad
+- QR code pairing
+- Read-only mode for observers
+
+### 🛡️ Safety Architecture
+
+- **Preview Mode**: See commands before they run
+- **Trust Folders**: Different policies per directory
+- **Risk Classification**: Commands labeled by impact
+- **Never YOLO by default**: Confirmations required
+
+### 🔌 MCP Extensions
+
+- `@github` — Pull request management
+- `@slack` — Team notifications
+- Custom tools via [MCP protocol](./docs/tools/mcp-server.md)
+
+---
 
 ## 📚 Documentation
 
 ### Getting Started
 
-- [**Quickstart Guide**](./docs/get-started/index.md) - Get up and running
-  quickly.
-- [**TermAI Operator Recipes**](./docs/termai-operator-recipes.md) - Practical,
-  safe prompts for common terminal tasks.
-- [**Authentication Setup**](./docs/get-started/authentication.md) - Detailed
-  auth configuration.
-- [**Configuration Guide**](./docs/get-started/configuration.md) - Settings and
-  customization.
-- [**Keyboard Shortcuts**](./docs/cli/keyboard-shortcuts.md) - Productivity
-  tips.
+- [**Quickstart Guide**](./docs/get-started/index.md)
+- [**Operator Recipes**](./docs/termai-operator-recipes.md) — Safe prompts for
+  common tasks
+- [**Authentication Setup**](./docs/get-started/authentication.md)
+- [**Configuration Guide**](./docs/get-started/configuration.md)
+- [**Keyboard Shortcuts**](./docs/cli/keyboard-shortcuts.md)
 
 ### Core Features
 
-- [**Commands Reference**](./docs/cli/commands.md) - All slash commands
-  (`/help`, `/chat`, etc).
-- [**Custom Commands**](./docs/cli/custom-commands.md) - Create your own
-  reusable commands.
-- [**Context Files (GEMINI.md)**](./docs/cli/gemini-md.md) - Provide persistent
-  context to Gemini CLI.
-- [**System Prompt Override (GEMINI_SYSTEM_MD)**](./docs/cli/system-prompt.md) -
-  Replace the built-in system prompt with your own.
-- [**TermAI System Prompt Example**](./docs/termai-system.md) - Example TermAI
-  system prompt file to use with `GEMINI_SYSTEM_MD`.
-- [**Checkpointing**](./docs/cli/checkpointing.md) - Save and resume
-  conversations.
-- [**Token Caching**](./docs/cli/token-caching.md) - Optimize token usage.
+- [**Commands Reference**](./docs/cli/commands.md) — Slash commands (`/help`,
+  `/sessions`)
+- [**Context Files (GEMINI.md)**](./docs/cli/gemini-md.md) — Persistent project
+  context
+- [**Checkpointing**](./docs/cli/checkpointing.md) — Save and resume
+  conversations
+- [**Trusted Folders**](./docs/cli/trusted-folders.md) — Execution policies
 
 ### Tools & Extensions
 
-- [**Built-in Tools Overview**](./docs/tools/index.md)
-  - [File System Operations](./docs/tools/file-system.md)
-  - [Shell Commands](./docs/tools/shell.md)
-  - [Web Fetch & Search](./docs/tools/web-fetch.md)
-- [**MCP Server Integration**](./docs/tools/mcp-server.md) - Extend with custom
-  tools.
-- [**Custom Extensions**](./docs/extensions/index.md) - Build and share your own
-  commands.
+- [**Built-in Tools**](./docs/tools/index.md) — File system, shell, web
+- [**MCP Integration**](./docs/tools/mcp-server.md) — External capabilities
+- [**Custom Extensions**](./docs/extensions/index.md) — Build your own
 
-### Advanced Topics
+### Advanced
 
-- [**Headless Mode (Scripting)**](./docs/cli/headless.md) - Use Gemini CLI in
-  automated workflows.
-- [**Architecture Overview**](./docs/architecture.md) - How Gemini CLI works.
-- [**IDE Integration**](./docs/ide-integration/index.md) - VS Code companion.
-- [**Sandboxing & Security**](./docs/cli/sandbox.md) - Safe execution
-  environments.
-- [**Trusted Folders**](./docs/cli/trusted-folders.md) - Control execution
-  policies by folder.
-- [**Enterprise Guide**](./docs/cli/enterprise.md) - Deploy and manage in a
-  corporate environment.
-- [**Telemetry & Monitoring**](./docs/cli/telemetry.md) - Usage tracking.
-- [**Tools API Development**](./docs/core/tools-api.md) - Create custom tools.
-- [**Local development**](./docs/local-development.md) - Local development
-  tooling.
+- [**Headless Mode**](./docs/cli/headless.md) — Scripting and CI/CD
+- [**Architecture**](./docs/architecture.md) — How TermAI works
+- [**Sandboxing & Security**](./docs/cli/sandbox.md)
+- [**Enterprise Guide**](./docs/cli/enterprise.md)
 
-### Troubleshooting & Support
+---
 
-- [**Troubleshooting Guide**](./docs/troubleshooting.md) - Common issues and
-  solutions.
-- [**FAQ**](./docs/faq.md) - Frequently asked questions.
-- Use `/bug` command to report issues directly from the CLI.
+## 🗺️ Roadmap
 
-### Using MCP Servers
+See our comprehensive [**Product Roadmap**](./futureroadmap_opus.md) for:
 
-Configure MCP servers in `~/.gemini/settings.json` to extend Gemini CLI with
-custom tools:
+- **Horizon 1** (Now — Q1 2025): Foundation, Voice MVP, Web-Remote v1
+- **Horizon 2** (2025): Novice UX, Workflow Engine, MCP Ecosystem
+- **Horizon 3** (2026+): Fleet Orchestration, Terminal Apps, TermAI Cloud
 
-```text
-> @github List my open pull requests
-> @slack Send a summary of today's commits to #dev channel
-> @database Run a query to find inactive users
-```
-
-See the [MCP Server Integration guide](./docs/tools/mcp-server.md) for setup
-instructions.
+---
 
 ## 🤝 Contributing
 
-We welcome contributions! Gemini CLI is fully open source (Apache 2.0), and we
-encourage the community to:
+We welcome contributions! TermAI is fully open source (Apache 2.0).
 
-- Report bugs and suggest features.
-- Improve documentation.
-- Submit code improvements.
-- Share your MCP servers and extensions.
+- Report bugs and suggest features
+- Improve documentation
+- Submit code improvements
+- Share your MCP servers and extensions
 
-See our [Contributing Guide](./CONTRIBUTING.md) for development setup, coding
-standards, and how to submit pull requests.
+See [Contributing Guide](./CONTRIBUTING.md) for development setup.
 
-Check our [Official Roadmap](https://github.com/orgs/google-gemini/projects/11)
-for planned features and priorities.
+---
+
+## 🏗️ Fork Lineage
+
+TermAI is a fork of
+[Google's Gemini CLI](https://github.com/google-gemini/gemini-cli), transformed
+from a coding-focused agent into a **general-purpose terminal operator**.
+
+**What we changed:**
+
+- Repositioned from "coding agent" to "universal terminal agent"
+- Added system awareness (CPU, disk, processes)
+- Added process orchestration (`/sessions`)
+- Building voice-first interactions
+- Building web-remote access
+
+**What we keep in sync:**
+
+- Core architecture and tool infrastructure
+- Authentication mechanisms
+- Security primitives
+
+See [Sync Upstream Guide](./docs/sync-upstream.md) for merge workflow.
+
+---
 
 ## 📖 Resources
 
-- **[Official Roadmap](./ROADMAP.md)** - See what's coming next.
-- **[Changelog](./docs/changelogs/index.md)** - See recent notable updates.
-- **[NPM Package](https://www.npmjs.com/package/@google/gemini-cli)** - Package
-  registry.
-- **[GitHub Issues](https://github.com/google-gemini/gemini-cli/issues)** -
-  Report bugs or request features.
-- **[Security Advisories](https://github.com/google-gemini/gemini-cli/security/advisories)** -
-  Security updates.
+- **[Product Roadmap](./futureroadmap_opus.md)** — Strategic direction
+- **[Changelog](./docs/changelogs/index.md)** — Recent updates
+- **[GitHub Issues](https://github.com/Prof-Harita/termAI/issues)** — Bugs &
+  features
+- **[Troubleshooting](./docs/troubleshooting.md)** — Common issues
 
-### Uninstall
-
-See the [Uninstall Guide](docs/cli/uninstall.md) for removal instructions.
+---
 
 ## 📄 Legal
 
@@ -408,5 +293,6 @@ See the [Uninstall Guide](docs/cli/uninstall.md) for removal instructions.
 ---
 
 <p align="center">
-  Built with ❤️ by Google and the open source community
+  <strong>TermAI</strong> — The Universal Translator for Your Computer<br/>
+  Built with ❤️ by Prof-Harita • Forked from Google Gemini CLI
 </p>
