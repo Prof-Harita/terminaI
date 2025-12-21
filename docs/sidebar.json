@@ -23,12 +23,20 @@
         "slug": "docs/termai-comparison"
       },
       {
+        "label": "Demo scripts",
+        "slug": "docs/demos"
+      },
+      {
         "label": "Architecture overview",
         "slug": "docs/architecture"
       },
       {
         "label": "Contribution guide",
         "slug": "docs/contributing"
+      },
+      {
+        "label": "Security posture",
+        "slug": "docs/security-posture"
       }
     ]
   },

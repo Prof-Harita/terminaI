@@ -29,6 +29,7 @@ import {
   ProcessManagerTool,
   getSharedProcessManagerState,
 } from './process-manager.js';
+import { sessionNotifier } from './process-notifications.js';
 import type {
   ShellExecutionResult,
   ShellOutputEvent,
@@ -151,6 +152,34 @@ describe('ProcessManagerTool', () => {
     );
   });
 
+  it('summarizes recent output', async () => {
+    const tool = new ProcessManagerTool(mockConfig);
+    await tool
+      .build({
+        operation: 'start',
+        name: 'dev',
+        command: 'node -e "console.log(1)"',
+        background: true,
+      })
+      .execute(new AbortController().signal);
+
+    outputCallback({ type: 'data', chunk: 'first line\nsecond line\n' });
+
+    const session =
+      getSharedProcessManagerState().sessions.get('dev') ??
+      ({} as { outputLines?: string[] });
+    expect(session.outputLines?.length ?? 0).toBeGreaterThan(0);
+
+    const summarizeResult = await tool
+      .build({ operation: 'summarize', name: 'dev', lines: 1 })
+      .execute(new AbortController().signal);
+
+    expect(summarizeResult.llmContent).toContain(
+      'Session "dev" — last 1 lines:',
+    );
+    expect(summarizeResult.returnDisplay).toContain('second line');
+  });
+
   it('requires confirmation for stop', async () => {
     const tool = new ProcessManagerTool(mockConfig);
     const invocation = tool.build({ operation: 'stop', name: 'dev' });
@@ -162,5 +191,23 @@ describe('ProcessManagerTool', () => {
       throw new Error('Confirmation should not be false');
     }
     expect(confirmation.type).toBe('exec');
+  });
+
+  it('emits notifications on start', async () => {
+    const handler = vi.fn();
+    sessionNotifier.on('session-event', handler);
+    const tool = new ProcessManagerTool(mockConfig);
+    await tool
+      .build({
+        operation: 'start',
+        name: 'dev',
+        command: 'node -e "console.log(1)"',
+        background: true,
+      })
+      .execute(new AbortController().signal);
+    sessionNotifier.removeListener('session-event', handler);
+    expect(handler).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'started', sessionName: 'dev' }),
+    );
   });
 });

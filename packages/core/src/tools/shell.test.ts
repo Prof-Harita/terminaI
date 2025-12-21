@@ -91,6 +91,7 @@ describe('ShellTool', () => {
       getEnableInteractiveShell: vi.fn().mockReturnValue(false),
       isInteractive: vi.fn().mockReturnValue(true),
       getShellToolInactivityTimeout: vi.fn().mockReturnValue(300000),
+      getPreviewMode: vi.fn().mockReturnValue(false),
     } as unknown as Config;
 
     shellTool = new ShellTool(mockConfig);
@@ -201,6 +202,14 @@ describe('ShellTool', () => {
       };
       resolveExecutionPromise(fullResult);
     };
+
+    it('returns preview output when preview mode is enabled', async () => {
+      (mockConfig.getPreviewMode as Mock).mockReturnValue(true);
+      const invocation = shellTool.build({ command: 'echo hi' });
+      const result = await invocation.execute(mockAbortSignal);
+      expect(result.returnDisplay).toContain('[PREVIEW]');
+      expect(mockShellExecutionService).not.toHaveBeenCalled();
+    });
 
     it('should wrap command on linux and parse pgrep output', async () => {
       const invocation = shellTool.build({ command: 'my-command &' });

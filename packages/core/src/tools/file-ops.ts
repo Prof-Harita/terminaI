@@ -151,6 +151,13 @@ class FileOpsToolInvocation extends BaseToolInvocation<
   }
 
   async execute(_signal: AbortSignal): Promise<ToolResult> {
+    if (this.config.getPreviewMode()) {
+      const description = this.getDescription();
+      return {
+        llmContent: `[PREVIEW] Would perform: ${description}`,
+        returnDisplay: `[PREVIEW] ${description}`,
+      };
+    }
     try {
       switch (this.params.operation) {
         case 'mkdir':

@@ -7,6 +7,7 @@
 import React from 'react';
 import { render } from 'ink';
 import { AppContainer, type VoiceOverrides } from './ui/AppContainer.js';
+import { Onboarding, type OnboardingResult } from './ui/Onboarding.js';
 import { loadCliConfig, parseArguments } from './config/config.js';
 import * as cliConfig from './config/config.js';
 import { readStdin } from './utils/readStdin.js';
@@ -62,6 +63,7 @@ import {
   fireSessionStartHook,
   fireSessionEndHook,
   getVersion,
+  ApprovalMode,
 } from '@google/gemini-cli-core';
 import {
   initializeApp,
@@ -104,6 +106,7 @@ import {
   isLoopbackHost,
   startWebRemoteServer,
 } from './utils/webRemoteServer.js';
+import { isFirstRun, markOnboardingComplete } from './utils/firstRun.js';
 
 const SLOW_RENDER_MS = 200;
 
@@ -458,6 +461,23 @@ export async function main() {
     const config = await loadCliConfig(settings.merged, sessionId, argv);
     loadConfigHandle?.end();
 
+    let onboardingVoiceOverrides: VoiceOverrides | undefined;
+    if (config.isInteractive() && isFirstRun()) {
+      const onboardingResult = await runOnboardingFlow();
+      markOnboardingComplete();
+      if (onboardingResult.approvalMode === 'preview') {
+        config.setPreviewMode(true);
+        config.setApprovalMode(ApprovalMode.DEFAULT);
+      } else if (onboardingResult.approvalMode === 'yolo') {
+        config.setApprovalMode(ApprovalMode.YOLO);
+      } else {
+        config.setApprovalMode(ApprovalMode.DEFAULT);
+      }
+      if (onboardingResult.voiceEnabled) {
+        onboardingVoiceOverrides = { enabled: true };
+      }
+    }
+
     const webRemoteHost = argv.webRemoteHost ?? '127.0.0.1';
     const webRemotePort = argv.webRemotePort ?? 0;
     const webRemoteAllowedOrigins = argv.webRemoteAllowedOrigins ?? [];
@@ -500,7 +520,7 @@ export async function main() {
         tokenOverride: argv.webRemoteToken,
         rotateToken: argv.webRemoteRotateToken,
       });
-      const { server, port } = await startWebRemoteServer({
+      const { server, port, url } = await startWebRemoteServer({
         host: webRemoteHost,
         port: webRemotePort,
         allowedOrigins: webRemoteAllowedOrigins,
@@ -532,6 +552,7 @@ export async function main() {
         [
           'Web-remote is enabled. This exposes local execution to any client with the token.',
           `Listening on http://${webRemoteHost}:${port}/`,
+          `UI: ${url}`,
           tokenNotice,
         ].join('\n'),
       );
@@ -674,7 +695,7 @@ export async function main() {
     }
 
     cliStartupHandle?.end();
-    const voiceOverrides: VoiceOverrides | undefined =
+    let voiceOverrides: VoiceOverrides | undefined =
       argv.voice !== undefined ||
       argv.voicePttKey !== undefined ||
       argv.voiceStt !== undefined ||
@@ -688,6 +709,9 @@ export async function main() {
             maxWords: argv.voiceMaxWords,
           }
         : undefined;
+    if (!voiceOverrides && onboardingVoiceOverrides) {
+      voiceOverrides = onboardingVoiceOverrides;
+    }
 
     // Render UI, passing necessary config values. Check that there is no command line question.
     if (config.isInteractive()) {
@@ -812,4 +836,17 @@ export function initializeOutputListenersAndFlush() {
     });
   }
   coreEvents.drainBacklogs();
+}
+
+async function runOnboardingFlow(): Promise<OnboardingResult> {
+  return await new Promise<OnboardingResult>((resolve) => {
+    const { unmount } = render(
+      <Onboarding
+        onComplete={(result) => {
+          resolve(result);
+          unmount();
+        }}
+      />,
+    );
+  });
 }

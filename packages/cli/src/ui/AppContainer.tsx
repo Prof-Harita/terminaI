@@ -62,6 +62,8 @@ import {
   fireSessionStartHook,
   fireSessionEndHook,
   generateSummary,
+  sessionNotifier,
+  type SessionEvent,
 } from '@google/gemini-cli-core';
 import { validateAuthMethod } from '../config/auth.js';
 import process from 'node:process';
@@ -132,6 +134,12 @@ import { useBanner } from './hooks/useBanner.js';
 import { VoiceController } from '../voice/voiceController.js';
 import { deriveSpokenReply } from '../voice/spokenReply.js';
 import { resolveAutoTtsProvider } from '../voice/tts/auto.js';
+import { VoiceStateMachine } from '../voice/VoiceStateMachine.js';
+import {
+  VoiceStateContext,
+  type VoiceUiState,
+} from './contexts/VoiceContext.js';
+import { ConversationStack } from '../voice/ConversationStack.js';
 
 const WARNING_PROMPT_DURATION_MS = 1000;
 const QUEUE_ERROR_DISPLAY_DURATION_MS = 3000;
@@ -296,12 +304,33 @@ export const AppContainer = (props: AppContainerProps) => {
     chatRecordingService: config.getGeminiClient()?.getChatRecordingService(),
   });
   useMemoryMonitor(historyManager);
+
+  useEffect(() => {
+    const handler = (event: SessionEvent) => {
+      historyManager.addItem(
+        {
+          type: MessageType.INFO,
+          text: `[session:${event.sessionName}] ${event.message}`,
+        },
+        event.timestamp,
+      );
+    };
+    sessionNotifier.on('session-event', handler);
+    return () => {
+      sessionNotifier.off('session-event', handler);
+    };
+  }, [historyManager]);
   const settings = useSettings();
   const voiceConfig = useMemo(
     () => resolveVoiceConfig(settings.merged.voice, props.voiceOverrides),
     [settings.merged.voice, props.voiceOverrides],
   );
   const voiceEnabled = voiceConfig.enabled;
+  const [voiceUiState, setVoiceUiState] = useState<VoiceUiState>({
+    enabled: voiceEnabled,
+    state: 'IDLE',
+    amplitude: 0,
+  });
   const ttsProvider = useMemo(() => {
     if (!voiceEnabled) {
       return null;
@@ -314,10 +343,65 @@ export const AppContainer = (props: AppContainerProps) => {
     }
     return null;
   }, [voiceEnabled, voiceConfig.ttsProvider]);
-  const voiceController = useMemo(
-    () => (voiceEnabled ? new VoiceController(ttsProvider) : null),
-    [voiceEnabled, ttsProvider],
+  const voiceStateMachine = useMemo(
+    () => (voiceEnabled ? new VoiceStateMachine() : null),
+    [voiceEnabled],
   );
+  const voiceController = useMemo(
+    () =>
+      voiceEnabled ? new VoiceController(ttsProvider, voiceStateMachine) : null,
+    [voiceEnabled, ttsProvider, voiceStateMachine],
+  );
+  useEffect(() => {
+    setVoiceUiState((prev) => ({
+      ...prev,
+      enabled: voiceEnabled,
+      state: voiceEnabled ? prev.state : 'IDLE',
+      amplitude: voiceEnabled ? prev.amplitude : 0,
+    }));
+  }, [voiceEnabled]);
+
+  useEffect(() => {
+    if (!voiceStateMachine) {
+      return;
+    }
+    const handleStateChange = (payload: { to: string }) => {
+      setVoiceUiState((prev) => ({
+        ...prev,
+        state: payload.to as VoiceUiState['state'],
+      }));
+    };
+    const handleActivity = (payload: { level?: number }) => {
+      if (payload.level === undefined) return;
+      setVoiceUiState((prev) => ({
+        ...prev,
+        amplitude: Math.max(0, Math.min(1, payload.level ?? 0)),
+      }));
+    };
+    voiceStateMachine.on('stateChange', handleStateChange);
+    voiceStateMachine.on('voiceActivity', handleActivity);
+    return () => {
+      voiceStateMachine.off('stateChange', handleStateChange);
+      voiceStateMachine.off('voiceActivity', handleActivity);
+    };
+  }, [voiceStateMachine]);
+
+  useEffect(() => {
+    if (!voiceStateMachine || !voiceController) {
+      return;
+    }
+    const handleDuck = (level: number = 0.2) => voiceController.duck(level);
+    const handleRestore = () => voiceController.restore();
+    const handleStop = () => voiceController.stopSpeaking();
+    voiceStateMachine.on('duckAudio', handleDuck);
+    voiceStateMachine.on('restoreAudio', handleRestore);
+    voiceStateMachine.on('stopTTS', handleStop);
+    return () => {
+      voiceStateMachine.off('duckAudio', handleDuck);
+      voiceStateMachine.off('restoreAudio', handleRestore);
+      voiceStateMachine.off('stopTTS', handleStop);
+    };
+  }, [voiceStateMachine, voiceController]);
   useEffect(
     () => () => {
       voiceController?.stopSpeaking();
@@ -940,6 +1024,7 @@ Logging in with Google... Restarting Gemini CLI to continue.
 
   const lastSpokenGeminiIdRef = useRef(0);
   const responseInProgressRef = useRef(false);
+  const conversationStack = useMemo(() => new ConversationStack(), []);
 
   useEffect(() => {
     if (!voiceEnabled) {
@@ -969,6 +1054,7 @@ Logging in with Google... Restarting Gemini CLI to continue.
     }
     lastSpokenGeminiIdRef.current = latest.endId;
     responseInProgressRef.current = false;
+    conversationStack.setLastResponse(latest.text);
     const { spokenText } = deriveSpokenReply(latest.text, voiceConfig.maxWords);
     if (spokenText) {
       void voiceController.speak(spokenText).catch((error) => {
@@ -981,6 +1067,7 @@ Logging in with Google... Restarting Gemini CLI to continue.
     voiceEnabled,
     voiceConfig.maxWords,
     voiceController,
+    conversationStack,
   ]);
 
   // Auto-accept indicator
@@ -989,6 +1076,69 @@ Logging in with Google... Restarting Gemini CLI to continue.
     addItem: historyManager.addItem,
     onApprovalModeChange: handleApprovalModeChange,
   });
+  const submitWithConversation = useCallback(
+    (query: string) => {
+      const intent = conversationStack.parseIntent(query);
+      const action = conversationStack.handleIntent(intent);
+      switch (action.action) {
+        case 'CANCEL_LAST_ACTION':
+          historyManager.addItem(
+            {
+              type: MessageType.INFO,
+              text: 'Cancelled the last request.',
+            },
+            Date.now(),
+          );
+          return;
+        case 'REPLACE_INPUT':
+          submitQuery(action.text);
+          return;
+        case 'SPEAK_LAST_RESPONSE': {
+          const repeatText = action.text;
+          if (!repeatText) {
+            historyManager.addItem(
+              {
+                type: MessageType.INFO,
+                text: 'No prior response to repeat.',
+              },
+              Date.now(),
+            );
+            return;
+          }
+          if (voiceEnabled && voiceController) {
+            const spoken = deriveSpokenReply(
+              repeatText,
+              voiceConfig.maxWords,
+            ).spokenText;
+            if (spoken) {
+              void voiceController.speak(spoken).catch((error) => {
+                debugLogger.warn(
+                  `Voice repeat failed: ${getErrorMessage(error)}`,
+                );
+              });
+            }
+          } else {
+            historyManager.addItem(
+              { type: MessageType.INFO, text: repeatText },
+              Date.now(),
+            );
+          }
+          return;
+        }
+        case 'PROCESS_NORMALLY':
+        default:
+          submitQuery(action.text);
+      }
+    },
+    [
+      conversationStack,
+      historyManager.addItem,
+      submitQuery,
+      voiceController,
+      voiceEnabled,
+      voiceConfig.maxWords,
+    ],
+  );
 
   const {
     messageQueue,
@@ -999,8 +1149,37 @@ Logging in with Google... Restarting Gemini CLI to continue.
   } = useMessageQueue({
     isConfigInitialized,
     streamingState,
-    submitQuery,
+    submitQuery: submitWithConversation,
   });
+
+  useEffect(() => {
+    if (!voiceEnabled || !voiceController) {
+      return;
+    }
+    if (!confirmationRequest?.prompt) {
+      return;
+    }
+    if (typeof confirmationRequest.prompt !== 'string') {
+      return;
+    }
+    const { spokenText } = deriveSpokenReply(
+      confirmationRequest.prompt,
+      voiceConfig.maxWords,
+    );
+    if (!spokenText) {
+      return;
+    }
+    void voiceController.speak(spokenText).catch((error) => {
+      debugLogger.warn(
+        `Voice confirmation failed: ${getErrorMessage(error)}`,
+      );
+    });
+  }, [
+    confirmationRequest,
+    voiceController,
+    voiceEnabled,
+    voiceConfig.maxWords,
+  ]);
 
   cancelHandlerRef.current = useCallback(
     (shouldRestorePrompt: boolean = true) => {
@@ -1375,12 +1554,18 @@ Logging in with Google... Restarting Gemini CLI to continue.
 
   const handleGlobalKeypress = useCallback(
     (key: Key) => {
-      if (voiceController?.isSpeaking()) {
-        if (
-          key.insertable ||
-          key.name === 'escape' ||
-          isPttKey(key, voiceConfig.pttKey)
-        ) {
+      const voiceKeyPressed =
+        voiceEnabled && isPttKey(key, voiceConfig.pttKey);
+      if (voiceKeyPressed) {
+        if (voiceController?.isSpeaking()) {
+          voiceStateMachine?.transition({ type: 'USER_VOICE_DETECTED' });
+          voiceStateMachine?.transition({ type: 'PTT_PRESS' });
+          voiceController.stopSpeaking();
+        } else {
+          voiceStateMachine?.transition({ type: 'PTT_PRESS' });
+        }
+      } else if (voiceController?.isSpeaking()) {
+        if (key.insertable || key.name === 'escape') {
           voiceController.stopSpeaking();
         }
       }
@@ -1472,6 +1657,8 @@ Logging in with Google... Restarting Gemini CLI to continue.
       isAlternateBuffer,
       voiceController,
       voiceConfig.pttKey,
+      voiceEnabled,
+      voiceStateMachine,
     ],
   );
 
@@ -1926,9 +2113,11 @@ Logging in with Google... Restarting Gemini CLI to continue.
               startupWarnings: props.startupWarnings || [],
             }}
           >
-            <ShellFocusContext.Provider value={isFocused}>
-              <App />
-            </ShellFocusContext.Provider>
+            <VoiceStateContext.Provider value={voiceUiState}>
+              <ShellFocusContext.Provider value={isFocused}>
+                <App />
+              </ShellFocusContext.Provider>
+            </VoiceStateContext.Provider>
           </AppContext.Provider>
         </ConfigContext.Provider>
       </UIActionsContext.Provider>

@@ -58,6 +58,7 @@ export interface CliArgs {
   debug: boolean | undefined;
   prompt: string | undefined;
   promptInteractive: string | undefined;
+  preview: boolean | undefined;
   voice: boolean | undefined;
   voicePttKey: string | undefined;
   voiceStt: string | undefined;
@@ -149,6 +150,12 @@ export async function parseArguments(settings: Settings): Promise<CliArgs> {
           alias: 's',
           type: 'boolean',
           description: 'Run in sandbox?',
+        })
+        .option('preview', {
+          alias: 'P',
+          type: 'boolean',
+          description:
+            'Preview mode: show planned actions without executing commands or writes.',
         })
 
         .option('yolo', {
@@ -588,6 +595,14 @@ export async function loadCliConfig(
     approvalMode =
       argv.yolo || false ? ApprovalMode.YOLO : ApprovalMode.DEFAULT;
   }
+  const voiceModeRequested =
+    argv.voice !== undefined ? argv.voice : settings.voice?.enabled;
+  if (voiceModeRequested && approvalMode === ApprovalMode.YOLO) {
+    debugLogger.warn(
+      'YOLO mode is disabled while voice mode is active for safety.',
+    );
+    approvalMode = ApprovalMode.DEFAULT;
+  }
 
   // Override approval mode if disableYoloMode is set.
   if (settings.security?.disableYoloMode) {
@@ -710,6 +725,7 @@ export async function loadCliConfig(
       settings.context?.loadMemoryFromIncludeDirectories || false,
     debugMode,
     question,
+    previewMode: argv.preview ?? false,
     previewFeatures: settings.general?.previewFeatures,
 
     coreTools: settings.tools?.core || undefined,

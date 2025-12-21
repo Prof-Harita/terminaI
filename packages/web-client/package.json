@@ -1,0 +1,7 @@
+{
+  "name": "@google/termai-web-client",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Minimal static client for TermAI web-remote",
+  "license": "Apache-2.0"
+}

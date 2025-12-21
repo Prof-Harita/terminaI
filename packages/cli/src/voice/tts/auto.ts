@@ -14,10 +14,12 @@ type AutoProviderOptions = {
   commandExists?: (command: string) => boolean;
 };
 
+type CommandArgsBuilder = (text: string, options?: SpeakOptions) => string[];
+
 function createCommandTtsProvider(
   name: string,
   command: string,
-  buildArgs: (text: string) => string[],
+  buildArgs: CommandArgsBuilder,
 ): TtsProvider {
   let currentProcess: ChildProcess | null = null;
 
@@ -33,7 +35,9 @@ function createCommandTtsProvider(
         resolve();
         return;
       }
-      const child = spawn(command, buildArgs(text), { stdio: 'ignore' });
+      const child = spawn(command, buildArgs(text, options), {
+        stdio: 'ignore',
+      });
       currentProcess = child;
       const onAbort = () => {
         stop();
@@ -82,7 +86,21 @@ export function resolveAutoTtsProvider(
     return createCommandTtsProvider('spd-say', 'spd-say', (text) => [text]);
   }
   if (platform === 'linux' && exists('espeak')) {
-    return createCommandTtsProvider('espeak', 'espeak', (text) => [text]);
+    return createCommandTtsProvider(
+      'espeak',
+      'espeak',
+      (text, speakOptions) => {
+        const args = [text];
+        if (typeof speakOptions?.volume === 'number') {
+          // espeak expects amplitude between 0-200
+          const amplitude = Math.round(
+            Math.max(0, Math.min(1, speakOptions.volume)) * 200,
+          );
+          args.unshift(`-a${amplitude}`);
+        }
+        return args;
+      },
+    );
   }
   if (platform === 'win32' && exists('powershell')) {
     return createCommandTtsProvider('powershell', 'powershell', (text) => [

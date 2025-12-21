@@ -91,6 +91,7 @@ describe('webRemoteServer', () => {
     expect(listenSpy).toHaveBeenCalledWith(0, '127.0.0.1');
     expect(updateCoderAgentCardUrlSpy).toHaveBeenCalledWith(41242, '127.0.0.1');
     expect(result.port).toBe(41242);
+    expect(result.url).toBe('http://127.0.0.1:41242/ui');
     expect(process.env['GEMINI_WEB_REMOTE_ALLOWED_ORIGINS']).toBe(
       'https://example.com',
     );

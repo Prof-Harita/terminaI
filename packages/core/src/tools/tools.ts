@@ -17,6 +17,7 @@ import {
   type ToolConfirmationRequest,
   type ToolConfirmationResponse,
 } from '../confirmation-bus/types.js';
+import type { RiskLevel } from '../safety/risk-classifier.js';
 
 /**
  * Represents a validated and ready-to-execute tool call.
@@ -692,6 +693,7 @@ export interface ToolExecuteConfirmationDetails {
   onConfirm: (outcome: ToolConfirmationOutcome) => Promise<void>;
   command: string;
   rootCommand: string;
+  risk?: RiskLevel;
 }
 
 export interface ToolMcpConfirmationDetails {

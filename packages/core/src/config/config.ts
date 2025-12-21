@@ -247,6 +247,7 @@ export interface ConfigParameters {
   targetDir: string;
   debugMode: boolean;
   question?: string;
+  previewMode?: boolean;
 
   coreTools?: string[];
   allowedTools?: string[];
@@ -357,6 +358,7 @@ export class Config {
   private workspaceContext: WorkspaceContext;
   private readonly debugMode: boolean;
   private readonly question: string | undefined;
+  private readonly previewMode: boolean;
 
   private readonly coreTools: string[] | undefined;
   private readonly allowedTools: string[] | undefined;
@@ -473,6 +475,7 @@ export class Config {
     this.pendingIncludeDirectories = params.includeDirectories ?? [];
     this.debugMode = params.debugMode;
     this.question = params.question;
+    this.previewMode = params.previewMode ?? false;
 
     this.coreTools = params.coreTools;
     this.allowedTools = params.allowedTools;
@@ -958,6 +961,12 @@ export class Config {
   }
   getQuestion(): string | undefined {
     return this.question;
+  }
+  getPreviewMode(): boolean {
+    return this.previewMode;
+  }
+  setPreviewMode(enabled: boolean): void {
+    this.previewMode = enabled;
   }
 
   getPreviewFeatures(): boolean | undefined {
