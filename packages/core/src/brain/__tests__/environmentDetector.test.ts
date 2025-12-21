@@ -39,7 +39,7 @@ import {
 describe('environmentDetector', () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    process.env.NODE_ENV = undefined;
+    process.env['NODE_ENV'] = undefined;
     mockHostname.mockReturnValue('dev-machine');
     mockUserInfo.mockReturnValue({ username: 'test' });
     mockExistsSync.mockReturnValue(false);
@@ -47,7 +47,7 @@ describe('environmentDetector', () => {
   });
 
   afterEach(() => {
-    process.env.NODE_ENV = undefined;
+    process.env['NODE_ENV'] = undefined;
   });
 
   it('detects prod by hostname', () => {

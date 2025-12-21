@@ -35,7 +35,7 @@ function getPulse(amplitude: number, state: string): string {
 export const VoiceOrb: React.FC = () => {
   const { enabled, state, amplitude } = useVoiceState();
   const visual = useMemo<StateVisual>(() => {
-    return STATE_VISUALS[state] || STATE_VISUALS.IDLE;
+    return STATE_VISUALS[state] || STATE_VISUALS['IDLE'];
   }, [state]);
 
   if (!enabled) {

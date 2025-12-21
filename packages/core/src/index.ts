@@ -39,7 +39,11 @@ export * from './core/nonInteractiveToolExecutor.js';
 export * from './core/recordingContentGenerator.js';
 
 export * from './fallback/types.js';
+// Brain exports
 export * from './brain/index.js';
+
+// Tool exports
+export * from './tools/process-notifications.js';
 
 export * from './code_assist/codeAssist.js';
 export * from './code_assist/oauth2.js';

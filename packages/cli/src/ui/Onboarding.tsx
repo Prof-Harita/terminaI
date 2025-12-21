@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useMemo, useState } from 'react';
+import { type FC, useMemo, useState } from 'react';
 import { Box, Text, useInput } from 'ink';
 
 export type OnboardingResult = {
@@ -54,7 +54,7 @@ function VoiceChoice({ enabled }: { enabled: boolean }) {
   );
 }
 
-export const Onboarding: React.FC<{ onComplete: (result: OnboardingResult) => void }> = ({
+export const Onboarding: FC<{ onComplete: (result: OnboardingResult) => void }> = ({
   onComplete,
 }) => {
   const [step, setStep] = useState<Step>('welcome');
@@ -115,7 +115,7 @@ export const Onboarding: React.FC<{ onComplete: (result: OnboardingResult) => vo
       {step === 'welcome' && (
         <Box flexDirection="column" gap={1}>
           <Text>
-            Welcome! Let's configure safety and voice so TermAI matches how you work.
+            Welcome! Let&apos;s configure safety and voice so TermAI matches how you work.
           </Text>
           <Text dimColor>Press Enter to continue.</Text>
         </Box>
@@ -141,7 +141,7 @@ export const Onboarding: React.FC<{ onComplete: (result: OnboardingResult) => vo
 
       {step === 'ready' && (
         <Box flexDirection="column" gap={1}>
-          <Text>All set. We'll launch the CLI with your choices.</Text>
+          <Text>All set. We&apos;ll launch the CLI with your choices.</Text>
           <Box flexDirection="column">
             <Text>
               • Approvals: {approvalMode === 'default'

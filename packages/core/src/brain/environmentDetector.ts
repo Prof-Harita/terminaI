@@ -42,7 +42,7 @@ function gatherSignals(): EnvironmentSignals {
     dockerContainers,
     hasNginx: fs.existsSync('/etc/nginx/sites-enabled'),
     hasSystemd: fs.existsSync('/run/systemd/system'),
-    nodeEnv: process.env.NODE_ENV,
+    nodeEnv: process.env['NODE_ENV'],
     user: os.userInfo().username,
   };
 }
@@ -72,7 +72,7 @@ export function detectEnvironment(): Environment {
   if (signals.nodeEnv === 'development') {
     return 'dev';
   }
-  if (process.env.HOME?.includes('/Users/')) {
+  if (process.env['HOME']?.includes('/Users/')) {
     return 'dev';
   }
 
@@ -96,6 +96,8 @@ export function getCeremonyMultiplier(env: Environment): number {
     case 'prod':
       return 1.8;
     case 'unknown':
+      return 1.5;
+    default:
       return 1.5;
   }
 }

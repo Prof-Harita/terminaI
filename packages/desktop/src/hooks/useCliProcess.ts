@@ -42,9 +42,10 @@ export function useCliProcess() {
       // Check for TUI output first
       const outputType = detectOutputType(payload);
       
-      if (outputType === 'tui') {
-        // If we detect TUI start sequence, we might need to handle it
-        // But usually the CLI event 'tool_call' will trigger the PTY
+      if (outputType === 'tui' && !activeTerminalSession) {
+        // If we detect TUI start sequence and aren't in a session, trigger one.
+        // We default to a shell since we can't infer the exact command from just output.
+        startTerminalSession('bash', []).catch(console.error);
       }
 
       const parsed: CliEvent = JSON.parse(payload);

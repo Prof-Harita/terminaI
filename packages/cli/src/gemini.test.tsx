@@ -49,7 +49,7 @@ vi.mock('@google/gemini-cli-core', async (importOriginal) => {
         ...(args as Parameters<typeof process.stdout.write>),
       ),
     ),
-    patchStdio: vi.fn(() => () => {}),
+    patchStdio: vi.fn(() => () => { }),
     createWorkingStdio: vi.fn(() => ({
       stdout: {
         write: vi.fn((...args) =>
@@ -549,6 +549,7 @@ describe('gemini.tsx main function kitty protocol', () => {
       outputFormat: undefined,
       fakeResponses: undefined,
       recordResponses: undefined,
+      preview: undefined,
       voice: undefined,
       voicePttKey: undefined,
       voiceStt: undefined,
@@ -641,7 +642,7 @@ describe('gemini.tsx main function kitty protocol', () => {
 
     const debugLoggerLogSpy = vi
       .spyOn(debugLogger, 'log')
-      .mockImplementation(() => {});
+      .mockImplementation(() => { });
 
     try {
       await main();
@@ -746,7 +747,7 @@ describe('gemini.tsx main function kitty protocol', () => {
     const { themeManager } = await import('./ui/themes/theme-manager.js');
     const debugLoggerWarnSpy = vi
       .spyOn(debugLogger, 'warn')
-      .mockImplementation(() => {});
+      .mockImplementation(() => { });
     const processExitSpy = vi
       .spyOn(process, 'exit')
       .mockImplementation((code) => {
@@ -842,7 +843,7 @@ describe('gemini.tsx main function kitty protocol', () => {
       });
     const consoleErrorSpy = vi
       .spyOn(console, 'error')
-      .mockImplementation(() => {});
+      .mockImplementation(() => { });
 
     vi.mocked(loadSettings).mockReturnValue({
       merged: { advanced: {}, security: { auth: {} }, ui: { theme: 'test' } },
@@ -921,7 +922,7 @@ describe('gemini.tsx main function kitty protocol', () => {
     );
     const debugLoggerErrorSpy = vi
       .spyOn(debugLogger, 'error')
-      .mockImplementation(() => {});
+      .mockImplementation(() => { });
     const processExitSpy = vi
       .spyOn(process, 'exit')
       .mockImplementation((code) => {
@@ -1298,7 +1299,7 @@ describe('validateDnsResolutionOrder', () => {
   beforeEach(() => {
     debugLoggerWarnSpy = vi
       .spyOn(debugLogger, 'warn')
-      .mockImplementation(() => {});
+      .mockImplementation(() => { });
   });
 
   afterEach(() => {

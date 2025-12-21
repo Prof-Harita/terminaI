@@ -4,7 +4,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { GenerativeModel } from '@google/genai';
+/**
+ * Minimal interface for LLM generation, compatible with the adapter built in shell.ts.
+ * This avoids importing GenerativeModel which doesn't exist in @google/genai v1.30+.
+ */
+export interface GenerativeModelAdapter {
+  generateContent: (prompt: string) => Promise<{
+    response: { text: () => string };
+  }>;
+}
 import { detectEnvironment } from './environmentDetector.js';
 import { matchCommonPattern } from './patterns.js';
 import { RISK_ASSESSMENT_PROMPT } from './prompts/riskAssessment.js';
@@ -111,7 +119,7 @@ function readResponseText(
 export async function assessRiskWithLLM(
   request: string,
   systemContext: string,
-  model: Pick<GenerativeModel, 'generateContent'>,
+  model: GenerativeModelAdapter,
 ): Promise<RiskDimensions & { reasoning: string }> {
   const prompt = RISK_ASSESSMENT_PROMPT.replace('{request}', request).replace(
     '{systemContext}',
@@ -126,16 +134,16 @@ export async function assessRiskWithLLM(
   const parsed = parseResponseText(text);
 
   const reasoning =
-    typeof parsed.reasoning === 'string'
-      ? parsed.reasoning
+    typeof parsed['reasoning'] === 'string'
+      ? (parsed['reasoning'] as string)
       : defaultReasoning ?? 'LLM risk assessment';
 
   return {
-    uniqueness: clamp(Number(parsed.uniqueness)),
-    complexity: clamp(Number(parsed.complexity)),
-    irreversibility: clamp(Number(parsed.irreversibility)),
-    consequences: clamp(Number(parsed.consequences)),
-    confidence: clamp(Number(parsed.confidence)),
+    uniqueness: clamp(Number(parsed['uniqueness'])),
+    complexity: clamp(Number(parsed['complexity'])),
+    irreversibility: clamp(Number(parsed['irreversibility'])),
+    consequences: clamp(Number(parsed['consequences'])),
+    confidence: clamp(Number(parsed['confidence'])),
     environment: 'unknown',
     reasoning,
   };
@@ -176,7 +184,7 @@ export async function assessRisk(
   request: string,
   command: string | null,
   systemContext: string,
-  model?: Pick<GenerativeModel, 'generateContent'>,
+  model?: GenerativeModelAdapter,
 ): Promise<RiskAssessment> {
   const environment = detectEnvironment();
   const heuristic = command ? assessRiskHeuristic(command) : null;

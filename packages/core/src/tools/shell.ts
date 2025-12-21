@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os, { EOL } from 'node:os';
 import crypto from 'node:crypto';
-import type { GenerativeModel } from '@google/genai';
+import type { GenerativeModelAdapter } from '../brain/index.js';
 import type { Config } from '../config/config.js';
 import { debugLogger, type AnyToolInvocation } from '../index.js';
 import { ToolErrorType } from './tool-error.js';
@@ -209,7 +209,7 @@ export class ShellToolInvocation extends BaseToolInvocation<
   }
 
   private buildGenerativeModelAdapter():
-    | Pick<GenerativeModel, 'generateContent'>
+    | GenerativeModelAdapter
     | null {
     try {
       if (typeof (this.config as unknown as { getBaseLlmClient?: unknown })
