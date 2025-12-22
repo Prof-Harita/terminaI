@@ -1,5 +1,9 @@
 # terminaI
 
+<div align="center">
+  <img src="docs-terminai/assets/terminai-banner.svg" alt="terminaI Banner" width="100%">
+</div>
+
 [![terminaI CI](https://github.com/Prof-Harita/termAI/actions/workflows/ci.yml/badge.svg)](https://github.com/Prof-Harita/termAI/actions/workflows/ci.yml)
 ![Stable Core](https://img.shields.io/badge/Stable%20Core-v0.21.0-blue)
 
@@ -8,6 +12,10 @@
 > While coding agents exploded (Cursor, Claude Code, Copilot), the terminal
 > remained untouched. terminaI fills that gap — an AI-powered terminal agent for
 > **everyone**, from laymen to sysadmins.
+
+## Our commitment
+
+| Always free and open source | Secure and private | Infinitely extensible |
 
 ---
 
@@ -27,28 +35,28 @@ There's no "Cursor for your computer." Until now.
 - _"What's eating my disk space? Clean it up safely."_
 - _"Start the dev server, watch logs, ping me if it crashes."_
 
-## 🚀 Why terminaI?
+## Why terminaI?
 
-| Feature              | terminaI                        | Warp        | GitHub Copilot CLI | Open Interpreter   |
-| -------------------- | ------------------------------- | ----------- | ------------------ | ------------------ |
-| **Primary Focus**    | **Universal System Operator**   | Terminal UI | Command Suggestion | Desktop Automation |
-| **License**          | **Open Source (Apache 2.0)**    | Proprietary | Proprietary        | Open Source        |
-| **Voice Control**    | **✅ Push-to-Talk**             | ❌          | ❌                 | ❌                 |
-| **Execution Safety** | **Confirmed + Sandbox**         | User runs   | User runs          | ⚠️ High risk       |
-| **Web Remote**       | **✅ Control from phone/iPad**  | ❌          | ❌                 | ❌                 |
-| **Model Agnostic**   | **✅ (Gemini, Ollama, Claude)** | N/A         | OpenAI only        | ✅                 |
+| Feature              | terminaI                      | Warp        | GitHub Copilot CLI | Open Interpreter   |
+| -------------------- | ----------------------------- | ----------- | ------------------ | ------------------ |
+| **Primary Focus**    | **Universal System Operator** | Terminal UI | Command Suggestion | Desktop Automation |
+| **License**          | **Open Source (Apache 2.0)**  | Proprietary | Proprietary        | Open Source        |
+| **Voice Control**    | **Push-to-Talk**              | ❌          | ❌                 | ❌                 |
+| **Execution Safety** | **Confirmed + Sandbox**       | User runs   | User runs          | ⚠️ High risk       |
+| **Web Remote**       | **Control from phone/iPad**   | ❌          | ❌                 | ❌                 |
+| **Model Agnostic**   | **(Gemini, Ollama, Claude)**  | N/A         | OpenAI only        | ✅                 |
 
 **Our Moat:**
 
-1. **🔓 Open Source + Model Agnostic** — No vendor lock-in
-2. **🗣️ Voice-First** — Hands-free terminal (Push-to-Talk with `space`)
-3. **🌐 Web-Remote** — Control your terminal from anywhere
-4. **🔧 MCP Ecosystem** — Extensible like an app store
-5. **🛡️ Safety Architecture** — Preview before execute, trust boundaries
+1. **Open Source + Model Agnostic** — No vendor lock-in
+2. **Voice-First** — Hands-free terminal (Push-to-Talk with `space`)
+3. **Web-Remote** — Control your terminal from anywhere
+4. **MCP Ecosystem** — Extensible like an app store
+5. **Safety Architecture** — Preview before execute, trust boundaries
 
 ---
 
-## 📦 Installation
+## Installation
 
 ### From Source (Recommended)
 
@@ -71,7 +79,7 @@ termai
 
 ---
 
-## 🔐 Authentication
+## Authentication
 
 terminaI uses Gemini models via Google OAuth. Choose your method:
 
@@ -104,7 +112,7 @@ options.
 
 ---
 
-## ⚡ Quick Examples
+## Quick Examples
 
 ### Everyday Tasks (Not Just Coding)
 
@@ -141,7 +149,7 @@ Press `space` or `ctrl+space` to activate Push-to-Talk.
 
 ---
 
-## 🎯 Who Is This For?
+## Who Is This For?
 
 | Persona                  | Pain Point                                     | terminaI Value                          |
 | ------------------------ | ---------------------------------------------- | --------------------------------------- |
@@ -153,34 +161,34 @@ Press `space` or `ctrl+space` to activate Push-to-Talk.
 
 ---
 
-## 📋 Key Features
+## Key Features
 
-### 🔧 Process Orchestration
+### Process Orchestration
 
 - Start/stop/monitor long-running processes (`/sessions`)
 - Tail logs with AI-powered summaries
 - Background notifications when builds finish
 
-### 🗣️ Voice Mode
+### Voice Mode
 
 - Push-to-Talk: `space` or `ctrl+space`
 - Local STT (privacy-first)
 - Spoken confirmations for risky operations
 
-### 🌐 Web Remote (Coming Soon)
+### Web Remote (Coming Soon)
 
 - Control your terminal from phone/iPad
 - QR code pairing
 - Read-only mode for observers
 
-### 🛡️ Safety Architecture
+### Safety Architecture
 
 - **Preview Mode**: See commands before they run
 - **Trust Folders**: Different policies per directory
 - **Risk Classification**: Commands labeled by impact
 - **Never YOLO by default**: Confirmations required
 
-### 🔌 MCP Extensions
+### MCP Extensions
 
 - `@github` — Pull request management
 - `@slack` — Team notifications
@@ -188,7 +196,7 @@ Press `space` or `ctrl+space` to activate Push-to-Talk.
 
 ---
 
-## 📚 Documentation
+## Documentation
 
 ### Getting Started
 
@@ -213,7 +221,7 @@ For features from the upstream Gemini CLI:
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
 See our comprehensive [**Product Roadmap**](./futureroadmap_opus.md) for:
 
@@ -223,7 +231,7 @@ See our comprehensive [**Product Roadmap**](./futureroadmap_opus.md) for:
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! terminaI is fully open source (Apache 2.0).
 
@@ -236,7 +244,7 @@ See [Contributing Guide](./CONTRIBUTING.md) for development setup.
 
 ---
 
-## 🏗️ Fork Lineage
+## Fork Lineage
 
 terminaI is a fork of
 [Google's Gemini CLI](https://github.com/google-gemini/gemini-cli), transformed
@@ -266,7 +274,7 @@ ensures stability and prevents breaking changes. See
 
 ---
 
-## 📖 Resources
+## Resources
 
 - **[terminaI Changelog](./docs-terminai/changelog.md)** — terminaI-specific
   changes
@@ -277,7 +285,7 @@ ensures stability and prevents breaking changes. See
 
 ---
 
-## 📄 Legal
+## Legal
 
 - **License**: [Apache License 2.0](LICENSE)
 - **Terms of Service**: [Terms & Privacy](./docs/tos-privacy.md)

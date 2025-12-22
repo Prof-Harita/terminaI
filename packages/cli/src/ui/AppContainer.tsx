@@ -1001,6 +1001,9 @@ Logging in with Google... Restarting terminaI to continue.
     activePtyId,
     loopDetectionConfirmationRequest,
     lastOutputTime,
+    interactivePasswordPrompt,
+    isFullScreen,
+    clearInteractivePasswordPrompt,
   } = useGeminiStream(
     config.getGeminiClient(),
     historyManager.history,
@@ -1927,6 +1930,8 @@ Logging in with Google... Restarting terminaI to continue.
       bannerData,
       bannerVisible,
       terminalBackgroundColor: config.getTerminalBackground(),
+      interactivePasswordPrompt,
+      isFullScreen,
     }),
     [
       isThemeDialogOpen,
@@ -2018,6 +2023,8 @@ Logging in with Google... Restarting terminaI to continue.
       warningMessage,
       bannerData,
       bannerVisible,
+      interactivePasswordPrompt,
+      isFullScreen,
       config,
     ],
   );
@@ -2062,6 +2069,7 @@ Logging in with Google... Restarting terminaI to continue.
       handleApiKeyCancel,
       setBannerVisible,
       setEmbeddedShellFocused,
+      clearInteractivePasswordPrompt,
     }),
     [
       handleThemeSelect,
@@ -2097,6 +2105,7 @@ Logging in with Google... Restarting terminaI to continue.
       handleApiKeyCancel,
       setBannerVisible,
       setEmbeddedShellFocused,
+      clearInteractivePasswordPrompt,
     ],
   );
 

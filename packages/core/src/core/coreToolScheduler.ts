@@ -1083,6 +1083,10 @@ export class CoreToolScheduler {
       toolCall.request.args,
     );
 
+    if (payload.newContent === undefined) {
+      return;
+    }
+
     const updatedParams = modifyContext.createUpdatedParams(
       currentContent,
       payload.newContent,

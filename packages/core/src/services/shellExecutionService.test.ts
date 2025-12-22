@@ -516,6 +516,77 @@ describe('ShellExecutionService', () => {
       expect(mockPtyProcess.resize).toHaveBeenCalledWith(100, 40);
       expect(mockHeadlessTerminal.resize).not.toHaveBeenCalled();
     });
+
+    it('should respond to DSR cursor position queries', async () => {
+      const ptyWriteCalls: string[] = [];
+      mockPtyProcess.write.mockImplementation((data) =>
+        ptyWriteCalls.push(data),
+      );
+
+      // The service uses a real (or unmocked) Terminal instance internally for the execution loop,
+      // so we cannot modify its buffer via mockHeadlessTerminal.
+      // A fresh terminal starts at cursor 0,0, so we expect 1,1 in the response.
+
+      await simulateExecution('interactive-tool', (pty) => {
+        // Tool sends DSR query: \x1b[6n
+        pty.onData.mock.calls[0][0]('\x1b[6n');
+        pty.onExit.mock.calls[0][0]({ exitCode: 0, signal: null });
+      });
+
+      // expected response: \x1b[row;colR (1-indexed)
+      // row = 0 + 1 = 1
+      // col = 0 + 1 = 1
+      const expectedResponse = '\x1b[1;1R';
+
+      expect(ptyWriteCalls).toContain(expectedResponse);
+    });
+
+    it('should emit interactive:password event when password prompt detected', async () => {
+      const events: Array<{ type: string; prompt?: string }> = [];
+      const originalMock = onOutputEventMock;
+      onOutputEventMock = vi.fn((event) => {
+        events.push(event);
+        originalMock(event);
+      });
+
+      await simulateExecution('sudo command', (pty) => {
+        pty.onData.mock.calls[0][0]('[sudo] password for user:');
+        pty.onExit.mock.calls[0][0]({ exitCode: 0, signal: null });
+      });
+
+      const passwordEvent = events.find(
+        (e) => e.type === 'interactive:password',
+      );
+      expect(passwordEvent).toBeDefined();
+      expect(passwordEvent?.prompt).toContain('password');
+    });
+
+    it('should emit interactive:fullscreen events for TUI applications', async () => {
+      const events: Array<{ type: string; active?: boolean }> = [];
+      const originalMock = onOutputEventMock;
+      onOutputEventMock = vi.fn((event) => {
+        events.push(event);
+        originalMock(event);
+      });
+
+      await simulateExecution('vim file.txt', (pty) => {
+        // TUI enters alternate screen buffer
+        pty.onData.mock.calls[0][0]('\x1b[?1049h');
+        // Later, TUI exits alternate screen buffer
+        pty.onData.mock.calls[0][0]('\x1b[?1049l');
+        pty.onExit.mock.calls[0][0]({ exitCode: 0, signal: null });
+      });
+
+      const enterEvent = events.find(
+        (e) => e.type === 'interactive:fullscreen' && e.active === true,
+      );
+      const exitEvent = events.find(
+        (e) => e.type === 'interactive:fullscreen' && e.active === false,
+      );
+
+      expect(enterEvent).toBeDefined();
+      expect(exitEvent).toBeDefined();
+    });
   });
 
   describe('Failed Execution', () => {

@@ -32,7 +32,7 @@ import type { Command, CommandArgument } from '../commands/types.js';
 import { GitService } from '@google/gemini-cli-core';
 import { createAuthMiddleware, loadAuthVerifier } from './auth.js';
 import { createCorsAllowlist } from './cors.js';
-import { createReplayProtection } from './replay.js';
+// import { createReplayProtection } from './replay.js'; // TODO: Re-enable when body streaming conflict is resolved
 
 type CommandResponse = {
   name: string;
@@ -215,13 +215,6 @@ export async function createApp() {
     expressApp.use((req, res, next) => {
       requestStorage.run({ req }, next);
     });
-    expressApp.use(
-      express.json({
-        verify: (req, _res, buf) => {
-          (req as { rawBody?: Buffer }).rawBody = buf;
-        },
-      }),
-    );
 
     const authVerifier = await loadAuthVerifier();
     expressApp.use(createCorsAllowlist(allowedOrigins));
@@ -230,7 +223,9 @@ export async function createApp() {
         bypassPaths: new Set(['/healthz']),
       }),
     );
-    expressApp.use(createReplayProtection());
+    // NOTE: Replay protection disabled temporarily - it requires rawBody
+    // which conflicts with A2A SDK's body-parser. See TODO for proper fix.
+    // expressApp.use(createReplayProtection());
     const webClientPath = path.join(
       path.dirname(fileURLToPath(import.meta.url)),
       '../../web-client',
@@ -391,6 +386,16 @@ export async function main() {
         `[CoreAgent] Agent Card: http://localhost:${actualPort}/.well-known/agent-card.json`,
       );
       logger.info('[CoreAgent] Press Ctrl+C to stop the server');
+    });
+
+    // Keep the process alive by waiting for the server to close
+    await new Promise<void>((resolve) => {
+      // setInterval ensures the event loop stays active
+      const keepAlive = setInterval(() => {}, 1000 * 60 * 60); // 1 hour interval
+      server.on('close', () => {
+        clearInterval(keepAlive);
+        resolve();
+      });
     });
   } catch (error) {
     logger.error('[CoreAgent] Error during startup:', error);

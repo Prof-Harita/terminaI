@@ -138,6 +138,8 @@ export interface UIState {
   bannerVisible: boolean;
   customDialog: React.ReactNode | null;
   terminalBackgroundColor: TerminalBackgroundColor;
+  interactivePasswordPrompt: string | null;
+  isFullScreen: boolean;
 }
 
 export const UIStateContext = createContext<UIState | null>(null);

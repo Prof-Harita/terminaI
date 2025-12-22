@@ -249,6 +249,15 @@ export class ProcessManager {
       return;
     }
 
+    // Interactive events are handled at the UI layer, not here
+    if (
+      event.type === 'interactive:password' ||
+      event.type === 'interactive:fullscreen'
+    ) {
+      return;
+    }
+
+    // At this point, event.type must be 'binary_progress'
     const message = `[Receiving binary output... ${formatMemoryUsage(
       event.bytesReceived,
     )} received]`;

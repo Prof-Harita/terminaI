@@ -217,18 +217,24 @@ export const useGeminiStream = (
     await done;
     setIsResponding(false);
   }, []);
-  const { handleShellCommand, activeShellPtyId, lastShellOutputTime } =
-    useShellCommandProcessor(
-      addItem,
-      setPendingHistoryItem,
-      onExec,
-      onDebugMessage,
-      config,
-      geminiClient,
-      setShellInputFocused,
-      terminalWidth,
-      terminalHeight,
-    );
+  const {
+    handleShellCommand,
+    activeShellPtyId,
+    lastShellOutputTime,
+    interactivePasswordPrompt,
+    isFullScreen,
+    clearInteractivePasswordPrompt,
+  } = useShellCommandProcessor(
+    addItem,
+    setPendingHistoryItem,
+    onExec,
+    onDebugMessage,
+    config,
+    geminiClient,
+    setShellInputFocused,
+    terminalWidth,
+    terminalHeight,
+  );
 
   const activePtyId = activeShellPtyId || activeToolPtyId;
 
@@ -1311,5 +1317,8 @@ export const useGeminiStream = (
     activePtyId,
     loopDetectionConfirmationRequest,
     lastOutputTime,
+    interactivePasswordPrompt,
+    isFullScreen,
+    clearInteractivePasswordPrompt,
   };
 };

@@ -104,7 +104,32 @@ export type ShellOutputEvent =
       type: 'binary_progress';
       /** The total number of bytes received so far. */
       bytesReceived: number;
+    }
+  | {
+      /** A password prompt has been detected, requiring user input. */
+      type: 'interactive:password';
+      /** The detected password prompt text. */
+      prompt: string;
+    }
+  | {
+      /** A TUI/fullscreen application has entered or exited. */
+      type: 'interactive:fullscreen';
+      /** Whether fullscreen mode is now active. */
+      active: boolean;
     };
+
+// Patterns that indicate a password prompt
+const PASSWORD_PATTERNS = [
+  /\[sudo\] password/i,
+  /Password:/i,
+  /passphrase/i,
+  /Enter password/i,
+  /Password for/i,
+];
+
+// ANSI escape sequences for alternate screen buffer (fullscreen TUI)
+const FULLSCREEN_ENTER = '\x1b[?1049h';
+const FULLSCREEN_EXIT = '\x1b[?1049l';
 
 interface ActivePty {
   ptyProcess: IPty;
@@ -266,6 +291,15 @@ export class ShellExecutionService {
       onOutputEvent,
       abortSignal,
     );
+  }
+
+  /**
+   * Builds the ANSI escape sequence for a Cursor Position Report (CPR).
+   * Format: CSI row ; col R
+   * Note: row and col are 1-indexed.
+   */
+  private static buildCursorPositionResponse(row: number, col: number): string {
+    return `\x1b[${row};${col}R`;
   }
 
   private static appendAndTruncate(
@@ -709,6 +743,39 @@ export class ShellExecutionService {
         };
 
         ptyProcess.onData((data: string) => {
+          // Handle DSR (Device Status Report) - Cursor Position Report query
+          // Interactive tools like codex send \x1b[6n to query the cursor position.
+          // They expect a response like \x1b[row;colR on stdin.
+          // Since we are running in a headless pty, we need to intercept this
+          // and respond with the cursor position from our headless terminal.
+          if (data.includes('\x1b[6n')) {
+            const buffer = headlessTerminal.buffer.active;
+            const response = this.buildCursorPositionResponse(
+              buffer.cursorY + 1, // 1-indexed
+              buffer.cursorX + 1, // 1-indexed
+            );
+            ptyProcess.write(response);
+          }
+
+          // Detect fullscreen TUI mode (alternate screen buffer)
+          if (data.includes(FULLSCREEN_ENTER)) {
+            onOutputEvent({ type: 'interactive:fullscreen', active: true });
+          }
+          if (data.includes(FULLSCREEN_EXIT)) {
+            onOutputEvent({ type: 'interactive:fullscreen', active: false });
+          }
+
+          // Detect password prompts
+          for (const pattern of PASSWORD_PATTERNS) {
+            if (pattern.test(data)) {
+              // Extract a clean prompt text for display
+              const match = data.match(pattern);
+              const prompt = match ? match[0] : 'Password required';
+              onOutputEvent({ type: 'interactive:password', prompt });
+              break;
+            }
+          }
+
           const bufferData = Buffer.from(data, 'utf-8');
           handleOutput(bufferData);
         });

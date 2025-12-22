@@ -78,9 +78,17 @@ export const useShellCommandProcessor = (
 ) => {
   const [activeShellPtyId, setActiveShellPtyId] = useState<number | null>(null);
   const [lastShellOutputTime, setLastShellOutputTime] = useState<number>(0);
+  const [interactivePasswordPrompt, setInteractivePasswordPrompt] = useState<
+    string | null
+  >(null);
+  const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
+  // We need to track the active fullscreen PID separately because activeShellPtyId
+  // is set/unset at start/end of execution, but we might want precise control.
+  // However, activeShellPtyId should suffice for now as long as it's set.
 
   const handleShellCommand = useCallback(
     (rawQuery: PartListUnion, abortSignal: AbortSignal): boolean => {
+      // ... (validation checks)
       if (typeof rawQuery !== 'string' || rawQuery.trim() === '') {
         return false;
       }
@@ -97,7 +105,7 @@ export const useShellCommandProcessor = (
       let commandToExecute = rawQuery;
       let pwdFilePath: string | undefined;
 
-      // On non-windows, wrap the command to capture the final working directory.
+      // ... (command wrapping logic)
       if (!isWindows) {
         let command = rawQuery.trim();
         const pwdFileName = `shell_pwd_${crypto.randomBytes(6).toString('hex')}.tmp`;
@@ -183,6 +191,12 @@ export const useShellCommandProcessor = (
                   binaryBytesReceived = event.bytesReceived;
                   shouldUpdate = true;
                   break;
+                case 'interactive:password':
+                  setInteractivePasswordPrompt(event.prompt);
+                  break;
+                case 'interactive:fullscreen':
+                  setIsFullScreen(event.active);
+                  break;
                 default: {
                   throw new Error('An unhandled ShellOutputEvent was found.');
                 }
@@ -244,6 +258,10 @@ export const useShellCommandProcessor = (
 
           result
             .then((result: ShellExecutionResult) => {
+              // Clear interactive states on completion
+              setInteractivePasswordPrompt(null);
+              setIsFullScreen(false);
+
               setPendingHistoryItem(null);
 
               let mainContent: string;
@@ -308,6 +326,8 @@ export const useShellCommandProcessor = (
               );
             })
             .catch((err) => {
+              setInteractivePasswordPrompt(null);
+              setIsFullScreen(false);
               setPendingHistoryItem(null);
               const errorMessage =
                 err instanceof Error ? err.message : String(err);
@@ -330,6 +350,8 @@ export const useShellCommandProcessor = (
             });
         } catch (err) {
           // This block handles synchronous errors from `execute`
+          setInteractivePasswordPrompt(null);
+          setIsFullScreen(false);
           setPendingHistoryItem(null);
           const errorMessage = err instanceof Error ? err.message : String(err);
           addItemToHistory(
@@ -371,5 +393,12 @@ export const useShellCommandProcessor = (
     ],
   );
 
-  return { handleShellCommand, activeShellPtyId, lastShellOutputTime };
+  return {
+    handleShellCommand,
+    activeShellPtyId,
+    lastShellOutputTime,
+    interactivePasswordPrompt,
+    isFullScreen,
+    clearInteractivePasswordPrompt: () => setInteractivePasswordPrompt(null),
+  };
 };
