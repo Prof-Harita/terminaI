@@ -165,12 +165,13 @@ export function setupUnhandledRejectionHandler() {
 This is an unexpected error. Please file a bug report using the /bug tool.
 CRITICAL: Unhandled Promise Rejection!
 =========================================
-Reason: ${reason}${reason instanceof Error && reason.stack
+Reason: ${reason}${
+      reason instanceof Error && reason.stack
         ? `
 Stack trace:
 ${reason.stack}`
         : ''
-      }`;
+    }`;
     debugLogger.error(errorMessage);
     if (!unhandledRejectionOccurred) {
       unhandledRejectionOccurred = true;
@@ -299,7 +300,7 @@ export async function main() {
   console.log('[DEBUG] CLI: main() called');
   const cliStartupHandle = startupProfiler.start('cli_startup');
   // const cleanupStdio = patchStdio(); // Disabled to fix TermAI output swallowing
-  const cleanupStdio = () => { };
+  const cleanupStdio = () => {};
   registerSyncCleanup(() => {
     // This is needed to ensure we don't lose any buffered output.
     initializeOutputListenersAndFlush();
@@ -527,6 +528,7 @@ export async function main() {
         allowedOrigins: webRemoteAllowedOrigins,
         tokenOverride: argv.webRemoteToken,
         rotateToken: argv.webRemoteRotateToken,
+        activeToken: authResult.token,
       });
       webRemoteServer = server;
       registerCleanup(
@@ -656,7 +658,7 @@ export async function main() {
 
     if (
       settings.merged.security?.auth?.selectedType ===
-      AuthType.LOGIN_WITH_GOOGLE &&
+        AuthType.LOGIN_WITH_GOOGLE &&
       config.isBrowserLaunchSuppressed()
     ) {
       // Do oauth before app renders to make copying the link possible.
@@ -698,17 +700,17 @@ export async function main() {
     cliStartupHandle?.end();
     let voiceOverrides: VoiceOverrides | undefined =
       argv.voice !== undefined ||
-        argv.voicePttKey !== undefined ||
-        argv.voiceStt !== undefined ||
-        argv.voiceTts !== undefined ||
-        argv.voiceMaxWords !== undefined
+      argv.voicePttKey !== undefined ||
+      argv.voiceStt !== undefined ||
+      argv.voiceTts !== undefined ||
+      argv.voiceMaxWords !== undefined
         ? {
-          enabled: argv.voice,
-          pttKey: argv.voicePttKey,
-          sttProvider: argv.voiceStt,
-          ttsProvider: argv.voiceTts,
-          maxWords: argv.voiceMaxWords,
-        }
+            enabled: argv.voice,
+            pttKey: argv.voicePttKey,
+            sttProvider: argv.voiceStt,
+            ttsProvider: argv.voiceTts,
+            maxWords: argv.voiceMaxWords,
+          }
         : undefined;
     if (!voiceOverrides && onboardingVoiceOverrides) {
       voiceOverrides = onboardingVoiceOverrides;
@@ -840,7 +842,7 @@ export function initializeOutputListenersAndFlush() {
 }
 
 async function runOnboardingFlow(): Promise<OnboardingResult> {
-  return await new Promise<OnboardingResult>((resolve) => {
+  return new Promise<OnboardingResult>((resolve) => {
     const { unmount } = render(
       <Onboarding
         onComplete={(result) => {

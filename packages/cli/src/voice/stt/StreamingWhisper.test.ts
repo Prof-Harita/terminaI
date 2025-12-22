@@ -1,11 +1,23 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 // StreamingWhisper imported dynamically in tests below
 import { EventEmitter } from 'node:events';
 
 describe('StreamingWhisper', () => {
   const stdout = new EventEmitter();
-  const stdin = { write: vi.fn(), end: vi.fn() } as any;
-  let spawnMock: any;
+  const stdin: {
+    write: ReturnType<typeof vi.fn>;
+    end: ReturnType<typeof vi.fn>;
+  } = {
+    write: vi.fn(),
+    end: vi.fn(),
+  };
+  let spawnMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     vi.resetModules();
@@ -22,7 +34,9 @@ describe('StreamingWhisper', () => {
   });
 
   it('spawns whisper and emits transcription events', async () => {
-    const { StreamingWhisper: WhisperImpl } = await import('./StreamingWhisper.js');
+    const { StreamingWhisper: WhisperImpl } = await import(
+      './StreamingWhisper.js'
+    );
     const whisper = new WhisperImpl({ modelPath: 'models/ggml-base.bin' });
     const handler = vi.fn();
     whisper.on('transcription', handler);
@@ -31,7 +45,9 @@ describe('StreamingWhisper', () => {
 
     stdout.emit(
       'data',
-      Buffer.from(JSON.stringify({ text: 'hello', final: true, confidence: 0.9 })),
+      Buffer.from(
+        `${JSON.stringify({ text: 'hello', final: true, confidence: 0.9 })}\n`,
+      ),
     );
 
     expect(handler).toHaveBeenCalledWith(
@@ -40,7 +56,9 @@ describe('StreamingWhisper', () => {
   });
 
   it('writes audio to stdin and stops', async () => {
-    const { StreamingWhisper: WhisperImpl } = await import('./StreamingWhisper.js');
+    const { StreamingWhisper: WhisperImpl } = await import(
+      './StreamingWhisper.js'
+    );
     const whisper = new WhisperImpl({ modelPath: 'models/ggml-base.bin' });
     whisper.startStreaming();
     whisper.feedAudio(Buffer.from('audio'));

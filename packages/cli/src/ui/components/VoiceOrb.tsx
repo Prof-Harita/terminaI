@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useMemo } from 'react';
+import type React from 'react';
+import { useMemo } from 'react';
 import { Box, Text } from 'ink';
 import { useVoiceState } from '../contexts/VoiceContext.js';
 
@@ -15,8 +16,8 @@ type StateVisual = {
 };
 
 const STATE_VISUALS: Record<string, StateVisual> = {
-  IDLE: { icon: '○', color: 'gray', label: 'voice ready' },
-  LISTENING: { icon: '●', color: 'red', label: 'listening' },
+  IDLE: { icon: '○', color: 'gray', label: 'voice active' },
+  LISTENING: { icon: '●', color: 'red', label: 'paused' },
   PROCESSING: { icon: '◐', color: 'yellow', label: 'thinking' },
   SPEAKING: { icon: '◉', color: 'cyan', label: 'speaking' },
   DUCKING: { icon: '◎', color: 'blue', label: 'holding for you' },
@@ -34,9 +35,7 @@ function getPulse(amplitude: number, state: string): string {
 
 export const VoiceOrb: React.FC = () => {
   const { enabled, state, amplitude } = useVoiceState();
-  const visual = useMemo<StateVisual>(() => {
-    return STATE_VISUALS[state] || STATE_VISUALS['IDLE'];
-  }, [state]);
+  const visual = useMemo<StateVisual>(() => STATE_VISUALS[state] || STATE_VISUALS['IDLE'], [state]);
 
   if (!enabled) {
     return null;

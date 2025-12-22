@@ -66,11 +66,19 @@ const streamToSSEEvents = (
 // Mock the logger to avoid polluting test output
 // Comment out to debug tests
 vi.mock('../utils/logger.js', () => ({
-  logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
+  logger: {
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn((...args) => console.error(...args)),
+  },
 }));
 
 let config: Config;
-const getToolRegistrySpy = vi.fn().mockReturnValue(ApprovalMode.DEFAULT);
+const getToolRegistrySpy = vi.fn().mockReturnValue({
+  getAllTools: () => [],
+  getToolsByServer: () => [],
+  getTool: () => undefined,
+});
 const getApprovalModeSpy = vi.fn();
 const getShellExecutionConfigSpy = vi.fn();
 const getExtensionsSpy = vi.fn();

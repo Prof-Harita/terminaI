@@ -82,7 +82,7 @@ describe('checkForUpdates', () => {
     expect(result).toBeNull();
   });
 
-  it('should return a message if a newer version is available', async () => {
+  it('returns null even if a newer version is available (update checks disabled)', async () => {
     getPackageJson.mockResolvedValue({
       name: 'test-package',
       version: '1.0.0',
@@ -90,10 +90,9 @@ describe('checkForUpdates', () => {
     latestVersion.mockResolvedValue('1.1.0');
 
     const result = await checkForUpdates(mockSettings);
-    expect(result?.message).toContain('1.0.0 → 1.1.0');
-    expect(result?.update.current).toEqual('1.0.0');
-    expect(result?.update.latest).toEqual('1.1.0');
-    expect(result?.update.name).toEqual('test-package');
+    expect(result).toBeNull();
+    expect(getPackageJson).not.toHaveBeenCalled();
+    expect(latestVersion).not.toHaveBeenCalled();
   });
 
   it('should return null if the latest version is the same as the current version', async () => {
@@ -134,7 +133,7 @@ describe('checkForUpdates', () => {
   });
 
   describe('nightly updates', () => {
-    it('should notify for a newer nightly version when current is nightly', async () => {
+    it('returns null for nightly versions (update checks disabled)', async () => {
       getPackageJson.mockResolvedValue({
         name: 'test-package',
         version: '1.2.3-nightly.1',
@@ -148,8 +147,9 @@ describe('checkForUpdates', () => {
       });
 
       const result = await checkForUpdates(mockSettings);
-      expect(result?.message).toContain('1.2.3-nightly.1 → 1.2.3-nightly.2');
-      expect(result?.update.latest).toBe('1.2.3-nightly.2');
+      expect(result).toBeNull();
+      expect(getPackageJson).not.toHaveBeenCalled();
+      expect(latestVersion).not.toHaveBeenCalled();
     });
   });
 });

@@ -1,5 +1,12 @@
-import { useRef, useEffect, RefObject } from 'react';
-import { Message } from '../types/cli';
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import type { RefObject } from 'react';
+import { useRef, useEffect } from 'react';
+import type { Message } from '../types/cli';
 import { MessageBubble } from './MessageBubble';
 import { ChatInput } from './ChatInput';
 import { ConfirmationCard } from './ConfirmationCard';
@@ -9,7 +16,7 @@ interface Props {
   isConnected: boolean;
   isProcessing: boolean;
   sendMessage: (text: string) => void;
-  respondToConfirmation: (id: string, approved: boolean) => void;
+  respondToConfirmation: (id: string, approved: boolean, pin?: string) => void;
   inputRef?: RefObject<HTMLTextAreaElement | null>;
 }
 
@@ -19,7 +26,7 @@ export function ChatView({
   isProcessing,
   sendMessage,
   respondToConfirmation,
-  inputRef
+  inputRef,
 }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -82,13 +89,20 @@ export function ChatView({
                 maxWidth: '360px',
               }}
             >
-              Ask about your system, run commands, or get help with terminal tasks.
+              Ask about your system, run commands, or get help with terminal
+              tasks.
             </p>
           </div>
         )}
 
         {/* Message list */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 'var(--space-6)',
+          }}
+        >
           {messages.map((msg) => (
             <div key={msg.id}>
               <MessageBubble message={msg} />
@@ -96,8 +110,12 @@ export function ChatView({
                 <div style={{ marginTop: 'var(--space-4)' }}>
                   <ConfirmationCard
                     confirmation={msg.pendingConfirmation}
-                    onRespond={(approved) =>
-                      respondToConfirmation(msg.pendingConfirmation!.id, approved)
+                    onRespond={(approved, pin) =>
+                      respondToConfirmation(
+                        msg.pendingConfirmation!.id,
+                        approved,
+                        pin,
+                      )
                     }
                   />
                 </div>
@@ -117,9 +135,18 @@ export function ChatView({
               }}
             >
               <span className="inline-flex gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-current animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="w-1.5 h-1.5 rounded-full bg-current animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="w-1.5 h-1.5 rounded-full bg-current animate-bounce" style={{ animationDelay: '300ms' }} />
+                <span
+                  className="w-1.5 h-1.5 rounded-full bg-current animate-bounce"
+                  style={{ animationDelay: '0ms' }}
+                />
+                <span
+                  className="w-1.5 h-1.5 rounded-full bg-current animate-bounce"
+                  style={{ animationDelay: '150ms' }}
+                />
+                <span
+                  className="w-1.5 h-1.5 rounded-full bg-current animate-bounce"
+                  style={{ animationDelay: '300ms' }}
+                />
               </span>
               Thinking...
             </div>

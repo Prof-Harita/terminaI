@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { describe, it, expect, vi } from 'vitest';
 import { VoiceStateMachine } from './VoiceStateMachine.js';
 

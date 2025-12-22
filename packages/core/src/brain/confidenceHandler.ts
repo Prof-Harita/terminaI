@@ -5,7 +5,11 @@
  */
 
 export interface ConfidenceAction {
-  type: 'proceed' | 'narrate-uncertainty' | 'diagnostic-first' | 'ask-clarification';
+  type:
+    | 'proceed'
+    | 'narrate-uncertainty'
+    | 'diagnostic-first'
+    | 'ask-clarification';
   message?: string;
   diagnosticCommand?: string;
   clarificationQuestion?: string;

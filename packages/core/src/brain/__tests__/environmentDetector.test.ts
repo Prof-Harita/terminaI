@@ -66,7 +66,9 @@ describe('environmentDetector', () => {
   });
 
   it('detects prod when docker containers include prod', () => {
-    mockExistsSync.mockImplementation((path) => path === '/var/run/docker.sock');
+    mockExistsSync.mockImplementation(
+      (path) => path === '/var/run/docker.sock',
+    );
     mockExecSync.mockReturnValue(Buffer.from('prod-service\n'));
     expect(detectEnvironment()).toBe('prod');
   });

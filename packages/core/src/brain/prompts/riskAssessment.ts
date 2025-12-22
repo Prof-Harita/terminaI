@@ -10,7 +10,13 @@ You are assessing the risk of a user request. Score each dimension 0-100.
 REQUEST: {request}
 CONTEXT: {systemContext}
 
-Respond in JSON only:
+Return ONLY a single JSON object.
+- No markdown
+- No code fences
+- No extra keys
+- No trailing commentary
+
+Schema (numbers must be integers 0-100):
 {
   "uniqueness": <0-100, how rare is this type of request>,
   "complexity": <0-100, is there a known framework or is this novel>,

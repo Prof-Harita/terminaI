@@ -154,15 +154,19 @@ export class AllowedPathChecker implements InProcessChecker {
 }
 
 export const DESTRUCTIVE_PATTERNS = [
-  { pattern: /rm\s+-rf?\s+\/(?!\S)/i, message: 'Recursive delete of root directory' },
+  {
+    pattern: /rm\s+-rf?\s+\/(?!\S)/i,
+    message: 'Recursive delete of root directory',
+  },
   { pattern: /rm\s+-rf?\s+~/i, message: 'Recursive delete of home directory' },
   { pattern: />\s*\/dev\/sd[a-z]/i, message: 'Direct write to disk device' },
   { pattern: /mkfs\s+\/dev\/sd/i, message: 'Formatting disk partition' },
 ];
 
-export function checkDestructive(
-  command: string,
-): { blocked: boolean; reason?: string } {
+export function checkDestructive(command: string): {
+  blocked: boolean;
+  reason?: string;
+} {
   for (const { pattern, message } of DESTRUCTIVE_PATTERNS) {
     if (pattern.test(command)) {
       return { blocked: true, reason: message };

@@ -152,8 +152,9 @@ describe('FileOpsTool', () => {
   });
 
   it('returns preview output without touching the file system', async () => {
-    (mockConfig as unknown as { getPreviewMode: () => boolean }).getPreviewMode =
-      () => true;
+    (
+      mockConfig as unknown as { getPreviewMode: () => boolean }
+    ).getPreviewMode = () => true;
     tool = new FileOpsTool(mockConfig);
     const params: FileOpsToolParams = {
       operation: 'mkdir',
@@ -162,6 +163,8 @@ describe('FileOpsTool', () => {
     const invocation = tool.build(params);
     const result = await invocation.execute(new AbortController().signal);
     expect(result.returnDisplay).toContain('[PREVIEW]');
-    await expect(fs.stat(path.join(tempRootDir, 'preview-dir'))).rejects.toThrow();
+    await expect(
+      fs.stat(path.join(tempRootDir, 'preview-dir')),
+    ).rejects.toThrow();
   });
 });

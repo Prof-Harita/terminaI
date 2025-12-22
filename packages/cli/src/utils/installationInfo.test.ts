@@ -37,7 +37,7 @@ vi.mock('child_process', async (importOriginal) => {
   };
 });
 
-const mockedIsGitRepository = vi.mocked(isGitRepository);
+const _mockedIsGitRepository = vi.mocked(isGitRepository);
 const mockedRealPathSync = vi.mocked(fs.realpathSync);
 const mockedExistsSync = vi.mocked(fs.existsSync);
 const mockedExecSync = vi.mocked(childProcess.execSync);
@@ -77,20 +77,17 @@ describe('getInstallationInfo', () => {
     expect(debugLogger.log).toHaveBeenCalledWith(error);
   });
 
-  it('should detect running from a local git clone', () => {
+  it('should treat local repo execution as global npm (local-clone check disabled)', () => {
     process.argv[1] = `${projectRoot}/packages/cli/dist/index.js`;
     mockedRealPathSync.mockReturnValue(
       `${projectRoot}/packages/cli/dist/index.js`,
     );
-    mockedIsGitRepository.mockReturnValue(true);
 
     const info = getInstallationInfo(projectRoot, false);
 
-    expect(info.packageManager).toBe(PackageManager.UNKNOWN);
-    expect(info.isGlobal).toBe(false);
-    expect(info.updateMessage).toBe(
-      'Running from a local git clone. Please update with "git pull".',
-    );
+    expect(info.packageManager).toBe(PackageManager.NPM);
+    expect(info.isGlobal).toBe(true);
+    expect(info.updateMessage).toContain('Installed with npm');
   });
 
   it('should detect running via npx', () => {

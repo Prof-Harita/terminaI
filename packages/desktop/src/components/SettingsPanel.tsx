@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { useSettingsStore } from '../stores/settingsStore';
 
 interface Props {
@@ -69,7 +75,13 @@ export function SettingsPanel({ isOpen, onClose }: Props) {
 
         {/* Account Section */}
         <Section title="Account">
-          <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-primary)', margin: 0 }}>
+          <p
+            style={{
+              fontSize: 'var(--text-sm)',
+              color: 'var(--text-primary)',
+              margin: 0,
+            }}
+          >
             {settings.email || 'Not signed in'}
           </p>
           {settings.email && (
@@ -88,13 +100,47 @@ export function SettingsPanel({ isOpen, onClose }: Props) {
           )}
         </Section>
 
+        {/* Agent Section */}
+        <Section title="Agent">
+          <SettingRow label="Agent URL">
+            <input
+              className="input"
+              value={settings.agentUrl}
+              onChange={(e) => settings.setAgentUrl(e.target.value)}
+              placeholder="http://127.0.0.1:41242"
+              style={{ width: '100%' }}
+            />
+          </SettingRow>
+          <SettingRow label="Agent Token">
+            <input
+              className="input"
+              value={settings.agentToken}
+              onChange={(e) => settings.setAgentToken(e.target.value)}
+              placeholder="paste token"
+              type="password"
+              style={{ width: '100%' }}
+            />
+          </SettingRow>
+          <SettingRow label="Workspace Path">
+            <input
+              className="input"
+              value={settings.agentWorkspacePath}
+              onChange={(e) => settings.setAgentWorkspacePath(e.target.value)}
+              placeholder="/tmp"
+              style={{ width: '100%' }}
+            />
+          </SettingRow>
+        </Section>
+
         {/* Security Section */}
         <Section title="Security">
           <SettingRow label="Approval Mode">
             <select
               value={settings.approvalMode}
               onChange={(e) =>
-                settings.setApprovalMode(e.target.value as 'safe' | 'prompt' | 'yolo')
+                settings.setApprovalMode(
+                  e.target.value as 'safe' | 'prompt' | 'yolo',
+                )
               }
               style={{
                 background: 'var(--bg-tertiary)',
@@ -115,7 +161,11 @@ export function SettingsPanel({ isOpen, onClose }: Props) {
               type="checkbox"
               checked={settings.previewMode}
               onChange={(e) => settings.setPreviewMode(e.target.checked)}
-              style={{ width: '18px', height: '18px', accentColor: 'var(--accent)' }}
+              style={{
+                width: '18px',
+                height: '18px',
+                accentColor: 'var(--accent)',
+              }}
             />
           </SettingRow>
         </Section>
@@ -125,7 +175,9 @@ export function SettingsPanel({ isOpen, onClose }: Props) {
           <SettingRow label="Provider">
             <select
               value={settings.provider}
-              onChange={(e) => settings.setProvider(e.target.value as 'gemini' | 'ollama')}
+              onChange={(e) =>
+                settings.setProvider(e.target.value as 'gemini' | 'ollama')
+              }
               style={{
                 background: 'var(--bg-tertiary)',
                 border: '1px solid var(--border)',
@@ -143,8 +195,24 @@ export function SettingsPanel({ isOpen, onClose }: Props) {
 
         {/* Voice Section */}
         <Section title="Voice">
+          <SettingRow label="Enable Voice">
+            <input
+              type="checkbox"
+              checked={settings.voiceEnabled}
+              onChange={(e) => settings.setVoiceEnabled(e.target.checked)}
+              style={{
+                width: '18px',
+                height: '18px',
+                accentColor: 'var(--accent)',
+              }}
+            />
+          </SettingRow>
           <SettingRow label="Push-to-Talk Key">
-            <span style={{ fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>Space</span>
+            <span
+              style={{ fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}
+            >
+              Space
+            </span>
           </SettingRow>
           <SettingRow label="Volume">
             <input
@@ -162,7 +230,13 @@ export function SettingsPanel({ isOpen, onClose }: Props) {
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <section style={{ marginBottom: 'var(--space-8)' }}>
       <h3
@@ -177,14 +251,26 @@ function Section({ title, children }: { title: string; children: React.ReactNode
       >
         {title}
       </h3>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'var(--space-4)',
+        }}
+      >
         {children}
       </div>
     </section>
   );
 }
 
-function SettingRow({ label, children }: { label: string; children: React.ReactNode }) {
+function SettingRow({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <div
       style={{
@@ -193,7 +279,11 @@ function SettingRow({ label, children }: { label: string; children: React.ReactN
         justifyContent: 'space-between',
       }}
     >
-      <span style={{ fontSize: 'var(--text-sm)', color: 'var(--text-primary)' }}>{label}</span>
+      <span
+        style={{ fontSize: 'var(--text-sm)', color: 'var(--text-primary)' }}
+      >
+        {label}
+      </span>
       {children}
     </div>
   );

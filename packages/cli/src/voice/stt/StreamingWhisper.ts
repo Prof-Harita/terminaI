@@ -38,8 +38,20 @@ export class StreamingWhisper extends EventEmitter {
       'json',
     ]);
 
+    // Buffer to accumulate partial lines across chunks
+    let stdoutBuffer = '';
+
     this.whisperProcess.stdout.on('data', (chunk: Buffer) => {
-      const lines = chunk.toString().split('\n');
+      // Append incoming chunk to buffer
+      stdoutBuffer += chunk.toString();
+
+      // Split on newlines
+      const lines = stdoutBuffer.split('\n');
+
+      // Keep the last partial line in the buffer
+      stdoutBuffer = lines.pop() ?? '';
+
+      // Process complete lines
       for (const line of lines) {
         if (!line.trim()) {
           continue;

@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { describe, it, expect } from 'vitest';
 import { detectOutputType, detectTuiExit } from './outputDetector';
 
@@ -6,7 +12,7 @@ describe('outputDetector', () => {
     it('detects TUI start sequences', () => {
       // Common terminal clear/init sequences
       expect(detectOutputType('\x1b[?1049h')).toBe('tui'); // Alternate screen buffer
-      expect(detectOutputType('\x1b[?1h')).toBe('tui');    // Application cursor keys
+      expect(detectOutputType('\x1b[?1h')).toBe('tui'); // Application cursor keys
     });
 
     it('detects progress updates', () => {

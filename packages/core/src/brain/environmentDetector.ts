@@ -66,7 +66,10 @@ export function detectEnvironment(): Environment {
   if (signals.hostname.includes('dev') || signals.hostname.includes('local')) {
     return 'dev';
   }
-  if (signals.hostname.includes('laptop') || signals.hostname.includes('macbook')) {
+  if (
+    signals.hostname.includes('laptop') ||
+    signals.hostname.includes('macbook')
+  ) {
     return 'dev';
   }
   if (signals.nodeEnv === 'development') {
@@ -76,11 +79,18 @@ export function detectEnvironment(): Environment {
     return 'dev';
   }
 
-  if (signals.hostname.includes('staging') || signals.hostname.includes('stg')) {
+  if (
+    signals.hostname.includes('staging') ||
+    signals.hostname.includes('stg')
+  ) {
     return 'staging';
   }
 
-  if (signals.hasNginx && signals.hasSystemd && !signals.hostname.includes('dev')) {
+  if (
+    signals.hasNginx &&
+    signals.hasSystemd &&
+    !signals.hostname.includes('dev')
+  ) {
     return 'prod';
   }
 

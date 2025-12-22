@@ -18,25 +18,47 @@ export interface ActionOutcome {
   errorMessage?: string;
 }
 
-const HISTORY_FILE = path.join(os.homedir(), '.termai', 'history.jsonl');
+function getHistoryFilePath(): string {
+  const homeRaw =
+    typeof (os as unknown as { homedir?: unknown }).homedir === 'function'
+      ? os.homedir()
+      : (process.env['HOME'] ?? '');
+  const home = typeof homeRaw === 'string' ? homeRaw : '';
+
+  const tmpRaw =
+    typeof (os as unknown as { tmpdir?: unknown }).tmpdir === 'function'
+      ? os.tmpdir()
+      : '';
+  const tmp = typeof tmpRaw === 'string' && tmpRaw ? tmpRaw : '/tmp';
+
+  const root = home || tmp;
+  try {
+    return path.join(root, '.termai', 'history.jsonl');
+  } catch {
+    return '/tmp/.termai/history.jsonl';
+  }
+}
+const MAX_HISTORY_BYTES = 2 * 1024 * 1024;
 
 export function logOutcome(outcome: ActionOutcome): void {
-  const dir = path.dirname(HISTORY_FILE);
+  const historyFile = getHistoryFilePath();
+  const dir = path.dirname(historyFile);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
 
-  fs.appendFileSync(HISTORY_FILE, `${JSON.stringify(outcome)}\n`);
+  fs.appendFileSync(historyFile, `${JSON.stringify(outcome)}\n`);
   pruneHistory(1000);
 }
 
 function pruneHistory(maxEntries: number): void {
-  if (!fs.existsSync(HISTORY_FILE)) {
+  const historyFile = getHistoryFilePath();
+  if (!fs.existsSync(historyFile)) {
     return;
   }
 
   const lines = fs
-    .readFileSync(HISTORY_FILE, 'utf-8')
+    .readFileSync(historyFile, 'utf-8')
     .split('\n')
     .filter(Boolean);
 
@@ -45,22 +67,34 @@ function pruneHistory(maxEntries: number): void {
   }
 
   const trimmed = lines.slice(-maxEntries);
-  fs.writeFileSync(HISTORY_FILE, `${trimmed.join('\n')}\n`);
+  fs.writeFileSync(historyFile, `${trimmed.join('\n')}\n`);
 }
 
 export function getRecentOutcomes(count: number = 50): ActionOutcome[] {
-  if (!fs.existsSync(HISTORY_FILE)) {
+  const historyFile = getHistoryFilePath();
+  if (!fs.existsSync(historyFile)) {
     return [];
   }
 
   try {
-    const lines = fs
-      .readFileSync(HISTORY_FILE, 'utf-8')
-      .split('\n')
-      .filter(Boolean);
-    return lines
-      .slice(-count)
-      .map((line) => JSON.parse(line) as ActionOutcome);
+    const stat = fs.statSync(historyFile);
+    const start = Math.max(0, stat.size - MAX_HISTORY_BYTES);
+    const fd = fs.openSync(historyFile, 'r');
+    try {
+      const buf = Buffer.alloc(stat.size - start);
+      fs.readSync(fd, buf, 0, buf.length, start);
+      const text = buf.toString('utf-8');
+      const rawLines = text.split('\n');
+      const lines =
+        start > 0
+          ? rawLines.slice(1).filter(Boolean)
+          : rawLines.filter(Boolean);
+      return lines
+        .slice(-count)
+        .map((line) => JSON.parse(line) as ActionOutcome);
+    } finally {
+      fs.closeSync(fd);
+    }
   } catch (_error) {
     return [];
   }

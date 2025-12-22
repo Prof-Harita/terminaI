@@ -1,9 +1,16 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import "./styles/globals.css";
-import App from "./App";
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App';
+// eslint-disable-next-line import/no-internal-modules
+import './styles/globals.css';
+
+createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>,

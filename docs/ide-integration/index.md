@@ -24,8 +24,7 @@ support VS Code extensions. To build support for other editors, see the
 
 - **VS Code commands:** You can access terminaI features directly from the VS
   Code Command Palette (`Cmd+Shift+P` or `Ctrl+Shift+P`):
-  - `terminaI: Run`: Starts a new terminaI session in the integrated
-    terminal.
+  - `terminaI: Run`: Starts a new terminaI session in the integrated terminal.
   - `terminaI: Accept Diff`: Accepts the changes in the active diff editor.
   - `terminaI: Close Diff Editor`: Rejects the changes and closes the active
     diff editor.
@@ -188,10 +187,10 @@ messages and how to resolve them.
 
 - **Message:**
   `IDE integration is not supported in your current environment. To use this feature, run terminaI in one of these supported IDEs: [List of IDEs]`
-  - **Cause:** You are running terminaI in a terminal or environment that is
-    not a supported IDE.
-  - **Solution:** Run terminaI from the integrated terminal of a supported
-    IDE, like Antigravity or VS Code.
+  - **Cause:** You are running terminaI in a terminal or environment that is not
+    a supported IDE.
+  - **Solution:** Run terminaI from the integrated terminal of a supported IDE,
+    like Antigravity or VS Code.
 
 - **Message:**
   `No installer is available for IDE. Please install the terminaI Companion extension manually from the marketplace.`

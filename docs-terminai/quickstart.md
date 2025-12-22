@@ -7,8 +7,7 @@ Get up and running with terminaI in 5 minutes.
 ### From Source (Recommended)
 
 ```bash
-git clone https://github.com/Prof-Harita/termAI.git
-cd termAI
+# From the repo root
 npm ci
 npm run build
 npm link --workspace packages/termai
@@ -27,7 +26,7 @@ For muscle memory compatibility:
 
 ## Authentication
 
-terminaI uses Google OAuth for Gemini API access.
+terminaI uses Google OAuth (browser flow) or an API key for model access.
 
 ### Option 1: Login with Google (Recommended)
 
@@ -36,12 +35,10 @@ terminai
 # Follow the browser authentication flow
 ```
 
-**Free tier:** 60 requests/min, 1,000 requests/day, Gemini 2.5 Pro
-
 ### Option 2: API Key
 
 ```bash
-export GEMINI_API_KEY="YOUR_API_KEY"  # from https://aistudio.google.com/apikey
+export GEMINI_API_KEY="YOUR_API_KEY"
 terminai
 ```
 
@@ -60,11 +57,25 @@ terminai
 
 - `/help` - Show available commands
 - `/sessions` - List background processes
-- `/voice` - Toggle voice mode
 - `/exit` - Exit terminaI
 
 ## Next Steps
 
-- [Voice Mode Guide](./voice.md) - Enable push-to-talk
-- [Web Remote Guide](./web-remote.md) - Access from browser
-- [Upstream Configuration](../docs/get-started/configuration.md) - Advanced settings
+- [Voice Guide](./voice.md) - Offline voice install + usage
+- [Web Remote (A2A) Guide](./web-remote.md) - Connect Desktop/web clients
+- [Desktop App Guide](./desktop.md) - Tauri Desktop client
+- [Safety Guide](./safety.md) - Approval ladder (A/B/C) + PIN
+- [Configuration](./configuration.md) - Settings and flags
+
+## Optional: Run the Desktop App (Tauri)
+
+The Desktop app is an A2A client (it does not spawn the CLI).
+
+```bash
+npm -w packages/desktop dev
+```
+
+In the Desktop app, set:
+
+- **Agent URL**: the A2A server URL (e.g. `http://127.0.0.1:41242`)
+- **Token**: the web-remote token printed by the CLI (see Web Remote guide)

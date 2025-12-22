@@ -1,5 +1,12 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { useState, useEffect, useMemo } from 'react';
-import { COMMANDS, Command } from '../data/commands';
+import type { Command } from '../data/commands';
+import { COMMANDS } from '../data/commands';
 
 interface Props {
   isOpen: boolean;
@@ -17,7 +24,7 @@ export function CommandPalette({ isOpen, onClose, onSelect }: Props) {
     return COMMANDS.filter(
       (cmd) =>
         cmd.name.toLowerCase().includes(lower) ||
-        cmd.description.toLowerCase().includes(lower)
+        cmd.description.toLowerCase().includes(lower),
     );
   }, [query]);
 
@@ -138,7 +145,8 @@ export function CommandPalette({ isOpen, onClose, onSelect }: Props) {
               style={{
                 padding: 'var(--space-4) var(--space-5)',
                 cursor: 'pointer',
-                background: i === selectedIndex ? 'var(--accent)' : 'transparent',
+                background:
+                  i === selectedIndex ? 'var(--accent)' : 'transparent',
                 transition: 'background var(--transition-fast)',
               }}
               onMouseEnter={() => setSelectedIndex(i)}
@@ -156,7 +164,8 @@ export function CommandPalette({ isOpen, onClose, onSelect }: Props) {
                     fontFamily: 'monospace',
                     fontSize: 'var(--text-sm)',
                     fontWeight: 500,
-                    color: i === selectedIndex ? 'white' : 'var(--text-primary)',
+                    color:
+                      i === selectedIndex ? 'white' : 'var(--text-primary)',
                   }}
                 >
                   {cmd.name}
@@ -164,7 +173,10 @@ export function CommandPalette({ isOpen, onClose, onSelect }: Props) {
                 <span
                   style={{
                     fontSize: 'var(--text-xs)',
-                    color: i === selectedIndex ? 'rgba(255,255,255,0.7)' : 'var(--text-muted)',
+                    color:
+                      i === selectedIndex
+                        ? 'rgba(255,255,255,0.7)'
+                        : 'var(--text-muted)',
                   }}
                 >
                   {cmd.category}
@@ -174,7 +186,10 @@ export function CommandPalette({ isOpen, onClose, onSelect }: Props) {
                 style={{
                   margin: 0,
                   fontSize: 'var(--text-sm)',
-                  color: i === selectedIndex ? 'rgba(255,255,255,0.85)' : 'var(--text-secondary)',
+                  color:
+                    i === selectedIndex
+                      ? 'rgba(255,255,255,0.85)'
+                      : 'var(--text-secondary)',
                 }}
               >
                 {cmd.description}
@@ -195,13 +210,40 @@ export function CommandPalette({ isOpen, onClose, onSelect }: Props) {
           }}
         >
           <span>
-            <kbd style={{ background: 'var(--bg-tertiary)', padding: '2px 6px', borderRadius: '4px' }}>↑↓</kbd> navigate
+            <kbd
+              style={{
+                background: 'var(--bg-tertiary)',
+                padding: '2px 6px',
+                borderRadius: '4px',
+              }}
+            >
+              ↑↓
+            </kbd>{' '}
+            navigate
           </span>
           <span>
-            <kbd style={{ background: 'var(--bg-tertiary)', padding: '2px 6px', borderRadius: '4px' }}>Enter</kbd> select
+            <kbd
+              style={{
+                background: 'var(--bg-tertiary)',
+                padding: '2px 6px',
+                borderRadius: '4px',
+              }}
+            >
+              Enter
+            </kbd>{' '}
+            select
           </span>
           <span>
-            <kbd style={{ background: 'var(--bg-tertiary)', padding: '2px 6px', borderRadius: '4px' }}>Esc</kbd> close
+            <kbd
+              style={{
+                background: 'var(--bg-tertiary)',
+                padding: '2px 6px',
+                borderRadius: '4px',
+              }}
+            >
+              Esc
+            </kbd>{' '}
+            close
           </span>
         </div>
       </div>

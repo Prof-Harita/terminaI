@@ -1,7 +1,8 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 mod cli_bridge;
-mod oauth;
+// mod oauth;
 mod pty_session;
+mod voice;
 
 use cli_bridge::CliBridge;
 use pty_session::PtySession;
@@ -97,7 +98,9 @@ pub fn run() {
             start_pty_session,
             send_terminal_input,
             stop_pty_session,
-            oauth::start_oauth
+            voice::stt_transcribe,
+            voice::tts_synthesize,
+            // oauth::start_oauth
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

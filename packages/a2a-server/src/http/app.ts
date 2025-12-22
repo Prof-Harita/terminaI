@@ -244,6 +244,10 @@ export async function createApp() {
       res.status(200).json({ status: 'ok' });
     });
 
+    expressApp.get('/whoami', (_req, res) => {
+      res.json({ targetDir: config.getTargetDir() });
+    });
+
     expressApp.post('/tasks', async (req, res) => {
       try {
         const taskId = uuidv4();

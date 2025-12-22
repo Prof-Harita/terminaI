@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 const RISK_COLORS: Record<string, string> = {
   low: 'bg-green-500/20 text-green-400',
   moderate: 'bg-yellow-500/20 text-yellow-400',
@@ -21,7 +27,9 @@ export function RiskBadge({ level }: Props) {
   const icon = RISK_ICONS[level] || '🟡';
 
   return (
-    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${colorClass}`}>
+    <span
+      className={`px-2 py-0.5 rounded-full text-xs font-medium ${colorClass}`}
+    >
       {icon} {level.toUpperCase()}
     </span>
   );

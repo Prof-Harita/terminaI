@@ -475,6 +475,24 @@
       },
       "additionalProperties": false
     },
+    "security": {
+      "title": "Security",
+      "description": "Security-related settings for tool execution and approvals.",
+      "markdownDescription": "Security-related settings for tool execution and approvals.\\n\\n- Category: `Security`\\n- Requires restart: `no`\\n- Default: `{}`",
+      "default": {},
+      "type": "object",
+      "properties": {
+        "approvalPin": {
+          "title": "Approval PIN",
+          "description": "6-digit PIN required for Level C (high-risk) command approvals. Default is 000000.",
+          "markdownDescription": "6-digit PIN required for Level C (high-risk) command approvals. Default is 000000.\\n\\n- Category: `Security`\\n- Requires restart: `no`\\n- Default: `000000`",
+          "default": "000000",
+          "type": "string",
+          "pattern": "^\\d{6}$"
+        }
+      },
+      "additionalProperties": false
+    },
     "telemetry": {
       "title": "Telemetry",
       "description": "Telemetry configuration.",

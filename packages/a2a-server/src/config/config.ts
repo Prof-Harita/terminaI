@@ -33,8 +33,9 @@ export async function loadConfig(
   settings: Settings,
   extensionLoader: ExtensionLoader,
   taskId: string,
+  targetDirOverride?: string,
 ): Promise<Config> {
-  const workspaceDir = process.cwd();
+  const workspaceDir = targetDirOverride || process.cwd();
   const adcFilePath = process.env['GOOGLE_APPLICATION_CREDENTIALS'];
 
   const configParams: ConfigParameters = {
@@ -143,7 +144,7 @@ export function setTargetDir(agentSettings: AgentSettings | undefined): string {
 
   try {
     const resolvedPath = path.resolve(targetDir);
-    process.chdir(resolvedPath);
+    // process.chdir(resolvedPath); // DISABLED: Global state mutation causes issues in multi-task server
     return resolvedPath;
   } catch (e) {
     logger.error(
@@ -153,8 +154,8 @@ export function setTargetDir(agentSettings: AgentSettings | undefined): string {
   }
 }
 
-export function loadEnvironment(): void {
-  const envFilePath = findEnvFile(process.cwd());
+export function loadEnvironment(startDir?: string): void {
+  const envFilePath = findEnvFile(startDir || process.cwd());
   if (envFilePath) {
     dotenv.config({ path: envFilePath, override: true });
   }

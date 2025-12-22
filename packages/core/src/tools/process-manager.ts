@@ -34,7 +34,10 @@ import type {
 import { BaseDeclarativeTool, BaseToolInvocation, Kind } from './tools.js';
 import { ToolErrorType } from './tool-error.js';
 import { PROCESS_MANAGER_TOOL_NAME } from './tool-names.js';
-import { sessionNotifier, type SessionEventType } from './process-notifications.js';
+import {
+  sessionNotifier,
+  type SessionEventType,
+} from './process-notifications.js';
 
 const MAX_OUTPUT_LINES = 1000;
 const DEFAULT_READ_LINES = 50;
@@ -597,7 +600,11 @@ export class ProcessManager {
     });
   }
 
-  private notify(type: SessionEventType, session: ProcessSession, message: string) {
+  private notify(
+    type: SessionEventType,
+    session: ProcessSession,
+    message: string,
+  ) {
     sessionNotifier.notify({
       type,
       sessionName: session.name,

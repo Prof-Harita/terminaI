@@ -129,6 +129,8 @@ export default tseslint.config(
         {
           allow: [
             'react-dom/test-utils',
+            'react-dom/client',
+            'zustand/middleware',
             'memfs/lib/volume.js',
             'yargs/**',
             'msw/node',
@@ -289,6 +291,19 @@ export default tseslint.config(
     rules: {
       'no-restricted-globals': 'off', // Allow local overrides
       '@typescript-eslint/no-floating-promises': 'off', // Too many in UI code
+    },
+  },
+  {
+    files: ['packages/web-client/**/*.js'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.es2021,
+      },
+    },
+    rules: {
+      'no-undef': 'off',
+      'license-header/header': 'off',
     },
   },
   // Prettier config must be last

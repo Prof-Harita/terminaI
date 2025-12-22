@@ -749,6 +749,10 @@ export class Task {
 
     const callId = part.data['callId'];
     const outcomeString = part.data['outcome'];
+    const pin =
+      typeof part.data['pin'] === 'string'
+        ? (part.data['pin'])
+        : undefined;
     let confirmationOutcome: ToolConfirmationOutcome | undefined;
 
     if (outcomeString === 'proceed_once') {
@@ -794,13 +798,17 @@ export class Task {
         // This will trigger the scheduler to continue or cancel the specific tool.
         // The scheduler's onToolCallsUpdate will then reflect the new state (e.g., executing or cancelled).
 
-        // If `edit` tool call, pass updated payload if presesent
+        // If `edit` tool call, pass updated payload if present
         if (confirmationDetails.type === 'edit') {
-          const payload = part.data['newContent']
-            ? ({
-                newContent: part.data['newContent'] as string,
-              } as ToolConfirmationPayload)
-            : undefined;
+          const payload =
+            part.data['newContent'] || pin
+              ? ({
+                  ...(part.data['newContent']
+                    ? { newContent: part.data['newContent'] as string }
+                    : {}),
+                  ...(pin ? { pin } : {}),
+                } as ToolConfirmationPayload)
+              : undefined;
           this.skipFinalTrueAfterInlineEdit = !!payload;
           try {
             await confirmationDetails.onConfirm(confirmationOutcome, payload);
@@ -811,7 +819,10 @@ export class Task {
             this.skipFinalTrueAfterInlineEdit = false;
           }
         } else {
-          await confirmationDetails.onConfirm(confirmationOutcome);
+          const payload = pin
+            ? ({ pin } as ToolConfirmationPayload)
+            : undefined;
+          await confirmationDetails.onConfirm(confirmationOutcome, payload);
         }
       } finally {
         if (gcpProject) {

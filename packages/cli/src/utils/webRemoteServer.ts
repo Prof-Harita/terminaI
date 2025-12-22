@@ -23,6 +23,7 @@ export type WebRemoteServerOptions = {
   allowedOrigins: string[];
   tokenOverride?: string;
   rotateToken?: boolean;
+  activeToken?: string | null;
 };
 
 export type WebRemoteAuthResult = {
@@ -66,7 +67,7 @@ export async function ensureWebRemoteAuth(
     return { token, tokenSource: 'generated', authPath };
   }
   if (envToken) {
-    return { token: null, tokenSource: 'env', authPath };
+    return { token: envToken, tokenSource: 'env', authPath };
   }
 
   const existing = await loadRemoteAuthState();
@@ -88,6 +89,15 @@ export async function startWebRemoteServer(
       options.allowedOrigins.join(',');
   }
 
+  const authResult = await ensureWebRemoteAuth(options);
+
+  // Show warning if token only exists as hashed state
+  if (authResult.tokenSource === 'existing' && !authResult.token) {
+    process.stderr.write(
+      '\n⚠️  Token not available (stored hashed). Use --web-remote-rotate-token to generate a new token.\n',
+    );
+  }
+
   const app = await createApp();
   const server = app.listen(options.port, options.host);
   const address = server.address();
@@ -95,13 +105,8 @@ export async function startWebRemoteServer(
     typeof address === 'string' || !address ? options.port : address.port;
   updateCoderAgentCardUrl(actualPort, options.host);
 
-  // Build the user-facing URL (include token if present)
-  const authState = await loadRemoteAuthState();
-  const token =
-    options.tokenOverride ??
-    process.env['GEMINI_WEB_REMOTE_TOKEN'] ??
-    authState?.tokenId ??
-    null;
+  // Build the user-facing URL using the token from authResult
+  const token = authResult.token;
   const url = `http://${options.host}:${actualPort}/ui${
     token ? `?token=${encodeURIComponent(token)}` : ''
   }`;

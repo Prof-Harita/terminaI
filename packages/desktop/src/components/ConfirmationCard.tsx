@@ -1,12 +1,23 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { useState } from 'react';
 import { RiskBadge } from './RiskBadge';
-import { PendingConfirmation } from '../types/cli';
+import type { PendingConfirmation } from '../types/cli';
 
 interface Props {
   confirmation: PendingConfirmation;
-  onRespond: (approved: boolean) => void;
+  onRespond: (approved: boolean, pin?: string) => void;
 }
 
 export function ConfirmationCard({ confirmation, onRespond }: Props) {
+  const [pin, setPin] = useState('');
+  const requiresPin = confirmation.requiresPin === true;
+  const pinLength = confirmation.pinLength ?? 6;
+
   return (
     <div
       style={{
@@ -77,11 +88,38 @@ export function ConfirmationCard({ confirmation, onRespond }: Props) {
         </pre>
       </details>
 
+      {requiresPin && (
+        <div style={{ marginBottom: 'var(--space-5)' }}>
+          <label
+            style={{
+              display: 'block',
+              marginBottom: 'var(--space-2)',
+              fontSize: 'var(--text-sm)',
+              color: 'var(--text-muted)',
+            }}
+          >
+            Enter PIN ({pinLength} digits)
+          </label>
+          <input
+            className="input"
+            inputMode="numeric"
+            pattern="\\d*"
+            value={pin}
+            onChange={(e) =>
+              setPin(e.target.value.replace(/\\D/g, '').slice(0, pinLength))
+            }
+            placeholder={'•'.repeat(pinLength)}
+            style={{ width: '100%' }}
+          />
+        </div>
+      )}
+
       {/* Actions */}
       <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
         <button
           className="btn"
-          onClick={() => onRespond(true)}
+          onClick={() => onRespond(true, requiresPin ? pin : undefined)}
+          disabled={requiresPin && pin.length !== pinLength}
           style={{
             flex: 1,
             background: '#22c55e',
@@ -92,7 +130,7 @@ export function ConfirmationCard({ confirmation, onRespond }: Props) {
         </button>
         <button
           className="btn btn-secondary"
-          onClick={() => onRespond(false)}
+          onClick={() => onRespond(false, requiresPin ? pin : undefined)}
           style={{ flex: 1 }}
         >
           Cancel

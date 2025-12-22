@@ -1,4 +1,10 @@
-import { Session } from '../hooks/useSessions';
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import type { Session } from '../hooks/useSessions';
 
 interface Props {
   session: Session;
@@ -35,7 +41,12 @@ export function SessionCard({ session, onStop, onViewLogs }: Props) {
           marginBottom: 'var(--space-2)',
         }}
       >
-        <span style={{ color: statusColor[session.status], fontSize: 'var(--text-xs)' }}>
+        <span
+          style={{
+            color: statusColor[session.status],
+            fontSize: 'var(--text-xs)',
+          }}
+        >
           {statusIcon[session.status]}
         </span>
         <span
@@ -67,7 +78,10 @@ export function SessionCard({ session, onStop, onViewLogs }: Props) {
         <button
           className="btn btn-ghost"
           onClick={onViewLogs}
-          style={{ padding: 'var(--space-1) var(--space-3)', fontSize: 'var(--text-xs)' }}
+          style={{
+            padding: 'var(--space-1) var(--space-3)',
+            fontSize: 'var(--text-xs)',
+          }}
         >
           View
         </button>

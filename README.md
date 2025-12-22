@@ -29,7 +29,7 @@ There's no "Cursor for your computer." Until now.
 
 ## 🚀 Why terminaI?
 
-| Feature              | terminaI                          | Warp        | GitHub Copilot CLI | Open Interpreter   |
+| Feature              | terminaI                        | Warp        | GitHub Copilot CLI | Open Interpreter   |
 | -------------------- | ------------------------------- | ----------- | ------------------ | ------------------ |
 | **Primary Focus**    | **Universal System Operator**   | Terminal UI | Command Suggestion | Desktop Automation |
 | **License**          | **Open Source (Apache 2.0)**    | Proprietary | Proprietary        | Open Source        |
@@ -143,7 +143,7 @@ Press `space` or `ctrl+space` to activate Push-to-Talk.
 
 ## 🎯 Who Is This For?
 
-| Persona                  | Pain Point                                     | terminaI Value                            |
+| Persona                  | Pain Point                                     | terminaI Value                          |
 | ------------------------ | ---------------------------------------------- | --------------------------------------- |
 | **Junior Developer**     | Scared of `rm -rf`, doesn't know syntax        | Safety net: preview + explain           |
 | **SRE / DevOps**         | Copilot hallucinates flags, hates latency      | Local-first, auditable, scriptable      |
@@ -193,16 +193,20 @@ Press `space` or `ctrl+space` to activate Push-to-Talk.
 ### Getting Started
 
 - [**terminaI Documentation Hub**](./docs-terminai/index.md) - Start here
-- [**Quickstart Guide**](./docs-terminai/quickstart.md) - Get running in 5 minutes
-- [**Voice Mode Guide**](./docs-terminai/voice.md) - Push-to-talk and voice commands
+- [**Quickstart Guide**](./docs-terminai/quickstart.md) - Get running in 5
+  minutes
+- [**Voice Mode Guide**](./docs-terminai/voice.md) - Push-to-talk and voice
+  commands
 - [**Web Remote Guide**](./docs-terminai/web-remote.md) - Access from browser
 
 ### Gemini CLI Features (Inherited)
 
 For features from the upstream Gemini CLI:
 
-- [**Authentication**](./docs/get-started/authentication.md) - OAuth and API keys
-- [**Configuration**](./docs/get-started/configuration.md) - Settings and customization
+- [**Authentication**](./docs/get-started/authentication.md) - OAuth and API
+  keys
+- [**Configuration**](./docs/get-started/configuration.md) - Settings and
+  customization
 - [**Commands Reference**](./docs/cli/commands.md) - Slash commands
 - [**MCP Integration**](./docs/tools/mcp-server.md) - External capabilities
 - [**Troubleshooting**](./docs/troubleshooting.md) - Common issues
@@ -256,13 +260,16 @@ from a coding-focused agent into a **general-purpose terminal operator**.
 
 **Upstream Sync Policy:**
 
-We do **not** sync with upstream for 30 days (until 100 Stars milestone). This ensures stability and prevents breaking changes. See [`.local/MAINTAINERS_POLICY.md`](.local/MAINTAINERS_POLICY.md) for details.
+We do **not** sync with upstream for 30 days (until 100 Stars milestone). This
+ensures stability and prevents breaking changes. See
+[`.local/MAINTAINERS_POLICY.md`](.local/MAINTAINERS_POLICY.md) for details.
 
 ---
 
 ## 📖 Resources
 
-- **[terminaI Changelog](./docs-terminai/changelog.md)** — terminaI-specific changes
+- **[terminaI Changelog](./docs-terminai/changelog.md)** — terminaI-specific
+  changes
 - **[Product Roadmap](./futureroadmap_opus.md)** — Strategic direction
 - **[GitHub Issues](https://github.com/Prof-Harita/termAI/issues)** — Bugs &
   features

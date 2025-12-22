@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { invoke } from '@tauri-apps/api/core';
@@ -6,6 +12,14 @@ interface SettingsState {
   // Account
   email: string;
   setEmail: (email: string) => void;
+
+  // Agent backend (A2A)
+  agentUrl: string;
+  setAgentUrl: (url: string) => void;
+  agentToken: string;
+  setAgentToken: (token: string) => void;
+  agentWorkspacePath: string;
+  setAgentWorkspacePath: (path: string) => void;
 
   // Security
   approvalMode: 'safe' | 'prompt' | 'yolo';
@@ -18,6 +32,8 @@ interface SettingsState {
   setProvider: (provider: 'gemini' | 'ollama') => void;
 
   // Voice
+  voiceEnabled: boolean;
+  setVoiceEnabled: (enabled: boolean) => void;
   voiceVolume: number;
   setVoiceVolume: (volume: number) => void;
 
@@ -27,8 +43,9 @@ interface SettingsState {
 
 // Helper to sync settings to CLI
 const syncToCli = (setting: string, value: string | boolean) => {
-  invoke('send_to_cli', { message: `/config set ${setting} ${value}` })
-    .catch(err => console.warn('Settings sync failed:', err));
+  invoke('send_to_cli', { message: `/config set ${setting} ${value}` }).catch(
+    (err) => console.warn('Settings sync failed:', err),
+  );
 };
 
 export const useSettingsStore = create<SettingsState>()(
@@ -37,6 +54,15 @@ export const useSettingsStore = create<SettingsState>()(
       // Account
       email: '',
       setEmail: (email) => set({ email }),
+
+      // Agent backend (A2A)
+      agentUrl: 'http://127.0.0.1:41242',
+      setAgentUrl: (agentUrl) => set({ agentUrl }),
+      agentToken: '',
+      setAgentToken: (agentToken) => set({ agentToken }),
+      agentWorkspacePath: '/tmp',
+      setAgentWorkspacePath: (agentWorkspacePath) =>
+        set({ agentWorkspacePath }),
 
       // Security
       approvalMode: 'prompt',
@@ -58,6 +84,8 @@ export const useSettingsStore = create<SettingsState>()(
       },
 
       // Voice
+      voiceEnabled: false,
+      setVoiceEnabled: (voiceEnabled) => set({ voiceEnabled }),
       voiceVolume: 80,
       setVoiceVolume: (voiceVolume) => set({ voiceVolume }),
 
@@ -66,7 +94,6 @@ export const useSettingsStore = create<SettingsState>()(
     }),
     {
       name: 'termai-settings',
-    }
-  )
+    },
+  ),
 );
-

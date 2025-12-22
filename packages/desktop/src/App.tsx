@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { ChatView } from './components/ChatView';
 import { SessionsSidebar } from './components/SessionsSidebar';
@@ -6,14 +12,12 @@ import { SettingsPanel } from './components/SettingsPanel';
 import { AuthScreen } from './components/AuthScreen';
 import { SplitLayout } from './components/SplitLayout';
 import { EmbeddedTerminal } from './components/EmbeddedTerminal';
-import { useAuth } from './hooks/useAuth';
 import { useCliProcess } from './hooks/useCliProcess';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
-import { Command } from './data/commands';
-import { invoke } from '@tauri-apps/api/core';
+import type { Command } from './data/commands';
+import { useSettingsStore } from './stores/settingsStore';
 
 function App() {
-  const { isAuthenticated } = useAuth();
   const {
     messages,
     isConnected,
@@ -21,18 +25,18 @@ function App() {
     activeTerminalSession,
     sendMessage,
     respondToConfirmation,
-    closeTerminal
+    closeTerminal,
   } = useCliProcess();
 
+  const agentToken = useSettingsStore((s) => s.agentToken);
   const [showAuth, setShowAuth] = useState(true);
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const chatInputRef = useRef<HTMLTextAreaElement>(null);
 
-  // Sync local auth state with hook
   useEffect(() => {
-    setShowAuth(!isAuthenticated);
-  }, [isAuthenticated]);
+    setShowAuth(agentToken.trim().length === 0 || !isConnected);
+  }, [agentToken, isConnected]);
 
   // Use centralized keyboard shortcuts hook
   useKeyboardShortcuts({
@@ -50,20 +54,26 @@ function App() {
     },
   });
 
-  const handleCommandSelect = useCallback(async (command: Command) => {
-    try {
-      void invoke('send_to_cli', { message: command.action });
-    } catch (err) {
-      console.error('Failed to execute command:', err);
-    }
-  }, []);
+  const handleCommandSelect = useCallback(
+    async (command: Command) => {
+      try {
+        sendMessage(command.action);
+      } catch (err) {
+        console.error('Failed to execute command:', err);
+      }
+    },
+    [sendMessage],
+  );
 
   if (showAuth) {
     return <AuthScreen onAuthenticated={() => setShowAuth(false)} />;
   }
 
   return (
-    <div className="h-screen w-screen flex flex-col" style={{ background: 'var(--bg-primary)' }}>
+    <div
+      className="h-screen w-screen flex flex-col"
+      style={{ background: 'var(--bg-primary)' }}
+    >
       {/* Header - Clean, minimal, good spacing */}
       <header
         className="flex items-center justify-between shrink-0"
@@ -85,7 +95,10 @@ function App() {
             className="btn btn-ghost"
             onClick={() => setIsPaletteOpen(true)}
             title="Command Palette (⌘K)"
-            style={{ fontSize: 'var(--text-xs)', padding: 'var(--space-2) var(--space-3)' }}
+            style={{
+              fontSize: 'var(--text-xs)',
+              padding: 'var(--space-2) var(--space-3)',
+            }}
           >
             ⌘K
           </button>

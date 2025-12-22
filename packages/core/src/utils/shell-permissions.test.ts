@@ -23,7 +23,7 @@ import type { Config } from '../config/config.js';
 import type { AnyToolInvocation } from '../index.js';
 
 const mockPlatform = vi.hoisted(() => vi.fn());
-const mockHomedir = vi.hoisted(() => vi.fn());
+const mockHomedir = vi.hoisted(() => vi.fn(() => '/tmp'));
 vi.mock('os', () => ({
   default: {
     platform: mockPlatform,
@@ -44,11 +44,13 @@ const describeWindowsOnly = isWindowsRuntime ? describe : describe.skip;
 
 beforeAll(async () => {
   mockPlatform.mockReturnValue('linux');
+  mockHomedir.mockReturnValue('/tmp');
   await initializeShellParsers();
 });
 
 beforeEach(() => {
   mockPlatform.mockReturnValue('linux');
+  mockHomedir.mockReturnValue('/tmp');
   mockQuote.mockImplementation((args: string[]) =>
     args.map((arg) => `'${arg}'`).join(' '),
   );

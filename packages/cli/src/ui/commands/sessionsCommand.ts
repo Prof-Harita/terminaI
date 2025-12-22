@@ -85,17 +85,16 @@ export const sessionsCommand: SlashCommand = {
           toolArgs: {
             operation: subcommand === 'stop' ? 'stop' : subcommand,
             name,
-            lines: subcommand === 'read' || subcommand === 'summarize'
-              ? lines
-              : undefined,
+            lines:
+              subcommand === 'read' || subcommand === 'summarize'
+                ? lines
+                : undefined,
             text: subcommand === 'send' ? remaining : undefined,
           },
         };
       case 'start':
         if (!name || !remaining) {
-          return buildError(
-            `Session name and command are required. ${usage}`,
-          );
+          return buildError(`Session name and command are required. ${usage}`);
         }
         return {
           type: 'tool',

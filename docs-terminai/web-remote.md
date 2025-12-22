@@ -1,82 +1,113 @@
-# Web Remote Guide
+# Web Remote (A2A) Guide
 
-Control your terminal from anywhere via web browser.
+Run a single local/remote agent backend (A2A) and connect clients (Desktop,
+browser, custom).
 
 ## Overview
 
-Web Remote (via A2A Server) enables browser-based access to your local terminaI agent. Access your terminal from your phone, tablet, or any device with a browser.
+Web Remote starts an **A2A server** that exposes the agent over HTTP(S).
 
-**Status:** 🚧 POC Available in Stable Core v0.21
+Clients:
+
+- **Desktop app (Tauri)**: recommended today (it speaks A2A directly).
+- **Browser UI**: available at `/ui`.
+- **Custom clients**: can use A2A JSON-RPC + SSE, with token + replay
+  signatures.
+
+**Status:** 🚧 Beta
 
 ## Architecture
 
 ```
-[Browser Client] ←→ [A2A Server] ←→ [Local terminaI Agent]
-   (Anywhere)       (Port 41242)     (Your Machine)
+[Client (Desktop/Web)] ←→ [A2A Server] ←→ [Local terminaI Agent]
+       (Any)             (HTTP)           (Your Machine)
 ```
 
 ## Setup
 
-### 1. Start the A2A Server
+### 1. Start Web Remote
+
+Run terminaI with the `--web-remote` flag:
 
 ```bash
-cd termAI
-npm run start:a2a-server
+terminai --web-remote
+# or
+npm start -- --web-remote
 ```
 
-The server will start on `http://localhost:41242`.
+By default it binds to `127.0.0.1` and chooses a random free port.
 
-### 2. Start the Web Client
+To pin a port:
 
 ```bash
-cd packages/web-client
-npm start
+terminai --web-remote --web-remote-port 41242
 ```
 
-The web UI will open at `http://localhost:3000`.
+The CLI prints:
 
-### 3. Connect
+- the listening URL (host/port)
+- the UI URL (may include a `?token=...` on first run)
+- token storage notes
 
-The web client automatically connects to the A2A server. You can now send commands from the browser.
+### 2. Connect
+
+#### Desktop App (recommended)
+
+- Open the Desktop app and set:
+  - **Agent URL**: `http://127.0.0.1:<port>`
+  - **Token**: the token printed by the CLI
+
+If the CLI says the token is “stored hashed” (and it didn’t print it), rotate
+it:
+
+```bash
+terminai --web-remote-rotate-token
+```
+
+#### Browser UI (experimental)
+
+Open the `/ui` URL printed by the CLI.
+
+- If the token was printed as `?token=...`, the UI stores it locally and removes
+  it from the URL.
+- If the token is not printed (stored hashed), rotate it first with
+  `terminai --web-remote-rotate-token`.
 
 ## Features
 
-- **Remote Command Execution**: Run terminal commands from any device
-- **Process Monitoring**: View running background processes
-- **Session Management**: Start/stop/monitor long-running tasks
-- **Real-time Updates**: Live streaming of command output
+- **Full Chat Interface**: Talk to your agent just like in the terminal.
+- **Streaming Responses**: Real-time output streaming.
+- **Tool Confirmations**: Approve or deny sensitive tool executions directly
+  from the client UI.
+- **Single backend**: same A2A surface works for local and remote clients.
 
 ## Security
 
-⚠️ **Current POC limitations**:
-- Local network only (no internet exposure yet)
-- No authentication (localhost only)
-- No SSL/TLS encryption
+The Web Remote is designed to be **safe by default**:
 
-**Future roadmap** (post-100 stars):
-- QR code pairing
-- End-to-end encryption
-- Cloudflare Tunnel integration for remote access
-- Read-only observer mode
+- **Authentication**: Bearer token required for API access.
+- **Replay Protection**: All state-changing requests require a cryptographic
+  signature (HMAC-SHA256) and a unique nonce to prevent replay attacks.
+- **CORS Policy**: Cross-Origin Resource Sharing is strictly limited. By
+  default, only same-origin requests are allowed. Use
+  `--web-remote-allowed-origins` to whitelist other domains.
+- **Token Rotation**: Use `--web-remote-rotate-token` to generate a new secret
+  if you believe yours is compromised.
 
-## Troubleshooting
+**Limitations**:
 
-### Connection Failed
+- The server binds to `127.0.0.1` by default. To expose it to the network, set
+  `--web-remote-host` and you must also pass `--i-understand-web-remote-risk`.
+- The built-in browser UI is intended for development and internal use; prefer
+  Desktop for “daily driver” usage.
 
-Ensure both the A2A server and web client are running:
-```bash
-# Terminal 1
-npm run start:a2a-server
+## Configuration
 
-# Terminal 2
-cd packages/web-client && npm start
-```
-
-### Port Already in Use
-
-Change the A2A server port:
-```bash
-CODER_AGENT_PORT=8080 npm run start:a2a-server
-```
-
-For more help, see [Troubleshooting](../docs/troubleshooting.md).
+| Flag                                     | Description                                                       |
+| ---------------------------------------- | ----------------------------------------------------------------- |
+| `--web-remote`                           | Enable the web remote server.                                     |
+| `--web-remote-port <port>`               | Specify a custom port (default: random free port).                |
+| `--web-remote-host <host>`               | Bind to a specific host (default: 127.0.0.1).                     |
+| `--web-remote-token <token>`             | Manually specify the auth token (not recommended for production). |
+| `--web-remote-rotate-token`              | Generate a new random token and update stored auth state.         |
+| `--web-remote-allowed-origins <origins>` | Comma-separated list of allowed CORS origins.                     |

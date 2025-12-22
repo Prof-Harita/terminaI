@@ -13,7 +13,10 @@ export class VoiceController {
   private speaking = false;
   private voiceStateMachine: VoiceStateMachine | null;
 
-  constructor(ttsProvider: TtsProvider | null, voiceStateMachine?: VoiceStateMachine | null) {
+  constructor(
+    ttsProvider: TtsProvider | null,
+    voiceStateMachine?: VoiceStateMachine | null,
+  ) {
     this.audio = ttsProvider ? new AudioController(ttsProvider) : null;
     this.voiceStateMachine = voiceStateMachine ?? null;
   }

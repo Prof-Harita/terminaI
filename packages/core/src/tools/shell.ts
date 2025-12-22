@@ -123,7 +123,6 @@ export class ShellToolInvocation extends BaseToolInvocation<
     const command = stripShellWrapper(this.params.command);
     const rootCommands = [...new Set(getCommandRoots(command))];
     const risk = classifyRisk(command);
-    const brainContext = await this.evaluateBrain(command);
 
     // In non-interactive mode, we need to prevent the tool from hanging while
     // waiting for user input. If a tool is not fully allowed (e.g. via
@@ -147,12 +146,30 @@ export class ShellToolInvocation extends BaseToolInvocation<
       (command) => !this.allowlist.has(command),
     );
 
-    const requiresBrainConfirmation =
-      brainContext?.decision.requiresConfirmation ?? false;
+    // Build deterministic action profile for approval ladder
+    const { buildShellActionProfile } = await import(
+      '../safety/approval-ladder/buildShellActionProfile.js'
+    );
+    const { computeMinimumReviewLevel } = await import(
+      '../safety/approval-ladder/computeMinimumReviewLevel.js'
+    );
 
-    if (commandsToConfirm.length === 0 && !requiresBrainConfirmation) {
-      return false; // already approved and allowlisted
+    const actionProfile = buildShellActionProfile({
+      command: this.params.command,
+      cwd: this.params.dir_path ?? process.cwd(),
+      workspaces: [this.config.getWorkspaceContext().targetDir],
+      provenance: ['model_suggestion'], // TODO: Thread from tool call context
+    });
+
+    const reviewResult = computeMinimumReviewLevel(actionProfile);
+    const effectiveReview = { ...reviewResult };
+
+    // Skip confirmation for Level A (no approval needed).
+    if (effectiveReview.level === 'A') {
+      return false;
     }
+
+    const brainContext = await this.evaluateBrain(command);
 
     const confirmationDetails: ToolExecuteConfirmationDetails = {
       type: 'exec',
@@ -160,12 +177,37 @@ export class ShellToolInvocation extends BaseToolInvocation<
       command:
         brainContext?.decision.confirmationMessage && commandsToConfirm.length
           ? `${this.params.command}\n\n${brainContext.decision.confirmationMessage}`
-          : brainContext?.decision.confirmationMessage ?? this.params.command,
+          : (brainContext?.decision.confirmationMessage ?? this.params.command),
       rootCommand: commandsToConfirm.length
         ? commandsToConfirm.join(', ')
         : rootCommands.join(', '),
       risk,
-      onConfirm: async (outcome: ToolConfirmationOutcome) => {
+      reviewLevel: effectiveReview.level,
+      requiresPin: effectiveReview.requiresPin,
+      pinLength: effectiveReview.requiresPin ? 6 : undefined,
+      explanation: effectiveReview.reasons.join('; '),
+      onConfirm: async (
+        outcome: ToolConfirmationOutcome,
+        payload?: { pin?: string },
+      ) => {
+        // Level C PIN verification
+        if (effectiveReview.requiresPin) {
+          const enteredPin = payload?.pin;
+          if (!enteredPin) {
+            throw new Error(
+              'PIN required for Level C action. Command execution denied.',
+            );
+          }
+
+          const configuredPin = this.config.getApprovalPin();
+          if (enteredPin !== configuredPin) {
+            throw new Error(
+              'Incorrect PIN. Level C action denied for security reasons.',
+            );
+          }
+        }
+
+        // Existing allowlist logic
         if (outcome === ToolConfirmationOutcome.ProceedAlways) {
           commandsToConfirm.forEach((command) => this.allowlist.add(command));
         }
@@ -175,9 +217,7 @@ export class ShellToolInvocation extends BaseToolInvocation<
     return confirmationDetails;
   }
 
-  private async evaluateBrain(
-    command: string,
-  ): Promise<BrainContext | null> {
+  private async evaluateBrain(command: string): Promise<BrainContext | null> {
     if (this.brainContext) {
       return this.brainContext;
     }
@@ -208,12 +248,12 @@ export class ShellToolInvocation extends BaseToolInvocation<
     }
   }
 
-  private buildGenerativeModelAdapter():
-    | GenerativeModelAdapter
-    | null {
+  private buildGenerativeModelAdapter(): GenerativeModelAdapter | null {
     try {
-      if (typeof (this.config as unknown as { getBaseLlmClient?: unknown })
-        .getBaseLlmClient !== 'function') {
+      if (
+        typeof (this.config as unknown as { getBaseLlmClient?: unknown })
+          .getBaseLlmClient !== 'function'
+      ) {
         return null;
       }
 
@@ -323,7 +363,7 @@ export class ShellToolInvocation extends BaseToolInvocation<
     setPidCallback?: (pid: number) => void,
   ): Promise<ToolResult> {
     const strippedCommand = stripShellWrapper(this.params.command);
-    const brainContext = await this.evaluateBrain(strippedCommand);
+    const brainContext = this.brainContext;
     const applyRisk = (result: ToolResult): ToolResult => {
       if (!brainContext) {
         return result;
@@ -342,35 +382,6 @@ export class ShellToolInvocation extends BaseToolInvocation<
           : result.returnDisplay;
       return { ...result, llmContent, returnDisplay };
     };
-
-    if (brainContext) {
-      const { confidenceAction } = brainContext;
-      if (confidenceAction.type === 'ask-clarification') {
-        const message =
-          confidenceAction.clarificationQuestion ??
-          'Need clarification before executing.';
-        this.recordOutcome(brainContext, strippedCommand, 'cancelled');
-        return applyRisk({
-          llmContent: message,
-          returnDisplay: message,
-        });
-      }
-
-      if (confidenceAction.type === 'diagnostic-first') {
-        // Continue but surface diagnostic suggestion in risk preamble.
-      }
-
-      if (brainContext.decision.strategy.type === 'plan-snapshot') {
-        const message =
-          brainContext.decision.confirmationMessage ??
-          'This operation requires a plan snapshot before execution.';
-        this.recordOutcome(brainContext, strippedCommand, 'cancelled');
-        return applyRisk({
-          llmContent: message,
-          returnDisplay: message,
-        });
-      }
-    }
 
     if (signal.aborted) {
       const result = {

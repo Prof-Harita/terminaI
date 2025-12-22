@@ -5,7 +5,7 @@
  */
 
 import type React from 'react';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { Box, Text } from 'ink';
 import { DiffRenderer } from './DiffRenderer.js';
 import { RenderInline } from '../../utils/InlineMarkdownRenderer.js';
@@ -40,6 +40,14 @@ export const ToolConfirmationMessage: React.FC<
   terminalWidth,
 }) => {
   const { onConfirm } = confirmationDetails;
+  const requiresPin =
+    confirmationDetails.type === 'exec' && confirmationDetails.requiresPin;
+  const pinLength =
+    confirmationDetails.type === 'exec'
+      ? (confirmationDetails.pinLength ?? 6)
+      : 6;
+  const [pin, setPin] = useState('');
+  const [pinError, setPinError] = useState<string | null>(null);
 
   const isAlternateBuffer = useAlternateBuffer();
   const settings = useSettings();
@@ -67,26 +75,73 @@ export const ToolConfirmationMessage: React.FC<
     };
   }, [config]);
 
-  const handleConfirm = async (outcome: ToolConfirmationOutcome) => {
-    if (confirmationDetails.type === 'edit') {
-      if (config.getIdeMode() && isDiffingEnabled) {
-        const cliOutcome =
-          outcome === ToolConfirmationOutcome.Cancel ? 'rejected' : 'accepted';
-        await ideClient?.resolveDiffFromCli(
-          confirmationDetails.filePath,
-          cliOutcome,
-        );
+  useEffect(() => {
+    setPin('');
+    setPinError(null);
+  }, [confirmationDetails]);
+
+  const handleConfirm = useCallback(
+    async (outcome: ToolConfirmationOutcome) => {
+      if (requiresPin && outcome !== ToolConfirmationOutcome.Cancel) {
+        if (!/^\d+$/.test(pin) || pin.length !== pinLength) {
+          setPinError(`Enter a ${pinLength}-digit PIN to proceed.`);
+          return;
+        }
       }
-    }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    onConfirm(outcome);
-  };
+
+      setPinError(null);
+
+      if (confirmationDetails.type === 'exec' && requiresPin) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        onConfirm(outcome, { pin });
+        return;
+      }
+
+      if (confirmationDetails.type === 'edit') {
+        if (config.getIdeMode() && isDiffingEnabled) {
+          const cliOutcome =
+            outcome === ToolConfirmationOutcome.Cancel
+              ? 'rejected'
+              : 'accepted';
+          await ideClient?.resolveDiffFromCli(
+            confirmationDetails.filePath,
+            cliOutcome,
+          );
+        }
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      onConfirm(outcome);
+    },
+    [
+      config,
+      confirmationDetails,
+      ideClient,
+      isDiffingEnabled,
+      onConfirm,
+      pin,
+      pinLength,
+      requiresPin,
+    ],
+  );
 
   const isTrustedFolder = config.isTrustedFolder();
 
   useKeypress(
     (key) => {
       if (!isFocused) return;
+      if (requiresPin) {
+        if (key.name === 'backspace') {
+          setPin((prev) => prev.slice(0, Math.max(0, prev.length - 1)));
+          setPinError(null);
+          return;
+        }
+        if (typeof key.sequence === 'string' && /^\d$/.test(key.sequence)) {
+          setPin((prev) => (prev + key.sequence).slice(0, pinLength));
+          setPinError(null);
+          return;
+        }
+      }
       if (key.name === 'escape' || (key.ctrl && key.name === 'c')) {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         handleConfirm(ToolConfirmationOutcome.Cancel);
@@ -375,6 +430,28 @@ export const ToolConfirmationMessage: React.FC<
       <Box marginBottom={1} flexShrink={0}>
         <Text color={theme.text.primary}>{question}</Text>
       </Box>
+
+      {confirmationDetails.type === 'exec' && (
+        <Box flexDirection="column" marginBottom={1} flexShrink={0}>
+          {confirmationDetails.reviewLevel && (
+            <Text color={theme.text.secondary}>
+              Review level: {confirmationDetails.reviewLevel}
+              {confirmationDetails.requiresPin ? ' (PIN required)' : ''}
+            </Text>
+          )}
+          {confirmationDetails.explanation && (
+            <Text color={theme.text.secondary}>
+              {confirmationDetails.explanation}
+            </Text>
+          )}
+          {requiresPin && (
+            <Text color={theme.text.secondary}>
+              PIN: {'•'.repeat(pin.length).padEnd(pinLength, '_')}
+            </Text>
+          )}
+          {pinError && <Text color={theme.status.error}>{pinError}</Text>}
+        </Box>
+      )}
 
       {/* Select Input for Options */}
       <Box flexShrink={0}>

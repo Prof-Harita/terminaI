@@ -27,7 +27,10 @@ export {
   type ExecutionDecision,
   type ExecutionStrategy,
 } from './executionRouter.js';
-export { handleConfidence, type ConfidenceAction } from './confidenceHandler.js';
+export {
+  handleConfidence,
+  type ConfidenceAction,
+} from './confidenceHandler.js';
 export {
   detectEnvironment,
   getCeremonyMultiplier,

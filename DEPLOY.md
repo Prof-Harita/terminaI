@@ -1,6 +1,7 @@
 # terminaI Deployment & Testing Guide
 
-This guide describes how to build, run, and test the terminaI application locally.
+This guide describes how to build, run, and test the terminaI application
+locally.
 
 ## Prerequisites
 

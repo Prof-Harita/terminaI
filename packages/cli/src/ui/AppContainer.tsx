@@ -229,18 +229,18 @@ function resolveVoiceConfig(
     DEFAULT_VOICE_CONFIG.enabled;
   const pttKey = normalizePttKey(
     overrides?.pttKey ??
-    settingsVoice?.pushToTalk?.key ??
-    DEFAULT_VOICE_CONFIG.pttKey,
+      settingsVoice?.pushToTalk?.key ??
+      DEFAULT_VOICE_CONFIG.pttKey,
   );
   const sttProvider = normalizeSttProvider(
     overrides?.sttProvider ??
-    settingsVoice?.stt?.provider ??
-    DEFAULT_VOICE_CONFIG.sttProvider,
+      settingsVoice?.stt?.provider ??
+      DEFAULT_VOICE_CONFIG.sttProvider,
   );
   const ttsProvider = normalizeTtsProvider(
     overrides?.ttsProvider ??
-    settingsVoice?.tts?.provider ??
-    DEFAULT_VOICE_CONFIG.ttsProvider,
+      settingsVoice?.tts?.provider ??
+      DEFAULT_VOICE_CONFIG.ttsProvider,
   );
   const maxWords =
     overrides?.maxWords ??
@@ -800,7 +800,7 @@ Logging in with Google... Restarting terminaI to continue.
       settings.merged.security?.auth?.enforcedType &&
       settings.merged.security?.auth.selectedType &&
       settings.merged.security?.auth.enforcedType !==
-      settings.merged.security?.auth.selectedType
+        settings.merged.security?.auth.selectedType
     ) {
       onAuthError(
         `Authentication is enforced to be ${settings.merged.security?.auth.enforcedType}, but you are currently using ${settings.merged.security?.auth.selectedType}.`,
@@ -925,10 +925,11 @@ Logging in with Google... Restarting terminaI to continue.
       historyManager.addItem(
         {
           type: MessageType.INFO,
-          text: `Memory refreshed successfully. ${memoryContent.length > 0
+          text: `Memory refreshed successfully. ${
+            memoryContent.length > 0
               ? `Loaded ${memoryContent.length} characters from ${fileCount} file(s).`
               : 'No memory content found.'
-            }`,
+          }`,
         },
         Date.now(),
       );
@@ -954,7 +955,7 @@ Logging in with Google... Restarting terminaI to continue.
   }, [config, historyManager]);
 
   const cancelHandlerRef = useRef<(shouldRestorePrompt?: boolean) => void>(
-    () => { },
+    () => {},
   );
 
   const getPreferredEditor = useCallback(
@@ -1090,7 +1091,7 @@ Logging in with Google... Restarting terminaI to continue.
           );
           return;
         case 'REPLACE_INPUT':
-          submitQuery(action.text);
+          void submitQuery(action.text);
           return;
         case 'SPEAK_LAST_RESPONSE': {
           const repeatText = action.text;
@@ -1126,12 +1127,12 @@ Logging in with Google... Restarting terminaI to continue.
         }
         case 'PROCESS_NORMALLY':
         default:
-          submitQuery(action.text);
+          void submitQuery(action.text);
       }
     },
     [
       conversationStack,
-      historyManager.addItem,
+      historyManager,
       submitQuery,
       voiceController,
       voiceEnabled,
@@ -1169,9 +1170,7 @@ Logging in with Google... Restarting terminaI to continue.
       return;
     }
     void voiceController.speak(spokenText).catch((error) => {
-      debugLogger.warn(
-        `Voice confirmation failed: ${getErrorMessage(error)}`,
-      );
+      debugLogger.warn(`Voice confirmation failed: ${getErrorMessage(error)}`);
     });
   }, [
     confirmationRequest,
@@ -1368,9 +1367,9 @@ Logging in with Google... Restarting terminaI to continue.
   }, []);
   const shouldShowIdePrompt = Boolean(
     currentIDE &&
-    !config.getIdeMode() &&
-    !settings.merged.ide?.hasSeenNudge &&
-    !idePromptAnswered,
+      !config.getIdeMode() &&
+      !settings.merged.ide?.hasSeenNudge &&
+      !idePromptAnswered,
   );
 
   const [showErrorDetails, setShowErrorDetails] = useState<boolean>(false);
@@ -1553,8 +1552,7 @@ Logging in with Google... Restarting terminaI to continue.
 
   const handleGlobalKeypress = useCallback(
     (key: Key) => {
-      const voiceKeyPressed =
-        voiceEnabled && isPttKey(key, voiceConfig.pttKey);
+      const voiceKeyPressed = voiceEnabled && isPttKey(key, voiceConfig.pttKey);
       if (voiceKeyPressed) {
         if (voiceController?.isSpeaking()) {
           voiceStateMachine?.transition({ type: 'USER_VOICE_DETECTED' });

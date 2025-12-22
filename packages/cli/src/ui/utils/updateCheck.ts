@@ -21,7 +21,6 @@ export interface UpdateObject {
   update: UpdateInfo;
 }
 
-
 export async function checkForUpdates(
   _settings: LoadedSettings,
 ): Promise<UpdateObject | null> {

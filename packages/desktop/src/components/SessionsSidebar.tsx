@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { useSessions } from '../hooks/useSessions';
 import { SessionCard } from './SessionCard';
 
@@ -28,7 +34,13 @@ export function SessionsSidebar() {
       >
         Sessions ({sessions.length})
       </h2>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'var(--space-3)',
+        }}
+      >
         {sessions.map((session) => (
           <SessionCard
             key={session.name}

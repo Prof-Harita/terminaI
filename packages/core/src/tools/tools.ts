@@ -684,16 +684,29 @@ export interface ToolEditConfirmationDetails {
 export interface ToolConfirmationPayload {
   // used to override `modifiedProposedContent` for modifiable tools in the
   // inline modify flow
-  newContent: string;
+  newContent?: string;
+  /** User-entered PIN for Level C confirmations */
+  pin?: string;
 }
 
 export interface ToolExecuteConfirmationDetails {
   type: 'exec';
   title: string;
-  onConfirm: (outcome: ToolConfirmationOutcome) => Promise<void>;
+  onConfirm: (
+    outcome: ToolConfirmationOutcome,
+    payload?: ToolConfirmationPayload,
+  ) => Promise<void>;
   command: string;
   rootCommand: string;
   risk?: RiskLevel;
+  /** Approval level required (A=no approval, B=click, C=click+PIN) */
+  reviewLevel?: 'A' | 'B' | 'C';
+  /** Whether this action requires PIN verification */
+  requiresPin?: boolean;
+  /** Length of PIN required (typically 6) */
+  pinLength?: number;
+  /** Plain-English explanation of ramifications */
+  explanation?: string;
 }
 
 export interface ToolMcpConfirmationDetails {
@@ -711,6 +724,13 @@ export interface ToolInfoConfirmationDetails {
   onConfirm: (outcome: ToolConfirmationOutcome) => Promise<void>;
   prompt: string;
   urls?: string[];
+}
+
+export interface ToolConfirmation {
+  details: ToolCallConfirmationDetails;
+  outcome: ToolConfirmationOutcome;
+  /** User-entered PIN for Level C confirmations */
+  pin?: string;
 }
 
 export type ToolCallConfirmationDetails =

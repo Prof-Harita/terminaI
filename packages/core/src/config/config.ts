@@ -337,6 +337,9 @@ export interface ConfigParameters {
   previewFeatures?: boolean;
   enableAgents?: boolean;
   experimentalJitContext?: boolean;
+  security?: {
+    approvalPin?: string;
+  };
 }
 
 export class Config {
@@ -462,6 +465,7 @@ export class Config {
   private readonly experimentalJitContext: boolean;
   private contextManager?: ContextManager;
   private terminalBackground: string | undefined = undefined;
+  private readonly approvalPin: string;
 
   constructor(params: ConfigParameters) {
     this.sessionId = params.sessionId;
@@ -615,6 +619,7 @@ export class Config {
     this.disableYoloMode = params.disableYoloMode ?? false;
     this.hooks = params.hooks;
     this.experiments = params.experiments;
+    this.approvalPin = params.security?.approvalPin ?? '000000';
 
     if (params.contextFileName) {
       setGeminiMdFilename(params.contextFileName);
@@ -1139,6 +1144,14 @@ export class Config {
 
   getApprovalMode(): ApprovalMode {
     return this.approvalMode;
+  }
+
+  /**
+   * Get the 6-digit PIN required for Level C (high-risk) command approvals.
+   * Defaults to "000000" if not configured.
+   */
+  getApprovalPin(): string {
+    return this.approvalPin;
   }
 
   setApprovalMode(mode: ApprovalMode): void {

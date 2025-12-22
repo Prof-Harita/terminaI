@@ -27,8 +27,8 @@ Protocol (MCP)**.
 
 ### 2. Discovery mechanism: The port file
 
-For terminaI to connect, it needs to discover which IDE instance it's running
-in and what port your server is using. The plugin **MUST** facilitate this by
+For terminaI to connect, it needs to discover which IDE instance it's running in
+and what port your server is using. The plugin **MUST** facilitate this by
 creating a "discovery file."
 
 - **How the CLI finds the file:** The CLI determines the Process ID (PID) of the

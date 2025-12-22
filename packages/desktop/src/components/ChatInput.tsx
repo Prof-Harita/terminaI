@@ -1,5 +1,13 @@
-import { useState, KeyboardEvent, RefObject } from 'react';
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import type { KeyboardEvent, RefObject } from 'react';
+import { useState } from 'react';
 import { VoiceOrb } from './VoiceOrb';
+import { useSettingsStore } from '../stores/settingsStore';
 
 interface Props {
   onSend: (text: string) => void;
@@ -9,6 +17,7 @@ interface Props {
 
 export function ChatInput({ onSend, disabled, inputRef }: Props) {
   const [input, setInput] = useState('');
+  const voiceEnabled = useSettingsStore((s) => s.voiceEnabled);
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -28,9 +37,13 @@ export function ChatInput({ onSend, disabled, inputRef }: Props) {
   };
 
   const handleVoiceTranscript = (text: string) => {
-    // Append transcript to input or send directly
     if (text.trim()) {
-      setInput(prev => prev ? `${prev} ${text}` : text);
+      if (voiceEnabled && !input.trim()) {
+        onSend(text.trim());
+        setInput('');
+        return;
+      }
+      setInput((prev) => (prev ? `${prev} ${text}` : text));
     }
   };
 
@@ -81,4 +94,3 @@ export function ChatInput({ onSend, disabled, inputRef }: Props) {
     </div>
   );
 }
-

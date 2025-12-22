@@ -1,65 +1,96 @@
-# Voice Mode Guide
+# Voice Guide
 
-Control terminaI hands-free with voice commands.
+terminaI supports offline voice (download once → offline) via the Desktop app.
 
 ## Overview
 
-Voice Mode enables push-to-talk interaction with terminaI using speech recognition (Deepgram STT) and text-to-speech for responses.
+There are two “voice surfaces” in this repo:
 
-**Status:** ✅ Available in Stable Core v0.21
+- **Desktop app (recommended)**: offline STT+TTS with natural turn-taking
+  (barge-in).
+- **CLI**: TTS spoken replies and spoken confirmations.
 
-## Activation
+## Install Offline Voice (one time)
 
-### Toggle Voice Mode
+Run this once (requires internet during install):
 
-Press **Spacebar** or **Ctrl+Space** to activate push-to-talk.
-
-Alternatively:
 ```bash
-terminai
-> /voice
+terminai voice install
 ```
 
-## Usage
+This installs voice dependencies into:
 
-1. **Press and Hold** Spacebar or Ctrl+Space
-2. **Speak your command**: "What processes are running?"
-3. **Release** the key
-4. terminaI transcribes, processes, and responds with voice
+- `~/.terminai/voice`
+  - `whisper` / `whisper.exe` + `ggml-base.en.bin` (STT)
+  - `piper` / `piper.exe` + `en_US-lessac-medium.onnx` (TTS)
 
-## Examples
+After install, voice runs offline.
 
-🎤 *"What's using all my disk space?"*  
-🎤 *"Start the build and notify me when done"*  
-🎤 *"Show me the status of my running processes"*
+## CLI Voice (TTS)
 
-## Configuration
+### Enable
 
-Voice mode settings can be configured in `.gemini/config.yaml`:
-
-```yaml
-voice:
-  enabled: true
-  stt_provider: deepgram
-  tts_enabled: true
+```bash
+terminai --voice
 ```
 
-See [upstream voice configuration](../docs/get-started/configuration.md) for advanced options.
+Or set `voice.enabled` in your settings file (default path:
+`~/.gemini/settings.json`).
+
+### What it does
+
+- Speaks a short “spoken reply” for assistant responses.
+- Speaks confirmation prompts.
+- Lets you interrupt speech (barge-in) with the PTT key.
+
+### Push-to-talk note
+
+The CLI currently cannot do true “press-and-hold to record” in a normal
+terminal. Today, the PTT key is used mainly for **interrupting speech**.
+
+## Desktop Voice (Tauri)
+
+The Desktop app supports:
+
+- Offline STT: `whisper.cpp`
+- Offline TTS: `piper`
+- Natural turn-taking: starting to talk interrupts TTS immediately (barge-in)
+- Spoken confirmations (including PIN prompts for Level C commands)
+- Volume control (Desktop Settings → Voice volume)
+
+### Use it
+
+1. Start the Desktop app:
+
+```bash
+npm -w packages/desktop dev
+```
+
+2. In Desktop Settings:
+
+- Enable **Voice**
+- Connect to the A2A agent backend (see `web-remote.md`)
+
+3. Hold **Space** to talk.
+
+## TTS voice model
+
+Desktop TTS uses a local piper model at
+`~/.terminai/voice/en_US-lessac-medium.onnx`.
+
+If you want a different voice (e.g. a deeper voice), you can replace that file
+with another piper English `.onnx` voice model (keeping the same filename).
+
+## Configuration (CLI)
+
+Settings live in `~/.gemini/settings.json` (same as upstream). Relevant keys:
+
+- `voice.enabled`
+- `voice.pushToTalk.key` (`space` or `ctrl+space`)
+- `voice.tts.provider` (`auto` or `none`)
+- `voice.spokenReply.maxWords`
 
 ## Troubleshooting
 
-### Microphone Not Working
-
-Ensure your OS has granted microphone permissions:
-- **Linux**: Check PulseAudio/ALSA settings
-- **macOS**: System Preferences → Security & Privacy → Microphone
-- **Windows**: Settings → Privacy → Microphone
-
-### STT Not Transcribing
-
-Verify Deepgram API key is set:
-```bash
-export DEEPGRAM_API_KEY="your-key"
-```
-
-For more help, see [Troubleshooting](../docs/troubleshooting.md).
+- If STT/TTS fails in Desktop, ensure `terminai voice install` completed and
+  that `~/.terminai/voice` contains `whisper` and `piper`.

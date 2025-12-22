@@ -12,6 +12,7 @@ import { mcpCommand } from '../commands/mcp.js';
 import type { OutputFormat } from '@google/gemini-cli-core';
 import { extensionsCommand } from '../commands/extensions.js';
 import { hooksCommand } from '../commands/hooks.js';
+import { voiceCommand } from '../commands/voice.js';
 import {
   Config,
   setGeminiMdFilename as setServerGeminiMdFilename,
@@ -345,6 +346,8 @@ export async function parseArguments(settings: Settings): Promise<CliArgs> {
     )
     // Register MCP subcommands
     .command(mcpCommand)
+    // Register Voice subcommands
+    .command(voiceCommand)
     // Ensure validation flows through .fail() for clean UX
     .fail((msg, err) => {
       if (err) throw err;

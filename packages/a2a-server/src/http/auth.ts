@@ -61,8 +61,14 @@ export function createAuthMiddleware(
 ): express.RequestHandler {
   const bypassPaths = options?.bypassPaths ?? new Set();
   return (req, res, next) => {
-    if (req.method === 'OPTIONS' || bypassPaths.has(req.path)) {
+    if (req.method === 'OPTIONS') {
       return next();
+    }
+
+    for (const path of bypassPaths) {
+      if (req.path === path || req.path.startsWith(`${path}/`)) {
+        return next();
+      }
     }
 
     const token = parseBearerToken(req.header('authorization'));

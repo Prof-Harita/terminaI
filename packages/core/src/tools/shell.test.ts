@@ -481,27 +481,35 @@ describe('ShellTool', () => {
   });
 
   describe('shouldConfirmExecute', () => {
-    it('should request confirmation for a new command and allowlist it on "Always"', async () => {
-      const params = { command: 'npm install' };
-      const invocation = shellTool.build(params);
+    it('should not require confirmation for Level A commands', async () => {
+      const invocation = shellTool.build({ command: 'ls' });
+      const confirmation = await invocation.shouldConfirmExecute(
+        new AbortController().signal,
+      );
+      expect(confirmation).toBe(false);
+    });
+
+    it('should require confirmation for Level B commands (no allowlist bypass)', async () => {
+      const invocation = shellTool.build({ command: 'npm install' });
       const confirmation = await invocation.shouldConfirmExecute(
         new AbortController().signal,
       );
 
       expect(confirmation).not.toBe(false);
       expect(confirmation && confirmation.type).toBe('exec');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((confirmation as any).reviewLevel).toBe('B');
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (confirmation as any).onConfirm(
         ToolConfirmationOutcome.ProceedAlways,
       );
 
-      // Should now be allowlisted
       const secondInvocation = shellTool.build({ command: 'npm test' });
       const secondConfirmation = await secondInvocation.shouldConfirmExecute(
         new AbortController().signal,
       );
-      expect(secondConfirmation).toBe(false);
+      expect(secondConfirmation).not.toBe(false);
     });
 
     it('should throw an error if validation fails', () => {

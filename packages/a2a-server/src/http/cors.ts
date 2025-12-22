@@ -28,7 +28,19 @@ export function createCorsAllowlist(
       return next();
     }
 
-    if (!allowlist.has(origin)) {
+    const host = req.get('host');
+    // const protocol = req.secure ? 'https' : 'http'; // Unused
+    // Simple check: if origin matches current host, allow it.
+    // We try both http and https to be robust, or trust req.protocol if configured.
+    // For local dev (http), matching http://${host} is sufficient.
+    const allowedSelf = `http://${host}`;
+    const allowedSelfSecure = `https://${host}`;
+
+    if (
+      !allowlist.has(origin) &&
+      origin !== allowedSelf &&
+      origin !== allowedSelfSecure
+    ) {
       return res.status(403).json({ error: 'Origin not allowed' });
     }
 

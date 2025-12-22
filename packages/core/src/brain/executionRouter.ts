@@ -20,9 +20,7 @@ export interface ExecutionDecision {
   warningMessage?: string;
 }
 
-export function routeExecution(
-  assessment: RiskAssessment,
-): ExecutionDecision {
+export function routeExecution(assessment: RiskAssessment): ExecutionDecision {
   const { overallRisk, dimensions, reasoning } = assessment;
 
   switch (overallRisk) {

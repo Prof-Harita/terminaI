@@ -1,4 +1,11 @@
-import { useState, useRef, useEffect, ReactNode } from 'react';
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import type { ReactNode } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 interface Props {
   leftPanel: ReactNode;
@@ -53,8 +60,9 @@ export function SplitLayout({
       {rightPanelVisible && (
         <>
           <div
-            className={`w-1 cursor-col-resize transition-colors ${isDragging ? 'bg-cyan-500' : 'bg-gray-800 hover:bg-cyan-500'
-              }`}
+            className={`w-1 cursor-col-resize transition-colors ${
+              isDragging ? 'bg-cyan-500' : 'bg-gray-800 hover:bg-cyan-500'
+            }`}
             onMouseDown={() => setIsDragging(true)}
           />
           <div

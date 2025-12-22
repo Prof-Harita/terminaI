@@ -113,6 +113,7 @@ export interface ParsedCommandDetail {
 interface CommandParseResult {
   details: ParsedCommandDetail[];
   hasError: boolean;
+  mode?: 'tree-sitter' | 'fallback' | 'powershell';
 }
 
 const POWERSHELL_COMMAND_ENV = '__GCLI_POWERSHELL_COMMAND__';
@@ -297,12 +298,12 @@ function parseBashCommandDetails(command: string): CommandParseResult | null {
     initializeShellParsers().catch(() => {
       // The failure path is surfaced via treeSitterInitializationError.
     });
-    return null;
+    return fallbackParseBashCommandDetails(command);
   }
 
   const tree = parseCommandTree(command);
   if (!tree) {
-    return null;
+    return fallbackParseBashCommandDetails(command);
   }
 
   const details = collectCommandDetails(tree.rootNode, command);
@@ -338,6 +339,7 @@ function parseBashCommandDetails(command: string): CommandParseResult | null {
   return {
     details,
     hasError,
+    mode: 'tree-sitter',
   };
 }
 
@@ -350,6 +352,7 @@ function parsePowerShellCommandDetails(
     return {
       details: [],
       hasError: true,
+      mode: 'powershell',
     };
   }
 
@@ -417,10 +420,342 @@ function parsePowerShellCommandDetails(
     return {
       details,
       hasError: details.length === 0,
+      mode: 'powershell',
     };
   } catch {
     return null;
   }
+}
+
+function fallbackParseBashCommandDetails(command: string): CommandParseResult {
+  const trimmed = command.trim();
+  if (!trimmed) {
+    return { details: [], hasError: true, mode: 'fallback' };
+  }
+
+  // Block prompt transformations (${var@P}) even while the tree-sitter parser is initializing.
+  // These transformations can execute commands as part of parameter expansion.
+  if (/\$\{[^}]*@[pP][^}]*\}/.test(command)) {
+    return { details: [], hasError: true, mode: 'fallback' };
+  }
+
+  const details: ParsedCommandDetail[] = [];
+  let hasError = false;
+
+  const pushSegment = (segment: string) => {
+    const text = segment.trim();
+    if (!text) {
+      hasError = true;
+      return;
+    }
+    const name = fallbackExtractCommandName(text);
+    if (name) {
+      details.push({ name, text });
+    } else {
+      // Keep the segment text even if we couldn't confidently extract the name.
+      details.push({ name: '', text });
+      hasError = true;
+    }
+  };
+
+  const splitTopLevel = (input: string) => {
+    let inSingle = false;
+    let inDouble = false;
+    let escaped = false;
+    let start = 0;
+
+    const flushUntil = (end: number) => {
+      pushSegment(input.slice(start, end));
+      start = end;
+    };
+
+    for (let i = 0; i < input.length; i += 1) {
+      const ch = input[i];
+
+      if (escaped) {
+        escaped = false;
+        continue;
+      }
+
+      if (ch === '\\\\') {
+        if (inSingle) {
+          continue;
+        }
+        escaped = true;
+        continue;
+      }
+
+      if (ch === "'" && !inDouble) {
+        inSingle = !inSingle;
+        continue;
+      }
+      if (ch === '"' && !inSingle) {
+        inDouble = !inDouble;
+        continue;
+      }
+
+      if (inSingle || inDouble) {
+        continue;
+      }
+
+      // Command chaining and pipelines.
+      const next = input[i + 1];
+      if (ch === '&' && next === '&') {
+        flushUntil(i);
+        start = i + 2;
+        i += 1;
+        continue;
+      }
+      if (ch === '|' && next === '|') {
+        flushUntil(i);
+        start = i + 2;
+        i += 1;
+        continue;
+      }
+      if (ch === ';' || ch === '\n') {
+        flushUntil(i);
+        start = i + 1;
+        continue;
+      }
+      if (ch === '|') {
+        // Avoid treating "||" as a pipeline (handled above).
+        flushUntil(i);
+        // Support |& (pipe both stdout and stderr).
+        start = next === '&' ? i + 2 : i + 1;
+        if (next === '&') {
+          i += 1;
+        }
+        continue;
+      }
+      if (ch === '&') {
+        // Standalone background operator. Avoid splitting on redirections like 2>&1.
+        const prev = i > 0 ? input[i - 1] : '';
+        const looksLikeRedirection = prev === '>';
+        if (!looksLikeRedirection) {
+          flushUntil(i);
+          start = i + 1;
+        }
+      }
+    }
+
+    if (inSingle || inDouble || escaped) {
+      hasError = true;
+    }
+
+    if (start < input.length) {
+      pushSegment(input.slice(start));
+    } else if (start === input.length) {
+      // Command ended on an operator.
+      hasError = true;
+    }
+  };
+
+  splitTopLevel(command);
+
+  // Best-effort extraction of commands hidden in substitutions (e.g. $(...), `...`, <(...), >(...)).
+  for (const sub of fallbackExtractSubcommandStrings(command)) {
+    const parsed = fallbackParseBashCommandDetails(sub);
+    details.push(...parsed.details);
+    hasError = hasError || parsed.hasError;
+  }
+
+  return {
+    details,
+    hasError: hasError || details.length === 0,
+    mode: 'fallback',
+  };
+}
+
+function fallbackExtractCommandName(segment: string): string | null {
+  let index = 0;
+
+  const readToken = (): string | null => {
+    while (index < segment.length && /\s/.test(segment[index])) {
+      index += 1;
+    }
+    if (index >= segment.length) return null;
+
+    let inSingle = false;
+    let inDouble = false;
+    let escaped = false;
+    const start = index;
+
+    while (index < segment.length) {
+      const ch = segment[index];
+      if (escaped) {
+        escaped = false;
+        index += 1;
+        continue;
+      }
+      if (ch === '\\\\' && !inSingle) {
+        escaped = true;
+        index += 1;
+        continue;
+      }
+      if (ch === "'" && !inDouble) {
+        inSingle = !inSingle;
+        index += 1;
+        continue;
+      }
+      if (ch === '"' && !inSingle) {
+        inDouble = !inDouble;
+        index += 1;
+        continue;
+      }
+      if (!inSingle && !inDouble && /\s/.test(ch)) {
+        break;
+      }
+      index += 1;
+    }
+
+    const token = segment.slice(start, index).trim();
+    return token || null;
+  };
+
+  for (let i = 0; i < 20; i += 1) {
+    const token = readToken();
+    if (!token) {
+      return null;
+    }
+
+    // Skip leading environment assignments (FOO=bar).
+    if (/^[A-Za-z_][A-Za-z0-9_]*=/.test(token)) {
+      continue;
+    }
+
+    return normalizeCommandName(token);
+  }
+
+  return null;
+}
+
+function fallbackExtractSubcommandStrings(command: string): string[] {
+  const extracted: string[] = [];
+  const source = command;
+
+  let inSingle = false;
+  let inDouble = false;
+  let escaped = false;
+
+  const extractParenGroup = (
+    startIndex: number,
+  ): { inner: string; end: number } | null => {
+    let depth = 1;
+    let i = startIndex;
+    let localInSingle = false;
+    let localInDouble = false;
+    let localEscaped = false;
+
+    while (i < source.length) {
+      const ch = source[i];
+      if (localEscaped) {
+        localEscaped = false;
+        i += 1;
+        continue;
+      }
+      if (ch === '\\\\' && !localInSingle) {
+        localEscaped = true;
+        i += 1;
+        continue;
+      }
+      if (ch === "'" && !localInDouble) {
+        localInSingle = !localInSingle;
+        i += 1;
+        continue;
+      }
+      if (ch === '"' && !localInSingle) {
+        localInDouble = !localInDouble;
+        i += 1;
+        continue;
+      }
+      if (localInSingle || localInDouble) {
+        i += 1;
+        continue;
+      }
+      if (ch === '(') {
+        depth += 1;
+      } else if (ch === ')') {
+        depth -= 1;
+        if (depth === 0) {
+          return { inner: source.slice(startIndex, i), end: i + 1 };
+        }
+      }
+      i += 1;
+    }
+
+    return null;
+  };
+
+  for (let i = 0; i < source.length; i += 1) {
+    const ch = source[i];
+    if (escaped) {
+      escaped = false;
+      continue;
+    }
+
+    if (ch === '\\\\' && !inSingle) {
+      escaped = true;
+      continue;
+    }
+    if (ch === "'" && !inDouble) {
+      inSingle = !inSingle;
+      continue;
+    }
+    if (ch === '"' && !inSingle) {
+      inDouble = !inDouble;
+      continue;
+    }
+    if (inSingle) {
+      continue;
+    }
+
+    // $(
+    if (ch === '$' && source[i + 1] === '(') {
+      const group = extractParenGroup(i + 2);
+      if (group) {
+        extracted.push(group.inner);
+        i = group.end - 1;
+      }
+      continue;
+    }
+
+    // <( or >(
+    if ((ch === '<' || ch === '>') && source[i + 1] === '(') {
+      const group = extractParenGroup(i + 2);
+      if (group) {
+        extracted.push(group.inner);
+        i = group.end - 1;
+      }
+      continue;
+    }
+
+    // Backticks
+    if (ch === '`') {
+      let j = i + 1;
+      let backtickEscaped = false;
+      while (j < source.length) {
+        const cj = source[j];
+        if (backtickEscaped) {
+          backtickEscaped = false;
+          j += 1;
+          continue;
+        }
+        if (cj === '\\\\') {
+          backtickEscaped = true;
+          j += 1;
+          continue;
+        }
+        if (cj === '`') {
+          extracted.push(source.slice(i + 1, j));
+          i = j;
+          break;
+        }
+        j += 1;
+      }
+    }
+  }
+
+  return extracted.map((s) => s.trim()).filter(Boolean);
 }
 
 export function parseCommandDetails(

@@ -45,7 +45,9 @@ function VoiceChoice({ enabled }: { enabled: boolean }) {
   return (
     <Box flexDirection="column" marginTop={1}>
       <Text color={enabled ? 'cyan' : 'gray'}>
-        {enabled ? '› Enable voice (push-to-talk)' : '  Enable voice (push-to-talk)'}
+        {enabled
+          ? '› Enable voice (push-to-talk)'
+          : '  Enable voice (push-to-talk)'}
       </Text>
       <Text color={!enabled ? 'cyan' : 'gray'}>
         {!enabled ? '› Keep text-only for now' : '  Keep text-only for now'}
@@ -54,17 +56,15 @@ function VoiceChoice({ enabled }: { enabled: boolean }) {
   );
 }
 
-export const Onboarding: FC<{ onComplete: (result: OnboardingResult) => void }> = ({
-  onComplete,
-}) => {
+export const Onboarding: FC<{
+  onComplete: (result: OnboardingResult) => void;
+}> = ({ onComplete }) => {
   const [step, setStep] = useState<Step>('welcome');
   const [approvalMode, setApprovalMode] =
     useState<OnboardingResult['approvalMode']>('default');
   const [voiceEnabled, setVoiceEnabled] = useState(false);
 
-  const stepIndex = useMemo(() => {
-    return ['welcome', 'approval', 'voice', 'ready'].indexOf(step);
-  }, [step]);
+  const stepIndex = useMemo(() => ['welcome', 'approval', 'voice', 'ready'].indexOf(step), [step]);
 
   useInput((_, key) => {
     if (key.return) {
@@ -88,12 +88,19 @@ export const Onboarding: FC<{ onComplete: (result: OnboardingResult) => void }> 
         setApprovalMode(next);
       } else if (key.rightArrow || key.downArrow) {
         const currentIdx = approvalModes.indexOf(approvalMode);
-        const next = approvalModes[Math.min(approvalModes.length - 1, currentIdx + 1)];
+        const next =
+          approvalModes[Math.min(approvalModes.length - 1, currentIdx + 1)];
         setApprovalMode(next);
       }
     }
     if (step === 'voice') {
-      if (key.leftArrow || key.rightArrow || key.upArrow || key.downArrow || key.tab) {
+      if (
+        key.leftArrow ||
+        key.rightArrow ||
+        key.upArrow ||
+        key.downArrow ||
+        key.tab
+      ) {
         setVoiceEnabled((prev) => !prev);
       }
     }
@@ -115,7 +122,8 @@ export const Onboarding: FC<{ onComplete: (result: OnboardingResult) => void }> 
       {step === 'welcome' && (
         <Box flexDirection="column" gap={1}>
           <Text>
-            Welcome! Let&apos;s configure safety and voice so TermAI matches how you work.
+            Welcome! Let&apos;s configure safety and voice so TermAI matches how
+            you work.
           </Text>
           <Text dimColor>Press Enter to continue.</Text>
         </Box>
@@ -125,7 +133,8 @@ export const Onboarding: FC<{ onComplete: (result: OnboardingResult) => void }> 
         <Box flexDirection="column">
           <Text>Choose your approval style.</Text>
           <Text dimColor>
-            Use ↑/↓ to pick. Enter to continue. You can change this later in settings.
+            Use ↑/↓ to pick. Enter to continue. You can change this later in
+            settings.
           </Text>
           <ApprovalChoice selected={approvalMode} />
         </Box>
@@ -144,7 +153,8 @@ export const Onboarding: FC<{ onComplete: (result: OnboardingResult) => void }> 
           <Text>All set. We&apos;ll launch the CLI with your choices.</Text>
           <Box flexDirection="column">
             <Text>
-              • Approvals: {approvalMode === 'default'
+              • Approvals:{' '}
+              {approvalMode === 'default'
                 ? 'Prompt before actions'
                 : approvalMode === 'preview'
                   ? 'Preview only'

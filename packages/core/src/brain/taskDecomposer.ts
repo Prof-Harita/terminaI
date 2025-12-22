@@ -50,8 +50,8 @@ interface DecompositionResponse {
 
 function parseResponseText(result: unknown): DecompositionResponse {
   const text =
-    typeof (result as { response?: { text?: () => string } }).response
-      ?.text === 'function'
+    typeof (result as { response?: { text?: () => string } }).response?.text ===
+    'function'
       ? (result as { response: { text: () => string } }).response.text()
       : (result as { response?: { text?: string } }).response?.text;
 

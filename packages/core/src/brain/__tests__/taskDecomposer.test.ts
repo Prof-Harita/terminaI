@@ -12,10 +12,7 @@ vi.mock('../riskAssessor.js', () => ({
   assessRisk: mockAssessRisk,
 }));
 
-import {
-  assessDecomposedTask,
-  decomposeTask,
-} from '../taskDecomposer.js';
+import { assessDecomposedTask, decomposeTask } from '../taskDecomposer.js';
 
 describe('taskDecomposer', () => {
   beforeEach(() => {
@@ -89,11 +86,9 @@ describe('taskDecomposer', () => {
       suggestedStrategy: 'plan-snapshot',
     });
 
-    const assessed = await assessDecomposedTask(
-      task,
-      'system',
-      { generateContent: vi.fn() },
-    );
+    const assessed = await assessDecomposedTask(task, 'system', {
+      generateContent: vi.fn(),
+    });
 
     expect(assessed.aggregateRisk).toBe('critical');
     expect(assessed.highestRiskStep).toBe('step-2');

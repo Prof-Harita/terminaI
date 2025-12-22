@@ -1,0 +1,34 @@
+
+ RUN  v3.2.4 /home/profharita/Code/termAI/packages/a2a-server
+      Coverage enabled with v8
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/http/app.test.ts [ src/http/app.test.ts ]
+Error: Failed to resolve entry for package "@google/gemini-cli-core". The package may have incorrect main/module/exports specified in its package.json.
+  Plugin: vite:import-analysis
+  File: /home/profharita/Code/termAI/packages/a2a-server/src/http/app.test.ts:8:0
+  34 |    };
+  35 |  });
+  36 |  const __vi_import_0__ = await import("@google/gemini-cli-core");
+     |                                       ^
+  37 |  const __vi_import_1__ = await import("supertest");
+  38 |  const __vi_import_2__ = await import("./app.js");
+ ❯ packageEntryFailure ../../node_modules/vite/dist/node/chunks/config.js:33435:32
+ ❯ resolvePackageEntry ../../node_modules/vite/dist/node/chunks/config.js:33432:2
+ ❯ tryNodeResolve ../../node_modules/vite/dist/node/chunks/config.js:33335:70
+ ❯ ResolveIdContext.handler ../../node_modules/vite/dist/node/chunks/config.js:33174:16
+ ❯ EnvironmentPluginContainer.resolveId ../../node_modules/vite/dist/node/chunks/config.js:29336:56
+ ❯ TransformPluginContext.resolve ../../node_modules/vite/dist/node/chunks/config.js:29548:13
+ ❯ normalizeUrl ../../node_modules/vite/dist/node/chunks/config.js:27730:22
+ ❯ ../../node_modules/vite/dist/node/chunks/config.js:27796:32
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  18:12:32
+   Duration  403ms (transform 9ms, setup 0ms, collect 0ms, tests 0ms, environment 0ms, prepare 50ms)
+

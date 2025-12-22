@@ -5,7 +5,8 @@
  */
 
 import { render } from 'ink-testing-library';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { act } from 'react-dom/test-utils';
 import { ModelDialog } from './ModelDialog.js';
 import { ConfigContext } from '../contexts/ConfigContext.js';
 import { KeypressProvider } from '../contexts/KeypressContext.js';
@@ -40,6 +41,7 @@ vi.mock('@google/gemini-cli-core', async () => {
 });
 
 describe('<ModelDialog />', () => {
+  const renders: Array<ReturnType<typeof render>> = [];
   const mockSetModel = vi.fn();
   const mockGetModel = vi.fn();
   const mockGetPreviewFeatures = vi.fn();
@@ -74,17 +76,31 @@ describe('<ModelDialog />', () => {
     });
   });
 
-  const renderComponent = (contextValue = mockConfig as Config) =>
-    render(
-      <KeypressProvider>
-        <ConfigContext.Provider value={contextValue}>
-          <ModelDialog onClose={mockOnClose} />
-        </ConfigContext.Provider>
-      </KeypressProvider>,
-    );
+  afterEach(() => {
+    for (const r of renders.splice(0)) {
+      act(() => r.unmount());
+    }
+  });
 
-  const waitForUpdate = () =>
-    new Promise((resolve) => setTimeout(resolve, 150));
+  const renderComponent = (contextValue = mockConfig as Config) => {
+    let r!: ReturnType<typeof render>;
+    act(() => {
+      r = render(
+        <KeypressProvider>
+          <ConfigContext.Provider value={contextValue}>
+            <ModelDialog onClose={mockOnClose} />
+          </ConfigContext.Provider>
+        </KeypressProvider>,
+      );
+    });
+    renders.push(r);
+    return r;
+  };
+
+  const waitForUpdate = (ms = 150) =>
+    act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, ms));
+    });
 
   it('renders the initial "main" view correctly', () => {
     const { lastFrame } = renderComponent();

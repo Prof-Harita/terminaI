@@ -1,5 +1,17 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 export interface CliEvent {
-  type: 'text' | 'tool_call' | 'tool_result' | 'confirmation' | 'error' | 'done';
+  type:
+    | 'text'
+    | 'tool_call'
+    | 'tool_result'
+    | 'confirmation'
+    | 'error'
+    | 'done';
   content?: string;
   toolName?: string;
   toolArgs?: Record<string, unknown>;
@@ -12,6 +24,8 @@ export interface PendingConfirmation {
   description: string;
   command: string;
   riskLevel: string;
+  requiresPin?: boolean;
+  pinLength?: number;
 }
 
 export interface Progress {
@@ -28,4 +42,3 @@ export interface Message {
   pendingConfirmation?: PendingConfirmation;
   progress?: Progress;
 }
-

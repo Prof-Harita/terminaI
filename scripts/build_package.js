@@ -44,6 +44,22 @@ if (packageName === 'core') {
   }
 }
 
+// Copy web-client for the a2a-server package
+if (packageName === 'a2a-server') {
+  const clientSource = join(
+    process.cwd(),
+    '..',
+    '..',
+    'packages',
+    'web-client',
+  );
+  const clientTarget = join(process.cwd(), 'dist', 'web-client');
+  if (existsSync(clientSource)) {
+    cpSync(clientSource, clientTarget, { recursive: true, dereference: true });
+    console.log('Copied web-client to dist/web-client');
+  }
+}
+
 // touch dist/.last_build
 writeFileSync(join(process.cwd(), 'dist', '.last_build'), '');
 process.exit(0);
