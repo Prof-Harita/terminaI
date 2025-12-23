@@ -1,13 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`<AppHeader /> > should not render the banner when no flags are set 1`] = `
-"
-      __                      _               _
-     / /____  _________ ___  (_)___  ____ _  | |
-    / __/ _ \\/ ___/ __ \`__ \\/ / __ \\/ __ \`/  | |
-   / /_/  __/ /  / / / / / / / / / / /_/ /  | |
-   \\__/___/_/  /_/ /_/ /_/_/_/ /_/__,_/   |_|
-
+"t  e  r  m  i  n  aI
 Tips for getting started:
 1. Ask questions, edit files, or run commands.
 2. Be specific for the best results.
@@ -16,13 +10,7 @@ Tips for getting started:
 `;
 
 exports[`<AppHeader /> > should not render the banner when previewFeatures is enabled 1`] = `
-"
-      __                      _               _
-     / /____  _________ ___  (_)___  ____ _  | |
-    / __/ _ \\/ ___/ __ \`__ \\/ / __ \\/ __ \`/  | |
-   / /_/  __/ /  / / / / / / / / / / /_/ /  | |
-   \\__/___/_/  /_/ /_/ /_/_/_/ /_/__,_/   |_|
-
+"t  e  r  m  i  n  aI
 Tips for getting started:
 1. Ask questions, edit files, or run commands.
 2. Be specific for the best results.
@@ -31,13 +19,7 @@ Tips for getting started:
 `;
 
 exports[`<AppHeader /> > should not render the default banner if shown count is 5 or more 1`] = `
-"
-      __                      _               _
-     / /____  _________ ___  (_)___  ____ _  | |
-    / __/ _ \\/ ___/ __ \`__ \\/ / __ \\/ __ \`/  | |
-   / /_/  __/ /  / / / / / / / / / / /_/ /  | |
-   \\__/___/_/  /_/ /_/ /_/_/_/ /_/__,_/   |_|
-
+"t  e  r  m  i  n  aI
 Tips for getting started:
 1. Ask questions, edit files, or run commands.
 2. Be specific for the best results.
@@ -46,13 +28,7 @@ Tips for getting started:
 `;
 
 exports[`<AppHeader /> > should render the banner when previewFeatures is disabled 1`] = `
-"
-      __                      _               _
-     / /____  _________ ___  (_)___  ____ _  | |
-    / __/ _ \\/ ___/ __ \`__ \\/ / __ \\/ __ \`/  | |
-   / /_/  __/ /  / / / / / / / / / / /_/ /  | |
-   \\__/___/_/  /_/ /_/ /_/_/_/ /_/__,_/   |_|
-
+"t  e  r  m  i  n  aI
 ╭─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
 │ This is the default banner                                                                                          │
 ╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
@@ -64,13 +40,7 @@ Tips for getting started:
 `;
 
 exports[`<AppHeader /> > should render the banner with default text 1`] = `
-"
-      __                      _               _
-     / /____  _________ ___  (_)___  ____ _  | |
-    / __/ _ \\/ ___/ __ \`__ \\/ / __ \\/ __ \`/  | |
-   / /_/  __/ /  / / / / / / / / / / /_/ /  | |
-   \\__/___/_/  /_/ /_/ /_/_/_/ /_/__,_/   |_|
-
+"t  e  r  m  i  n  aI
 ╭─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
 │ This is the default banner                                                                                          │
 ╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
@@ -82,13 +52,7 @@ Tips for getting started:
 `;
 
 exports[`<AppHeader /> > should render the banner with warning text 1`] = `
-"
-      __                      _               _
-     / /____  _________ ___  (_)___  ____ _  | |
-    / __/ _ \\/ ___/ __ \`__ \\/ / __ \\/ __ \`/  | |
-   / /_/  __/ /  / / / / / / / / / / /_/ /  | |
-   \\__/___/_/  /_/ /_/ /_/_/_/ /_/__,_/   |_|
-
+"t  e  r  m  i  n  aI
 ╭─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
 │ There are capacity issues                                                                                           │
 ╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯

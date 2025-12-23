@@ -1,10 +1,48 @@
 /**
  * @license
  * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import type express from 'express';
+
+function isLoopbackHostname(hostname: string): boolean {
+  const normalized = hostname.trim().toLowerCase();
+  if (!normalized) {
+    return false;
+  }
+  if (normalized === 'localhost' || normalized.endsWith('.localhost')) {
+    return true;
+  }
+  if (normalized === '::1') {
+    return true;
+  }
+  return normalized.startsWith('127.');
+}
+
+function getHostnameFromHostHeader(hostHeader: string | undefined): string {
+  if (!hostHeader) {
+    return '';
+  }
+
+  // hostHeader may be "host:port" or "[ipv6]:port".
+  try {
+    const url = new URL(`http://${hostHeader}`);
+    return url.hostname;
+  } catch {
+    return hostHeader;
+  }
+}
+
+function isTauriOrAppOrigin(origin: string): boolean {
+  try {
+    const url = new URL(origin);
+    return url.protocol === 'tauri:' || url.protocol === 'app:';
+  } catch {
+    return false;
+  }
+}
 
 const DEFAULT_ALLOWED_HEADERS = [
   'Authorization',
@@ -36,10 +74,30 @@ export function createCorsAllowlist(
     const allowedSelf = `http://${host}`;
     const allowedSelfSecure = `https://${host}`;
 
+    const requestHostname = getHostnameFromHostHeader(host);
+
+    // Allow common desktop app origins (e.g. Tauri) since the bearer token is
+    // the real security boundary.
+    const tauriOriginAllowed = isTauriOrAppOrigin(origin);
+
+    // If the server is being accessed via a loopback host, allow other loopback
+    // origins regardless of port (useful for local dev servers and desktop UIs).
+    let loopbackOriginAllowed = false;
+    try {
+      const originUrl = new URL(origin);
+      loopbackOriginAllowed =
+        isLoopbackHostname(requestHostname) &&
+        isLoopbackHostname(originUrl.hostname);
+    } catch {
+      loopbackOriginAllowed = false;
+    }
+
     if (
       !allowlist.has(origin) &&
       origin !== allowedSelf &&
-      origin !== allowedSelfSecure
+      origin !== allowedSelfSecure &&
+      !tauriOriginAllowed &&
+      !loopbackOriginAllowed
     ) {
       return res.status(403).json({ error: 'Origin not allowed' });
     }

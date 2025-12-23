@@ -1,309 +1,96 @@
-# How to contribute
+# Contributing to TerminaI
 
-We would love to accept your patches and contributions to this project. This
-document includes:
+TerminaI is a community-built “Sovereign Shell”: governed autonomy for laptops
+and servers.
 
-- **[Before you begin](#before-you-begin):** Essential steps to take before
-  becoming a Gemini CLI contributor.
-- **[Code contribution process](#code-contribution-process):** How to contribute
-  code to Gemini CLI.
-- **[Development setup and workflow](#development-setup-and-workflow):** How to
-  set up your development environment and workflow.
-- **[Documentation contribution process](#documentation-contribution-process):**
-  How to contribute documentation to Gemini CLI.
+We’re optimizing for **contributors** right now. If you want to build the future
+of trustworthy system automation (A2A, MCP, policy gating, PTY hardening, audit
+logs), you’re in the right place.
 
-We're looking forward to seeing your contributions!
+## Quick start (dev setup)
 
-## Before you begin
-
-### Sign our Contributor License Agreement
-
-Contributions to this project must be accompanied by a
-[Contributor License Agreement](https://cla.developers.google.com/about) (CLA).
-You (or your employer) retain the copyright to your contribution; this simply
-gives us permission to use and redistribute your contributions as part of the
-project.
-
-If you or your current employer have already signed the Google CLA (even if it
-was for a different project), you probably don't need to do it again.
-
-Visit <https://cla.developers.google.com/> to see your current agreements or to
-sign a new one.
-
-### Review our Community Guidelines
-
-This project follows
-[Google's Open Source Community Guidelines](https://opensource.google/conduct/).
-
-## Code contribution process
-
-### Get started
-
-The process for contributing code is as follows:
-
-1.  **Find an issue** that you want to work on. If an issue is tagged as
-    "🔒Maintainers only", this means it is reserved for project maintainers. We
-    will not accept pull requests related to these issues.
-2.  **Fork the repository** and create a new branch.
-3.  **Make your changes** in the `packages/` directory.
-4.  **Ensure all checks pass** by running `npm run preflight`.
-5.  **Open a pull request** with your changes.
-
-### Code reviews
-
-All submissions, including submissions by project members, require review. We
-use [GitHub pull requests](https://docs.github.com/articles/about-pull-requests)
-for this purpose.
-
-If your pull request involves changes to `packages/cli` (the frontend), we
-recommend running our automated frontend review tool. **Note: This tool is
-currently experimental.** It helps detect common React anti-patterns, testing
-issues, and other frontend-specific best practices that are easy to miss.
-
-To run the review tool, enter the following command from within Gemini CLI:
-
-```text
-/review-frontend <PR_NUMBER>
-```
-
-Replace `<PR_NUMBER>` with your pull request number. Authors are encouraged to
-run this on their own PRs for self-review, and reviewers should use it to
-augment their manual review process.
-
-### Self assigning issues
-
-To assign an issue to yourself, simply add a comment with the text `/assign`.
-The comment must contain only that text and nothing else. This command will
-assign the issue to you, provided it is not already assigned.
-
-Please note that you can have a maximum of 3 issues assigned to you at any given
-time.
-
-### Pull request guidelines
-
-To help us review and merge your PRs quickly, please follow these guidelines.
-PRs that do not meet these standards may be closed.
-
-#### 1. Link to an existing issue
-
-All PRs should be linked to an existing issue in our tracker. This ensures that
-every change has been discussed and is aligned with the project's goals before
-any code is written.
-
-- **For bug fixes:** The PR should be linked to the bug report issue.
-- **For features:** The PR should be linked to the feature request or proposal
-  issue that has been approved by a maintainer.
-
-If an issue for your change doesn't exist, please **open one first** and wait
-for feedback before you start coding.
-
-#### 2. Keep it small and focused
-
-We favor small, atomic PRs that address a single issue or add a single,
-self-contained feature.
-
-- **Do:** Create a PR that fixes one specific bug or adds one specific feature.
-- **Don't:** Bundle multiple unrelated changes (e.g., a bug fix, a new feature,
-  and a refactor) into a single PR.
-
-Large changes should be broken down into a series of smaller, logical PRs that
-can be reviewed and merged independently.
-
-#### 3. Use draft PRs for work in progress
-
-If you'd like to get early feedback on your work, please use GitHub's **Draft
-Pull Request** feature. This signals to the maintainers that the PR is not yet
-ready for a formal review but is open for discussion and initial feedback.
-
-#### 4. Ensure all checks pass
-
-Before submitting your PR, ensure that all automated checks are passing by
-running `npm run preflight`. This command runs all tests, linting, and other
-style checks.
-
-#### 5. Update documentation
-
-If your PR introduces a user-facing change (e.g., a new command, a modified
-flag, or a change in behavior), you must also update the relevant documentation
-in the `/docs` directory.
-
-See more about writing documentation:
-[Documentation contribution process](#documentation-contribution-process).
-
-#### 6. Write clear commit messages and a good PR description
-
-Your PR should have a clear, descriptive title and a detailed description of the
-changes. Follow the [Conventional Commits](https://www.conventionalcommits.org/)
-standard for your commit messages.
-
-- **Good PR title:** `feat(cli): Add --json flag to 'config get' command`
-- **Bad PR title:** `Made some changes`
-
-In the PR description, explain the "why" behind your changes and link to the
-relevant issue (e.g., `Fixes #123`).
-
-### Forking
-
-If you are forking the repository you will be able to run the Build, Test and
-Integration test workflows. However in order to make the integration tests run
-you'll need to add a
-[GitHub Repository Secret](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository)
-with a value of `GEMINI_API_KEY` and set that to a valid API key that you have
-available. Your key and secret are private to your repo; no one without access
-can see your key and you cannot see any secrets related to this repo.
-
-Additionally you will need to click on the `Actions` tab and enable workflows
-for your repository, you'll find it's the large blue button in the center of the
-screen.
-
-### Development setup and workflow
-
-This section guides contributors on how to build, modify, and understand the
-development setup of this project.
-
-### Setting up the development environment
-
-**Prerequisites:**
-
-1.  **Node.js**:
-    - **Development:** Please use Node.js `~20.19.0`. This specific version is
-      required due to an upstream development dependency issue. You can use a
-      tool like [nvm](https://github.com/nvm-sh/nvm) to manage Node.js versions.
-    - **Production:** For running the CLI in a production environment, any
-      version of Node.js `>=20` is acceptable.
-2.  **Git**
-
-### Build process
-
-To clone the repository:
+**Prereqs:** Node.js `>=20`, Git.
 
 ```bash
-git clone https://github.com/google-gemini/gemini-cli.git # Or your fork's URL
-cd gemini-cli
-```
-
-To install dependencies defined in `package.json` as well as root dependencies:
-
-```bash
-npm install
-```
-
-To build the entire project (all packages):
-
-```bash
+git clone https://github.com/Prof-Harita/terminaI.git
+cd terminaI
+npm ci
 npm run build
+
+# Link the launcher
+npm link --workspace packages/termai
+
+# Run
+terminai
 ```
 
-This command typically compiles TypeScript to JavaScript, bundles assets, and
-prepares the packages for execution. Refer to `scripts/build.js` and
-`package.json` scripts for more details on what happens during the build.
+See also: `docs-terminai/quickstart.md`.
 
-### Enabling sandboxing
+## Where to contribute (pick a lane)
 
-[Sandboxing](#sandboxing) is highly recommended and requires, at a minimum,
-setting `GEMINI_SANDBOX=true` in your `~/.env` and ensuring a sandboxing
-provider (e.g. `macOS Seatbelt`, `docker`, or `podman`) is available. See
-[Sandboxing](#sandboxing) for details.
+High-impact areas (with suggested entry points):
 
-To build both the `gemini` CLI utility and the sandbox container, run
-`build:all` from the root directory:
+1. **Governance / Safety** — approvals, trust boundaries, policy ladder
+   - start: `packages/core/src/safety/`, `packages/core/src/policy/`
+2. **PTY hardening (Desktop System Operator)** — resize, exit status,
+   backpressure, signals
+   - start: `packages/desktop/src-tauri/src/pty_session.rs`
+3. **Auditability** — audit log + user-visible action history
+   - start: `docs/security-posture.md`,
+     `packages/core/src/telemetry/sanitize.ts`
+4. **MCP ecosystem** — new powers via MCP servers
+   - start: `docs/tools/mcp-server.md`
+5. **A2A protocol + clients** — drive TerminaI from IDE/GUI/scripts
+   - start: `packages/a2a-server/`, `docs-terminai/web-remote.md`
+
+## How to contribute (process)
+
+1. Pick an issue (or open one).
+2. Fork the repo, create a branch.
+3. Make a focused change.
+4. Run validators (see below).
+5. Open a PR.
+
+### PR hygiene
+
+- Keep PRs small and focused.
+- Link to an issue where possible.
+- Add/adjust tests when behavior changes.
+- Avoid drive-by refactors.
+
+## Validators
+
+Fast local checks:
 
 ```bash
-npm run build:all
+npm test --workspaces --if-present
 ```
 
-To skip building the sandbox container, you can use `npm run build` instead.
-
-### Running the CLI
-
-To start the Gemini CLI from the source code (after building), run the following
-command from the root directory:
+If you’re changing linted areas:
 
 ```bash
-npm start
+npm run lint
 ```
 
-If you'd like to run the source build outside of the gemini-cli folder, you can
-utilize `npm link path/to/gemini-cli/packages/cli` (see:
-[docs](https://docs.npmjs.com/cli/v9/commands/npm-link)) or
-`alias gemini="node path/to/gemini-cli/packages/cli"` to run with `gemini`
-
-### Running tests
-
-This project contains two types of tests: unit tests and integration tests.
-
-#### Unit tests
-
-To execute the unit test suite for the project:
-
-```bash
-npm run test
-```
-
-This will run tests located in the `packages/core` and `packages/cli`
-directories. Ensure tests pass before submitting any changes. For a more
-comprehensive check, it is recommended to run `npm run preflight`.
-
-#### Integration tests
-
-The integration tests are designed to validate the end-to-end functionality of
-the Gemini CLI. They are not run as part of the default `npm run test` command.
-
-To run the integration tests, use the following command:
-
-```bash
-npm run test:e2e
-```
-
-For more detailed information on the integration testing framework, please see
-the [Integration Tests documentation](/docs/integration-tests.md).
-
-### Linting and preflight checks
-
-To ensure code quality and formatting consistency, run the preflight check:
+Full preflight (slow):
 
 ```bash
 npm run preflight
 ```
 
-This command will run ESLint, Prettier, all tests, and other checks as defined
-in the project's `package.json`.
+## Security & secrets
 
-_ProTip_
+- Do not commit secrets, API keys, or tokens.
+- If you find a vulnerability, please follow `SECURITY.md`.
 
-after cloning create a git precommit hook file to ensure your commits are always
-clean.
+## Code of Conduct
 
-```bash
-echo "
-# Run npm build and check for errors
-if ! npm run preflight; then
-  echo "npm build failed. Commit aborted."
-  exit 1
-fi
-" > .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
-```
+By participating, you agree to `CODE_OF_CONDUCT.md`.
 
-#### Formatting
+## Licensing
 
-To separately format the code in this project by running the following command
-from the root directory:
-
-```bash
-npm run format
-```
-
-This command uses Prettier to format the code according to the project's style
-guidelines.
-
-#### Linting
-
-To separately lint the code in this project, run the following command from the
-root directory:
-
-```bash
-npm run lint
-```
+This project is licensed under Apache 2.0. By submitting a pull request, you
+agree that your contributions are licensed under the same terms.
 
 ### Coding conventions
 

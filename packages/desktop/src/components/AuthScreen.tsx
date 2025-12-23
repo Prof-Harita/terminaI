@@ -1,6 +1,7 @@
 /**
  * @license
  * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -24,7 +25,10 @@ export function AuthScreen({ onAuthenticated }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const canContinue = useMemo(() => agentUrl.trim().length > 0 && agentToken.trim().length > 0, [agentToken, agentUrl]);
+  const canContinue = useMemo(
+    () => agentUrl.trim().length > 0 && agentToken.trim().length > 0,
+    [agentToken, agentUrl],
+  );
 
   useEffect(() => {
     if (!isSubmitting) {

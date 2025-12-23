@@ -3,9 +3,9 @@
 exports[`AuthDialog > Snapshots > renders correctly with auth error 1`] = `
 "╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
 │                                                                                                                      │
-│ ? Get started                                                                                                        │
+│ ? Connect TerminaI to a Model Provider                                                                               │
 │                                                                                                                      │
-│   How would you like to authenticate for this project?                                                               │
+│   TerminaI uses Gemini for intelligence. Choose your connection method:                                              │
 │                                                                                                                      │
 │   (selected) Login with Google(not selected) Use Gemini API Key(not selected) Vertex AI                              │
 │                                                                                                                      │
@@ -13,9 +13,9 @@ exports[`AuthDialog > Snapshots > renders correctly with auth error 1`] = `
 │                                                                                                                      │
 │   (Use Enter to select)                                                                                              │
 │                                                                                                                      │
-│   Terms of Services and Privacy Notice for Gemini CLI                                                                │
+│   Terms of Service and Privacy Notice for TerminaI                                                                   │
 │                                                                                                                      │
-│   https://github.com/google-gemini/gemini-cli/blob/main/docs/tos-privacy.md                                          │
+│   https://github.com/Prof-Harita/terminaI/blob/main/docs/tos-privacy.md                                              │
 │                                                                                                                      │
 ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯"
 `;
@@ -23,17 +23,17 @@ exports[`AuthDialog > Snapshots > renders correctly with auth error 1`] = `
 exports[`AuthDialog > Snapshots > renders correctly with default props 1`] = `
 "╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
 │                                                                                                                      │
-│ ? Get started                                                                                                        │
+│ ? Connect TerminaI to a Model Provider                                                                               │
 │                                                                                                                      │
-│   How would you like to authenticate for this project?                                                               │
+│   TerminaI uses Gemini for intelligence. Choose your connection method:                                              │
 │                                                                                                                      │
 │   (selected) Login with Google(not selected) Use Gemini API Key(not selected) Vertex AI                              │
 │                                                                                                                      │
 │   (Use Enter to select)                                                                                              │
 │                                                                                                                      │
-│   Terms of Services and Privacy Notice for Gemini CLI                                                                │
+│   Terms of Service and Privacy Notice for TerminaI                                                                   │
 │                                                                                                                      │
-│   https://github.com/google-gemini/gemini-cli/blob/main/docs/tos-privacy.md                                          │
+│   https://github.com/Prof-Harita/terminaI/blob/main/docs/tos-privacy.md                                              │
 │                                                                                                                      │
 ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯"
 `;
@@ -41,17 +41,17 @@ exports[`AuthDialog > Snapshots > renders correctly with default props 1`] = `
 exports[`AuthDialog > Snapshots > renders correctly with enforced auth type 1`] = `
 "╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
 │                                                                                                                      │
-│ ? Get started                                                                                                        │
+│ ? Connect TerminaI to a Model Provider                                                                               │
 │                                                                                                                      │
-│   How would you like to authenticate for this project?                                                               │
+│   TerminaI uses Gemini for intelligence. Choose your connection method:                                              │
 │                                                                                                                      │
 │   (selected) Use Gemini API Key                                                                                      │
 │                                                                                                                      │
 │   (Use Enter to select)                                                                                              │
 │                                                                                                                      │
-│   Terms of Services and Privacy Notice for Gemini CLI                                                                │
+│   Terms of Service and Privacy Notice for TerminaI                                                                   │
 │                                                                                                                      │
-│   https://github.com/google-gemini/gemini-cli/blob/main/docs/tos-privacy.md                                          │
+│   https://github.com/Prof-Harita/terminaI/blob/main/docs/tos-privacy.md                                              │
 │                                                                                                                      │
 ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯"
 `;

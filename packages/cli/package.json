@@ -1,15 +1,16 @@
 {
-  "name": "@google/gemini-cli",
+  "name": "@terminai/cli",
   "version": "0.21.0",
-  "description": "Gemini CLI",
+  "description": "TerminaI CLI",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/google-gemini/gemini-cli.git"
+    "url": "git+https://github.com/Prof-Harita/terminaI.git"
   },
   "type": "module",
   "main": "dist/index.js",
   "bin": {
+    "terminai": "dist/index.js",
     "gemini": "dist/index.js"
   },
   "scripts": {
@@ -30,8 +31,8 @@
   },
   "dependencies": {
     "@agentclientprotocol/sdk": "^0.11.0",
-    "@google/gemini-cli-a2a-server": "file:../a2a-server",
-    "@google/gemini-cli-core": "file:../core",
+    "@terminai/a2a-server": "file:../a2a-server",
+    "@terminai/core": "file:../core",
     "@google/genai": "1.30.0",
     "@iarna/toml": "^2.2.5",
     "@modelcontextprotocol/sdk": "^1.23.0",

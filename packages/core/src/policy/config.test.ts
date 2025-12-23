@@ -1,6 +1,7 @@
 /**
  * @license
  * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -10,6 +11,8 @@ import nodePath from 'node:path';
 
 import type { PolicySettings } from './types.js';
 import { ApprovalMode, PolicyDecision, InProcessCheckerType } from './types.js';
+
+import { GEMINI_DIR } from '../utils/paths.js';
 
 import { Storage } from '../config/storage.js';
 
@@ -44,7 +47,7 @@ describe('createPolicyEngineConfig', () => {
           typeof path === 'string' &&
           nodePath
             .normalize(path)
-            .includes(nodePath.normalize('.gemini/policies'))
+            .includes(nodePath.normalize(`${GEMINI_DIR}/policies`))
         ) {
           // Return empty array for user policies
           return [] as unknown as Awaited<ReturnType<typeof actualFs.readdir>>;
@@ -567,7 +570,7 @@ describe('createPolicyEngineConfig', () => {
           typeof path === 'string' &&
           nodePath
             .normalize(path)
-            .includes(nodePath.normalize('.gemini/policies'))
+            .includes(nodePath.normalize(`${GEMINI_DIR}/policies`))
         ) {
           return [
             {
@@ -593,7 +596,7 @@ describe('createPolicyEngineConfig', () => {
           typeof path === 'string' &&
           nodePath
             .normalize(path)
-            .includes(nodePath.normalize('.gemini/policies/write.toml'))
+            .includes(nodePath.normalize(`${GEMINI_DIR}/policies/write.toml`))
         ) {
           return `
 [[rule]]
@@ -657,7 +660,7 @@ priority = 150
           typeof path === 'string' &&
           nodePath
             .normalize(path)
-            .includes(nodePath.normalize('.gemini/policies'))
+            .includes(nodePath.normalize(`${GEMINI_DIR}/policies`))
         ) {
           return [
             {
@@ -683,7 +686,7 @@ priority = 150
           typeof path === 'string' &&
           nodePath
             .normalize(path)
-            .includes(nodePath.normalize('.gemini/policies/safety.toml'))
+            .includes(nodePath.normalize(`${GEMINI_DIR}/policies/safety.toml`))
         ) {
           return `
 [[rule]]
@@ -758,7 +761,7 @@ required_context = ["environment"]
           typeof path === 'string' &&
           nodePath
             .normalize(path)
-            .includes(nodePath.normalize('.gemini/policies'))
+            .includes(nodePath.normalize(`${GEMINI_DIR}/policies`))
         ) {
           return [
             {
@@ -785,7 +788,7 @@ required_context = ["environment"]
           nodePath
             .normalize(path)
             .includes(
-              nodePath.normalize('.gemini/policies/invalid_safety.toml'),
+              nodePath.normalize(`${GEMINI_DIR}/policies/invalid_safety.toml`),
             )
         ) {
           return `

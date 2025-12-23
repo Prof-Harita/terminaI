@@ -1,38 +1,91 @@
-# Tutorials
+# Tutorials (System Operator)
 
-This page contains tutorials for interacting with Gemini CLI.
+These are hands-on, “operator style” tutorials for TerminaI.
 
-## Setting up a Model Context Protocol (MCP) server
+> Note on config paths: TerminaI is migrating toward `~/.terminai/` as the
+> primary home. Some installs may still read legacy `~/.gemini/` for
+> compatibility.
+
+---
+
+## Tutorial 1 — Fix a broken WiFi connection (laptop)
+
+Goal: diagnose + repair WiFi, with approvals for risky steps.
+
+1. Start TerminaI:
+
+```bash
+terminai
+```
+
+2. Prompt:
+
+```text
+My WiFi stopped working. Diagnose what’s wrong and fix it.
+Explain what you find. For any destructive step, ask for confirmation first.
+```
+
+3. What “good” looks like:
+
+- TerminaI inspects: interface state, driver/module, rfkill, logs.
+- It proposes steps like:
+  - restart NetworkManager
+  - reload a kernel module
+  - renew DHCP
+- You see confirmations before impactful actions.
+
+---
+
+## Tutorial 2 — Disk cleanup (safe + reversible)
+
+```text
+I’m low on disk space. Find the biggest directories and propose a safe cleanup plan.
+Prefer reversible cleanups (caches/log rotations) before deletes.
+```
+
+Good output includes:
+
+- a ranked list of suspects
+- a plan with “safe → riskier” steps
+- explicit confirmation before deletions
+
+---
+
+## Tutorial 3 — Restart a broken service and verify it’s healthy
+
+```text
+My app is down. Identify the service, restart it safely, and verify it’s healthy.
+If there are errors in logs, summarize the root cause.
+```
+
+---
+
+## Tutorial 4 — Connect an MCP server (add new powers)
 
 > [!CAUTION] Before using a third-party MCP server, ensure you trust its source
-> and understand the tools it provides. Your use of third-party servers is at
-> your own risk.
+> and understand the tools it provides.
 
-This tutorial demonstrates how to set up an MCP server, using the
-[GitHub MCP server](https://github.com/github/github-mcp-server) as an example.
-The GitHub MCP server provides tools for interacting with GitHub repositories,
-such as creating issues and commenting on pull requests.
+This tutorial demonstrates adding an MCP server using the GitHub MCP server:
+https://github.com/github/github-mcp-server
 
 ### Prerequisites
 
-Before you begin, ensure you have the following installed and configured:
-
 - **Docker:** Install and run [Docker].
 - **GitHub Personal Access Token (PAT):** Create a new [classic] or
-  [fine-grained] PAT with the necessary scopes.
+  [fine-grained] PAT.
 
 [Docker]: https://www.docker.com/
 [classic]: https://github.com/settings/tokens/new
 [fine-grained]: https://github.com/settings/personal-access-tokens/new
 
-### Guide
+### Configure `settings.json`
 
-#### Configure the MCP server in `settings.json`
+Create or open your settings file:
 
-In your project's root directory, create or open the
-[`.gemini/settings.json` file](../get-started/configuration.md). Within the
-file, add the `mcpServers` configuration block, which provides instructions for
-how to launch the GitHub MCP server.
+- preferred: `~/.terminai/settings.json`
+- legacy fallback: `~/.gemini/settings.json`
+
+Add:
 
 ```json
 {
@@ -55,29 +108,23 @@ how to launch the GitHub MCP server.
 }
 ```
 
-#### Set your GitHub token
-
-> [!CAUTION] Using a broadly scoped personal access token that has access to
-> personal and private repositories can lead to information from the private
-> repository being leaked into the public repository. We recommend using a
-> fine-grained access token that doesn't share access to both public and private
-> repositories.
-
-Use an environment variable to store your GitHub PAT:
+Set your token:
 
 ```bash
-GITHUB_PERSONAL_ACCESS_TOKEN="pat_YourActualGitHubTokenHere"
+export GITHUB_PERSONAL_ACCESS_TOKEN="pat_YourActualGitHubTokenHere"
 ```
 
-Gemini CLI uses this value in the `mcpServers` configuration that you defined in
-the `settings.json` file.
+Then ask:
 
-#### Launch Gemini CLI and verify the connection
-
-When you launch Gemini CLI, it automatically reads your configuration and
-launches the GitHub MCP server in the background. You can then use natural
-language prompts to ask Gemini CLI to perform GitHub actions. For example:
-
-```bash
-"get all open issues assigned to me in the 'foo/bar' repo and prioritize them"
+```text
+List my open GitHub issues assigned to me and summarize them.
 ```
+
+---
+
+## Tutorial 5 — Run A2A (drive TerminaI from other clients)
+
+If you want to control TerminaI from a browser/desktop client/IDE integration,
+start the A2A server and follow:
+
+- `docs-terminai/web-remote.md`

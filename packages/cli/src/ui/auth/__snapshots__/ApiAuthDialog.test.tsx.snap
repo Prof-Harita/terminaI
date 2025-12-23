@@ -3,9 +3,9 @@
 exports[`ApiAuthDialog > renders correctly 1`] = `
 "╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
 │                                                                                                  │
-│ Enter Gemini API Key                                                                             │
+│ Connect TerminaI to Gemini                                                                       │
 │                                                                                                  │
-│ Please enter your Gemini API key. It will be securely stored in your system keychain.            │
+│ Enter your Gemini API key to power TerminaI. It will be securely stored in your system keychain. │
 │ You can get an API key from https://aistudio.google.com/app/apikey                               │
 │                                                                                                  │
 │ ╭──────────────────────────────────────────────────────────────────────────────────────────────╮ │

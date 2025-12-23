@@ -1,4 +1,11 @@
-import { useState, KeyboardEvent } from 'react';
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { useState, type KeyboardEvent } from 'react';
 
 interface Props {
   prompt: string;

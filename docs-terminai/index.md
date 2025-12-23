@@ -1,13 +1,12 @@
-# terminaI Documentation
+# TerminaI Documentation
 
-Welcome to terminaI - the universal terminal agent that bridges human intent and
-system action.
+Welcome to TerminaI — the Sovereign Shell: governed autonomy for laptops and
+servers.
 
 ## What is terminaI?
 
-terminaI is an AI-powered terminal agent forked from Google's Gemini CLI,
-repositioned from a coding-focused tool to a **general-purpose terminal
-operator** for everyone - from laymen to sysadmins.
+TerminaI is a **general-purpose terminal operator** for everyone — from laymen
+to sysadmins — built on a stable upstream core.
 
 **Running on:** Stable Core v0.21
 
@@ -34,6 +33,15 @@ operator** for everyone - from laymen to sysadmins.
 - [Safety Guide](./safety.md) - Safety posture + approval ladder
 - [Configuration](./configuration.md) - Settings file + key options
 - [Troubleshooting](./troubleshooting.md) - Common issues + fixes
+
+### For contributors
+
+- [Governance](./governance.md)
+- [Why the Gemini CLI core?](./why-gemini.md)
+- [System Operator Recipes](./recipes.md)
+- [A2A Protocol](./a2a.md)
+- [Case studies](./case-studies.md)
+- [Developer API reference](./api-reference.md)
 
 ## Architecture
 

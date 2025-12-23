@@ -25,9 +25,36 @@ authenticated.
 
 ## Level C approval fails (PIN)
 
-- PIN is `security.approvalPin` in `~/.gemini/settings.json` (default
-  `"000000"`).
+- PIN is `security.approvalPin` in `~/.terminai/settings.json` (default
+  `"000000"`). Some installs may still read legacy `~/.gemini/settings.json`.
 - PIN must be exactly 6 digits and match exactly.
+
+## `terminai` command not found
+
+- If you installed from source, ensure you ran:
+
+  ```bash
+  npm link --workspace packages/termai
+  ```
+
+- If you installed via npm, ensure your global npm bin is on PATH.
+
+## A2A server won’t start (port already in use)
+
+- Start on a different port:
+
+  ```bash
+  CODER_AGENT_PORT=41243 terminai --web-remote
+  ```
+
+- Or stop the existing process that’s using the port.
+
+## MCP server won’t start
+
+- Verify the `command` exists (e.g. `docker`).
+- Run the MCP command manually to check for errors.
+- If you used environment variables in settings, ensure they are exported in the
+  shell that launches TerminaI.
 
 ## Voice install fails
 

@@ -1,5 +1,5 @@
 {
-  "name": "@google/gemini-cli",
+  "name": "terminai-monorepo",
   "version": "0.21.0",
   "engines": {
     "node": ">=20.0.0"
@@ -11,14 +11,14 @@
   "private": "true",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/google-gemini/gemini-cli.git"
+    "url": "git+https://github.com/Prof-Harita/terminaI.git"
   },
   "config": {
     "sandboxImageUri": "us-docker.pkg.dev/gemini-code-dev/gemini-cli/sandbox:0.21.0-nightly.20251219.70696e364"
   },
   "scripts": {
     "start": "cross-env NODE_ENV=development node scripts/start.js",
-    "start:a2a-server": "CODER_AGENT_PORT=41242 GEMINI_WEB_REMOTE_TOKEN=${GEMINI_WEB_REMOTE_TOKEN:-} npm run start --workspace @google/gemini-cli-a2a-server",
+    "start:a2a-server": "CODER_AGENT_PORT=41242 GEMINI_WEB_REMOTE_TOKEN=${GEMINI_WEB_REMOTE_TOKEN:-} npm run start --workspace @terminai/a2a-server",
     "debug": "cross-env DEBUG=1 node --inspect-brk scripts/start.js",
     "deflake": "node scripts/deflake.js",
     "deflake:test:integration:sandbox:none": "npm run deflake -- --command=\"npm run test:integration:sandbox:none -- --retry=0\"",
@@ -27,7 +27,7 @@
     "auth:docker": "gcloud auth configure-docker us-west1-docker.pkg.dev",
     "auth": "npm run auth:npm && npm run auth:docker",
     "generate": "node scripts/generate-git-commit-info.js",
-    "predocs:settings": "npm run build --workspace @google/gemini-cli-core",
+    "predocs:settings": "npm run build --workspace @terminai/core",
     "schema:settings": "node --import tsx ./scripts/generate-settings-schema.ts",
     "docs:settings": "node --import tsx ./scripts/generate-settings-doc.ts",
     "docs:keybindings": "node --import tsx ./scripts/generate-keybindings-doc.ts",
@@ -69,6 +69,7 @@
     }
   },
   "bin": {
+    "terminai": "bundle/gemini.js",
     "gemini": "bundle/gemini.js"
   },
   "files": [

@@ -223,11 +223,41 @@ export default tseslint.config(
           '/**',
           ' * @license',
           ' * Copyright 2025 Google LLC',
+          ' * Portions Copyright 2025 TerminaI Authors',
           ' * SPDX-License-Identifier: Apache-2.0',
           ' */',
         ],
       ],
       'import/enforce-node-protocol-usage': ['error', 'always'],
+    },
+  },
+  {
+    files: [
+      'esbuild.config.js',
+      'scripts/**/*.{js,ts}',
+      'integration-tests/**/*.{js,ts}',
+      'packages/desktop/*.config.js',
+      'packages/vscode-ide-companion/**/*.js',
+    ],
+    rules: {
+      // Keep legacy header for upstream scripts/tests/configs to avoid mass churn.
+      'license-header/header': [
+        'error',
+        [
+          '/**',
+          ' * @license',
+          ' * Copyright 2025 Google LLC',
+          ' * SPDX-License-Identifier: Apache-2.0',
+          ' */',
+        ],
+      ],
+    },
+  },
+  {
+    files: ['**/vite-env.d.ts'],
+    rules: {
+      // Vite's triple-slash directives are special; ignore license header here.
+      'license-header/header': 'off',
     },
   },
   // extra settings for scripts that we run directly with node

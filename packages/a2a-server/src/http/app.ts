@@ -1,10 +1,12 @@
 /**
  * @license
  * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import express from 'express';
+import * as fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -33,6 +35,36 @@ import { GitService } from '@google/gemini-cli-core';
 import { createAuthMiddleware, loadAuthVerifier } from './auth.js';
 import { createCorsAllowlist } from './cors.js';
 // import { createReplayProtection } from './replay.js'; // TODO: Re-enable when body streaming conflict is resolved
+
+function resolveWebClientPath(): string | null {
+  const override = process.env['GEMINI_WEB_CLIENT_PATH'];
+  const baseDir = path.dirname(fileURLToPath(import.meta.url));
+
+  const candidates = [
+    override,
+    // If web-client is vendored into the a2a-server package (future-proofing)
+    path.join(baseDir, '../../web-client'),
+    // Monorepo dev: src/http -> ../../../web-client
+    path.join(baseDir, '../../../web-client'),
+    // Monorepo build: dist/src/http -> ../../../../web-client
+    path.join(baseDir, '../../../../web-client'),
+    // Running from repo root
+    path.join(process.cwd(), 'packages/web-client'),
+    path.join(process.cwd(), 'web-client'),
+  ].filter((value): value is string => Boolean(value));
+
+  for (const candidate of candidates) {
+    try {
+      const indexHtml = path.join(candidate, 'index.html');
+      if (fs.existsSync(indexHtml)) {
+        return candidate;
+      }
+    } catch {
+      // ignore
+    }
+  }
+  return null;
+}
 
 type CommandResponse = {
   name: string;
@@ -125,13 +157,15 @@ async function handleExecuteCommand(
     if (commandToExecute.streaming) {
       const eventBus = new DefaultExecutionEventBus();
       res.setHeader('Content-Type', 'text/event-stream');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Connection', 'keep-alive');
       const eventHandler = (event: AgentExecutionEvent) => {
         const jsonRpcResponse = {
           jsonrpc: '2.0',
           id: 'taskId' in event ? event.taskId : (event as Message).messageId,
           result: event,
         };
-        res.write(`data: ${JSON.stringify(jsonRpcResponse)}\n`);
+        res.write(`data: ${JSON.stringify(jsonRpcResponse)}\n\n`);
       };
       eventBus.on('event', eventHandler);
 
@@ -220,17 +254,20 @@ export async function createApp() {
     expressApp.use(createCorsAllowlist(allowedOrigins));
     expressApp.use(
       createAuthMiddleware(authVerifier, {
-        bypassPaths: new Set(['/healthz']),
+        bypassPaths: new Set(['/healthz', '/ui']),
       }),
     );
     // NOTE: Replay protection disabled temporarily - it requires rawBody
     // which conflicts with A2A SDK's body-parser. See TODO for proper fix.
     // expressApp.use(createReplayProtection());
-    const webClientPath = path.join(
-      path.dirname(fileURLToPath(import.meta.url)),
-      '../../web-client',
-    );
-    expressApp.use('/ui', express.static(webClientPath));
+    const webClientPath = resolveWebClientPath();
+    if (webClientPath) {
+      expressApp.use('/ui', express.static(webClientPath));
+    } else {
+      logger.warn(
+        '[CoreAgent] Web client assets not found; /ui will be unavailable. Set GEMINI_WEB_CLIENT_PATH to override.',
+      );
+    }
 
     const appBuilder = new A2AExpressApp(requestHandler);
     expressApp = appBuilder.setupRoutes(expressApp, '');

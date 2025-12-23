@@ -1,6 +1,7 @@
 /**
  * @license
  * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -100,7 +101,7 @@ describe('<HistoryItemDisplay />', () => {
     const { lastFrame } = renderWithProviders(
       <HistoryItemDisplay {...baseItem} item={item} />,
     );
-    expect(lastFrame()).toContain('About TermAI');
+    expect(lastFrame()).toContain('About TerminaI');
   });
 
   it('renders ModelStatsDisplay for "model_stats" type', () => {

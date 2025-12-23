@@ -1,0 +1,28 @@
+[agent]
+name = "docker-prune"
+description = "Clean up unused Docker resources safely"
+
+[commands]
+# Read-only diagnostic commands (auto-approved)
+read = [
+  "docker ps -a",
+  "docker images",
+  "docker volume ls",
+  "docker network ls",
+  "docker system df",
+  "docker container ls -a"
+]
+
+# Write commands requiring user confirmation
+write = [
+  "docker system prune -f",
+  "docker volume prune -f",
+  "docker image prune -a -f",
+  "docker container prune -f",
+  "docker network prune -f"
+]
+
+[policy]
+default = "write"
+write_requires = "user-confirm"
+yolo_warning = "This will remove all stopped containers, unused networks, dangling images, and build cache"
