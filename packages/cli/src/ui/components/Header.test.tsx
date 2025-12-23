@@ -1,6 +1,7 @@
 /**
  * @license
  * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -8,25 +9,15 @@ import { render } from '../../test-utils/render.js';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { Header } from './Header.js';
 import * as useTerminalSize from '../hooks/useTerminalSize.js';
-import { longAsciiLogo, longAsciiLogoIde } from './AsciiArt.js';
-import * as semanticColors from '../semantic-colors.js';
-import * as terminalSetup from '../utils/terminalSetup.js';
+import {
+  logoBody,
+  logoCursor,
+  logoBodyLarge,
+  logoCursorLarge,
+} from './AsciiArt.js';
 import { Text } from 'ink';
-import type React from 'react';
 
 vi.mock('../hooks/useTerminalSize.js');
-vi.mock('../utils/terminalSetup.js', () => ({
-  getTerminalProgram: vi.fn(),
-}));
-vi.mock('ink-gradient', () => {
-  const MockGradient = ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
-  );
-  return {
-    default: vi.fn(MockGradient),
-  };
-});
-vi.mock('../semantic-colors.js');
 vi.mock('ink', async () => {
   const originalInk = await vi.importActual<typeof import('ink')>('ink');
   return {
@@ -38,144 +29,61 @@ vi.mock('ink', async () => {
 describe('<Header />', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(terminalSetup.getTerminalProgram).mockReturnValue(null);
   });
 
-  it('renders the long logo on a wide terminal', () => {
+  it('renders the split logo (body + cursor) with colors on a wide terminal', () => {
     vi.spyOn(useTerminalSize, 'useTerminalSize').mockReturnValue({
       columns: 120,
       rows: 20,
     });
     render(<Header version="1.0.0" nightly={false} />);
-    expect(Text).toHaveBeenCalledWith(
-      expect.objectContaining({
-        children: longAsciiLogo,
-      }),
-      undefined,
-    );
+    const textCalls = (Text as Mock).mock.calls;
+    expect(textCalls.length).toBe(2);
+    expect(textCalls[0][0]).toMatchObject({
+      children: logoBodyLarge,
+      color: 'white',
+    });
+    expect(textCalls[1][0]).toMatchObject({
+      children: logoCursorLarge,
+      color: 'red',
+      bold: true,
+    });
   });
 
-  it('uses the IDE logo when running in an IDE', () => {
+  it('renders the small logo when the terminal is narrow', () => {
     vi.spyOn(useTerminalSize, 'useTerminalSize').mockReturnValue({
-      columns: 120,
+      columns: 20,
       rows: 20,
     });
-    vi.mocked(terminalSetup.getTerminalProgram).mockReturnValue('vscode');
-
     render(<Header version="1.0.0" nightly={false} />);
-    expect(Text).toHaveBeenCalledWith(
-      expect.objectContaining({
-        children: longAsciiLogoIde,
-      }),
-      undefined,
-    );
+    const textCalls = (Text as Mock).mock.calls;
+    expect(textCalls.length).toBe(2);
+    expect(textCalls[0][0]).toMatchObject({
+      children: logoBody,
+      color: 'white',
+    });
+    expect(textCalls[1][0]).toMatchObject({
+      children: logoCursor,
+      color: 'red',
+      bold: true,
+    });
   });
 
   it('renders custom ASCII art when provided', () => {
     const customArt = 'CUSTOM ART';
-    render(
+    const { lastFrame } = render(
       <Header version="1.0.0" nightly={false} customAsciiArt={customArt} />,
     );
-    expect(Text).toHaveBeenCalledWith(
-      expect.objectContaining({
-        children: customArt,
-      }),
-      undefined,
-    );
-  });
-
-  it('renders custom ASCII art as is when running in an IDE', () => {
-    const customArt = 'CUSTOM ART';
-    vi.mocked(terminalSetup.getTerminalProgram).mockReturnValue('vscode');
-    render(
-      <Header version="1.0.0" nightly={false} customAsciiArt={customArt} />,
-    );
-    expect(Text).toHaveBeenCalledWith(
-      expect.objectContaining({
-        children: customArt,
-      }),
-      undefined,
-    );
+    expect(lastFrame()).toContain(customArt);
   });
 
   it('displays the version number when nightly is true', () => {
-    render(<Header version="1.0.0" nightly={true} />);
-    const textCalls = (Text as Mock).mock.calls;
-    expect(textCalls[1][0].children.join('')).toBe('v1.0.0');
+    const { lastFrame } = render(<Header version="1.0.0" nightly={true} />);
+    expect(lastFrame()).toContain('v1.0.0');
   });
 
   it('does not display the version number when nightly is false', () => {
-    render(<Header version="1.0.0" nightly={false} />);
-    expect(Text).not.toHaveBeenCalledWith(
-      expect.objectContaining({
-        children: 'v1.0.0',
-      }),
-      undefined,
-    );
-  });
-
-  it('renders with no gradient when theme.ui.gradient is undefined', async () => {
-    vi.spyOn(semanticColors, 'theme', 'get').mockReturnValue({
-      text: {
-        primary: '',
-        secondary: '',
-        link: '',
-        accent: '#123456',
-        response: '',
-      },
-      background: {
-        primary: '',
-        diff: { added: '', removed: '' },
-      },
-      border: {
-        default: '',
-        focused: '',
-      },
-      ui: {
-        comment: '',
-        symbol: '',
-        dark: '',
-        gradient: undefined,
-      },
-      status: {
-        error: '',
-        success: '',
-        warning: '',
-      },
-    });
-    const Gradient = await import('ink-gradient');
-    render(<Header version="1.0.0" nightly={false} />);
-    expect(Gradient.default).not.toHaveBeenCalled();
-    const textCalls = (Text as Mock).mock.calls;
-    expect(textCalls[0][0]).toHaveProperty('color', '#123456');
-  });
-
-  it('renders with a single color when theme.ui.gradient has one color', async () => {
-    const singleColor = '#FF0000';
-    vi.spyOn(semanticColors, 'theme', 'get').mockReturnValue({
-      ui: { gradient: [singleColor] },
-    } as typeof semanticColors.theme);
-    const Gradient = await import('ink-gradient');
-    render(<Header version="1.0.0" nightly={false} />);
-    expect(Gradient.default).not.toHaveBeenCalled();
-    const textCalls = (Text as Mock).mock.calls;
-    console.log(JSON.stringify(textCalls, null, 2));
-    expect(textCalls.length).toBe(1);
-    expect(textCalls[0][0]).toHaveProperty('color', singleColor);
-  });
-
-  it('renders with a gradient when theme.ui.gradient has two or more colors', async () => {
-    const gradientColors = ['#FF0000', '#00FF00'];
-    vi.spyOn(semanticColors, 'theme', 'get').mockReturnValue({
-      ui: { gradient: gradientColors },
-    } as typeof semanticColors.theme);
-    const Gradient = await import('ink-gradient');
-    render(<Header version="1.0.0" nightly={false} />);
-    expect(Gradient.default).toHaveBeenCalledWith(
-      expect.objectContaining({
-        colors: gradientColors,
-      }),
-      undefined,
-    );
+    const { lastFrame } = render(<Header version="1.0.0" nightly={false} />);
+    expect(lastFrame()).not.toContain('v1.0.0');
   });
 });

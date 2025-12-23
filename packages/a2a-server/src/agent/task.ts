@@ -1,6 +1,7 @@
 /**
  * @license
  * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -750,9 +751,7 @@ export class Task {
     const callId = part.data['callId'];
     const outcomeString = part.data['outcome'];
     const pin =
-      typeof part.data['pin'] === 'string'
-        ? (part.data['pin'])
-        : undefined;
+      typeof part.data['pin'] === 'string' ? part.data['pin'] : undefined;
     let confirmationOutcome: ToolConfirmationOutcome | undefined;
 
     if (outcomeString === 'proceed_once') {

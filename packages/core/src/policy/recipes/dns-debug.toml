@@ -1,0 +1,28 @@
+[agent]
+name = "dns-debug"
+description = "Troubleshoot DNS resolution issues"
+
+[commands]
+# Read-only diagnostic commands (auto-approved)
+read = [
+  "dig google.com",
+  "dig +trace google.com",
+  "nslookup google.com",
+  "nslookup -type=any google.com",
+  "host google.com",
+  "cat /etc/resolv.conf",
+  "resolvectl status",
+  "systemctl status systemd-resolved",
+  "nmcli device show | grep DNS",
+  "getent hosts google.com"
+]
+
+# Write commands requiring user confirmation
+write = [
+  "systemctl restart systemd-resolved",
+  "resolvectl flush-caches"
+]
+
+[policy]
+default = "read-only"
+write_requires = "user-confirm"

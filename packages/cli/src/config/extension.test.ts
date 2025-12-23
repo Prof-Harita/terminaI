@@ -1,6 +1,7 @@
 /**
  * @license
  * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -22,6 +23,7 @@ import {
   ExtensionUninstallEvent,
   ExtensionDisableEvent,
   ExtensionEnableEvent,
+  GEMINI_DIR,
   KeychainTokenStorage,
 } from '@google/gemini-cli-core';
 import { loadSettings, SettingScope } from './settings.js';
@@ -1090,7 +1092,7 @@ describe('extension tests', () => {
     it('should add the workspace to trusted folders if user consents', async () => {
       const trustedFoldersPath = path.join(
         tempHomeDir,
-        '.gemini',
+        GEMINI_DIR,
         'trustedFolders.json',
       );
       vi.mocked(isWorkspaceTrusted).mockReturnValue({

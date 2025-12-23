@@ -1,6 +1,6 @@
-# TermAI Security Posture
+# TerminaI Security Posture
 
-This document captures the current threat model and controls for TermAI (local
+This document captures the current threat model and controls for TerminaI (local
 CLI + web-remote). It should be reviewed before enabling non-local access or
 relaxing guardrails.
 
@@ -39,9 +39,9 @@ relaxing guardrails.
 ## Operator Guidance
 
 - Prefer `--preview` when exploring unfamiliar repos.
-- Keep web-remote bound to loopback; if exposing externally, rotate tokens
-  (`--web-remote-rotate-token`) and set an allowlist of origins.
-- Avoid running as root; TermAI will label privileged commands as high risk.
+- Keep web-remote bound to loopback; if exposing externally, rotate tokens and
+  set an allowlist of origins.
+- Avoid running as root; TerminaI will label privileged commands as high risk.
 - Treat model responses as untrusted—verify before executing.
 
 ## Future Hardening

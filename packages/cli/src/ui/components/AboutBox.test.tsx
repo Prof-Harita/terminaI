@@ -1,6 +1,7 @@
 /**
  * @license
  * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -27,7 +28,7 @@ describe('AboutBox', () => {
   it('renders with required props', () => {
     const { lastFrame } = render(<AboutBox {...defaultProps} />);
     const output = lastFrame();
-    expect(output).toContain('About TermAI');
+    expect(output).toContain('About TerminaI');
     expect(output).toContain('1.0.0');
     expect(output).toContain('mock-commit-hash');
     expect(output).toContain('gemini-pro');

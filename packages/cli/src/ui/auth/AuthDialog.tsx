@@ -1,6 +1,7 @@
 /**
  * @license
  * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -189,7 +190,7 @@ export function AuthDialog({
         alignItems="flex-start"
       >
         <Text color={theme.text.primary}>
-          Logging in with Google... Restarting Gemini CLI to continue.
+          Connecting to Gemini... Restarting TerminaI to continue.
         </Text>
       </Box>
     );
@@ -207,11 +208,12 @@ export function AuthDialog({
       <Text color={theme.text.accent}>? </Text>
       <Box flexDirection="column" flexGrow={1}>
         <Text bold color={theme.text.primary}>
-          Get started
+          Connect TerminaI to a Model Provider
         </Text>
         <Box marginTop={1}>
           <Text color={theme.text.primary}>
-            How would you like to authenticate for this project?
+            TerminaI uses Gemini for intelligence. Choose your connection
+            method:
           </Text>
         </Box>
         <Box marginTop={1}>
@@ -234,13 +236,13 @@ export function AuthDialog({
         </Box>
         <Box marginTop={1}>
           <Text color={theme.text.primary}>
-            Terms of Services and Privacy Notice for Gemini CLI
+            Terms of Service and Privacy Notice for TerminaI
           </Text>
         </Box>
         <Box marginTop={1}>
           <Text color={theme.text.link}>
             {
-              'https://github.com/google-gemini/gemini-cli/blob/main/docs/tos-privacy.md'
+              'https://github.com/Prof-Harita/terminaI/blob/main/docs/tos-privacy.md'
             }
           </Text>
         </Box>

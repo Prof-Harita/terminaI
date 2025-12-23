@@ -1,11 +1,11 @@
 {
-  "name": "@google/gemini-cli-core",
-  "version": "0.21.0-nightly.20251219.70696e364",
-  "description": "Gemini CLI Core",
+  "name": "@terminai/core",
+  "version": "0.21.0",
+  "description": "TerminaI Core",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/google-gemini/gemini-cli.git"
+    "url": "git+https://github.com/Prof-Harita/terminaI.git"
   },
   "type": "module",
   "main": "dist/index.js",

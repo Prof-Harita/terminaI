@@ -1,23 +1,21 @@
 /**
  * @license
  * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import type React from 'react';
-import { Box } from 'ink';
+import { Box, Text } from 'ink';
 import { ThemedGradient } from './ThemedGradient.js';
 import {
-  shortAsciiLogo,
-  longAsciiLogo,
-  tinyAsciiLogo,
-  shortAsciiLogoIde,
-  longAsciiLogoIde,
-  tinyAsciiLogoIde,
+  logoBody,
+  logoCursor,
+  logoBodyLarge,
+  logoCursorLarge,
 } from './AsciiArt.js';
 import { getAsciiArtWidth } from '../utils/textUtils.js';
 import { useTerminalSize } from '../hooks/useTerminalSize.js';
-import { getTerminalProgram } from '../utils/terminalSetup.js';
 
 interface HeaderProps {
   customAsciiArt?: string; // For user-defined ASCII art
@@ -31,22 +29,34 @@ export const Header: React.FC<HeaderProps> = ({
   nightly,
 }) => {
   const { columns: terminalWidth } = useTerminalSize();
-  const isIde = getTerminalProgram();
-  let displayTitle;
-  const widthOfLongLogo = getAsciiArtWidth(longAsciiLogo);
-  const widthOfShortLogo = getAsciiArtWidth(shortAsciiLogo);
+
+  // Determine which logo size to use based on terminal width
+  // The large logo is roughly 30 chars wide
+  const showLarge = terminalWidth >= 40;
+
+  const body = showLarge ? logoBodyLarge : logoBody;
+  const cursor = showLarge ? logoCursorLarge : logoCursor;
+
+  // Calculate total width for container
+  const artWidth = getAsciiArtWidth(body) + getAsciiArtWidth(cursor);
 
   if (customAsciiArt) {
-    displayTitle = customAsciiArt;
-  } else if (terminalWidth >= widthOfLongLogo) {
-    displayTitle = isIde ? longAsciiLogoIde : longAsciiLogo;
-  } else if (terminalWidth >= widthOfShortLogo) {
-    displayTitle = isIde ? shortAsciiLogoIde : shortAsciiLogo;
-  } else {
-    displayTitle = isIde ? tinyAsciiLogoIde : tinyAsciiLogo;
+    return (
+      <Box
+        alignItems="flex-start"
+        width={getAsciiArtWidth(customAsciiArt)}
+        flexShrink={0}
+        flexDirection="column"
+      >
+        <ThemedGradient>{customAsciiArt}</ThemedGradient>
+        {nightly && (
+          <Box width="100%" flexDirection="row" justifyContent="flex-end">
+            <ThemedGradient>v{version}</ThemedGradient>
+          </Box>
+        )}
+      </Box>
+    );
   }
-
-  const artWidth = getAsciiArtWidth(displayTitle);
 
   return (
     <Box
@@ -55,7 +65,15 @@ export const Header: React.FC<HeaderProps> = ({
       flexShrink={0}
       flexDirection="column"
     >
-      <ThemedGradient>{displayTitle}</ThemedGradient>
+      <Box flexDirection="row">
+        {/* Main body: white/grey */}
+        <Text color="white">{body}</Text>
+        {/* Cursor: red, bold, blinking */}
+        <Text color="red" bold>
+          {cursor}
+        </Text>
+      </Box>
+
       {nightly && (
         <Box width="100%" flexDirection="row" justifyContent="flex-end">
           <ThemedGradient>v{version}</ThemedGradient>

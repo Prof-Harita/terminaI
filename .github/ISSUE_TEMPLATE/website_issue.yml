@@ -1,15 +1,16 @@
 name: 'Website issue'
-description: 'Report an issue with the Gemini CLI Website and Gemini CLI Extensions Gallery'
+description: 'Report an issue with the TerminaI website'
 labels:
-  - 'area/extensions'
+  - 'status/need-triage'
+  - 'area/website'
 body:
   - type: 'markdown'
     attributes:
       value: |-
         > [!IMPORTANT]
-        > Thanks for taking the time to report an issue with the Gemini CLI Website
+        > Thanks for taking the time to report an issue with the TerminaI website.
         >
-        > Please search **[existing issues](https://github.com/google-gemini/gemini-cli/issues?q=is%3Aissue+is%3Aopen+label%3Aarea%2Fwebsite)**  to see if a similar feature has already been requested.
+        > Please search **[existing issues](https://github.com/Prof-Harita/terminaI/issues?q=is%3Aissue+is%3Aopen+label%3Aarea%2Fwebsite)** to see if a similar issue has already been reported.
   - type: 'input'
     id: 'url'
     attributes:

@@ -57,4 +57,5 @@ patch_output.log
 .genkit
 .gemini-clipboard/
 
+# Local scratch files (not committed)
 .local/

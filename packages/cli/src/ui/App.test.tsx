@@ -1,6 +1,7 @@
 /**
  * @license
  * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -14,6 +15,10 @@ import { StreamingState } from './types.js';
 import { ConfigContext } from './contexts/ConfigContext.js';
 import { AppContext, type AppState } from './contexts/AppContext.js';
 import { SettingsContext } from './contexts/SettingsContext.js';
+import {
+  UIActionsContext,
+  type UIActions,
+} from './contexts/UIActionsContext.js';
 import {
   type SettingScope,
   LoadedSettings,
@@ -100,13 +105,19 @@ describe('App', () => {
     startupWarnings: [],
   };
 
+  const mockUIActions = {
+    clearInteractivePasswordPrompt: vi.fn(),
+  } as unknown as UIActions;
+
   const renderWithProviders = (ui: React.ReactElement, state: UIState) =>
     render(
       <AppContext.Provider value={mockAppState}>
         <ConfigContext.Provider value={mockConfig}>
           <SettingsContext.Provider value={mockLoadedSettings}>
             <UIStateContext.Provider value={state}>
-              {ui}
+              <UIActionsContext.Provider value={mockUIActions}>
+                {ui}
+              </UIActionsContext.Provider>
             </UIStateContext.Provider>
           </SettingsContext.Provider>
         </ConfigContext.Provider>

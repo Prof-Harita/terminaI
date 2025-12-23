@@ -1,6 +1,7 @@
 /**
  * @license
  * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -103,12 +104,12 @@ export function ApiAuthDialog({
       width="100%"
     >
       <Text bold color={theme.text.primary}>
-        Enter Gemini API Key
+        Connect TerminaI to Gemini
       </Text>
       <Box marginTop={1} flexDirection="column">
         <Text color={theme.text.primary}>
-          Please enter your Gemini API key. It will be securely stored in your
-          system keychain.
+          Enter your Gemini API key to power TerminaI. It will be securely
+          stored in your system keychain.
         </Text>
         <Text color={theme.text.secondary}>
           You can get an API key from{' '}

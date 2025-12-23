@@ -1,6 +1,7 @@
 /**
  * @license
  * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -64,7 +65,10 @@ export const Onboarding: FC<{
     useState<OnboardingResult['approvalMode']>('default');
   const [voiceEnabled, setVoiceEnabled] = useState(false);
 
-  const stepIndex = useMemo(() => ['welcome', 'approval', 'voice', 'ready'].indexOf(step), [step]);
+  const stepIndex = useMemo(
+    () => ['welcome', 'approval', 'voice', 'ready'].indexOf(step),
+    [step],
+  );
 
   useInput((_, key) => {
     if (key.return) {

@@ -1,16 +1,16 @@
 {
-  "name": "@google/gemini-cli-a2a-server",
-  "version": "0.21.0-nightly.20251219.70696e364",
-  "description": "terminaI A2A Server",
+  "name": "@terminai/a2a-server",
+  "version": "0.21.0",
+  "description": "TerminaI A2A Server",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/google-gemini/gemini-cli.git",
+    "url": "git+https://github.com/Prof-Harita/terminaI.git",
     "directory": "packages/a2a-server"
   },
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "gemini-cli-a2a-server": "dist/a2a-server.mjs"
+    "terminai-a2a-server": "dist/a2a-server.mjs"
   },
   "scripts": {
     "build": "node ../../scripts/build_package.js",
@@ -27,7 +27,7 @@
   "dependencies": {
     "@a2a-js/sdk": "^0.3.7",
     "@google-cloud/storage": "^7.16.0",
-    "@google/gemini-cli-core": "file:../core",
+    "@terminai/core": "file:../core",
     "@google/genai": "^1.30.0",
     "express": "^5.1.0",
     "fs-extra": "^11.3.0",

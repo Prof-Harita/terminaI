@@ -4,296 +4,254 @@
   <img src="docs-terminai/assets/terminai-banner.svg" alt="terminaI Banner" width="100%">
 </div>
 
-[![terminaI CI](https://github.com/Prof-Harita/termAI/actions/workflows/ci.yml/badge.svg)](https://github.com/Prof-Harita/termAI/actions/workflows/ci.yml)
-![Stable Core](https://img.shields.io/badge/Stable%20Core-v0.21.0-blue)
+<p align="center">
+  <a href="https://github.com/Prof-Harita/terminaI/actions/workflows/ci.yml"><img src="https://github.com/Prof-Harita/termAI/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <img src="https://img.shields.io/badge/Core-v0.21.0-blue" alt="Core Version">
+  <img src="https://img.shields.io/badge/License-Apache%202.0-green" alt="License">
+  <img src="https://img.shields.io/badge/Node.js-20+-339933" alt="Node.js">
+</p>
 
-> **The Universal Translator between Human Intent and System Action.**
->
-> While coding agents exploded (Cursor, Claude Code, Copilot), the terminal
-> remained untouched. terminaI fills that gap — an AI-powered terminal agent for
-> **everyone**, from laymen to sysadmins.
-
-## Our commitment
-
-| Always free and open source | Secure and private | Infinitely extensible |
+<h3 align="center">The Sovereign Shell</h3>
+<p align="center"><i>Governed Autonomy for Systems and Servers</i></p>
 
 ---
 
-## The Problem We're Solving
+## 🎯 The Vision
 
-| Domain                      | For Developers             | For Everyone Else |
-| --------------------------- | -------------------------- | ----------------- |
-| **Coding**                  | Cursor, Claude Code, Aider | Replit, Bolt, v0  |
-| **Terminal / OS Operation** | Claude Code, Codex CLI     | **❌ NOTHING**    |
+**What if your computer could just _do things_ for you—safely?**
 
-There's no "Cursor for your computer." Until now.
+Not "suggest commands." Not "generate scripts." Actually _operate_ your system:
+diagnose issues, fix problems, orchestrate workflows—with guardrails that make
+it trustworthy.
 
-**terminaI lets anyone say:**
+TerminaI is an **AI-powered system operator** that runs on laptops, dev boxes,
+and servers. It combines the power of modern LLMs with the governance
+enterprises demand.
+
+> _"Google provides the intelligence. TerminaI provides the root access and the
+> guardrails."_
+
+---
+
+## ✨ Why TerminaI
+
+<table>
+<tr>
+<td width="50%">
+
+### 🏠 For End Users
+
+**"Fix my computer"—for real.**
 
 - _"Why is my laptop slow? Fix it."_
-- _"Back up my important files before I format."_
-- _"What's eating my disk space? Clean it up safely."_
-- _"Start the dev server, watch logs, ping me if it crashes."_
+- _"What's eating my disk space? Clean it safely."_
+- _"Back up my files before I update."_
 
-## Why terminaI?
+No command-line knowledge needed. Just describe what you want.
 
-| Feature              | terminaI                      | Warp        | GitHub Copilot CLI | Open Interpreter   |
-| -------------------- | ----------------------------- | ----------- | ------------------ | ------------------ |
-| **Primary Focus**    | **Universal System Operator** | Terminal UI | Command Suggestion | Desktop Automation |
-| **License**          | **Open Source (Apache 2.0)**  | Proprietary | Proprietary        | Open Source        |
-| **Voice Control**    | **Push-to-Talk**              | ❌          | ❌                 | ❌                 |
-| **Execution Safety** | **Confirmed + Sandbox**       | User runs   | User runs          | ⚠️ High risk       |
-| **Web Remote**       | **Control from phone/iPad**   | ❌          | ❌                 | ❌                 |
-| **Model Agnostic**   | **(Gemini, Ollama, Claude)**  | N/A         | OpenAI only        | ✅                 |
+</td>
+<td width="50%">
 
-**Our Moat:**
+### ⚡ For Power Users
 
-1. **Open Source + Model Agnostic** — No vendor lock-in
-2. **Voice-First** — Hands-free terminal (Push-to-Talk with `space`)
-3. **Web-Remote** — Control your terminal from anywhere
-4. **MCP Ecosystem** — Extensible like an app store
-5. **Safety Architecture** — Preview before execute, trust boundaries
+**Your terminal, supercharged.**
+
+- Voice control (push-to-talk with `space`)
+- Process orchestration (`/sessions`)
+- MCP extensions (GitHub, Slack, custom tools)
+- Audit trail of every action
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 🔧 For Developers
+
+**The primitives you want to build on.**
+
+- **A2A Protocol**: Agent-to-Agent control plane
+- **MCP Ecosystem**: Model Context Protocol integration
+- **Policy Engine**: Programmable trust boundaries
+- **PTY Bridge**: Real terminal, not simulations
+
+</td>
+<td width="50%">
+
+### 📈 For Organizations
+
+**Agentic automation you can audit.**
+
+- Non-repudiable action logs
+- Approval workflows for sensitive ops
+- Fleet-ready architecture
+- No data leaves your infrastructure
+
+</td>
+</tr>
+</table>
 
 ---
 
-## Installation
+## 🔥 What Makes Us Different
 
-### From Source (Recommended)
+|                                            | TerminaI | GitHub Copilot CLI | Open Interpreter | Warp |
+| ------------------------------------------ | :------: | :----------------: | :--------------: | :--: |
+| **Actually executes** (not just suggests)  |    ✅    |         ❌         |        ✅        |  ❌  |
+| **Policy gating** (approval before action) |    ✅    |         ❌         |        ❌        |  ❌  |
+| **Audit trail** (what happened, when, why) |    ✅    |         ❌         |        ❌        |  ❌  |
+| **Voice control**                          |    ✅    |         ❌         |        ❌        |  ❌  |
+| **Agent-to-Agent protocol**                |    ✅    |         ❌         |        ❌        |  ❌  |
+| **Fully open source**                      |    ✅    |         ❌         |        ✅        |  ❌  |
+| **Self-hosted / air-gapped**               |    ✅    |         ❌         |        ✅        |  ❌  |
+
+**The thesis**: AI system operation must be _governed_. We're building the
+infrastructure to make that possible.
+
+---
+
+## 🚀 Quick Start
 
 ```bash
-git clone https://github.com/Prof-Harita/termAI.git
-cd termAI
-npm ci
-npm run build
+# Clone and build
+git clone https://github.com/Prof-Harita/terminaI.git
+cd terminaI && npm ci && npm run build
+
+# Link the CLI
 npm link --workspace packages/termai
 
-# Run it
-termai
+# Run
+terminai
 ```
 
-### Optional: Add `gemini` Alias (for muscle memory)
-
-```bash
-./scripts/termai-install.sh --alias-gemini
-```
-
----
-
-## Authentication
-
-terminaI uses Gemini models via Google OAuth. Choose your method:
-
-### Option 1: Login with Google (Recommended)
-
-```bash
-termai
-# Follow the browser authentication flow
-```
-
-**Free tier:** 60 requests/min, 1,000 requests/day, Gemini 2.5 Pro
-
-### Option 2: Gemini API Key
-
-```bash
-export GEMINI_API_KEY="YOUR_API_KEY"  # from https://aistudio.google.com/apikey
-termai
-```
-
-### Option 3: Vertex AI (Enterprise)
-
-```bash
-export GOOGLE_API_KEY="YOUR_API_KEY"
-export GOOGLE_GENAI_USE_VERTEXAI=true
-termai
-```
-
-See [Authentication Guide](./docs/get-started/authentication.md) for more
-options.
-
----
-
-## Quick Examples
-
-### Everyday Tasks (Not Just Coding)
-
-```bash
-termai
-> What's using all my disk space?
-> Find large files over 1GB and show me which I can delete safely
-
-> What processes are eating my CPU right now?
-
-> Back up my Documents folder to an external drive
-```
-
-### Developer Workflows
-
-```bash
-termai
-> Start the dev server in the background and watch the logs
-> If it crashes, restart it and notify me
-
-> Run the test suite, fix any failures, and commit the fix
-
-> Explain the architecture of this codebase
-```
-
-### Voice Control
-
-Press `space` or `ctrl+space` to activate Push-to-Talk.
+Then just talk to it:
 
 ```
-🎤 "Start the build and tell me when it's done"
-🎤 "What's the status of my running processes?"
+> What's using my CPU right now?
+> Start the dev server in the background and watch for crashes
+> Fix my wifi connection
 ```
 
 ---
 
-## Who Is This For?
+## 🛡️ The Trust Model
 
-| Persona                  | Pain Point                                     | terminaI Value                          |
-| ------------------------ | ---------------------------------------------- | --------------------------------------- |
-| **Junior Developer**     | Scared of `rm -rf`, doesn't know syntax        | Safety net: preview + explain           |
-| **SRE / DevOps**         | Copilot hallucinates flags, hates latency      | Local-first, auditable, scriptable      |
-| **Small Business Owner** | "The shop screen is black. I don't know Nginx" | Intent-based: "Restart the display"     |
-| **Data Analyst**         | Excel crashes on 50 CSVs, can't use pandas     | Local pandas-power via natural language |
-| **Accessibility User**   | GUIs are hostile, menus are nested             | Voice-first universal interface         |
+TerminaI doesn't just run commands. It **governs** them.
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  User Intent                                                │
+│  "Clean up Docker containers"                               │
+└──────────────────────────┬──────────────────────────────────┘
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│  Policy Engine                                              │
+│  ├─ Classify risk level                                     │
+│  ├─ Check trust boundaries                                  │
+│  └─ Route to appropriate approval flow                      │
+└──────────────────────────┬──────────────────────────────────┘
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│  Approval                                                   │
+│  "This will remove stopped containers. Proceed? [y/n]"      │
+└──────────────────────────┬──────────────────────────────────┘
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│  Execution + Audit                                          │
+│  ├─ Execute via real PTY                                    │
+│  └─ Log to tamper-evident audit trail                       │
+└─────────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## Key Features
+## 🔌 Extensibility
 
-### Process Orchestration
+### MCP (Model Context Protocol)
 
-- Start/stop/monitor long-running processes (`/sessions`)
-- Tail logs with AI-powered summaries
-- Background notifications when builds finish
+Connect TerminaI to external tools and services:
 
-### Voice Mode
-
-- Push-to-Talk: `space` or `ctrl+space`
-- Local STT (privacy-first)
-- Spoken confirmations for risky operations
-
-### Web Remote (Coming Soon)
-
-- Control your terminal from phone/iPad
-- QR code pairing
-- Read-only mode for observers
-
-### Safety Architecture
-
-- **Preview Mode**: See commands before they run
-- **Trust Folders**: Different policies per directory
-- **Risk Classification**: Commands labeled by impact
-- **Never YOLO by default**: Confirmations required
-
-### MCP Extensions
-
-- `@github` — Pull request management
+- `@github` — PR management, issue creation
 - `@slack` — Team notifications
-- Custom tools via [MCP protocol](./docs/tools/mcp-server.md)
+- Custom servers — Your internal APIs
+
+### A2A (Agent-to-Agent)
+
+Let other programs control TerminaI:
+
+- IDE integrations
+- Desktop app companions
+- Multi-agent orchestration
+- Remote operation via secure pairing
 
 ---
 
-## Documentation
+## 🗺️ Architecture
 
-### Getting Started
-
-- [**terminaI Documentation Hub**](./docs-terminai/index.md) - Start here
-- [**Quickstart Guide**](./docs-terminai/quickstart.md) - Get running in 5
-  minutes
-- [**Voice Mode Guide**](./docs-terminai/voice.md) - Push-to-talk and voice
-  commands
-- [**Web Remote Guide**](./docs-terminai/web-remote.md) - Access from browser
-
-### Gemini CLI Features (Inherited)
-
-For features from the upstream Gemini CLI:
-
-- [**Authentication**](./docs/get-started/authentication.md) - OAuth and API
-  keys
-- [**Configuration**](./docs/get-started/configuration.md) - Settings and
-  customization
-- [**Commands Reference**](./docs/cli/commands.md) - Slash commands
-- [**MCP Integration**](./docs/tools/mcp-server.md) - External capabilities
-- [**Troubleshooting**](./docs/troubleshooting.md) - Common issues
+```
+packages/
+├── core/         # Engine: tools, policy, routing, telemetry
+├── cli/          # Terminal UI (Ink/React)
+├── desktop/      # Tauri app + PTY bridge
+├── a2a-server/   # Agent-to-Agent control plane
+└── termai/       # The `terminai` launcher
+```
 
 ---
 
-## Roadmap
+## 🤝 Contributing
 
-See our comprehensive [**Product Roadmap**](./futureroadmap_opus.md) for:
+We're building the future of trustworthy system automation. Join us.
 
-- **Horizon 1** (Now — Q1 2025): Foundation, Voice MVP, Web-Remote v1
-- **Horizon 2** (2025): Novice UX, Workflow Engine, MCP Ecosystem
-- **Horizon 3** (2026+): Fleet Orchestration, Terminal Apps, terminaI Cloud
+**High-impact contribution areas:**
 
----
+- **Policy Engine** — Make system operation safe by default
+- **PTY Hardening** — Resize, signals, backpressure
+- **Audit System** — Tamper-evident logging
+- **MCP Servers** — New capabilities as plugins
+- **A2A Clients** — IDE, GUI, and mobile integrations
 
-## Contributing
-
-We welcome contributions! terminaI is fully open source (Apache 2.0).
-
-- Report bugs and suggest features
-- Improve documentation
-- Submit code improvements
-- Share your MCP servers and extensions
-
-See [Contributing Guide](./CONTRIBUTING.md) for development setup.
+→ [Contributing Guide](./CONTRIBUTING.md)  
+→ [Open Issues](https://github.com/Prof-Harita/terminaI/issues)
 
 ---
 
-## Fork Lineage
+## 📜 Lineage
 
-terminaI is a fork of
-[Google's Gemini CLI](https://github.com/google-gemini/gemini-cli), transformed
-from a coding-focused agent into a **general-purpose terminal operator**.
-
-**Running on:** Stable Core v0.21.0 (frozen)
+TerminaI is a sovereign fork of
+[Google's Gemini CLI](https://github.com/google-gemini/gemini-cli).
 
 **What we changed:**
 
-- Repositioned from "coding agent" to "universal terminal agent"
-- Added system awareness (CPU, disk, processes)
-- Added process orchestration (`/sessions`)
-- Added voice-first interactions (push-to-talk)
-- Added web-remote access (A2A server POC)
+- Repositioned from "coding agent" → "system operator"
+- Added governance layer (policy, approvals, audit)
+- Added voice-first interactions
+- Added A2A server for agent coordination
 
-**What we keep:**
-
-- Core architecture and tool infrastructure
-- Authentication mechanisms
-- Security primitives
-
-**Upstream Sync Policy:**
-
-We do **not** sync with upstream for 30 days (until 100 Stars milestone). This
-ensures stability and prevents breaking changes. See
-[`.local/MAINTAINERS_POLICY.md`](.local/MAINTAINERS_POLICY.md) for details.
+**Running on:** Core v0.21.0 (stable, frozen)
 
 ---
 
-## Resources
+## 📚 Resources
 
-- **[terminaI Changelog](./docs-terminai/changelog.md)** — terminaI-specific
-  changes
-- **[Product Roadmap](./futureroadmap_opus.md)** — Strategic direction
-- **[GitHub Issues](https://github.com/Prof-Harita/termAI/issues)** — Bugs &
-  features
-- **[Troubleshooting](./docs/troubleshooting.md)** — Common issues
+|                        |                                              |
+| ---------------------- | -------------------------------------------- |
+| 📖 **Documentation**   | [docs-terminai/](./docs-terminai/index.md)   |
+| 🗓️ **Roadmap**         | [tasks_roadmapv2.md](./tasks_roadmapv2.md)   |
+| 🔐 **Security**        | [SECURITY.md](./SECURITY.md)                 |
+| 📋 **Terms & Privacy** | [docs/tos-privacy.md](./docs/tos-privacy.md) |
 
 ---
 
-## Legal
+## ⚖️ License
 
-- **License**: [Apache License 2.0](LICENSE)
-- **Terms of Service**: [Terms & Privacy](./docs/tos-privacy.md)
-- **Security**: [Security Policy](SECURITY.md)
+[Apache License 2.0](LICENSE) — Free as in freedom. Use it, fork it, ship it.
 
 ---
 
 <p align="center">
-  <strong>terminaI</strong> — The Universal Translator for Your Computer<br/>
-  Built with ❤️ by Prof-Harita • Forked from Google Gemini CLI
+  <b>terminaI</b> — Governed Autonomy for Systems and Servers<br/><br/>
+  <a href="https://github.com/Prof-Harita/terminaI/stargazers">⭐ Star on GitHub</a> · 
+  <a href="./CONTRIBUTING.md">Contribute</a> · 
+  <a href="https://github.com/Prof-Harita/terminaI/issues">Report Issues</a>
 </p>

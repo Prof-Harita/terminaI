@@ -1,13 +1,14 @@
 # Themes
 
-Gemini CLI supports a variety of themes to customize its color scheme and
-appearance. You can change the theme to suit your preferences via the `/theme`
-command or `"theme":` configuration setting.
+TerminaI inherits the theme system from the upstream Gemini CLI.
+
+You can customize the color scheme via the `/theme` command or the `"theme"`
+setting.
 
 ## Available themes
 
-Gemini CLI comes with a selection of pre-defined themes, which you can list
-using the `/theme` command within Gemini CLI:
+TerminaI comes with a selection of pre-defined themes, which you can list using
+the `/theme` command:
 
 - **Dark themes:**
   - `ANSI`
@@ -26,7 +27,7 @@ using the `/theme` command within Gemini CLI:
 
 ### Changing themes
 
-1.  Enter `/theme` into Gemini CLI.
+1.  Enter `/theme` into TerminaI.
 2.  A dialog or selection prompt appears, listing the available themes.
 3.  Using the arrow keys, select a theme. Some interfaces might offer a live
     preview or highlight as you select.
@@ -38,9 +39,24 @@ can change the theme using the `/theme` command.
 
 ### Theme persistence
 
-Selected themes are saved in Gemini CLI's
+Selected themes are saved in TerminaI's
 [configuration](../get-started/configuration.md) so your preference is
 remembered across sessions.
+
+---
+
+## TerminaI look (recommended)
+
+If you’re contributing and want the “Sovereign Shell” vibe, pick a high-contrast
+dark theme and keep your terminal background near-black.
+
+Examples (these are generated from the built-in theme set):
+
+<img src="../assets/theme-default.png" alt="Default theme (dark)" width="600" />
+
+<img src="../assets/theme-github.png" alt="GitHub theme (dark)" width="600" />
+
+<img src="../assets/theme-ayu.png" alt="Ayu theme (dark)" width="600" />
 
 ---
 

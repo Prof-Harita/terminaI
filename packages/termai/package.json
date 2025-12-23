@@ -1,11 +1,11 @@
 {
-  "name": "termai",
+  "name": "@terminai/cli-wrapper",
   "version": "0.21.0",
-  "description": "terminaI CLI wrapper for Gemini CLI",
+  "description": "TerminaI CLI - The Sovereign Shell",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Prof-Harita/termAI.git"
+    "url": "git+https://github.com/Prof-Harita/terminaI.git"
   },
   "type": "module",
   "main": "dist/index.js",
@@ -27,7 +27,7 @@
     "README.md"
   ],
   "dependencies": {
-    "@google/gemini-cli": "file:../cli"
+    "@terminai/cli": "file:../cli"
   },
   "devDependencies": {
     "@types/node": "^20.11.24",

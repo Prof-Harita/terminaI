@@ -1,6 +1,7 @@
 /**
  * @license
  * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -123,7 +124,7 @@ export async function createContentGenerator(
     );
     const customHeadersEnv =
       process.env['GEMINI_CLI_CUSTOM_HEADERS'] || undefined;
-    const userAgent = `GeminiCLI/${version}/${model} (${process.platform}; ${process.arch})`;
+    const userAgent = `TerminaI/${version}/${model} (${process.platform}; ${process.arch})`;
     const customHeadersMap = parseCustomHeaders(customHeadersEnv);
     const apiKeyAuthMechanism =
       process.env['GEMINI_API_KEY_AUTH_MECHANISM'] || 'x-goog-api-key';

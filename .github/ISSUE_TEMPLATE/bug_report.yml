@@ -1,5 +1,5 @@
 name: 'Bug Report'
-description: 'Report a bug to help us improve Gemini CLI'
+description: 'Report a bug to help us improve TerminaI'
 labels:
   - 'status/need-triage'
 body:
@@ -9,7 +9,7 @@ body:
         > [!IMPORTANT]
         > Thanks for taking the time to fill out this bug report!
         >
-        > Please search **[existing issues](https://github.com/google-gemini/gemini-cli/issues)** to see if an issue already exists for the bug you encountered.
+        > Please search **[existing issues](https://github.com/Prof-Harita/terminaI/issues)** to see if an issue already exists for the bug you encountered.
 
   - type: 'textarea'
     id: 'problem'
@@ -30,12 +30,12 @@ body:
     id: 'info'
     attributes:
       label: 'Client information'
-      description: 'Please paste the full text from the `/about` command run from Gemini CLI. Also include which platform (macOS, Windows, Linux).'
+      description: 'Please paste the full text from the `/about` command run from TerminaI. Also include which platform (macOS, Windows, Linux).'
       value: |-
         <details>
         <summary>Client Information</summary>
 
-        Run `gemini` to enter the interactive CLI, then run the `/about` command.
+        Run `terminai` to enter the interactive CLI, then run the `/about` command.
 
         ```console
         > /about

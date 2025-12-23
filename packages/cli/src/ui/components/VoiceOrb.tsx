@@ -1,6 +1,7 @@
 /**
  * @license
  * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -35,7 +36,10 @@ function getPulse(amplitude: number, state: string): string {
 
 export const VoiceOrb: React.FC = () => {
   const { enabled, state, amplitude } = useVoiceState();
-  const visual = useMemo<StateVisual>(() => STATE_VISUALS[state] || STATE_VISUALS['IDLE'], [state]);
+  const visual = useMemo<StateVisual>(
+    () => STATE_VISUALS[state] || STATE_VISUALS['IDLE'],
+    [state],
+  );
 
   if (!enabled) {
     return null;

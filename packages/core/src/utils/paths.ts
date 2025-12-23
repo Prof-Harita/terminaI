@@ -1,15 +1,71 @@
 /**
  * @license
  * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import path from 'node:path';
 import os from 'node:os';
 import * as crypto from 'node:crypto';
+import * as fs from 'node:fs';
 
-export const GEMINI_DIR = '.gemini';
+export const TERMINAI_DIR = '.terminai';
+export const LEGACY_GEMINI_DIR = '.gemini';
+// Backwards compatibility alias - existing code imports GEMINI_DIR
+export const GEMINI_DIR = TERMINAI_DIR;
 export const GOOGLE_ACCOUNTS_FILENAME = 'google_accounts.json';
+
+/**
+ * Gets the terminai config directory, migrating from legacy .gemini if needed.
+ * Non-destructive: copies legacy data, never moves/deletes it.
+ */
+export function getTerminaiConfigDir(): string {
+  const terminaiPath = path.join(os.homedir(), TERMINAI_DIR);
+  const legacyPath = path.join(os.homedir(), LEGACY_GEMINI_DIR);
+
+  // First run migration: copy legacy to new (non-destructive)
+  if (!fs.existsSync(terminaiPath) && fs.existsSync(legacyPath)) {
+    try {
+      fs.cpSync(legacyPath, terminaiPath, { recursive: true });
+    } catch {
+      // If copy fails, continue anyway - we'll create fresh
+    }
+  }
+
+  // Ensure directory exists
+  if (!fs.existsSync(terminaiPath)) {
+    fs.mkdirSync(terminaiPath, { recursive: true });
+  }
+
+  return terminaiPath;
+}
+
+/**
+ * Reads a file with fallback to legacy .gemini directory.
+ * Prefers .terminai, falls back to .gemini for backwards compatibility.
+ */
+export function readWithFallback(relativePath: string): string | null {
+  const primary = path.join(os.homedir(), TERMINAI_DIR, relativePath);
+  const legacy = path.join(os.homedir(), LEGACY_GEMINI_DIR, relativePath);
+
+  if (fs.existsSync(primary)) {
+    return fs.readFileSync(primary, 'utf-8');
+  }
+  if (fs.existsSync(legacy)) {
+    return fs.readFileSync(legacy, 'utf-8');
+  }
+  return null;
+}
+
+/**
+ * Checks if a file exists in either terminai or legacy gemini directory.
+ */
+export function existsWithFallback(relativePath: string): boolean {
+  const primary = path.join(os.homedir(), TERMINAI_DIR, relativePath);
+  const legacy = path.join(os.homedir(), LEGACY_GEMINI_DIR, relativePath);
+  return fs.existsSync(primary) || fs.existsSync(legacy);
+}
 
 /**
  * Special characters that need to be escaped in file paths for shell compatibility.

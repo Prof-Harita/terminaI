@@ -1,6 +1,7 @@
 /**
  * @license
  * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -141,7 +142,7 @@ describe('createContentGenerator', () => {
       vertexai: undefined,
       httpOptions: {
         headers: {
-          'User-Agent': expect.stringContaining('GeminiCLI/1.2.3/gemini-pro'),
+          'User-Agent': expect.stringContaining('TerminaI/1.2.3/gemini-pro'),
           'x-gemini-api-privileged-user-id': expect.any(String),
         },
       },
