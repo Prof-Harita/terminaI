@@ -118,7 +118,10 @@
     "ts-prune": "^0.10.3",
     "tsx": "^4.20.3",
     "typescript-eslint": "^8.30.1",
-    "vitest": "^3.2.4",
+    "vitest": "^3.1.1",
+    "@google/gemini-cli": "file:./packages/cli",
+    "@google/gemini-cli-a2a-server": "file:./packages/a2a-server",
+    "@google/gemini-cli-core": "file:./packages/core",
     "yargs": "^17.7.2"
   },
   "dependencies": {

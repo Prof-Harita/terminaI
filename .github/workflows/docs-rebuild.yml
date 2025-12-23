@@ -11,6 +11,10 @@ jobs:
     steps:
       - name: 'Trigger rebuild'
         run: |
+          if [ -z "${{ secrets.DOCS_REBUILD_URL }}" ]; then
+            echo "DOCS_REBUILD_URL is not set; skipping docs rebuild trigger."
+            exit 0
+          fi
           curl -X POST \
             -H "Content-Type: application/json" \
             -d '{}' \
