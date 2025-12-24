@@ -18,6 +18,8 @@ const cleanupFunctions: Array<(() => void) | (() => Promise<void>)> = [];
 const syncCleanupFunctions: Array<() => void> = [];
 let configForTelemetry: Config | null = null;
 
+import { computerSessionManager } from '@terminai/core';
+
 export function registerCleanup(fn: (() => void) | (() => Promise<void>)) {
   cleanupFunctions.push(fn);
 }
@@ -25,6 +27,15 @@ export function registerCleanup(fn: (() => void) | (() => Promise<void>)) {
 export function registerSyncCleanup(fn: () => void) {
   syncCleanupFunctions.push(fn);
 }
+
+// Register core cleanup
+registerSyncCleanup(() => {
+  try {
+    computerSessionManager.disposeAll();
+  } catch (_) {
+    // console.error('Failed to cleanup sessions', err);
+  }
+});
 
 export function runSyncCleanup() {
   for (const fn of syncCleanupFunctions) {

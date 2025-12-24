@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { Text, Box } from 'ink';
 import { theme } from '../../semantic-colors.js';
 import { useSelectionList } from '../../hooks/useSelectionList.js';
+import { InteractiveBox } from '../../kit/InteractiveBox.js';
 
 import type { SelectionListItem } from '../../hooks/useSelectionList.js';
 
@@ -62,7 +63,7 @@ export function BaseSelectionList<
   maxItemsToShow = 10,
   renderItem,
 }: BaseSelectionListProps<T, TItem>): React.JSX.Element {
-  const { activeIndex } = useSelectionList({
+  const listHookResult = useSelectionList({
     items,
     initialIndex,
     onSelect,
@@ -70,6 +71,8 @@ export function BaseSelectionList<
     isFocused,
     showNumbers,
   });
+
+  const { activeIndex, setActiveIndex } = listHookResult;
 
   const [scrollOffset, setScrollOffset] = useState(0);
 
@@ -129,7 +132,20 @@ export function BaseSelectionList<
         )}.`;
 
         return (
-          <Box key={item.key} alignItems="flex-start">
+          <InteractiveBox
+            key={item.key}
+            alignItems="flex-start"
+            onHover={(hovered) => {
+              if (hovered && !item.disabled) {
+                setActiveIndex(itemIndex);
+              }
+            }}
+            onClick={() => {
+              if (!item.disabled) {
+                onSelect(item.value);
+              }
+            }}
+          >
             {/* Radio button indicator */}
             <Box minWidth={2} flexShrink={0}>
               <Text
@@ -160,7 +176,7 @@ export function BaseSelectionList<
                 numberColor,
               })}
             </Box>
-          </Box>
+          </InteractiveBox>
         );
       })}
 

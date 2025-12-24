@@ -94,7 +94,7 @@ describe('toml-loader', () => {
       const filePath = await writeAgentToml(`
         name = "test-agent"
         description = "A test agent"
-        tools = ["run_shell_command", "delegate_to_agent"]
+        tools = ["run_terminal_command", "delegate_to_agent"]
         [prompts]
         system_prompt = "You are a test agent."
       `);

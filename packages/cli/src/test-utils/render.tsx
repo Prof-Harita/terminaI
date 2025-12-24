@@ -173,6 +173,8 @@ const mockUIActions: UIActions = {
   setBannerVisible: vi.fn(),
   setEmbeddedShellFocused: vi.fn(),
   clearInteractivePasswordPrompt: vi.fn(),
+  setViewMode: vi.fn(),
+  setSpotlightOpen: vi.fn(),
 };
 
 export const renderWithProviders = (

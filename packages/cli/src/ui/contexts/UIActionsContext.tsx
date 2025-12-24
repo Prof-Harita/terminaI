@@ -58,6 +58,8 @@ export interface UIActions {
   setBannerVisible: (visible: boolean) => void;
   setEmbeddedShellFocused: (value: boolean) => void;
   clearInteractivePasswordPrompt: () => void;
+  setViewMode: (mode: 'standard' | 'focus' | 'multiplex') => void;
+  setSpotlightOpen: (isOpen: boolean) => void;
 }
 
 export const UIActionsContext = createContext<UIActions | null>(null);

@@ -32,41 +32,34 @@ export const Footer: React.FC = () => {
   const { vimEnabled, vimMode } = useVimMode();
 
   const {
-    model,
-    targetDir,
-    debugMode,
+    currentModel: model,
     branchName,
     debugMessage,
     corgiMode,
     errorCount,
     showErrorDetails,
-    promptTokenCount,
     nightly,
     isTrustedFolder,
     mainAreaWidth,
-  } = {
-    model: uiState.currentModel,
-    targetDir: config.getTargetDir(),
-    debugMode: config.getDebugMode(),
-    branchName: uiState.branchName,
-    debugMessage: uiState.debugMessage,
-    corgiMode: uiState.corgiMode,
-    errorCount: uiState.errorCount,
-    showErrorDetails: uiState.showErrorDetails,
-    promptTokenCount: uiState.sessionStats.lastPromptTokenCount,
-    nightly: uiState.nightly,
-    isTrustedFolder: uiState.isTrustedFolder,
-    mainAreaWidth: uiState.mainAreaWidth,
-  };
+    viewMode,
+  } = uiState;
+
+  const targetDir = config.getTargetDir();
+  const debugMode = config.getDebugMode();
+  const promptTokenCount = uiState.sessionStats.lastPromptTokenCount;
 
   const showMemoryUsage =
-    config.getDebugMode() || settings.merged.ui?.showMemoryUsage || false;
+    (config.getDebugMode() || settings.merged.ui?.showMemoryUsage || false) &&
+    viewMode !== 'focus';
   const hideCWD = settings.merged.ui?.footer?.hideCWD || false;
   const hideSandboxStatus =
-    settings.merged.ui?.footer?.hideSandboxStatus || false;
+    settings.merged.ui?.footer?.hideSandboxStatus ||
+    false ||
+    viewMode === 'focus';
   const hideModelInfo = settings.merged.ui?.footer?.hideModelInfo || false;
   const hideContextPercentage =
-    settings.merged.ui?.footer?.hideContextPercentage ?? true;
+    (settings.merged.ui?.footer?.hideContextPercentage ?? true) ||
+    viewMode === 'focus';
 
   const pathLength = Math.max(20, Math.floor(mainAreaWidth * 0.25));
   const displayPath = shortenPath(tildeifyPath(targetDir), pathLength);
@@ -166,7 +159,7 @@ export const Footer: React.FC = () => {
             {showMemoryUsage && <MemoryUsageDisplay />}
           </Box>
           <Box alignItems="center">
-            {corgiMode && (
+            {corgiMode && viewMode !== 'focus' && (
               <Box paddingLeft={1} flexDirection="row">
                 <Text>
                   <Text color={theme.ui.symbol}>| </Text>

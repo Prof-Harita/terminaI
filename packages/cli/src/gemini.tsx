@@ -82,6 +82,7 @@ import { SessionSelector } from './utils/sessionUtils.js';
 import { computeWindowTitle } from './utils/windowTitle.js';
 import { SettingsContext } from './ui/contexts/SettingsContext.js';
 import { MouseProvider } from './ui/contexts/MouseContext.js';
+import { ThemeProvider } from './ui/contexts/ThemeContext.js';
 
 import { SessionStatsProvider } from './ui/contexts/SessionContext.js';
 import { VimModeProvider } from './ui/contexts/VimModeContext.js';
@@ -236,18 +237,20 @@ export async function startInteractiveUI(
             }
           >
             <ScrollProvider>
-              <SessionStatsProvider>
-                <VimModeProvider settings={settings}>
-                  <AppContainer
-                    config={config}
-                    startupWarnings={startupWarnings}
-                    version={version}
-                    resumedSessionData={resumedSessionData}
-                    initializationResult={initializationResult}
-                    voiceOverrides={voiceOverrides}
-                  />
-                </VimModeProvider>
-              </SessionStatsProvider>
+              <ThemeProvider>
+                <SessionStatsProvider>
+                  <VimModeProvider settings={settings}>
+                    <AppContainer
+                      config={config}
+                      startupWarnings={startupWarnings}
+                      version={version}
+                      resumedSessionData={resumedSessionData}
+                      initializationResult={initializationResult}
+                      voiceOverrides={voiceOverrides}
+                    />
+                  </VimModeProvider>
+                </SessionStatsProvider>
+              </ThemeProvider>
             </ScrollProvider>
           </MouseProvider>
         </KeypressProvider>

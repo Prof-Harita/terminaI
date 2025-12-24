@@ -35,6 +35,7 @@ import { AgentControlTool } from '../tools/agent-control.js';
 import { WebFetchTool } from '../tools/web-fetch.js';
 import { MemoryTool, setGeminiMdFilename } from '../tools/memoryTool.js';
 import { WebSearchTool } from '../tools/web-search.js';
+import { ReplTool } from '../tools/repl.js';
 import { GeminiClient } from '../core/client.js';
 import { BaseLlmClient } from '../core/baseLlmClient.js';
 import type { HookDefinition, HookEventName } from '../hooks/types.js';
@@ -1669,6 +1670,8 @@ export class Config {
     if (this.getUseWriteTodos()) {
       registerCoreTool(WriteTodosTool, this);
     }
+    // Register REPL tool for Sovereign Computer architecture
+    registerCoreTool(ReplTool, this);
 
     // Register Subagents as Tools
     // Register DelegateToAgentTool if agents are enabled

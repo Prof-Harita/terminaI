@@ -78,6 +78,7 @@ export interface CommandContext {
     dispatchExtensionStateUpdate: (action: ExtensionUpdateAction) => void;
     addConfirmUpdateExtensionRequest: (value: ConfirmationRequest) => void;
     removeComponent: () => void;
+    setViewMode: (mode: 'standard' | 'focus' | 'multiplex') => void;
   };
   // Session-specific data
   session: {

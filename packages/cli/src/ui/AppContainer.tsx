@@ -13,7 +13,7 @@ import {
   useRef,
   useLayoutEffect,
 } from 'react';
-import { type DOMElement, measureElement } from 'ink';
+import { type DOMElement, measureElement, useInput } from 'ink';
 import { App } from './App.js';
 import { AppContext } from './contexts/AppContext.js';
 import { UIStateContext, type UIState } from './contexts/UIStateContext.js';
@@ -444,6 +444,9 @@ export const AppContainer = (props: AppContainerProps) => {
   const [defaultBannerText, setDefaultBannerText] = useState('');
   const [warningBannerText, setWarningBannerText] = useState('');
   const [bannerVisible, setBannerVisible] = useState(true);
+  const [viewMode, setViewMode] = useState<'standard' | 'focus' | 'multiplex'>(
+    'standard',
+  );
 
   const bannerData = useMemo(
     () => ({
@@ -588,7 +591,10 @@ export const AppContainer = (props: AppContainerProps) => {
   const { consoleMessages, clearConsoleMessages: clearConsoleMessagesState } =
     useConsoleMessages();
 
-  const mainAreaWidth = calculateMainAreaWidth(terminalWidth, settings);
+  const mainAreaWidth =
+    viewMode === 'focus'
+      ? Math.min(terminalWidth, 100)
+      : calculateMainAreaWidth(terminalWidth, settings);
   // Derive widths for InputPrompt using shared helper
   const { inputWidth, suggestionsWidth } = useMemo(() => {
     const { inputWidth, suggestionsWidth } =
@@ -869,6 +875,7 @@ Logging in with Google... Restarting terminaI to continue.
       toggleDebugProfiler,
       dispatchExtensionStateUpdate,
       addConfirmUpdateExtensionRequest,
+      setViewMode,
     }),
     [
       setAuthState,
@@ -885,6 +892,7 @@ Logging in with Google... Restarting terminaI to continue.
       openPermissionsDialog,
       addConfirmUpdateExtensionRequest,
       toggleDebugProfiler,
+      setViewMode,
     ],
   );
 
@@ -1793,6 +1801,14 @@ Logging in with Google... Restarting terminaI to continue.
     [pendingSlashCommandHistoryItems, pendingGeminiHistoryItems],
   );
 
+  const [isSpotlightOpen, setSpotlightOpen] = useState(false);
+
+  useInput((input, key) => {
+    if (input === 'k' && key.ctrl) {
+      setSpotlightOpen((prev) => !prev);
+    }
+  });
+
   const [geminiMdFileCount, setGeminiMdFileCount] = useState<number>(
     config.getGeminiMdFileCount(),
   );
@@ -1933,8 +1949,11 @@ Logging in with Google... Restarting terminaI to continue.
       terminalBackgroundColor: config.getTerminalBackground(),
       interactivePasswordPrompt,
       isFullScreen,
+      viewMode,
+      isSpotlightOpen,
     }),
     [
+      isSpotlightOpen,
       isThemeDialogOpen,
       themeError,
       isAuthenticating,
@@ -2026,6 +2045,7 @@ Logging in with Google... Restarting terminaI to continue.
       bannerVisible,
       interactivePasswordPrompt,
       isFullScreen,
+      viewMode,
       config,
     ],
   );
@@ -2071,8 +2091,11 @@ Logging in with Google... Restarting terminaI to continue.
       setBannerVisible,
       setEmbeddedShellFocused,
       clearInteractivePasswordPrompt,
+      setViewMode,
+      setSpotlightOpen,
     }),
     [
+      setSpotlightOpen,
       handleThemeSelect,
       closeThemeDialog,
       handleThemeHighlight,
@@ -2107,6 +2130,7 @@ Logging in with Google... Restarting terminaI to continue.
       setBannerVisible,
       setEmbeddedShellFocused,
       clearInteractivePasswordPrompt,
+      setViewMode,
     ],
   );
 

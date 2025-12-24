@@ -73,6 +73,7 @@ interface SlashCommandProcessorActions {
   toggleDebugProfiler: () => void;
   dispatchExtensionStateUpdate: (action: ExtensionUpdateAction) => void;
   addConfirmUpdateExtensionRequest: (request: ConfirmationRequest) => void;
+  setViewMode: (mode: 'standard' | 'focus' | 'multiplex') => void;
 }
 
 /**
@@ -232,6 +233,7 @@ export const useSlashCommandProcessor = (
         addConfirmUpdateExtensionRequest:
           actions.addConfirmUpdateExtensionRequest,
         removeComponent: () => setCustomDialog(null),
+        setViewMode: actions.setViewMode,
       },
       session: {
         stats: session.stats,

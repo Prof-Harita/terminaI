@@ -21,13 +21,18 @@ interface AppHeaderProps {
 export const AppHeader = ({ version }: AppHeaderProps) => {
   const settings = useSettings();
   const config = useConfig();
-  const { nightly, mainAreaWidth, bannerData, bannerVisible } = useUIState();
+  const { nightly, mainAreaWidth, bannerData, bannerVisible, viewMode } =
+    useUIState();
 
   const { bannerText } = useBanner(bannerData, config);
 
   return (
     <Box flexDirection="column">
-      {!(settings.merged.ui?.hideBanner || config.getScreenReader()) && (
+      {!(
+        settings.merged.ui?.hideBanner ||
+        config.getScreenReader() ||
+        viewMode === 'focus'
+      ) && (
         <>
           <Header version={version} nightly={nightly} />
           {bannerVisible && bannerText && (
@@ -39,9 +44,11 @@ export const AppHeader = ({ version }: AppHeaderProps) => {
           )}
         </>
       )}
-      {!(settings.merged.ui?.hideTips || config.getScreenReader()) && (
-        <Tips config={config} />
-      )}
+      {!(
+        settings.merged.ui?.hideTips ||
+        config.getScreenReader() ||
+        viewMode === 'focus'
+      ) && <Tips config={config} />}
     </Box>
   );
 };

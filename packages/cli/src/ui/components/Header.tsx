@@ -6,6 +6,7 @@
  */
 
 import type React from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Text } from 'ink';
 import { ThemedGradient } from './ThemedGradient.js';
 import {
@@ -33,6 +34,15 @@ export const Header: React.FC<HeaderProps> = ({
   // Determine which logo size to use based on terminal width
   // The large logo is roughly 30 chars wide
   const showLarge = terminalWidth >= 40;
+
+  const [blink, setBlink] = useState(true);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setBlink((b) => !b);
+    }, 530); // 530ms is a common cursor blink rate
+    return () => clearInterval(timer);
+  }, []);
 
   const body = showLarge ? logoBodyLarge : logoBody;
   const cursor = showLarge ? logoCursorLarge : logoCursor;
@@ -66,10 +76,10 @@ export const Header: React.FC<HeaderProps> = ({
       flexDirection="column"
     >
       <Box flexDirection="row">
-        {/* Main body: white/grey */}
-        <Text color="white">{body}</Text>
-        {/* Cursor: red, bold, blinking */}
-        <Text color="red" bold>
+        {/* Main body: #FFFFFF */}
+        <Text color="#FFFFFF">{body}</Text>
+        {/* Cursor: #E2231A, blinking */}
+        <Text color="#E2231A" dimColor={!blink}>
           {cursor}
         </Text>
       </Box>

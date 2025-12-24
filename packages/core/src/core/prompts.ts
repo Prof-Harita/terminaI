@@ -12,6 +12,7 @@ import {
   MEMORY_TOOL_NAME,
   READ_FILE_TOOL_NAME,
   SHELL_TOOL_NAME,
+  REPL_TOOL_NAME,
 } from '../tools/tool-names.js';
 import process from 'node:process';
 import { isGitRepository } from '../utils/gitUtils.js';
@@ -123,15 +124,32 @@ export function getCoreSystemPrompt(
     .getAllToolNames()
     .includes(WriteTodosTool.Name);
 
+  const enableReplTool = config
+    .getToolRegistry()
+    .getAllToolNames()
+    .includes(REPL_TOOL_NAME);
+
   const interactiveMode = config.isInteractiveShellEnabled();
 
   let basePrompt: string;
   if (systemMdEnabled) {
     basePrompt = fs.readFileSync(systemMdPath, 'utf8');
   } else {
+    // Adaptive Intelligence Section
+    const adaptiveIntelligence = enableReplTool
+      ? `
+# Adaptive Intelligence & Sovereign Computer
+You have access to a persistent REPL environment ('${REPL_TOOL_NAME}') for Python, Node.js, and Shell, which creates a 'Sovereign Computer' capability.
+- **When to use REPL**: For stateful tasks, multi-step calculations, complex logic, data processing, scraped data analysis, or when variables need to persist between steps.
+- **When NOT to use REPL**: For simple single-shot file I/O, git operations, standard system administration (use '${SHELL_TOOL_NAME}' for these), or when no state needs to be shared.
+- **State Persistence**: Variables defined in '${REPL_TOOL_NAME}' persist across calls within the same session. You can build up complex state objects over time.
+- **Self-Correction**: If code fails, the output will contain a traceback. Analyze it and use '${REPL_TOOL_NAME}' again to fix the code and retry.
+`
+      : '';
+
     const generalTerminalWorkflows = `
 # Primary Workflows
-
+${adaptiveIntelligence}
 ## General Terminal Tasks
 
 When requested to perform any terminal task, follow this sequence:

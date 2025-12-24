@@ -6,10 +6,12 @@
  */
 
 import type React from 'react';
-import { Box } from 'ink';
+import { Box, Text } from 'ink';
 import { Notifications } from '../components/Notifications.js';
-import { MainContent } from '../components/MainContent.js';
 import { DialogManager } from '../components/DialogManager.js';
+import { DialogLayer } from './DialogLayer.js';
+import { MultiplexView } from '../views/MultiplexView.js';
+import { SessionView } from '../views/SessionView.js';
 import { Composer } from '../components/Composer.js';
 import { ExitWarning } from '../components/ExitWarning.js';
 import { useUIState } from '../contexts/UIStateContext.js';
@@ -60,8 +62,12 @@ export const DefaultAppLayout: React.FC = () => {
   const width = isAlternateBuffer
     ? uiState.terminalWidth
     : uiState.mainAreaWidth;
+  const marginLeft = isAlternateBuffer
+    ? 0
+    : Math.floor((uiState.terminalWidth - width) / 2);
   return (
     <Box
+      marginLeft={Math.max(0, marginLeft)}
       flexDirection="column"
       width={width}
       height={isAlternateBuffer ? terminalHeight - 1 : undefined}
@@ -71,7 +77,18 @@ export const DefaultAppLayout: React.FC = () => {
       ref={uiState.rootUiRef}
     >
       <VoiceOrb />
-      <MainContent />
+      {uiState.viewMode === 'multiplex' ? (
+        <MultiplexView
+          leftPane={<SessionView />}
+          rightPane={
+            <Box borderStyle="single">
+              <Text>Active Process Output Placeholder</Text>
+            </Box>
+          }
+        />
+      ) : (
+        <SessionView />
+      )}
 
       <Box
         flexDirection="column"
@@ -107,6 +124,7 @@ export const DefaultAppLayout: React.FC = () => {
 
         <ExitWarning />
       </Box>
+      <DialogLayer />
     </Box>
   );
 };

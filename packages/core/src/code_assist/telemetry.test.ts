@@ -308,7 +308,7 @@ describe('telemetry', () => {
       const toolCalls: CompletedToolCall[] = [
         {
           request: {
-            name: 'replace', // in EDIT_TOOL_NAMES
+            name: 'edit_file', // in EDIT_TOOL_NAMES
             args: {},
             callId: 'call-1',
             isClientInitiated: false,

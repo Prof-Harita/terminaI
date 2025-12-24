@@ -42,6 +42,7 @@ export * from './core/recordingContentGenerator.js';
 export * from './fallback/types.js';
 // Brain exports
 export * from './brain/index.js';
+export * from './computer/index.js';
 
 // Tool exports
 export * from './tools/process-notifications.js';

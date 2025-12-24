@@ -141,6 +141,8 @@ export interface UIState {
   terminalBackgroundColor: TerminalBackgroundColor;
   interactivePasswordPrompt: string | null;
   isFullScreen: boolean;
+  viewMode: 'standard' | 'focus' | 'multiplex';
+  isSpotlightOpen: boolean;
 }
 
 export const UIStateContext = createContext<UIState | null>(null);
