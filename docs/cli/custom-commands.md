@@ -214,7 +214,7 @@ When you run `/git:commit`, the CLI first executes `git diff --staged`, then
 replaces `!{git diff --staged}` with the output of that command before sending
 the final, complete prompt to the model.
 
-### Operator recipe examples (TermAI)
+### Operator recipe examples (TerminaI)
 
 These examples show concise, safe prompts for common terminal tasks. Adjust
 commands as needed for your OS and project.

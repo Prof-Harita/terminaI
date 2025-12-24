@@ -88,7 +88,7 @@ function App() {
           className="font-semibold"
           style={{ fontSize: 'var(--text-lg)', color: 'var(--text-primary)' }}
         >
-          TermAI
+          TerminaI
         </h1>
 
         <div className="flex items-center" style={{ gap: 'var(--space-2)' }}>

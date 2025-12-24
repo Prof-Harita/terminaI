@@ -75,7 +75,7 @@ export const useFolderTrust = (
       } catch (_e) {
         coreEvents.emitFeedback(
           'error',
-          'Failed to save trust settings. Exiting TermAI.',
+          'Failed to save trust settings. Exiting TerminaI.',
         );
         setTimeout(async () => {
           await runExitCleanup();

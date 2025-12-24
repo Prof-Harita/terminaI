@@ -120,14 +120,14 @@ export const Onboarding: FC<{
       gap={1}
     >
       <Text color="cyan" bold>
-        TermAI — First Run Setup ({stepIndex + 1}/4)
+        TerminaI — First Run Setup ({stepIndex + 1}/4)
       </Text>
 
       {step === 'welcome' && (
         <Box flexDirection="column" gap={1}>
           <Text>
-            Welcome! Let&apos;s configure safety and voice so TermAI matches how
-            you work.
+            Welcome! Let&apos;s configure safety and voice so TerminaI matches
+            how you work.
           </Text>
           <Text dimColor>Press Enter to continue.</Text>
         </Box>

@@ -7,9 +7,9 @@
 
 ## 1. Global Settings
 
-- **Public Repo URL**: `https://github.com/Prof-Harita/termAI`
+- **Public Repo URL**: `https://github.com/Prof-Harita/terminaI`
 - **Install Command**: `npm i -g @google/gemini-cli` (Placeholder until renamed)
-  or `git clone https://github.com/Prof-Harita/termAI.git`
+  or `git clone https://github.com/Prof-Harita/terminaI.git`
 - **Tagline**: "The Universal Translator between Human Intent and System
   Action."
 
@@ -43,7 +43,7 @@
 - **Primary CTA**: `Download Beta` (Links to `/download`) — _Style: Solid Black
   Button (Light Mode) / White Button (Dark Mode)_.
 - **Secondary CTA**: `GitHub ★ Star` (Links to
-  `https://github.com/Prof-Harita/termAI`) — _Style: Outline_.
+  `https://github.com/Prof-Harita/terminaI`) — _Style: Outline_.
 
 ### 2.2 Feature Grid ("Why terminaI?")
 
@@ -123,8 +123,8 @@ npm i -g @google/gemini-cli
 **2. From Source (Developers)**
 
 ```bash
-git clone https://github.com/Prof-Harita/termAI.git
-cd termAI
+git clone https://github.com/Prof-Harita/terminaI.git
+cd terminaI
 npm ci && npm run build
 npm link --workspace packages/termai
 ```

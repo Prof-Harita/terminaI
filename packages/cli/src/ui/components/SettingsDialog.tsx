@@ -1057,7 +1057,7 @@ export function SettingsDialog({
         {showRestartPrompt && (
           <Box marginX={1}>
             <Text color={theme.status.warning}>
-              To see changes, TermAI must be restarted. Press r to exit and
+              To see changes, TerminaI must be restarted. Press r to exit and
               apply changes now.
             </Text>
           </Box>

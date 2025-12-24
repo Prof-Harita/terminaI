@@ -22,7 +22,8 @@ export const SpotlightDialog = () => {
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  // Define available commands
+  // Define available commands - only recompute when query or shellModeActive changes
+  // Note: setViewMode and setShellModeActive are stable refs from context
   const items: SpotlightItem[] = useMemo(() => {
     const list: SpotlightItem[] = [
       { label: 'View: Focus Mode', execute: () => setViewMode('focus') },
@@ -41,7 +42,8 @@ export const SpotlightDialog = () => {
     return list.filter((item) =>
       item.label.toLowerCase().includes(query.toLowerCase()),
     );
-  }, [query, setViewMode, shellModeActive, setShellModeActive]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, shellModeActive]);
 
   useInput((input, key) => {
     if (!isSpotlightOpen) return;

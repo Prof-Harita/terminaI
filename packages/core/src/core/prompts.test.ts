@@ -79,7 +79,7 @@ describe('Core System Prompt (prompts.ts)', () => {
   it('should use chatty system prompt for preview model', () => {
     vi.mocked(mockConfig.getActiveModel).mockReturnValue(PREVIEW_GEMINI_MODEL);
     const prompt = getCoreSystemPrompt(mockConfig);
-    expect(prompt).toContain('You are TermAI'); // Check for core content
+    expect(prompt).toContain('You are TerminaI'); // Check for core content
     expect(prompt).toContain('General Terminal Tasks');
     expect(prompt).not.toContain('No Chitchat:');
   });
@@ -99,7 +99,7 @@ describe('Core System Prompt (prompts.ts)', () => {
     vi.stubEnv('SANDBOX', undefined);
     const prompt = getCoreSystemPrompt(mockConfig, userMemory);
     expect(prompt).not.toContain('---\n\n'); // Separator should not be present
-    expect(prompt).toContain('You are TermAI'); // Check for core content
+    expect(prompt).toContain('You are TerminaI'); // Check for core content
     expect(prompt).toContain('General Terminal Tasks');
   });
 
@@ -110,7 +110,7 @@ describe('Core System Prompt (prompts.ts)', () => {
     const prompt = getCoreSystemPrompt(mockConfig, memory);
 
     expect(prompt.endsWith(expectedSuffix)).toBe(true);
-    expect(prompt).toContain('You are TermAI'); // Ensure base prompt follows
+    expect(prompt).toContain('You are TerminaI'); // Ensure base prompt follows
     expect(prompt).toContain('General Terminal Tasks');
   });
 

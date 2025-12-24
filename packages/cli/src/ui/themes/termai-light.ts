@@ -28,7 +28,7 @@ const termaiLightColors: ColorsTheme = {
 };
 
 export const TermAILight: Theme = new Theme(
-  'TermAI Light',
+  'TerminaI Light',
   'light',
   {
     hljs: {

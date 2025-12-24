@@ -37,7 +37,7 @@ Usage:
 web_fetch(prompt="Your prompt, including a URL such as https://google.com.")
 ```
 
-## Operator tips (TermAI)
+## Operator tips (TerminaI)
 
 - Use `web_fetch` when you already have specific URLs. If you need to discover
   sources first, use `google_web_search`.

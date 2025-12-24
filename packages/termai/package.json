@@ -1,7 +1,7 @@
 {
   "name": "@terminai/cli-wrapper",
   "version": "0.21.0",
-  "description": "TerminaI CLI - The Sovereign Shell",
+  "description": "TerminaI CLI - AI-Powered Terminal",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",

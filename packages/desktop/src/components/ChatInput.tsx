@@ -67,7 +67,7 @@ export function ChatInput({ onSend, disabled, inputRef }: Props) {
         <textarea
           ref={inputRef}
           className="input"
-          placeholder="Message TermAI..."
+          placeholder="Message TerminaI..."
           rows={1}
           value={input}
           onChange={(e) => setInput(e.target.value)}

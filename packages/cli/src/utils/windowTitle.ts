@@ -6,13 +6,13 @@
  */
 
 /**
- * Computes the window title for the TermAI application.
+ * Computes the window title for the TerminaI application.
  *
  * @param folderName - The name of the current folder/workspace to display in the title
- * @returns The computed window title, either from CLI_TITLE environment variable or the default TermAI title
+ * @returns The computed window title, either from CLI_TITLE environment variable or the default TerminaI title
  */
 export function computeWindowTitle(folderName: string): string {
-  const title = process.env['CLI_TITLE'] || `TermAI - ${folderName}`;
+  const title = process.env['CLI_TITLE'] || `TerminaI - ${folderName}`;
 
   // Remove control characters that could cause issues in terminal titles
   return title.replace(

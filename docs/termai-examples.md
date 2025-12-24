@@ -1,7 +1,7 @@
-# What can TermAI do?
+# What can TerminaI do?
 
-TermAI is designed for everyday terminal tasks, not just code. Here are concrete
-examples you can copy-paste.
+TerminaI is designed for everyday terminal tasks, not just code. Here are
+concrete examples you can copy-paste.
 
 ## System and ops
 

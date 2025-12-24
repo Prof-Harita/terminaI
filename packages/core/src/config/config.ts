@@ -1670,7 +1670,7 @@ export class Config {
     if (this.getUseWriteTodos()) {
       registerCoreTool(WriteTodosTool, this);
     }
-    // Register REPL tool for Sovereign Computer architecture
+    // Register REPL tool for Persistent REPL architecture
     registerCoreTool(ReplTool, this);
 
     // Register Subagents as Tools

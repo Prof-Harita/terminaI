@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # TerminaI Installer Script
-# The Sovereign Shell: Governed Autonomy for Systems and Servers
+# AI-Powered Terminal: Governed Autonomy for Systems and Servers
 #
 # Usage: curl -sSL https://install.terminai.org | sh
 #
@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 
 echo ""
 echo -e "${BOLD}╔════════════════════════════════════════════════════════════╗${NC}"
-echo -e "${BOLD}║          TerminaI - The Sovereign Shell                    ║${NC}"
+echo -e "${BOLD}║          TerminaI - AI-Powered Terminal                     ║${NC}"
 echo -e "${BOLD}║    Governed Autonomy for Systems and Servers               ║${NC}"
 echo -e "${BOLD}╚════════════════════════════════════════════════════════════╝${NC}"
 echo ""

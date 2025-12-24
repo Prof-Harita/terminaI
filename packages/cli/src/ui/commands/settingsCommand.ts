@@ -10,7 +10,7 @@ import { CommandKind } from './types.js';
 
 export const settingsCommand: SlashCommand = {
   name: 'settings',
-  description: 'View and edit TermAI settings',
+  description: 'View and edit TerminaI settings',
   kind: CommandKind.BUILT_IN,
   autoExecute: true,
   action: (_context, _args): OpenDialogActionReturn => ({

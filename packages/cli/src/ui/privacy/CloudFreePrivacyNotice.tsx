@@ -86,7 +86,7 @@ export const CloudFreePrivacyNotice = ({
       </Text>
       <Newline />
       <Text color={theme.text.primary}>
-        When you use Gemini Code Assist for individuals with TermAI, Google
+        When you use Gemini Code Assist for individuals with TerminaI, Google
         collects your prompts, related code, generated output, code edits,
         related feature usage information, and your feedback to provide,
         improve, and develop Google products and services and machine learning

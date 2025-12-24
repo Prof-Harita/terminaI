@@ -94,11 +94,12 @@ Additionally, these tools incorporate:
 - **[Sandboxing](../cli/sandbox.md)**: Sandboxing isolates the model and its
   changes from your environment to reduce potential risk.
 
-## TermAI-specific tools in this repo
+## TerminaI-specific tools in this repo
 
 - **`file_ops`:** Safe file organization (mkdir/move/copy/delete/tree listing).
   See [File System Tools](./file-system.md).
 - **`process_manager`:** Named long-running sessions with bounded output and
-  safe termination. See [TermAI process manager](../termai-process-manager.md).
+  safe termination. See
+  [TerminaI process manager](../termai-process-manager.md).
 - **`agent_control`:** Supervises external agent CLIs as managed sessions (run,
   send prompt, read output, stop).

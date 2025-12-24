@@ -445,7 +445,7 @@ export const AppContainer = (props: AppContainerProps) => {
   const [warningBannerText, setWarningBannerText] = useState('');
   const [bannerVisible, setBannerVisible] = useState(true);
   const [viewMode, setViewMode] = useState<'standard' | 'focus' | 'multiplex'>(
-    'standard',
+    'focus', // Start in zen mode for clean startup experience
   );
 
   const bannerData = useMemo(
@@ -612,9 +612,10 @@ export const AppContainer = (props: AppContainerProps) => {
     }
   }, []);
 
+  const maxInputHeight = Math.max(3, Math.floor(terminalHeight * 0.4));
   const buffer = useTextBuffer({
     initialText: '',
-    viewport: { height: 10, width: inputWidth },
+    viewport: { height: maxInputHeight, width: inputWidth },
     stdin,
     setRawMode,
     isValidPath,
@@ -1227,10 +1228,14 @@ Logging in with Google... Restarting terminaI to continue.
 
   const handleFinalSubmit = useCallback(
     (submittedValue: string) => {
+      // Switch from zen/focus mode to standard after first input
+      if (viewMode === 'focus') {
+        setViewMode('standard');
+      }
       addMessage(submittedValue);
       addInput(submittedValue); // Track input for up-arrow history
     },
-    [addMessage, addInput],
+    [addMessage, addInput, viewMode, setViewMode],
   );
 
   const handleClearScreen = useCallback(() => {
@@ -1841,7 +1846,7 @@ Logging in with Google... Restarting terminaI to continue.
           authType === AuthType.USE_VERTEX_AI
         ) {
           setDefaultBannerText(
-            'TermAI is powered by Gemini 1.5 Pro and Flash. \nEnable "Preview features" in /settings. \nLearn more at https://goo.gle/enable-preview-features',
+            'TerminaI is powered by Gemini 1.5 Pro and Flash. \nEnable "Preview features" in /settings. \nLearn more at https://goo.gle/enable-preview-features',
           );
         }
       }

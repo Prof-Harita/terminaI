@@ -1,4 +1,4 @@
-# TermAI Operator Recipes
+# TerminaI Operator Recipes
 
 This page contains practical, safe prompts for common terminal tasks. Each
 recipe is designed to be concise, observable, and confirmable.
