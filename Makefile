@@ -57,7 +57,7 @@ run-npx:
 
 create-alias:
 	scripts/create_alias.sh
-You are working on terminaI, a fork of gemini-cli located at /home/profharita/Code/termAI.
+You are working on terminaI, a fork of gemini-cli located at /home/profharita/Code/terminaI.
 
 ## What's Already Done (MVP)
 Per tasks.md section "1. Current State":
@@ -69,7 +69,7 @@ Per tasks.md section "1. Current State":
 ## Your Task: Build, Test, and Verify
 
 ### Step 1: Build
-cd /home/profharita/Code/termAI
+cd /home/profharita/Code/terminaI
 npm ci
 npm run build
 

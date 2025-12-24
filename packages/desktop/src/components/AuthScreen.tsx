@@ -41,7 +41,7 @@ export function AuthScreen({ onAuthenticated }: Props) {
 
   return (
     <div className="flex flex-col items-center justify-center h-full bg-[var(--bg-primary)]">
-      <h1 className="text-4xl font-bold mb-2 text-white">TermAI</h1>
+      <h1 className="text-4xl font-bold mb-2 text-white">TerminaI</h1>
       <p className="text-gray-400 mb-8">Connect to your agent (A2A) backend</p>
 
       <div

@@ -1,6 +1,6 @@
-# TermAI quickstart
+# TerminaI quickstart
 
-TermAI is a terminal-first AI that ships as a wrapper on top of Gemini CLI. It
+TerminaI is a terminal-first AI that ships as a wrapper on top of Gemini CLI. It
 runs the same engine with a Terminal AI system prompt by default.
 
 ## Install
@@ -21,8 +21,8 @@ termai
 ### Option 3: from source
 
 ```bash
-git clone https://github.com/Prof-Harita/termAI.git
-cd termAI
+git clone https://github.com/Prof-Harita/terminaI.git
+cd terminaI
 npm ci
 npm run build
 npm link --workspace packages/termai
@@ -56,4 +56,4 @@ termai
 ## Troubleshooting
 
 If you hit permission prompts or tool denials, re-run the command and confirm
-explicitly. TermAI will never bypass your confirmation policies.
+explicitly. TerminaI will never bypass your confirmation policies.

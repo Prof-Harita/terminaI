@@ -85,42 +85,44 @@ export interface CustomTheme {
   GradientColors?: string[];
 }
 
+// Light theme: Desert Sand - warm, inviting, tasteful
 export const lightTheme: ColorsTheme = {
   type: 'light',
-  Background: '#FAFAFA',
-  Foreground: '',
-  LightBlue: '#89BDCD',
-  AccentBlue: '#3B82F6',
-  AccentPurple: '#8B5CF6',
-  AccentCyan: '#06B6D4',
-  AccentGreen: '#3CA84B',
-  AccentYellow: '#D5A40A',
-  AccentRed: '#DD4C4C',
-  DiffAdded: '#C6EAD8',
-  DiffRemoved: '#FFCCCC',
-  Comment: '#008000',
-  Gray: '#97a0b0',
-  DarkGray: interpolateColor('#97a0b0', '#FAFAFA', 0.5),
-  GradientColors: ['#4796E4', '#847ACE', '#C3677F'],
+  Background: '#FAF7F2', // Desert sand
+  Foreground: '#1A1A1A',
+  LightBlue: '#4A90A4',
+  AccentBlue: '#2563EB',
+  AccentPurple: '#7C3AED',
+  AccentCyan: '#0891B2',
+  AccentGreen: '#059669',
+  AccentYellow: '#CA8A04',
+  AccentRed: '#E2231A', // TerminaI red
+  DiffAdded: '#D1FAE5',
+  DiffRemoved: '#FEE2E2',
+  Comment: '#6B7280',
+  Gray: '#8C8C8C',
+  DarkGray: interpolateColor('#8C8C8C', '#FAF7F2', 0.5),
+  GradientColors: ['#E2231A', '#F97316'], // Red to orange
 };
 
+// Dark theme: Midnight - true black, clean, modern
 export const darkTheme: ColorsTheme = {
   type: 'dark',
-  Background: '#121212',
-  Foreground: '#E0E0E0',
-  LightBlue: '#4FC3F7',
-  AccentBlue: '#2979FF',
-  AccentPurple: '#B388FF',
-  AccentCyan: '#00E5FF',
-  AccentGreen: '#00E676',
-  AccentYellow: '#FFEA00',
-  AccentRed: '#FF1744',
-  DiffAdded: '#1B5E20',
-  DiffRemoved: '#B71C1C',
-  Comment: '#757575',
-  Gray: '#9E9E9E',
-  DarkGray: interpolateColor('#9E9E9E', '#121212', 0.5),
-  GradientColors: ['#00E676', '#2979FF', '#B388FF'],
+  Background: '#0D0D0D', // True black
+  Foreground: '#E5E5E5',
+  LightBlue: '#60A5FA',
+  AccentBlue: '#3B82F6',
+  AccentPurple: '#A78BFA',
+  AccentCyan: '#22D3EE',
+  AccentGreen: '#34D399',
+  AccentYellow: '#FBBF24',
+  AccentRed: '#E2231A', // TerminaI red
+  DiffAdded: '#064E3B',
+  DiffRemoved: '#7F1D1D',
+  Comment: '#737373',
+  Gray: '#737373',
+  DarkGray: interpolateColor('#737373', '#0D0D0D', 0.5),
+  GradientColors: ['#E2231A', '#F97316'], // Red to orange
 };
 
 export const ansiTheme: ColorsTheme = {

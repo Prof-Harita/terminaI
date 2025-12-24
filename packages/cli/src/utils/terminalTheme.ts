@@ -49,7 +49,7 @@ export async function setupTerminalAndTheme(
       terminalBackground,
       themeManager.getAllThemes(),
       DEFAULT_THEME.name,
-      'TermAI Light',
+      'TerminaI Light',
     );
     themeManager.setActiveTheme(themeName);
   }

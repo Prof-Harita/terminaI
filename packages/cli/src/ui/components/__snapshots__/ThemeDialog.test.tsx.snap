@@ -13,7 +13,7 @@ exports[`Initial Theme Selection > should default to a dark theme when terminal 
 │    6. GitHub Dark                                     │ 5         a, b = b, a + b                                  │ │
 │    7. Holiday Dark                                    │ 6     return a                                             │ │
 │    8. Shades Of Purple Dark                           │                                                            │ │
-│ ●  9. TermAI Dark Dark                                │ 1 - print("Hello, " + name)                                │ │
+│ ●  9. TerminaI Dark Dark                              │ 1 - print("Hello, " + name)                                │ │
 │   10. ANSI Light Light (Incompatible)                 │ 1 + print(f"Hello, {name}!")                               │ │
 │   11. Ayu Light Light (Incompatible)                  │                                                            │ │
 │   12. Default Light Light (Incompatible)              └────────────────────────────────────────────────────────────┘ │
@@ -34,7 +34,7 @@ exports[`Initial Theme Selection > should default to a light theme when terminal
 │ ●  3. Default Light Light                             │ 2 def fibonacci(n):                                        │ │
 │    4. GitHub Light Light                              │ 3     a, b = 0, 1                                          │ │
 │    5. Google Code Light                               │ 4     for _ in range(n):                                   │ │
-│    6. TermAI Light Light                              │ 5         a, b = b, a + b                                  │ │
+│    6. TerminaI Light Light                            │ 5         a, b = b, a + b                                  │ │
 │    7. Xcode Light                                     │ 6     return a                                             │ │
 │    8. ANSI Dark (Incompatible)                        │                                                            │ │
 │    9. Atom One Dark (Incompatible)                    │ 1 - print("Hello, " + name)                                │ │
@@ -61,7 +61,7 @@ exports[`Initial Theme Selection > should use the theme from settings even if te
 │    6. GitHub Dark                                     │ 5         a, b = b, a + b                                  │ │
 │    7. Holiday Dark                                    │ 6     return a                                             │ │
 │    8. Shades Of Purple Dark                           │                                                            │ │
-│    9. TermAI Dark Dark                                │ 1 - print("Hello, " + name)                                │ │
+│    9. TerminaI Dark Dark                              │ 1 - print("Hello, " + name)                                │ │
 │   10. ANSI Light Light (Incompatible)                 │ 1 + print(f"Hello, {name}!")                               │ │
 │   11. Ayu Light Light (Incompatible)                  │                                                            │ │
 │   12. Default Light Light (Incompatible)              └────────────────────────────────────────────────────────────┘ │
@@ -101,7 +101,7 @@ exports[`ThemeDialog Snapshots > should render correctly in theme selection mode
 │   11. Google Code Light                               │ 1 - print("Hello, " + name)                                │ │
 │   12. Holiday Dark                                    │ 1 + print(f"Hello, {name}!")                               │ │
 │   13. Shades Of Purple Dark                           │                                                            │ │
-│ ● 14. TermAI Dark Dark                                └────────────────────────────────────────────────────────────┘ │
+│ ● 14. TerminaI Dark Dark                              └────────────────────────────────────────────────────────────┘ │
 │ ▼                                                                                                                    │
 │                                                                                                                      │
 │ (Use Enter to select, Tab to configure scope, Esc to close)                                                          │

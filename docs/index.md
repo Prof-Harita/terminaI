@@ -20,14 +20,14 @@ This documentation is organized into the following sections:
 
 ### Overview
 
-- **[TermAI operator recipes](./termai-operator-recipes.md):** Practical, safe
+- **[TerminaI operator recipes](./termai-operator-recipes.md):** Practical, safe
   prompts for common terminal tasks.
-- **[TermAI quickstart](./termai-quickstart.md):** Install and launch TermAI in
-  minutes.
-- **[What can TermAI do?](./termai-examples.md):** Copy-paste examples for
+- **[TerminaI quickstart](./termai-quickstart.md):** Install and launch TerminaI
+  in minutes.
+- **[What can TerminaI do?](./termai-examples.md):** Copy-paste examples for
   real-world tasks.
-- **[TermAI comparison](./termai-comparison.md):** Differences from Gemini CLI,
-  Warp, and Fig.
+- **[TerminaI comparison](./termai-comparison.md):** Differences from Gemini
+  CLI, Warp, and Fig.
 - **[Architecture overview](./architecture.md):** Understand the high-level
   design of Gemini CLI, including its components and how they interact.
 - **[Contribution guide](../CONTRIBUTING.md):** Information for contributors and
@@ -35,7 +35,8 @@ This documentation is organized into the following sections:
 
 ### Get started
 
-- **[TermAI quickstart](./termai-quickstart.md):** Install and launch TermAI.
+- **[TerminaI quickstart](./termai-quickstart.md):** Install and launch
+  TerminaI.
 - **[Gemini CLI quickstart](./get-started/index.md):** Let's get started with
   Gemini CLI.
 - **[Gemini 3 Pro on Gemini CLI](./get-started/gemini-3.md):** Learn how to
@@ -59,8 +60,8 @@ This documentation is organized into the following sections:
 - **[Enterprise](./cli/enterprise.md):** Gemini CLI for enterprise.
 - **[Headless mode](./cli/headless.md):** Use Gemini CLI programmatically for
   scripting and automation.
-- **[TermAI process manager](./termai-process-manager.md):** Manual verification
-  steps for process orchestration.
+- **[TerminaI process manager](./termai-process-manager.md):** Manual
+  verification steps for process orchestration.
 - **[Keyboard shortcuts](./cli/keyboard-shortcuts.md):** A reference for all
   keyboard shortcuts to improve your workflow.
 - **[Model selection](./cli/model.md):** Select the model used to process your

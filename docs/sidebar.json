@@ -7,19 +7,19 @@
         "slug": "docs"
       },
       {
-        "label": "TermAI operator recipes",
+        "label": "TerminaI operator recipes",
         "slug": "docs/termai-operator-recipes"
       },
       {
-        "label": "TermAI quickstart",
+        "label": "TerminaI quickstart",
         "slug": "docs/termai-quickstart"
       },
       {
-        "label": "What can TermAI do?",
+        "label": "What can TerminaI do?",
         "slug": "docs/termai-examples"
       },
       {
-        "label": "TermAI comparison",
+        "label": "TerminaI comparison",
         "slug": "docs/termai-comparison"
       },
       {
@@ -44,7 +44,7 @@
     "label": "Get started",
     "items": [
       {
-        "label": "TermAI quickstart",
+        "label": "TerminaI quickstart",
         "slug": "docs/termai-quickstart"
       },
       {
@@ -101,7 +101,7 @@
         "slug": "docs/cli/headless"
       },
       {
-        "label": "TermAI process manager",
+        "label": "TerminaI process manager",
         "slug": "docs/termai-process-manager"
       },
       {

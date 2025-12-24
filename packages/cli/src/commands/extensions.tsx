@@ -21,7 +21,7 @@ import { initializeOutputListenersAndFlush } from '../gemini.js';
 export const extensionsCommand: CommandModule = {
   command: 'extensions <command>',
   aliases: ['extension'],
-  describe: 'Manage TermAI extensions.',
+  describe: 'Manage TerminaI extensions.',
   builder: (yargs) =>
     yargs
       .middleware(() => initializeOutputListenersAndFlush())

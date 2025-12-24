@@ -5,13 +5,13 @@
 </div>
 
 <p align="center">
-  <a href="https://github.com/Prof-Harita/terminaI/actions/workflows/ci.yml"><img src="https://github.com/Prof-Harita/termAI/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/Prof-Harita/terminaI/actions/workflows/ci.yml"><img src="https://github.com/Prof-Harita/terminaI/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <img src="https://img.shields.io/badge/Core-v0.21.0-blue" alt="Core Version">
   <img src="https://img.shields.io/badge/License-Apache%202.0-green" alt="License">
   <img src="https://img.shields.io/badge/Node.js-20+-339933" alt="Node.js">
 </p>
 
-<h3 align="center">The Sovereign Shell</h3>
+<h3 align="center">AI-Powered Terminal for Everyone</h3>
 <p align="center"><i>Governed Autonomy for Systems and Servers</i></p>
 
 ---
@@ -218,7 +218,7 @@ We're building the future of trustworthy system automation. Join us.
 
 ## 📜 Lineage
 
-TerminaI is a sovereign fork of
+TerminaI is a community fork of
 [Google's Gemini CLI](https://github.com/google-gemini/gemini-cli).
 
 **What we changed:**

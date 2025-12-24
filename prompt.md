@@ -30,8 +30,8 @@ Phase 2: Uber-Prioritization (The Home Run Framework) Re-sort all tasks from
 roadmapv1.md and add missing ones based on these tiers:
 
 [H] - Launch Home Runs (Pre-Launch): Tasks that establish TerminaI as a
-sovereign platform and provide the "System Operator" superpower. Without these,
-we are just a Google fork.
+independent platform and provide the "System Operator" superpower. Without
+these, we are just a Google fork.
 
 [H-Defensiveness] - The Moat (Pre-Launch): Architectural changes that make us
 impossible to clone (e.g., the local Policy Engine and A2A Protocol).

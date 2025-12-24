@@ -1,7 +1,7 @@
 # Contributing to TerminaI
 
-TerminaI is a community-built “Sovereign Shell”: governed autonomy for laptops
-and servers.
+TerminaI is a community-built AI terminal with governed autonomy for laptops and
+servers.
 
 We’re optimizing for **contributors** right now. If you want to build the future
 of trustworthy system automation (A2A, MCP, policy gating, PTY hardening, audit

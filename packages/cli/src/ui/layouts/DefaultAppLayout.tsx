@@ -6,12 +6,12 @@
  */
 
 import type React from 'react';
-import { Box, Text } from 'ink';
+import { Box } from 'ink';
 import { Notifications } from '../components/Notifications.js';
 import { DialogManager } from '../components/DialogManager.js';
 import { DialogLayer } from './DialogLayer.js';
-import { MultiplexView } from '../views/MultiplexView.js';
 import { SessionView } from '../views/SessionView.js';
+import { ZenView } from '../views/ZenView.js';
 import { Composer } from '../components/Composer.js';
 import { ExitWarning } from '../components/ExitWarning.js';
 import { useUIState } from '../contexts/UIStateContext.js';
@@ -57,39 +57,52 @@ export const DefaultAppLayout: React.FC = () => {
       />
     );
   }
-  // If in alternate buffer mode, need to leave room to draw the scrollbar on
-  // the right side of the terminal.
+
+  // ZenView for focus mode - full screen centered
+  if (uiState.viewMode === 'focus') {
+    return (
+      <Box
+        width={uiState.terminalWidth}
+        height={isAlternateBuffer ? terminalHeight - 1 : undefined}
+        ref={uiState.rootUiRef}
+      >
+        <ZenView />
+        <DialogLayer />
+      </Box>
+    );
+  }
+
+  // Standard/Session Layout (Clean Split View like OpenCode)
   const width = isAlternateBuffer
     ? uiState.terminalWidth
     : uiState.mainAreaWidth;
   const marginLeft = isAlternateBuffer
     ? 0
     : Math.floor((uiState.terminalWidth - width) / 2);
+
   return (
     <Box
       marginLeft={Math.max(0, marginLeft)}
       flexDirection="column"
       width={width}
-      height={isAlternateBuffer ? terminalHeight - 1 : undefined}
+      height={terminalHeight - 1}
       flexShrink={0}
       flexGrow={0}
       overflow="hidden"
       ref={uiState.rootUiRef}
     >
       <VoiceOrb />
-      {uiState.viewMode === 'multiplex' ? (
-        <MultiplexView
-          leftPane={<SessionView />}
-          rightPane={
-            <Box borderStyle="single">
-              <Text>Active Process Output Placeholder</Text>
-            </Box>
-          }
-        />
-      ) : (
-        <SessionView />
-      )}
 
+      {/* 
+        Classic Vertical Layout (nano/htop style)
+        Top: Session (Messages) - Grows to fill space
+        Bottom: Input - Fixed height
+      */}
+      <Box flexGrow={1} width="100%" flexDirection="column" overflow="hidden">
+        <SessionView />
+      </Box>
+
+      {/* Minimal Footer / Input Area */}
       <Box
         flexDirection="column"
         ref={uiState.mainControlsRef}

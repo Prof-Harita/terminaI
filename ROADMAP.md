@@ -23,6 +23,6 @@ without breaking existing users.
 - Deeper system operator UX (session browser, safe replays, richer
   confirmations)
 - Optional provider abstraction (only if it can be done without breaking
-  sovereignty goals)
+  independence goals)
 
 For execution-level detail, see `tasks_roadmapv2.md`.

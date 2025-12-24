@@ -1,7 +1,7 @@
-# TermAI CLI
+# TerminaI CLI
 
-TermAI is a terminal-first AI built on Gemini CLI. This package provides the
-`termai` executable with the TermAI system prompt enabled by default.
+TerminaI is a terminal-first AI built on Gemini CLI. This package provides the
+`termai` executable with the TerminaI system prompt enabled by default.
 
 ## Quickstart
 

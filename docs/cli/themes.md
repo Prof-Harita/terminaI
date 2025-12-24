@@ -47,7 +47,7 @@ remembered across sessions.
 
 ## TerminaI look (recommended)
 
-If you’re contributing and want the “Sovereign Shell” vibe, pick a high-contrast
+If you're contributing and want the hacker terminal vibe, pick a high-contrast
 dark theme and keep your terminal background near-black.
 
 Examples (these are generated from the built-in theme set):

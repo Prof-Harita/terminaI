@@ -732,7 +732,7 @@ describe('SettingsDialog', () => {
       // Should not show restart prompt initially
       await waitFor(() => {
         expect(lastFrame()).not.toContain(
-          'To see changes, TermAI must be restarted',
+          'To see changes, TerminaI must be restarted',
         );
       });
 

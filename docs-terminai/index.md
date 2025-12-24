@@ -1,7 +1,7 @@
 # TerminaI Documentation
 
-Welcome to TerminaI — the Sovereign Shell: governed autonomy for laptops and
-servers.
+Welcome to TerminaI — an AI-powered terminal with governed autonomy for laptops
+and servers.
 
 ## What is terminaI?
 

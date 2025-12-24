@@ -18,7 +18,7 @@ project-specific behavior or create a customized persona.
 > it, and then selectively modify or replace it (see
 > [“Export the default prompt”](#export-the-default-prompt-recommended)).
 
-If you want a ready-to-use TermAI operator prompt, see the example file:
+If you want a ready-to-use TerminaI operator prompt, see the example file:
 [`docs/termai-system.md`](../termai-system.md).
 
 ## How to enable

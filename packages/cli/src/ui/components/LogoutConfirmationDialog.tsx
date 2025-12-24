@@ -63,7 +63,7 @@ export const LogoutConfirmationDialog: React.FC<
             You are now logged out.
           </Text>
           <Text color={theme.text.secondary}>
-            Login again to continue using TermAI, or exit the application.
+            Login again to continue using TerminaI, or exit the application.
           </Text>
         </Box>
 

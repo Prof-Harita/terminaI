@@ -46,7 +46,7 @@ fi
 
 npm install -g "${PACKAGE_NAME}"
 
-echo "TermAI installed. Run: termai"
+echo "TerminaI installed. Run: termai"
 
 if [ "$ALIAS_GEMINI" = true ]; then
   shell_name=$(basename "${SHELL:-}")

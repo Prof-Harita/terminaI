@@ -1,7 +1,7 @@
-# TermAI Demo Scripts
+# TerminaI Demo Scripts
 
-These demos are copy-paste prompts that show off TermAI’s strengths. Run them in
-an interactive session; many use background sessions and summaries.
+These demos are copy-paste prompts that show off TerminaI’s strengths. Run them
+in an interactive session; many use background sessions and summaries.
 
 ## System Health
 

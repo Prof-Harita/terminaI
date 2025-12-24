@@ -303,7 +303,7 @@ export async function startInteractiveUI(
 export async function main() {
   console.log('[DEBUG] CLI: main() called');
   const cliStartupHandle = startupProfiler.start('cli_startup');
-  // const cleanupStdio = patchStdio(); // Disabled to fix TermAI output swallowing
+  // const cleanupStdio = patchStdio(); // Disabled to fix TerminaI output swallowing
   const cleanupStdio = () => {};
   registerSyncCleanup(() => {
     // This is needed to ensure we don't lose any buffered output.

@@ -56,10 +56,10 @@ variables, command-line arguments, and settings files.
 To explore your configuration options, see
 [Gemini CLI Configuration](./configuration.md).
 
-If you want to override the system prompt (for example, to adopt the TermAI
+If you want to override the system prompt (for example, to adopt the TerminaI
 operator persona), see
 [System Prompt Override (GEMINI_SYSTEM_MD)](../cli/system-prompt.md) and the
-[TermAI system prompt example](../termai-system.md).
+[TerminaI system prompt example](../termai-system.md).
 
 ## Use
 

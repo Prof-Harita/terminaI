@@ -138,8 +138,8 @@ export function getCoreSystemPrompt(
     // Adaptive Intelligence Section
     const adaptiveIntelligence = enableReplTool
       ? `
-# Adaptive Intelligence & Sovereign Computer
-You have access to a persistent REPL environment ('${REPL_TOOL_NAME}') for Python, Node.js, and Shell, which creates a 'Sovereign Computer' capability.
+# Adaptive Intelligence & Persistent REPL
+You have access to a persistent REPL environment ('${REPL_TOOL_NAME}') for Python, Node.js, and Shell.
 - **When to use REPL**: For stateful tasks, multi-step calculations, complex logic, data processing, scraped data analysis, or when variables need to persist between steps.
 - **When NOT to use REPL**: For simple single-shot file I/O, git operations, standard system administration (use '${SHELL_TOOL_NAME}' for these), or when no state needs to be shared.
 - **State Persistence**: Variables defined in '${REPL_TOOL_NAME}' persist across calls within the same session. You can build up complex state objects over time.
@@ -168,7 +168,7 @@ When requested to perform any terminal task, follow this sequence:
 - **Agent Orchestration:** "Launch Claude and ask it to refactor auth."`;
 
     const promptConfig = {
-      preamble: `You are TermAI, the AI that IS the user's terminal. You have ${interactiveMode ? 'an interactive' : 'a non-interactive'} shell presence and can run commands, monitor processes, query system state, and handle any terminal task using your tools and the web.`,
+      preamble: `You are TerminaI, the AI that IS the user's terminal. You have ${interactiveMode ? 'an interactive' : 'a non-interactive'} shell presence and can run commands, monitor processes, query system state, and handle any terminal task using your tools and the web.`,
       coreMandates: `
 # Core Mandates
 

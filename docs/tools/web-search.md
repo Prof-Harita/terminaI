@@ -26,7 +26,7 @@ Usage:
 google_web_search(query="Your query goes here.")
 ```
 
-## Operator tips (TermAI)
+## Operator tips (TerminaI)
 
 - Use `google_web_search` for discovery ("find sources about…") and then use
   `web_fetch` for deep reads of specific URLs.

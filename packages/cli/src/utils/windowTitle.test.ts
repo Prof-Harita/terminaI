@@ -22,7 +22,7 @@ describe('computeWindowTitle', () => {
 
   it('should use default Gemini title when CLI_TITLE is not set', () => {
     const result = computeWindowTitle('my-project');
-    expect(result).toBe('TermAI - my-project');
+    expect(result).toBe('TerminaI - my-project');
   });
 
   it('should use CLI_TITLE environment variable when set', () => {
@@ -40,21 +40,21 @@ describe('computeWindowTitle', () => {
 
   it('should handle folder names with control characters', () => {
     const result = computeWindowTitle('project\x07name');
-    expect(result).toBe('TermAI - projectname');
+    expect(result).toBe('TerminaI - projectname');
   });
 
   it('should handle empty folder name', () => {
     const result = computeWindowTitle('');
-    expect(result).toBe('TermAI - ');
+    expect(result).toBe('TerminaI - ');
   });
 
   it('should handle folder names with spaces', () => {
     const result = computeWindowTitle('my project');
-    expect(result).toBe('TermAI - my project');
+    expect(result).toBe('TerminaI - my project');
   });
 
   it('should handle folder names with special characters', () => {
     const result = computeWindowTitle('project-name_v1.0');
-    expect(result).toBe('TermAI - project-name_v1.0');
+    expect(result).toBe('TerminaI - project-name_v1.0');
   });
 });

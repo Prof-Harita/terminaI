@@ -114,7 +114,7 @@ export async function parseArguments(settings: Settings): Promise<CliArgs> {
     .locale('en')
     .scriptName('gemini')
     .usage(
-      'Usage: gemini [options] [command]\n\nTermAI - Launch an interactive CLI, use -p/--prompt for non-interactive mode',
+      'Usage: gemini [options] [command]\n\nTerminaI - Launch an interactive CLI, use -p/--prompt for non-interactive mode',
     )
 
     .option('debug', {
@@ -123,7 +123,7 @@ export async function parseArguments(settings: Settings): Promise<CliArgs> {
       description: 'Run in debug mode?',
       default: false,
     })
-    .command('$0 [query..]', 'Launch TermAI', (yargsInstance) =>
+    .command('$0 [query..]', 'Launch TerminaI', (yargsInstance) =>
       yargsInstance
         .positional('query', {
           description:
