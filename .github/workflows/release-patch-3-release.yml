@@ -1,7 +1,7 @@
 name: 'Release: Patch (3) Release'
 
 run-name: >-
-  Release Patch (3) Release | T:${{ inputs.type }} | R:${{ inputs.release_ref }} ${{ inputs.original_pr && format('| PR:#{0}', inputs.original_pr) || '' }}
+  Release Patch (3) Release | T:${{ inputs.type }} | R:${{ inputs.release_ref }} ${{ inputs.original_pr && format('| PR:#{0}', inputs.original_pr) || '' }}'
 
 on:
   workflow_dispatch:
@@ -168,7 +168,7 @@ jobs:
           echo "  Previous Tag: ${{ steps.patch_version.outputs.PREVIOUS_TAG }}"
 
       - name: 'Run Tests'
-        if: ${{ github.event.inputs.force_skip_tests != 'true' }}
+        if: '${{ github.event.inputs.force_skip_tests != 'true' }}'
         uses: './.github/actions/run-tests'
         with:
           gemini_api_key: '${{ secrets.GEMINI_API_KEY }}'
@@ -194,7 +194,7 @@ jobs:
           working-directory: './release'
 
       - name: 'Create Issue on Failure'
-        if: ${{ failure() && github.event.inputs.dry_run == false }}
+        if: '${{ failure() && github.event.inputs.dry_run == false }}'
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
           RELEASE_TAG: '${{ steps.patch_version.outputs.RELEASE_TAG }}'
@@ -206,7 +206,7 @@ jobs:
             --label 'release-failure,priority/p0'
 
       - name: 'Comment Success on Original PR'
-        if: ${{ success() && github.event.inputs.original_pr }}
+        if: '${{ success() && github.event.inputs.original_pr }}'
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
           ORIGINAL_PR: '${{ github.event.inputs.original_pr }}'
@@ -223,7 +223,7 @@ jobs:
           node scripts/releasing/patch-comment.js
 
       - name: 'Comment Failure on Original PR'
-        if: ${{ failure() && github.event.inputs.original_pr }}
+        if: '${{ failure() && github.event.inputs.original_pr }}'
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
           ORIGINAL_PR: '${{ github.event.inputs.original_pr }}'

@@ -83,7 +83,7 @@ jobs:
           echo "ORIGIN_HASH=$(git rev-parse "${ORIGIN_TAG}")" >> "$GITHUB_OUTPUT"
 
       - name: 'Change tag'
-        if: ${{ github.event.inputs.rollback_destination != '' }}
+        if: '${{ github.event.inputs.rollback_destination != '' }}'
         uses: './.github/actions/tag-npm-release'
         with:
           channel: '${{ github.event.inputs.channel }}'
@@ -103,7 +103,7 @@ jobs:
           npm-token: '${{ secrets.NPM_TOKEN }}'
 
       - name: 'Deprecate Cli Npm Package'
-        if: ${{ github.event.inputs.dry-run == 'false' && github.event.inputs.environment == 'prod' }}
+        if: '${{ github.event.inputs.dry-run == 'false' && github.event.inputs.environment == 'prod' }}'
         env:
           NODE_AUTH_TOKEN: '${{ steps.cli-token.outputs.auth-token }}'
           PACKAGE_NAME: '${{ vars.CLI_PACKAGE_NAME }}'
@@ -120,7 +120,7 @@ jobs:
           npm-token: '${{ secrets.NPM_TOKEN }}'
 
       - name: 'Deprecate Core Npm Package'
-        if: ${{ github.event.inputs.dry-run == 'false' && github.event.inputs.environment == 'prod' }}
+        if: '${{ github.event.inputs.dry-run == 'false' && github.event.inputs.environment == 'prod' }}'
         env:
           NODE_AUTH_TOKEN: '${{ steps.core-token.outputs.auth-token }}'
           PACKAGE_NAME: '${{ vars.CORE_PACKAGE_NAME }}'
@@ -137,7 +137,7 @@ jobs:
           npm-token: '${{ secrets.NPM_TOKEN }}'
 
       - name: 'Deprecate A2A Server Npm Package'
-        if: ${{ github.event.inputs.dry-run == 'false' && github.event.inputs.environment == 'prod'  }}
+        if: '${{ github.event.inputs.dry-run == 'false' && github.event.inputs.environment == 'prod'  }}'
         env:
           NODE_AUTH_TOKEN: '${{ steps.a2a-token.outputs.auth-token }}'
           PACKAGE_NAME: '${{ vars.A2A_PACKAGE_NAME }}'
@@ -147,7 +147,7 @@ jobs:
           npm deprecate "${PACKAGE_NAME}@${ROLLBACK_ORIGIN}" "This version has been rolled back."
 
       - name: 'Delete Github Release'
-        if: ${{ github.event.inputs.dry-run == 'false' && github.event.inputs.environment == 'prod'}}
+        if: '${{ github.event.inputs.dry-run == 'false' && github.event.inputs.environment == 'prod'}}
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
           ORIGIN_TAG: '${{ steps.origin_tag.outputs.ORIGIN_TAG }}'
@@ -156,7 +156,7 @@ jobs:
           gh release delete "${ORIGIN_TAG}" --yes
 
       - name: 'Verify Origin Release Deletion'
-        if: ${{ github.event.inputs.dry-run == 'false' }}
+        if: '${{ github.event.inputs.dry-run == 'false' }}'
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
           TARGET_TAG: '${{ steps.origin_tag.outputs.ORIGIN_TAG }}'
@@ -171,7 +171,7 @@ jobs:
 
       - name: 'Add Rollback Tag'
         id: 'rollback_tag'
-        if: ${{ github.event.inputs.dry-run == 'false' }}
+        if: '${{ github.event.inputs.dry-run == 'false' }}'
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
           ROLLBACK_TAG_NAME: '${{ steps.origin_tag.outputs.ORIGIN_TAG }}-rollback'
@@ -183,7 +183,7 @@ jobs:
           git push origin --tags
 
       - name: 'Verify Rollback Tag Added'
-        if: ${{ github.event.inputs.dry-run == 'false' }}
+        if: '${{ github.event.inputs.dry-run == 'false' }}'
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
           TARGET_TAG: '${{ steps.rollback_tag.outputs.ROLLBACK_TAG }}'
@@ -198,7 +198,7 @@ jobs:
           fi
 
       - name: 'Log Dry run'
-        if: ${{ github.event.inputs.dry-run == 'true' }}
+        if: '${{ github.event.inputs.dry-run == 'true' }}'
         env:
           ROLLBACK_ORIGIN: '${{ github.event.inputs.rollback_origin }}'
           ROLLBACK_DESTINATION: '${{ github.event.inputs.rollback_destination }}'
