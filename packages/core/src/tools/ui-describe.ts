@@ -14,6 +14,7 @@ import type { MessageBus } from '../confirmation-bus/message-bus.js';
 import { UI_DESCRIBE_TOOL_NAME } from './tool-names.js';
 import { formatUiResult } from './ui-tool-utils.js';
 import { DesktopAutomationService } from '../gui/service/DesktopAutomationService.js';
+import type { ElementNode } from '../gui/protocol/types.js';
 
 class UiDescribeToolInvocation extends BaseToolInvocation<
   UiDescribeArgs,
@@ -34,32 +35,115 @@ class UiDescribeToolInvocation extends BaseToolInvocation<
 
   async execute(_signal: AbortSignal): Promise<ToolResult> {
     const svc = DesktopAutomationService.getInstance();
-    // Re-use svc.query or similar logic.
-    // Since svc doesn't have explicit 'describe' method in the interface I saw earlier,
-    // I might need to use 'query' or implement 'describe' in svc.
-    // The gap analysis says: "Tool must resolve: selector -> best match -> return full node + ancestry".
-    // ui.query does resolve + return node.
-    // ui.describe implies detailed inspection.
-    // I can reuse svc.query({ selector: target, limit: 1 }) if I don't want to modify valid service interface too much.
-    // However, the prompt says "Implement UiDescribeTool...".
-    // And "ui.describe (Gap B1.1)".
 
-    // Ideally svc should have a describe method.
-    // But ui-query.ts likely calls svc.query.
-    // Let's call svc.query for now as it returns the node.
-    // Or I can add describe to svc if needed.
-    // svc.query returns UiActionResult with data: array of elements.
-
-    const result = await svc.query({
+    // Get snapshot and resolve selector
+    const queryResult = await svc.query({
       selector: this.params.target,
       limit: 1,
     });
 
-    // Remap result for 'describe' semantic (e.g. detailed view) if needed.
-    // For now, returning the query result format is acceptable as it includes the node.
+    if (queryResult.status === 'error' || !queryResult.data) {
+      return formatUiResult(queryResult, 'UiDescribe');
+    }
 
-    return formatUiResult(result, 'UiDescribe');
+    const matches = queryResult.data as Array<{
+      element: ElementNode;
+      confidence: number;
+    }>;
+
+    if (matches.length === 0) {
+      return formatUiResult(
+        {
+          ...queryResult,
+          status: 'error',
+          message: `No element found matching: ${this.params.target}`,
+        },
+        'UiDescribe',
+      );
+    }
+
+    const element = matches[0].element;
+
+    // Build richer describe output with ancestry, all states, and platform IDs
+    const describeData = {
+      // Core identification
+      id: element.id,
+      role: element.role,
+      name: element.name ?? null,
+      value: element.value ?? null,
+
+      // Position and size
+      bounds: element.bounds ?? null,
+
+      // States (expanded view)
+      states: {
+        enabled: element.states?.enabled ?? null,
+        focused: element.states?.focused ?? null,
+        checked: element.states?.checked ?? null,
+        selected: element.states?.selected ?? null,
+        expanded: element.states?.expanded ?? null,
+      },
+
+      // Platform-specific identifiers for robust automation
+      platformIds: {
+        automationId: element.platformIds?.automationId ?? null,
+        runtimeId: element.platformIds?.runtimeId ?? null,
+        legacyId: element.platformIds?.legacyId ?? null,
+        atspiPath: element.platformIds?.atspiPath ?? null,
+        axId: element.platformIds?.axId ?? null,
+        sapId: element.platformIds?.sapId ?? null,
+      },
+
+      // UIA patterns (if available)
+      patterns: element.patterns ?? null,
+
+      // Child count for understanding element complexity
+      childCount: element.children?.length ?? 0,
+
+      // Confidence from selector match
+      confidence: matches[0].confidence,
+
+      // Suggested selectors for automation
+      suggestedSelectors: buildSuggestedSelectors(element),
+    };
+
+    return formatUiResult(
+      {
+        status: 'success',
+        driver: queryResult.driver,
+        data: describeData,
+      },
+      'UiDescribe',
+    );
   }
+}
+
+/**
+ * Build suggested selectors based on available platform IDs and attributes.
+ * Ordered by stability/reliability.
+ */
+function buildSuggestedSelectors(element: ElementNode): string[] {
+  const selectors: string[] = [];
+
+  // Most stable: platform-specific IDs
+  if (element.platformIds?.automationId) {
+    selectors.push(`uia:automationId="${element.platformIds.automationId}"`);
+  }
+  if (element.platformIds?.atspiPath) {
+    selectors.push(`atspi:atspiPath="${element.platformIds.atspiPath}"`);
+  }
+  if (element.platformIds?.legacyId) {
+    selectors.push(`win32:legacyId=${element.platformIds.legacyId}`);
+  }
+
+  // Role + name combination
+  if (element.name) {
+    selectors.push(`role=${element.role} && name="${element.name}"`);
+  } else {
+    selectors.push(`role=${element.role}`);
+  }
+
+  return selectors;
 }
 
 export class UiDescribeTool extends UiToolBase<UiDescribeArgs> {

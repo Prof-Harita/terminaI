@@ -35,8 +35,8 @@ export class DesktopAutomationService {
   private lastSnapshot?: VisualDOMSnapshot;
   private lastSnapshotTime: number = 0;
   private static readonly SNAPSHOT_TTL_MS = 200; // Cache valid for 200ms
-  // Default to true for now to allow out-of-the-box usage until config is wired
-  private enabled = true;
+  // Default to false for security - must be explicitly enabled via settings
+  private enabled = false;
 
   private constructor() {
     this.driver = getDesktopDriver();
@@ -148,9 +148,20 @@ export class DesktopAutomationService {
       };
     }
 
-    // 3. Execute
-    const refinedArgs = { ...args, target: targetId ?? args.target };
-    const actionResult = await this.driver.click(refinedArgs);
+    // 3. Execute - pass target selector AND bounds for fallback click
+    const refinedArgs: Record<string, unknown> = {
+      ...args,
+      target: targetId ?? args.target,
+    };
+
+    // Include bounds in the driver call so sidecar can use coordinate fallback
+    if (targetNode.bounds) {
+      refinedArgs['bounds'] = targetNode.bounds;
+    }
+
+    const actionResult = await this.driver.click(
+      refinedArgs as unknown as UiClickArgs,
+    );
 
     // 4. Post-Action Verification (basic)
     if (actionResult.status === 'success' && args.verify) {

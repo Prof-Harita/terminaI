@@ -13,8 +13,8 @@ class AtspiClient:
             "canSnapshot": True,
             "canClick": True,
             "canType": True,
-            "canScroll": True,
-            "canKey": True,
+            "canScroll": False,  # Not properly implemented yet
+            "canKey": False,     # Not properly implemented yet
             "canOcr": False,
             "canScreenshot": False, # Not implemented yet in sidecar
             "canInjectInput": True
@@ -147,8 +147,11 @@ class AtspiClient:
         except:
             pass
 
+        # Use atspiPath for stable, deterministic ID
+        element_id = path_str if path_str else "root"
+        
         return {
-            "id": str(hash(acc_obj)), # Weak ID
+            "id": element_id,
             "role": role_name,
             "name": name,
             "value": "",

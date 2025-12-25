@@ -47,17 +47,17 @@ decision = "ask_user"
 priority = 10
 
 [[rule]]
-toolName = "run_shell_command"
+toolName = "run_terminal_command"
 decision = "ask_user"
 priority = 10
 
 [[rule]]
-toolName = "write_file"
+toolName = "write_to_file"
 decision = "ask_user"
 priority = 10
 
 [[rule]]
-toolName = "write_file"
+toolName = "write_to_file"
 decision = "allow"
 priority = 15
 modes = ["autoEdit"]

@@ -115,11 +115,25 @@ export class WindowsUiaDriver implements DesktopDriver {
   }
 
   async getCapabilities(): Promise<DriverCapabilities> {
-    const caps = await this.sendRequest<DriverCapabilities>(
-      'get_capabilities',
-      {},
-    );
-    return caps || { platform: 'windows', driver: 'uia', native: true };
+    try {
+      const caps = await this.sendRequest<DriverCapabilities>(
+        'get_capabilities',
+        {},
+      );
+      return caps;
+    } catch {
+      // Fallback: return a properly-shaped capabilities object for Windows
+      return {
+        canSnapshot: false,
+        canClick: false,
+        canType: false,
+        canScroll: false,
+        canKey: false,
+        canOcr: false,
+        canScreenshot: false,
+        canInjectInput: false,
+      };
+    }
   }
 
   async snapshot(args: UiSnapshotArgs): Promise<VisualDOMSnapshot> {

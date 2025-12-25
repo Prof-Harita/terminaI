@@ -57,5 +57,10 @@ patch_output.log
 .genkit
 .gemini-clipboard/
 
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
 # Local scratch files (not committed)
 # .local/

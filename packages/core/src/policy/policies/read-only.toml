@@ -26,17 +26,17 @@
 #   999: YOLO mode allow-all (becomes 1.999 in default tier)
 
 [[rule]]
-toolName = "glob"
+toolName = "glob_files"
 decision = "allow"
 priority = 50
 
 [[rule]]
-toolName = "search_file_content"
+toolName = "grep_search"
 decision = "allow"
 priority = 50
 
 [[rule]]
-toolName = "list_directory"
+toolName = "list_files"
 decision = "allow"
 priority = 50
 
@@ -51,7 +51,7 @@ decision = "allow"
 priority = 50
 
 [[rule]]
-toolName = "google_web_search"
+toolName = "search_web"
 decision = "allow"
 priority = 50
 
@@ -77,5 +77,15 @@ priority = 50
 
 [[rule]]
 toolName = "ui.assert"
+decision = "allow"
+priority = 50
+
+[[rule]]
+toolName = "ui.health"
+decision = "allow"
+priority = 50
+
+[[rule]]
+toolName = "ui.describe"
 decision = "allow"
 priority = 50

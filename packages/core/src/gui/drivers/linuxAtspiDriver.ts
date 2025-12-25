@@ -19,7 +19,11 @@ import type {
   VisualDOMSnapshot,
   UiActionResult,
 } from '../protocol/types.js';
-import { UiActionResultSchema } from '../protocol/schemas.js';
+import {
+  UiActionResultSchema,
+  DriverCapabilitiesSchema,
+  VisualDOMSnapshotSchema,
+} from '../protocol/schemas.js';
 import type {
   UiClickArgs,
   UiTypeArgs,
@@ -163,13 +167,33 @@ export class LinuxAtspiDriver implements DesktopDriver {
       const request = JSON.stringify({ jsonrpc: '2.0', method, params, id });
       this.process!.stdin!.write(request + '\n');
     }).then((result: unknown) => {
-      // Basic schema validation for commonly returned types
-      if (method !== 'snapshot' && method !== 'get_capabilities') {
+      // Runtime validation for all response types
+      if (method === 'get_capabilities') {
+        const parsed = DriverCapabilitiesSchema.safeParse(result);
+        if (!parsed.success) {
+          console.warn(
+            'Driver capabilities validation failed:',
+            parsed.error.format(),
+          );
+          throw new Error(
+            `Invalid capabilities response from driver: ${parsed.error.message}`,
+          );
+        }
+      } else if (method === 'snapshot') {
+        const parsed = VisualDOMSnapshotSchema.safeParse(result);
+        if (!parsed.success) {
+          console.warn(
+            'Driver snapshot validation failed:',
+            parsed.error.format(),
+          );
+          // Log but don't throw - allow partial snapshots to pass through
+        }
+      } else {
         const parsed = UiActionResultSchema.safeParse(result);
         if (!parsed.success) {
           console.warn(
             'Driver response validation failed for ' + method + ':',
-            parsed.error,
+            parsed.error.format(),
           );
         }
       }

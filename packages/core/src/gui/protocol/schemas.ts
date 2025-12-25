@@ -14,7 +14,7 @@
 import { z } from 'zod';
 
 // Reuse common shapes
-const DriverCapabilitiesSchema = z.object({
+export const DriverCapabilitiesSchema = z.object({
   canSnapshot: z.boolean(),
   canClick: z.boolean(),
   canType: z.boolean(),
@@ -25,11 +25,107 @@ const DriverCapabilitiesSchema = z.object({
   canInjectInput: z.boolean(),
 });
 
-const DriverDescriptorSchema = z.object({
+export const DriverDescriptorSchema = z.object({
   name: z.string(),
   kind: z.enum(['native', 'remote', 'mock']),
   version: z.string(),
   capabilities: DriverCapabilitiesSchema,
+});
+
+// ElementNode schema (recursive)
+const ElementNodeSchemaBase = z.object({
+  id: z.string(),
+  role: z.string(),
+  name: z.string().optional(),
+  value: z.string().optional(),
+  bounds: z
+    .object({
+      x: z.number(),
+      y: z.number(),
+      w: z.number(),
+      h: z.number(),
+    })
+    .optional(),
+  states: z
+    .object({
+      enabled: z.boolean().optional(),
+      focused: z.boolean().optional(),
+      checked: z.boolean().optional(),
+      selected: z.boolean().optional(),
+      expanded: z.boolean().optional(),
+    })
+    .optional(),
+  platformIds: z
+    .object({
+      automationId: z.string().optional(),
+      runtimeId: z.string().optional(),
+      legacyId: z.string().optional(),
+      atspiPath: z.string().optional(),
+      axId: z.string().optional(),
+      sapId: z.string().optional(),
+    })
+    .optional(),
+  patterns: z
+    .object({
+      invoke: z.boolean().optional(),
+      value: z.boolean().optional(),
+      grid: z.boolean().optional(),
+      selection: z.boolean().optional(),
+      range: z.boolean().optional(),
+    })
+    .optional(),
+});
+
+// Use lazy for recursive children reference
+export const ElementNodeSchema: z.ZodType<unknown> =
+  ElementNodeSchemaBase.extend({
+    children: z.lazy(() => z.array(ElementNodeSchema)).optional(),
+  });
+
+// VisualDOMSnapshot schema for runtime validation
+export const VisualDOMSnapshotSchema = z.object({
+  snapshotId: z.string(),
+  timestamp: z.string(),
+  activeApp: z.object({
+    pid: z.number(),
+    appId: z.string().optional(),
+    processName: z.string().optional(),
+    title: z.string(),
+    windowHandle: z.string().optional(),
+    bounds: z
+      .object({
+        x: z.number(),
+        y: z.number(),
+        w: z.number(),
+        h: z.number(),
+      })
+      .optional(),
+  }),
+  tree: ElementNodeSchema.optional(),
+  textIndex: z
+    .array(
+      z.object({
+        text: z.string(),
+        bounds: z.object({
+          x: z.number(),
+          y: z.number(),
+          w: z.number(),
+          h: z.number(),
+        }),
+        source: z.enum(['structure', 'ocr']),
+        confidence: z.number(),
+      }),
+    )
+    .optional(),
+  screenshot: z
+    .object({
+      hash: z.string(),
+      width: z.number(),
+      height: z.number(),
+      encoding: z.enum(['png', 'jpeg']),
+    })
+    .optional(),
+  driver: DriverDescriptorSchema,
 });
 
 // Tool Argument Schemas

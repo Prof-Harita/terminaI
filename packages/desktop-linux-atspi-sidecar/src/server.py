@@ -16,6 +16,7 @@ class JsonRpcServer:
             "scroll": self.client.scroll,
             "focus": self.client.focus,
             "click_xy": self.client.click_xy,  # Expose explicit coordinate click
+        }
 
     def run(self):
         # Unbuffered stdin/stdout

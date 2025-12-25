@@ -38,7 +38,7 @@ class UiSnapshotToolInvocation extends BaseToolInvocation<
     const result = {
       status: 'success' as const,
       driver: snap.driver,
-      evidence: { snapshotId: 'current' },
+      evidence: { snapshotId: snap.snapshotId },
       data: snap,
     };
     return formatUiResult(result, 'UiSnapshot');

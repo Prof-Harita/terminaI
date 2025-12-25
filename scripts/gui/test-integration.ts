@@ -11,6 +11,9 @@ async function main() {
 
   const service = DesktopAutomationService.getInstance();
 
+  // Enable GUI automation for testing (default is off for security)
+  service.setEnabled(true);
+
   try {
     console.log('1. Checking capabilities...');
     const caps = await service.getCapabilities();
@@ -31,7 +34,7 @@ async function main() {
 
     console.log('3. Testing query (self-check)...');
     const queryResult = await service.query({
-      selector: 'node', // simplistic selector
+      selector: 'role=Frame', // Use valid selector syntax
       limit: 10,
     });
     console.log(

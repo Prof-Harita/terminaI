@@ -152,8 +152,8 @@ impl WindowsDriver {
         let caps = self.get_capabilities();
         
         VisualDOMSnapshot {
-            snapshot_id: uuid::Uuid::new_v4().to_string(), // Need uuid crate or simple random
-            timestamp: chrono::Utc::now().to_rfc3339(),   // Need chrono crate or simple time
+            snapshot_id: generate_id(),
+            timestamp: get_timestamp(),
             active_app: ActiveApp {
                 pid: 0,
                 title: "Desktop".to_string(),
@@ -183,9 +183,7 @@ impl WindowsDriver {
     }
 }
 
-// Since we are adding dependencies in code (uuid, chrono) that aren't in Cargo.toml yet,
-// we should stick to stdlib or update Cargo.toml.
-// Let's use simple generic implementations for id/time to avoid breaking build.
+// --- Stdlib-based helpers for id/time ---
 
 fn generate_id() -> String {
     format!("{:x}", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos())
