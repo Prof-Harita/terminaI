@@ -20,8 +20,7 @@ on:
 
 concurrency:
   group: '${{ github.workflow }}-${{ github.head_ref || github.ref }}'
-  cancel-in-progress: |-
-    ${{ github.ref != 'refs/heads/main' && !startsWith(github.ref, 'refs/heads/release/') }}
+  cancel-in-progress: true
 
 permissions:
   checks: 'write'
