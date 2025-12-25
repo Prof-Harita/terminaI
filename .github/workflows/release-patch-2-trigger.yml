@@ -78,17 +78,17 @@ jobs:
 
       - name: 'Trigger Patch Release'
         env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           HEAD_REF: "${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.event.inputs.ref }}"
           PR_BODY: "${{ github.event_name == 'pull_request' && github.event.pull_request.body || '' }}"
-          WORKFLOW_ID: '${{ github.event.inputs.workflow_id }}'
-          GITHUB_REPOSITORY_OWNER: '${{ github.repository_owner }}'
-          GITHUB_REPOSITORY_NAME: '${{ github.event.repository.name }}'
-          GITHUB_EVENT_NAME: '${{ github.event_name }}'
-          GITHUB_EVENT_PAYLOAD: '${{ toJSON(github.event) }}'
-          FORCE_SKIP_TESTS: '${{ github.event.inputs.force_skip_tests }}'
-          TEST_MODE: '${{ github.event.inputs.test_mode }}'
+          WORKFLOW_ID: "${{ github.event.inputs.workflow_id }}"
+          GITHUB_REPOSITORY_OWNER: "${{ github.repository_owner }}"
+          GITHUB_REPOSITORY_NAME: "${{ github.event.repository.name }}"
+          GITHUB_EVENT_NAME: "${{ github.event_name }}"
+          GITHUB_EVENT_PAYLOAD: "${{ toJSON(github.event) }}"
+          FORCE_SKIP_TESTS: "${{ github.event.inputs.force_skip_tests }}"
+          TEST_MODE: "${{ github.event.inputs.test_mode }}"
           ENVIRONMENT: "${{ github.event.inputs.environment || 'prod' }}"
-          DRY_RUN: '${{ github.event.inputs.dry_run }}'
+          DRY_RUN: "${{ github.event.inputs.dry_run }}"
         run: |
           node scripts/releasing/patch-trigger.js --dry-run="${DRY_RUN}"

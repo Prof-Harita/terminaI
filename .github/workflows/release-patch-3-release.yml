@@ -1,7 +1,7 @@
 name: 'Release: Patch (3) Release'
 
 run-name: >-
-  Release Patch (3) Release | T:${{ inputs.type }} | R:${{ inputs.release_ref }} ${{ inputs.original_pr && format('| PR:#{0}', inputs.original_pr) || '' }}'
+  Release Patch (3) Release | T:${{ inputs.type }} | R:${{ inputs.release_ref }} ${{ inputs.original_pr && format('| PR:#{0}', inputs.original_pr) || '' }}"
 
 on:
   workflow_dispatch:
@@ -59,7 +59,7 @@ jobs:
       - name: 'Checkout Release Code'
         uses: 'actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8'
         with:
-          ref: '${{ github.event.inputs.release_ref }}'
+          ref: "${{ github.event.inputs.release_ref }}"
           path: 'release'
           fetch-depth: 0
 
@@ -72,7 +72,7 @@ jobs:
       - name: 'configure .npmrc'
         uses: './.github/actions/setup-npmrc'
         with:
-          github-token: '${{ secrets.GITHUB_TOKEN }}'
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
 
       - name: 'Install Script Dependencies'
         run: |-
@@ -86,15 +86,15 @@ jobs:
       - name: 'Print Inputs'
         shell: 'bash'
         env:
-          JSON_INPUTS: '${{ toJSON(inputs) }}'
+          JSON_INPUTS: "${{ toJSON(inputs) }}"
         run: 'echo "$JSON_INPUTS"'
 
       - name: 'Get Patch Version'
         id: 'patch_version'
         env:
-          GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-          PATCH_FROM: '${{ github.event.inputs.type }}'
-          CLI_PACKAGE_NAME: '${{vars.CLI_PACKAGE_NAME}}'
+          GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          PATCH_FROM: "${{ github.event.inputs.type }}"
+          CLI_PACKAGE_NAME: "${{vars.CLI_PACKAGE_NAME}}"
         run: |
           # Use the existing get-release-version.js script to calculate patch version
           # Run from main checkout which has full git history and access to npm
@@ -113,11 +113,11 @@ jobs:
 
       - name: 'Verify Version Consistency'
         env:
-          GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-          CHANNEL: '${{ github.event.inputs.type }}'
-          ORIGINAL_RELEASE_VERSION: '${{ steps.patch_version.outputs.RELEASE_VERSION }}'
-          ORIGINAL_RELEASE_TAG: '${{ steps.patch_version.outputs.RELEASE_TAG }}'
-          ORIGINAL_PREVIOUS_TAG: '${{ steps.patch_version.outputs.PREVIOUS_TAG }}'
+          GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          CHANNEL: "${{ github.event.inputs.type }}"
+          ORIGINAL_RELEASE_VERSION: "${{ steps.patch_version.outputs.RELEASE_VERSION }}"
+          ORIGINAL_RELEASE_TAG: "${{ steps.patch_version.outputs.RELEASE_TAG }}"
+          ORIGINAL_PREVIOUS_TAG: "${{ steps.patch_version.outputs.PREVIOUS_TAG }}"
         run: |
           echo "🔍 Verifying no concurrent patch releases have occurred..."
 
@@ -168,37 +168,37 @@ jobs:
           echo "  Previous Tag: ${{ steps.patch_version.outputs.PREVIOUS_TAG }}"
 
       - name: 'Run Tests'
-        if: '${{ github.event.inputs.force_skip_tests != 'true' }}'
+        if: "${{ github.event.inputs.force_skip_tests != 'true' }}"
         uses: './.github/actions/run-tests'
         with:
-          gemini_api_key: '${{ secrets.GEMINI_API_KEY }}'
+          gemini_api_key: "${{ secrets.GEMINI_API_KEY }}"
           working-directory: './release'
 
       - name: 'Publish Release'
         uses: './.github/actions/publish-release'
         with:
-          release-version: '${{ steps.patch_version.outputs.RELEASE_VERSION }}'
-          release-tag: '${{ steps.patch_version.outputs.RELEASE_TAG }}'
-          npm-tag: '${{ steps.patch_version.outputs.NPM_TAG }}'
-          npm-token: '${{ secrets.NPM_TOKEN }}'
-          github-token: '${{ secrets.GITHUB_TOKEN }}'
-          dry-run: '${{ github.event.inputs.dry_run }}'
-          previous-tag: '${{ steps.patch_version.outputs.PREVIOUS_TAG }}'
-          gemini_api_key: '${{ secrets.GEMINI_API_KEY }}'
-          npm-registry-publish-url: '${{ vars.NPM_REGISTRY_PUBLISH_URL }}'
-          npm-registry-url: '${{ vars.NPM_REGISTRY_URL }}'
-          npm-registry-scope: '${{ vars.NPM_REGISTRY_SCOPE }}'
-          cli-package-name: '${{ vars.CLI_PACKAGE_NAME }}'
-          core-package-name: '${{ vars.CORE_PACKAGE_NAME }}'
-          a2a-package-name: '${{ vars.A2A_PACKAGE_NAME }}'
+          release-version: "${{ steps.patch_version.outputs.RELEASE_VERSION }}"
+          release-tag: "${{ steps.patch_version.outputs.RELEASE_TAG }}"
+          npm-tag: "${{ steps.patch_version.outputs.NPM_TAG }}"
+          npm-token: "${{ secrets.NPM_TOKEN }}"
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          dry-run: "${{ github.event.inputs.dry_run }}"
+          previous-tag: "${{ steps.patch_version.outputs.PREVIOUS_TAG }}"
+          gemini_api_key: "${{ secrets.GEMINI_API_KEY }}"
+          npm-registry-publish-url: "${{ vars.NPM_REGISTRY_PUBLISH_URL }}"
+          npm-registry-url: "${{ vars.NPM_REGISTRY_URL }}"
+          npm-registry-scope: "${{ vars.NPM_REGISTRY_SCOPE }}"
+          cli-package-name: "${{ vars.CLI_PACKAGE_NAME }}"
+          core-package-name: "${{ vars.CORE_PACKAGE_NAME }}"
+          a2a-package-name: "${{ vars.A2A_PACKAGE_NAME }}"
           working-directory: './release'
 
       - name: 'Create Issue on Failure'
-        if: '${{ failure() && github.event.inputs.dry_run == false }}'
+        if: "${{ failure() && github.event.inputs.dry_run == false }}"
         env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-          RELEASE_TAG: '${{ steps.patch_version.outputs.RELEASE_TAG }}'
-          DETAILS_URL: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          RELEASE_TAG: "${{ steps.patch_version.outputs.RELEASE_TAG }}"
+          DETAILS_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         run: |
           gh issue create \
             --title 'Patch Release Failed for ${RELEASE_TAG} on $(date +'%Y-%m-%d')' \
@@ -206,40 +206,40 @@ jobs:
             --label 'release-failure,priority/p0'
 
       - name: 'Comment Success on Original PR'
-        if: '${{ success() && github.event.inputs.original_pr }}'
+        if: "${{ success() && github.event.inputs.original_pr }}"
         env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-          ORIGINAL_PR: '${{ github.event.inputs.original_pr }}'
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          ORIGINAL_PR: "${{ github.event.inputs.original_pr }}"
           SUCCESS: 'true'
-          RELEASE_VERSION: '${{ steps.patch_version.outputs.RELEASE_VERSION }}'
-          RELEASE_TAG: '${{ steps.patch_version.outputs.RELEASE_TAG }}'
-          NPM_TAG: '${{ steps.patch_version.outputs.NPM_TAG }}'
-          CHANNEL: '${{ github.event.inputs.type }}'
-          DRY_RUN: '${{ github.event.inputs.dry_run }}'
-          GITHUB_RUN_ID: '${{ github.run_id }}'
-          GITHUB_REPOSITORY_OWNER: '${{ github.repository_owner }}'
-          GITHUB_REPOSITORY_NAME: '${{ github.event.repository.name }}'
+          RELEASE_VERSION: "${{ steps.patch_version.outputs.RELEASE_VERSION }}"
+          RELEASE_TAG: "${{ steps.patch_version.outputs.RELEASE_TAG }}"
+          NPM_TAG: "${{ steps.patch_version.outputs.NPM_TAG }}"
+          CHANNEL: "${{ github.event.inputs.type }}"
+          DRY_RUN: "${{ github.event.inputs.dry_run }}"
+          GITHUB_RUN_ID: "${{ github.run_id }}"
+          GITHUB_REPOSITORY_OWNER: "${{ github.repository_owner }}"
+          GITHUB_REPOSITORY_NAME: "${{ github.event.repository.name }}"
         run: |
           node scripts/releasing/patch-comment.js
 
       - name: 'Comment Failure on Original PR'
-        if: '${{ failure() && github.event.inputs.original_pr }}'
+        if: "${{ failure() && github.event.inputs.original_pr }}"
         env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-          ORIGINAL_PR: '${{ github.event.inputs.original_pr }}'
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          ORIGINAL_PR: "${{ github.event.inputs.original_pr }}"
           SUCCESS: 'false'
-          RELEASE_VERSION: '${{ steps.patch_version.outputs.RELEASE_VERSION }}'
-          RELEASE_TAG: '${{ steps.patch_version.outputs.RELEASE_TAG }}'
-          NPM_TAG: '${{ steps.patch_version.outputs.NPM_TAG }}'
-          CHANNEL: '${{ github.event.inputs.type }}'
-          DRY_RUN: '${{ github.event.inputs.dry_run }}'
-          GITHUB_RUN_ID: '${{ github.run_id }}'
-          GITHUB_REPOSITORY_OWNER: '${{ github.repository_owner }}'
-          GITHUB_REPOSITORY_NAME: '${{ github.event.repository.name }}'
+          RELEASE_VERSION: "${{ steps.patch_version.outputs.RELEASE_VERSION }}"
+          RELEASE_TAG: "${{ steps.patch_version.outputs.RELEASE_TAG }}"
+          NPM_TAG: "${{ steps.patch_version.outputs.NPM_TAG }}"
+          CHANNEL: "${{ github.event.inputs.type }}"
+          DRY_RUN: "${{ github.event.inputs.dry_run }}"
+          GITHUB_RUN_ID: "${{ github.run_id }}"
+          GITHUB_REPOSITORY_OWNER: "${{ github.repository_owner }}"
+          GITHUB_REPOSITORY_NAME: "${{ github.event.repository.name }}"
           # Pass current version info for race condition failures
-          CURRENT_RELEASE_VERSION: '${{ env.CURRENT_RELEASE_VERSION }}'
-          CURRENT_RELEASE_TAG: '${{ env.CURRENT_RELEASE_TAG }}'
-          CURRENT_PREVIOUS_TAG: '${{ env.CURRENT_PREVIOUS_TAG }}'
+          CURRENT_RELEASE_VERSION: "${{ env.CURRENT_RELEASE_VERSION }}"
+          CURRENT_RELEASE_TAG: "${{ env.CURRENT_RELEASE_TAG }}"
+          CURRENT_PREVIOUS_TAG: "${{ env.CURRENT_PREVIOUS_TAG }}"
         run: |
           # Check if this was a version consistency failure
           if [[ -n "${CURRENT_RELEASE_VERSION}" ]]; then

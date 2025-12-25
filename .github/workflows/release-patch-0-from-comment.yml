@@ -23,7 +23,7 @@ jobs:
         id: 'slash_command'
         uses: 'peter-evans/slash-command-dispatch@40877f718dce0101edfc7aea2b3800cc192f9ed5'
         with:
-          token: '${{ secrets.GITHUB_TOKEN }}'
+          token: "${{ secrets.GITHUB_TOKEN }}"
           commands: 'patch'
           permission: 'write'
           issue-type: 'pull-request'
@@ -32,7 +32,7 @@ jobs:
         id: 'pr_status'
         if: "startsWith(github.event.comment.body, '/patch')"
         env:
-          GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         run: |
           gh pr view "${{ github.event.issue.number }}" --json mergeCommit,state > pr_status.json
           echo "MERGE_COMMIT_SHA=$(jq -r .mergeCommit.oid pr_status.json)" >> "$GITHUB_OUTPUT"
@@ -43,9 +43,9 @@ jobs:
         id: 'dispatch_patch'
         uses: 'actions/github-script@00f12e3e20659f42342b1c0226afda7f7c042325'
         env:
-          COMMENT_BODY: '${{ github.event.comment.body }}'
+          COMMENT_BODY: "${{ github.event.comment.body }}"
         with:
-          github-token: '${{ secrets.GITHUB_TOKEN }}'
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
           script: |
             // Parse the comment body directly to extract channel(s)
             const commentBody = process.env.COMMENT_BODY;
@@ -87,9 +87,9 @@ jobs:
                 workflow_id: 'release-patch-1-create-pr.yml',
                 ref: 'main',
                 inputs: {
-                  commit: '${{ steps.pr_status.outputs.MERGE_COMMIT_SHA }}',
+                  commit: "${{ steps.pr_status.outputs.MERGE_COMMIT_SHA }}",
                   channel: channel,
-                  original_pr: '${{ github.event.issue.number }}',
+                  original_pr: "${{ github.event.issue.number }}",
                   environment: 'prod'
                 }
               });
@@ -126,8 +126,8 @@ jobs:
         if: "startsWith(github.event.comment.body, '/patch') && steps.pr_status.outputs.STATE != 'MERGED'"
         uses: 'peter-evans/create-or-update-comment@67dcc547d311b736a8e6c5c236542148a47adc3d'
         with:
-          token: '${{ secrets.GITHUB_TOKEN }}'
-          issue-number: '${{ github.event.issue.number }}'
+          token: "${{ secrets.GITHUB_TOKEN }}"
+          issue-number: "${{ github.event.issue.number }}"
           body: |
             :x: The `/patch` command failed. This pull request must be merged before a patch can be created.
 
@@ -135,8 +135,8 @@ jobs:
         if: "always() && startsWith(github.event.comment.body, '/patch') && steps.dispatch_patch.outcome == 'success' && steps.dispatch_patch.outputs.dispatched_run_urls"
         uses: 'peter-evans/create-or-update-comment@67dcc547d311b736a8e6c5c236542148a47adc3d'
         with:
-          token: '${{ secrets.GITHUB_TOKEN }}'
-          issue-number: '${{ github.event.issue.number }}'
+          token: "${{ secrets.GITHUB_TOKEN }}"
+          issue-number: "${{ github.event.issue.number }}"
           body: |
             ✅ **Patch workflow(s) dispatched successfully!**
 
@@ -153,8 +153,8 @@ jobs:
         if: "always() && startsWith(github.event.comment.body, '/patch') && steps.dispatch_patch.outcome == 'success' && !steps.dispatch_patch.outputs.dispatched_run_urls"
         uses: 'peter-evans/create-or-update-comment@67dcc547d311b736a8e6c5c236542148a47adc3d'
         with:
-          token: '${{ secrets.GITHUB_TOKEN }}'
-          issue-number: '${{ github.event.issue.number }}'
+          token: "${{ secrets.GITHUB_TOKEN }}"
+          issue-number: "${{ github.event.issue.number }}"
           body: |
             ✅ **Patch workflow(s) dispatched successfully!**
 
@@ -171,8 +171,8 @@ jobs:
         if: "always() && startsWith(github.event.comment.body, '/patch') && (steps.dispatch_patch.outcome == 'failure' || steps.dispatch_patch.outcome == 'cancelled')"
         uses: 'peter-evans/create-or-update-comment@67dcc547d311b736a8e6c5c236542148a47adc3d'
         with:
-          token: '${{ secrets.GITHUB_TOKEN }}'
-          issue-number: '${{ github.event.issue.number }}'
+          token: "${{ secrets.GITHUB_TOKEN }}"
+          issue-number: "${{ github.event.issue.number }}"
           body: |
             ❌ **Patch workflow dispatch failed!**
 
