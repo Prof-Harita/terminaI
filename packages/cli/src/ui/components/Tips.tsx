@@ -29,7 +29,7 @@ export const Tips: React.FC<TipsProps> = ({ config }) => {
         <Text color={theme.text.primary}>
           3. Create{' '}
           <Text bold color={theme.text.accent}>
-            GEMINI.md
+            terminaI.md
           </Text>{' '}
           files to customize your interactions with Gemini.
         </Text>

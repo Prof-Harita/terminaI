@@ -13,6 +13,12 @@ import type {
   ContentGeneratorConfig,
 } from '../core/contentGenerator.js';
 import {
+  LlmProviderId,
+  type ProviderConfig,
+  type ProviderCapabilities,
+  getProviderCapabilities,
+} from '../core/providerTypes.js';
+import {
   AuthType,
   createContentGenerator,
   createContentGeneratorConfig,
@@ -343,6 +349,7 @@ export interface ConfigParameters {
   security?: {
     approvalPin?: string;
   };
+  providerConfig?: ProviderConfig;
 }
 
 export class Config {
@@ -470,6 +477,7 @@ export class Config {
   private contextManager?: ContextManager;
   private terminalBackground: string | undefined = undefined;
   private readonly approvalPin: string;
+  private readonly providerConfig: ProviderConfig;
 
   constructor(params: ConfigParameters) {
     this.sessionId = params.sessionId;
@@ -625,6 +633,9 @@ export class Config {
     this.hooks = params.hooks;
     this.experiments = params.experiments;
     this.approvalPin = params.security?.approvalPin ?? '000000';
+    this.providerConfig = params.providerConfig ?? {
+      provider: LlmProviderId.GEMINI,
+    };
 
     if (params.contextFileName) {
       setGeminiMdFilename(params.contextFileName);
@@ -729,6 +740,14 @@ export class Config {
 
   getContentGenerator(): ContentGenerator {
     return this.contentGenerator;
+  }
+
+  getProviderConfig(): ProviderConfig {
+    return this.providerConfig;
+  }
+
+  getProviderCapabilities(): ProviderCapabilities {
+    return getProviderCapabilities(this.providerConfig.provider);
   }
 
   getWebRemoteRelayUrl(): string | undefined {
@@ -1230,7 +1249,7 @@ export class Config {
 
   /**
    * Updates the system instruction with the latest user memory.
-   * Whenever the user memory (GEMINI.md files) is updated.
+   * Whenever the user memory (terminaI.md files) is updated.
    */
   async updateSystemInstructionIfInitialized(): Promise<void> {
     const geminiClient = this.getGeminiClient();

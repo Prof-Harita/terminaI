@@ -25,6 +25,8 @@ import { FakeContentGenerator } from './fakeContentGenerator.js';
 import { parseCustomHeaders } from '../utils/customHeaderUtils.js';
 import { RecordingContentGenerator } from './recordingContentGenerator.js';
 import { getVersion, getEffectiveModel } from '../../index.js';
+import { LlmProviderId } from './providerTypes.js';
+import { OpenAIContentGenerator } from './openaiContentGenerator.js';
 
 /**
  * Interface abstracting the core functionalities for generating content and counting tokens.
@@ -108,6 +110,16 @@ export async function createContentGeneratorConfig(
   return contentGeneratorConfig;
 }
 
+function validateGeminiBaseUrl(url: string): string {
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    throw new Error(
+      'TERMINAI_GEMINI_BASE_URL must start with http:// or https://',
+    );
+  }
+  // Normalize trailing slash: remove if present for consistency
+  return url.replace(/\/$/, '');
+}
+
 export async function createContentGenerator(
   config: ContentGeneratorConfig,
   gcConfig: Config,
@@ -142,6 +154,16 @@ export async function createContentGenerator(
     ) {
       baseHeaders['Authorization'] = `Bearer ${config.apiKey}`;
     }
+
+    const providerConfig = gcConfig.getProviderConfig();
+    if (providerConfig.provider === LlmProviderId.OPENAI_COMPATIBLE) {
+      const generator = new OpenAIContentGenerator(providerConfig, gcConfig);
+      return new LoggingContentGenerator(generator, gcConfig);
+    } else if (providerConfig.provider === LlmProviderId.ANTHROPIC) {
+      // Placeholder for Anthropic
+      throw new Error('Anthropic provider not yet implemented');
+    }
+
     if (
       config.authType === AuthType.LOGIN_WITH_GOOGLE ||
       config.authType === AuthType.COMPUTE_ADC
@@ -171,7 +193,18 @@ export async function createContentGenerator(
           'x-gemini-api-privileged-user-id': `${installationId}`,
         };
       }
-      const httpOptions = { headers };
+      const geminiBaseUrl = process.env['TERMINAI_GEMINI_BASE_URL'];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const httpOptions: any = { headers };
+      if (geminiBaseUrl) {
+        const validatedUrl = validateGeminiBaseUrl(geminiBaseUrl);
+        httpOptions.baseUrl = validatedUrl;
+        if (gcConfig.getDebugMode()) {
+          console.error(
+            `[TerminaI] using custom Gemini Base URL: ${validatedUrl}`,
+          );
+        }
+      }
 
       const googleGenAI = new GoogleGenAI({
         apiKey: config.apiKey === '' ? undefined : config.apiKey,

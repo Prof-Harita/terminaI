@@ -2,7 +2,7 @@
 
 This guide will walk you through creating your first Gemini CLI extension.
 You'll learn how to set up a new extension, add a custom tool via an MCP server,
-create a custom command, and provide context to the model with a `GEMINI.md`
+create a custom command, and provide context to the model with a `terminaI.md`
 file.
 
 ## Prerequisites
@@ -186,14 +186,14 @@ a command that searches for a pattern in your code.
 After saving the file, restart the Gemini CLI. You can now run
 `/fs:grep-code "some pattern"` to use your new command.
 
-## Step 5: Add a custom `GEMINI.md`
+## Step 5: Add a custom `terminaI.md`
 
-You can provide persistent context to the model by adding a `GEMINI.md` file to
-your extension. This is useful for giving the model instructions on how to
+You can provide persistent context to the model by adding a `terminaI.md` file
+to your extension. This is useful for giving the model instructions on how to
 behave or information about your extension's tools. Note that you may not always
 need this for extensions built to expose commands and prompts.
 
-1.  Create a file named `GEMINI.md` in the root of your extension directory:
+1.  Create a file named `terminaI.md` in the root of your extension directory:
 
     ```markdown
     # My First Extension Instructions
@@ -208,7 +208,7 @@ need this for extensions built to expose commands and prompts.
     {
       "name": "my-first-extension",
       "version": "1.0.0",
-      "contextFileName": "GEMINI.md",
+      "contextFileName": "terminaI.md",
       "mcpServers": {
         "nodeServer": {
           "command": "node",
@@ -219,8 +219,8 @@ need this for extensions built to expose commands and prompts.
     }
     ```
 
-Restart the CLI again. The model will now have the context from your `GEMINI.md`
-file in every session where the extension is active.
+Restart the CLI again. The model will now have the context from your
+`terminaI.md` file in every session where the extension is active.
 
 ## Step 6: Releasing your extension
 

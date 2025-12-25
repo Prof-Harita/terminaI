@@ -134,6 +134,9 @@ export type HistoryItemAbout = HistoryItemBase & {
   gcpProject: string;
   ideClient: string;
   userEmail?: string;
+  provider?: string;
+  effectiveModel?: string;
+  baseUrlHost?: string;
 };
 
 export type HistoryItemHelp = HistoryItemBase & {
@@ -330,6 +333,7 @@ export type Message =
       gcpProject: string;
       ideClient: string;
       userEmail?: string;
+      provider?: string;
       content?: string; // Optional content, not really used for ABOUT
     }
   | {

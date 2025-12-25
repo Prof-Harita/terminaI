@@ -5,7 +5,7 @@ exports[`<AppHeader /> > should not render the banner when no flags are set 1`] 
 Tips for getting started:
 1. Ask questions, edit files, or run commands.
 2. Be specific for the best results.
-3. Create GEMINI.md files to customize your interactions with Gemini.
+3. Create terminaI.md files to customize your interactions with Gemini.
 4. /help for more information."
 `;
 
@@ -14,7 +14,7 @@ exports[`<AppHeader /> > should not render the banner when previewFeatures is en
 Tips for getting started:
 1. Ask questions, edit files, or run commands.
 2. Be specific for the best results.
-3. Create GEMINI.md files to customize your interactions with Gemini.
+3. Create terminaI.md files to customize your interactions with Gemini.
 4. /help for more information."
 `;
 
@@ -23,7 +23,7 @@ exports[`<AppHeader /> > should not render the default banner if shown count is 
 Tips for getting started:
 1. Ask questions, edit files, or run commands.
 2. Be specific for the best results.
-3. Create GEMINI.md files to customize your interactions with Gemini.
+3. Create terminaI.md files to customize your interactions with Gemini.
 4. /help for more information."
 `;
 
@@ -35,7 +35,7 @@ exports[`<AppHeader /> > should render the banner when previewFeatures is disabl
 Tips for getting started:
 1. Ask questions, edit files, or run commands.
 2. Be specific for the best results.
-3. Create GEMINI.md files to customize your interactions with Gemini.
+3. Create terminaI.md files to customize your interactions with Gemini.
 4. /help for more information."
 `;
 
@@ -47,7 +47,7 @@ exports[`<AppHeader /> > should render the banner with default text 1`] = `
 Tips for getting started:
 1. Ask questions, edit files, or run commands.
 2. Be specific for the best results.
-3. Create GEMINI.md files to customize your interactions with Gemini.
+3. Create terminaI.md files to customize your interactions with Gemini.
 4. /help for more information."
 `;
 
@@ -59,6 +59,6 @@ exports[`<AppHeader /> > should render the banner with warning text 1`] = `
 Tips for getting started:
 1. Ask questions, edit files, or run commands.
 2. Be specific for the best results.
-3. Create GEMINI.md files to customize your interactions with Gemini.
+3. Create terminaI.md files to customize your interactions with Gemini.
 4. /help for more information."
 `;

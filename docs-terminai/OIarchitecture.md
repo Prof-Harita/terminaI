@@ -7,7 +7,7 @@
 
 ## Comparison Table
 
-| Problem                               | **TerminaI (Before)**                                         | **Open Interpreter**                                                       | **TerminaI (Proposed)**                                                         |
+| Problem                               | **Gemini CLI forked**                                         | **Open Interpreter**                                                       | **TerminaI**                                                                    |
 | ------------------------------------- | ------------------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
 | **How does it run code?**             | Runs one command, forgets everything, starts fresh next time. | Keeps a "notebook" open—variables and imports stay alive.                  | Same as OI: persistent sessions that remember everything.                       |
 | **How does it think?**                | "Let me call a tool for that." Treats code as a last resort.  | "Let me try some code, see what happens, and adjust." Code is the default. | Adaptive: uses tools for simple tasks, escalates to code when needed.           |

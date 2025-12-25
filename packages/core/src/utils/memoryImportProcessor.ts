@@ -188,7 +188,7 @@ function findCodeRegions(content: string): Array<[number, number]> {
 }
 
 /**
- * Processes import statements in GEMINI.md content
+ * Processes import statements in terminaI.md content
  * Supports @path/to/file syntax for importing content from other files
  * @param content - The content to process for imports
  * @param basePath - The directory path where the current file is located

@@ -18,9 +18,9 @@ across sessions, providing personalized and directed assistance.
 
 ## How to use `save_memory` with the Gemini CLI
 
-The tool appends the provided `fact` to a special `GEMINI.md` file located in
-the user's home directory (`~/.gemini/GEMINI.md`). This file can be configured
-to have a different name.
+The tool appends the provided `fact` to a special `terminaI.md` file located in
+the user's home directory (`~/.terminai/terminaI.md`). This file can be
+configured to have a different name.
 
 Once added, the facts are stored under a `## Gemini Added Memories` section.
 This file is loaded as context in subsequent sessions, allowing the CLI to

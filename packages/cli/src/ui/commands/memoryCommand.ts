@@ -130,7 +130,7 @@ export const memoryCommand: SlashCommand = {
     },
     {
       name: 'list',
-      description: 'Lists the paths of the GEMINI.md files in use',
+      description: 'Lists the paths of the terminaI.md files in use',
       kind: CommandKind.BUILT_IN,
       autoExecute: true,
       action: async (context) => {
@@ -139,8 +139,8 @@ export const memoryCommand: SlashCommand = {
 
         const messageContent =
           fileCount > 0
-            ? `There are ${fileCount} GEMINI.md file(s) in use:\n\n${filePaths.join('\n')}`
-            : 'No GEMINI.md files in use.';
+            ? `There are ${fileCount} terminaI.md file(s) in use:\n\n${filePaths.join('\n')}`
+            : 'No terminaI.md files in use.';
 
         context.ui.addItem(
           {

@@ -14,6 +14,7 @@ import {
   UserAccountManager,
   debugLogger,
   getVersion,
+  LlmProviderId,
 } from '@terminai/core';
 
 export const aboutCommand: SlashCommand = {
@@ -44,6 +45,26 @@ export const aboutCommand: SlashCommand = {
       cachedAccount,
     });
     const userEmail = cachedAccount ?? undefined;
+    const providerConfig = context.services.config?.getProviderConfig?.();
+    const provider = providerConfig?.provider || 'gemini';
+
+    let baseUrlHost: string | undefined;
+    try {
+      if (provider === LlmProviderId.OPENAI_COMPATIBLE) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const pc = providerConfig as any;
+        if (pc.baseUrl) {
+          baseUrlHost = new URL(pc.baseUrl).host;
+        }
+      } else if (
+        provider === LlmProviderId.GEMINI &&
+        process.env['TERMINAI_GEMINI_BASE_URL']
+      ) {
+        baseUrlHost = new URL(process.env['TERMINAI_GEMINI_BASE_URL']).host;
+      }
+    } catch {
+      // Ignore invalid URLs
+    }
 
     const aboutItem: Omit<HistoryItemAbout, 'id'> = {
       type: MessageType.ABOUT,
@@ -55,6 +76,9 @@ export const aboutCommand: SlashCommand = {
       gcpProject,
       ideClient,
       userEmail,
+      provider,
+      effectiveModel: modelVersion,
+      baseUrlHost,
     };
 
     context.ui.addItem(aboutItem, Date.now());

@@ -12,6 +12,7 @@ import {
   AuthType,
   createContentGeneratorConfig,
 } from './contentGenerator.js';
+import { LlmProviderId } from './providerTypes.js';
 import { createCodeAssistContentGenerator } from '../code_assist/codeAssist.js';
 import { GoogleGenAI } from '@google/genai';
 import type { Config } from '../config/config.js';
@@ -33,6 +34,9 @@ const mockConfig = {
   getProxy: vi.fn().mockReturnValue(undefined),
   getUsageStatisticsEnabled: vi.fn().mockReturnValue(true),
   getPreviewFeatures: vi.fn().mockReturnValue(false),
+  getProviderConfig: vi
+    .fn()
+    .mockReturnValue({ provider: LlmProviderId.GEMINI }),
 } as unknown as Config;
 
 describe('createContentGenerator', () => {
@@ -52,6 +56,9 @@ describe('createContentGenerator', () => {
     const fakeResponsesFile = 'fake/responses.yaml';
     const mockConfigWithFake = {
       fakeResponses: fakeResponsesFile,
+      getProviderConfig: vi
+        .fn()
+        .mockReturnValue({ provider: LlmProviderId.GEMINI }),
     } as unknown as Config;
     const generator = await createContentGenerator(
       {
@@ -71,6 +78,9 @@ describe('createContentGenerator', () => {
     const mockConfigWithRecordResponses = {
       fakeResponses: fakeResponsesFile,
       recordResponses: recordResponsesFile,
+      getProviderConfig: vi
+        .fn()
+        .mockReturnValue({ provider: LlmProviderId.GEMINI }),
     } as unknown as Config;
     const generator = await createContentGenerator(
       {
@@ -121,6 +131,9 @@ describe('createContentGenerator', () => {
       getProxy: vi.fn().mockReturnValue(undefined),
       getUsageStatisticsEnabled: () => true,
       getPreviewFeatures: vi.fn().mockReturnValue(false),
+      getProviderConfig: vi
+        .fn()
+        .mockReturnValue({ provider: LlmProviderId.GEMINI }),
     } as unknown as Config;
 
     // Set a fixed version for testing
@@ -189,6 +202,9 @@ describe('createContentGenerator', () => {
       getProxy: vi.fn().mockReturnValue(undefined),
       getUsageStatisticsEnabled: () => false,
       getPreviewFeatures: vi.fn().mockReturnValue(false),
+      getProviderConfig: vi
+        .fn()
+        .mockReturnValue({ provider: LlmProviderId.GEMINI }),
     } as unknown as Config;
 
     const mockGenerator = {
@@ -236,6 +252,9 @@ describe('createContentGenerator', () => {
       getProxy: vi.fn().mockReturnValue(undefined),
       getUsageStatisticsEnabled: () => false,
       getPreviewFeatures: vi.fn().mockReturnValue(false),
+      getProviderConfig: vi
+        .fn()
+        .mockReturnValue({ provider: LlmProviderId.GEMINI }),
     } as unknown as Config;
 
     const mockGenerator = {
@@ -270,6 +289,9 @@ describe('createContentGenerator', () => {
       getProxy: vi.fn().mockReturnValue(undefined),
       getUsageStatisticsEnabled: () => false,
       getPreviewFeatures: vi.fn().mockReturnValue(false),
+      getProviderConfig: vi
+        .fn()
+        .mockReturnValue({ provider: LlmProviderId.GEMINI }),
     } as unknown as Config;
 
     const mockGenerator = {
@@ -312,6 +334,9 @@ describe('createContentGenerator', () => {
       getModel: vi.fn().mockReturnValue('gemini-pro'),
       getUsageStatisticsEnabled: () => false,
       getPreviewFeatures: vi.fn().mockReturnValue(false),
+      getProviderConfig: vi
+        .fn()
+        .mockReturnValue({ provider: LlmProviderId.GEMINI }),
     } as unknown as Config;
     const mockGenerator = {
       models: {},
@@ -336,6 +361,159 @@ describe('createContentGenerator', () => {
     expect(generator).toEqual(
       new LoggingContentGenerator(mockGenerator.models, mockConfig),
     );
+  });
+
+  it('should set baseUrl when TERMINAI_GEMINI_BASE_URL is set to a valid URL', async () => {
+    const mockConfig = {
+      getModel: vi.fn().mockReturnValue('gemini-pro'),
+      getProxy: vi.fn().mockReturnValue(undefined),
+      getUsageStatisticsEnabled: () => false,
+      getPreviewFeatures: vi.fn().mockReturnValue(false),
+      getDebugMode: vi.fn().mockReturnValue(false),
+      getProviderConfig: vi
+        .fn()
+        .mockReturnValue({ provider: LlmProviderId.GEMINI }),
+    } as unknown as Config;
+
+    const mockGenerator = {
+      models: {},
+    } as unknown as GoogleGenAI;
+    vi.mocked(GoogleGenAI).mockImplementation(() => mockGenerator as never);
+    vi.stubEnv('TERMINAI_GEMINI_BASE_URL', 'https://custom.gemini.api/');
+
+    const generator = await createContentGenerator(
+      {
+        apiKey: 'test-api-key',
+        authType: AuthType.USE_GEMINI,
+      },
+      mockConfig,
+    );
+    expect(GoogleGenAI).toHaveBeenCalledWith({
+      apiKey: 'test-api-key',
+      vertexai: undefined,
+      httpOptions: {
+        headers: {
+          'User-Agent': expect.any(String),
+        },
+        baseUrl: 'https://custom.gemini.api',
+      },
+    });
+    expect(generator).toEqual(
+      new LoggingContentGenerator(mockGenerator.models, mockConfig),
+    );
+  });
+
+  it('should throw error when TERMINAI_GEMINI_BASE_URL is invalid', async () => {
+    const mockConfig = {
+      getModel: vi.fn().mockReturnValue('gemini-pro'),
+      getProxy: vi.fn().mockReturnValue(undefined),
+      getUsageStatisticsEnabled: () => false,
+      getPreviewFeatures: vi.fn().mockReturnValue(false),
+      getDebugMode: vi.fn().mockReturnValue(false),
+      getProviderConfig: vi
+        .fn()
+        .mockReturnValue({ provider: LlmProviderId.GEMINI }),
+    } as unknown as Config;
+
+    vi.stubEnv('TERMINAI_GEMINI_BASE_URL', 'invalid-url');
+
+    await expect(
+      createContentGenerator(
+        {
+          apiKey: 'test-api-key',
+          authType: AuthType.USE_GEMINI,
+        },
+        mockConfig,
+      ),
+    ).rejects.toThrow(
+      'TERMINAI_GEMINI_BASE_URL must start with http:// or https://',
+    );
+  });
+
+  it('should normalize trailing slash in TERMINAI_GEMINI_BASE_URL', async () => {
+    const mockConfig = {
+      getModel: vi.fn().mockReturnValue('gemini-pro'),
+      getProxy: vi.fn().mockReturnValue(undefined),
+      getUsageStatisticsEnabled: () => false,
+      getPreviewFeatures: vi.fn().mockReturnValue(false),
+      getDebugMode: vi.fn().mockReturnValue(false),
+      getProviderConfig: vi
+        .fn()
+        .mockReturnValue({ provider: LlmProviderId.GEMINI }),
+    } as unknown as Config;
+
+    const mockGenerator = {
+      models: {},
+    } as unknown as GoogleGenAI;
+    vi.mocked(GoogleGenAI).mockImplementation(() => mockGenerator as never);
+    vi.stubEnv('TERMINAI_GEMINI_BASE_URL', 'https://custom.gemini.api/');
+
+    await createContentGenerator(
+      {
+        apiKey: 'test-api-key',
+        authType: AuthType.USE_GEMINI,
+      },
+      mockConfig,
+    );
+    expect(GoogleGenAI).toHaveBeenCalledWith(
+      expect.objectContaining({
+        httpOptions: expect.objectContaining({
+          baseUrl: 'https://custom.gemini.api',
+        }),
+      }),
+    );
+  });
+
+  it('should NOT pass baseUrl to OAuth (LOGIN_WITH_GOOGLE) even when TERMINAI_GEMINI_BASE_URL is set', async () => {
+    const mockGenerator = {} as unknown as ContentGenerator;
+    vi.mocked(createCodeAssistContentGenerator).mockResolvedValue(
+      mockGenerator as never,
+    );
+    vi.stubEnv(
+      'TERMINAI_GEMINI_BASE_URL',
+      'https://should-be-ignored.example/',
+    );
+
+    await createContentGenerator(
+      {
+        authType: AuthType.LOGIN_WITH_GOOGLE,
+      },
+      mockConfig,
+    );
+
+    // Verify that createCodeAssistContentGenerator was called (OAuth path)
+    expect(createCodeAssistContentGenerator).toHaveBeenCalled();
+    // And GoogleGenAI was NOT called (API key path)
+    expect(GoogleGenAI).not.toHaveBeenCalled();
+  });
+
+  it('should create OpenAIContentGenerator when provider is OPENAI_COMPATIBLE', async () => {
+    const openaiConfig = {
+      getModel: vi.fn().mockReturnValue('gpt-4o'),
+      getProxy: vi.fn().mockReturnValue(undefined),
+      getDebugMode: vi.fn().mockReturnValue(false),
+      getPreviewFeatures: vi.fn().mockReturnValue(false),
+      getProviderConfig: vi.fn().mockReturnValue({
+        provider: LlmProviderId.OPENAI_COMPATIBLE,
+        baseUrl: 'https://api.openai.com/v1',
+        model: 'gpt-4o',
+        auth: { type: 'bearer', apiKey: 'test-key' },
+      }),
+    } as unknown as Config;
+
+    const generator = await createContentGenerator(
+      {
+        authType: AuthType.USE_GEMINI, // Auth type is ignored for OpenAI provider
+      },
+      openaiConfig,
+    );
+
+    // Verify it's a LoggingContentGenerator wrapping something (OpenAIContentGenerator)
+    expect(generator).toBeInstanceOf(LoggingContentGenerator);
+    // GoogleGenAI should NOT be called
+    expect(GoogleGenAI).not.toHaveBeenCalled();
+    // createCodeAssistContentGenerator should NOT be called
+    expect(createCodeAssistContentGenerator).not.toHaveBeenCalled();
   });
 });
 

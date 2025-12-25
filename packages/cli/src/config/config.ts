@@ -10,7 +10,6 @@ import { hideBin } from 'yargs/helpers';
 import process from 'node:process';
 import net from 'node:net';
 import { mcpCommand } from '../commands/mcp.js';
-import type { OutputFormat } from '@terminai/core';
 import { extensionsCommand } from '../commands/extensions.js';
 import { hooksCommand } from '../commands/hooks.js';
 import { voiceCommand } from '../commands/voice.js';
@@ -36,6 +35,10 @@ import {
   WEB_FETCH_TOOL_NAME,
   getVersion,
   PREVIEW_GEMINI_MODEL_AUTO,
+  LlmProviderId,
+  type ProviderConfig,
+  type OpenAICompatibleConfig,
+  type OutputFormat,
 } from '@terminai/core';
 import type { Settings } from './settings.js';
 
@@ -705,7 +708,7 @@ export async function loadCliConfig(
   const defaultModel = settings.general?.previewFeatures
     ? PREVIEW_GEMINI_MODEL_AUTO
     : DEFAULT_GEMINI_MODEL_AUTO;
-  const resolvedModel: string =
+  let resolvedModel: string =
     argv.model ||
     process.env['GEMINI_MODEL'] ||
     settings.model?.name ||
@@ -718,6 +721,64 @@ export async function loadCliConfig(
       : (settings.ui?.accessibility?.screenReader ?? false);
 
   const ptyInfo = await getPty();
+
+  let providerConfig: ProviderConfig = { provider: LlmProviderId.GEMINI };
+  if (settings.llm?.provider === 'openai_compatible') {
+    const s = settings.llm.openaiCompatible;
+    const openaiModel = argv.model || s?.model;
+    if (s?.baseUrl && openaiModel) {
+      let authType: NonNullable<OpenAICompatibleConfig['auth']>['type'] =
+        'none';
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const auth = s.auth as any;
+      if (auth?.type === 'api-key') authType = 'api-key';
+      else if (auth?.type === 'bearer') authType = 'bearer';
+
+      const headers: Record<string, string> = {};
+      if (settings.llm.headers) {
+        for (const [k, v] of Object.entries(settings.llm.headers)) {
+          if (typeof v === 'string') headers[k] = v;
+        }
+      }
+
+      providerConfig = {
+        provider: LlmProviderId.OPENAI_COMPATIBLE,
+        baseUrl: s.baseUrl,
+        model: openaiModel,
+        auth: {
+          type: authType,
+          apiKey: undefined, // Will be resolved by environment variable in core if needed, or we can pass it here.
+          // Plan says "apiKey: string (generally via env var)".
+          // If we want to support direct key in settings (bad practice), we could.
+          // For now, let's rely on envVarName lookup which the Core client will do, or pass the value if available in Env.
+          // Actually, Config object usually resolves Env vars?
+          // Let's pass the env var name and let the client resolve it, OR resolve it here.
+          // Core's OpenAICompatibleConfig has `apiKey?: string`.
+          envVarName: s.auth?.envVarName,
+        },
+        headers,
+      };
+
+      // Resolve API Key here if env var name is provided
+      if (
+        providerConfig.provider === LlmProviderId.OPENAI_COMPATIBLE &&
+        s.auth?.envVarName &&
+        process.env[s.auth.envVarName]
+      ) {
+        providerConfig.auth!.apiKey = process.env[s.auth.envVarName];
+      }
+
+      // In OpenAI-compatible mode, the effective model should be the OpenAI model.
+      // This ensures the UI and request pipeline agree on the model being used.
+      resolvedModel = openaiModel;
+    } else {
+      throw new FatalConfigError(
+        'llm.provider is set to openai_compatible, but llm.openaiCompatible.baseUrl and a model (llm.openaiCompatible.model or --model) are required.',
+      );
+    }
+  } else if (settings.llm?.provider === 'anthropic') {
+    providerConfig = { provider: LlmProviderId.ANTHROPIC };
+  }
 
   return new Config({
     sessionId,
@@ -799,6 +860,7 @@ export async function loadCliConfig(
     output: {
       format: (argv.outputFormat ?? settings.output?.format) as OutputFormat,
     },
+    providerConfig,
     enableMessageBusIntegration,
     codebaseInvestigatorSettings:
       settings.experimental?.codebaseInvestigatorSettings,

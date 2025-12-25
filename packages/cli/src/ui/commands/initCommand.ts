@@ -17,7 +17,7 @@ import { performInit } from '@terminai/core';
 
 export const initCommand: SlashCommand = {
   name: 'init',
-  description: 'Analyzes the project and creates a tailored GEMINI.md file',
+  description: 'Analyzes the project and creates a tailored terminaI.md file',
   kind: CommandKind.BUILT_IN,
   autoExecute: true,
   action: async (
@@ -32,18 +32,18 @@ export const initCommand: SlashCommand = {
       };
     }
     const targetDir = context.services.config.getTargetDir();
-    const geminiMdPath = path.join(targetDir, 'GEMINI.md');
+    const geminiMdPath = path.join(targetDir, 'terminaI.md');
 
     const result = performInit(fs.existsSync(geminiMdPath));
 
     if (result.type === 'submit_prompt') {
-      // Create an empty GEMINI.md file
+      // Create an empty terminaI.md file
       fs.writeFileSync(geminiMdPath, '', 'utf8');
 
       context.ui.addItem(
         {
           type: 'info',
-          text: 'Empty GEMINI.md created. Now analyzing the project to populate it.',
+          text: 'Empty terminaI.md created. Now analyzing the project to populate it.',
         },
         Date.now(),
       );

@@ -7,7 +7,7 @@
 
 import type React from 'react';
 import { useCallback, useContext, useMemo, useState } from 'react';
-import { Box, Text } from 'ink';
+import { Box, Text, useInput } from 'ink';
 import {
   PREVIEW_GEMINI_MODEL,
   PREVIEW_GEMINI_FLASH_MODEL,
@@ -19,7 +19,9 @@ import {
   ModelSlashCommandEvent,
   logModelSlashCommand,
   getDisplayString,
+  LlmProviderId,
 } from '@terminai/core';
+// removed duplicate import
 import { useKeypress } from '../hooks/useKeypress.js';
 import { theme } from '../semantic-colors.js';
 import { DescriptiveRadioButtonSelect } from './shared/DescriptiveRadioButtonSelect.js';
@@ -30,12 +32,54 @@ interface ModelDialogProps {
   onClose: () => void;
 }
 
+function SimpleInput({
+  defaultValue,
+  onSubmit,
+  onCancel,
+}: {
+  defaultValue: string;
+  onSubmit: (value: string) => void;
+  onCancel: () => void;
+}) {
+  const [value, setValue] = useState(defaultValue);
+
+  useInput((input, key) => {
+    if (key.escape) {
+      onCancel();
+      return;
+    }
+    if (key.return) {
+      onSubmit(value);
+      return;
+    }
+    if (key.backspace || key.delete) {
+      setValue((v) => v.slice(0, -1));
+      return;
+    }
+    if (!key.ctrl && !key.meta) {
+      setValue((v) => v + input);
+    }
+  });
+
+  return (
+    <Box borderStyle="single" borderColor={theme.border.default} paddingX={1}>
+      <Text>{value}</Text>
+      <Text color={theme.text.secondary} dimColor>
+        _
+      </Text>
+    </Box>
+  );
+}
+
 export function ModelDialog({ onClose }: ModelDialogProps): React.JSX.Element {
   const config = useContext(ConfigContext);
   const [view, setView] = useState<'main' | 'manual'>('main');
 
   // Determine the Preferred Model (read once when the dialog opens).
   const preferredModel = config?.getModel() || DEFAULT_GEMINI_MODEL_AUTO;
+
+  const providerConfig = config?.getProviderConfig();
+  const isOpenAI = providerConfig?.provider === LlmProviderId.OPENAI_COMPATIBLE;
 
   const shouldShowPreviewModels =
     config?.getPreviewFeatures() && config.getHasAccessToPreviewModel();
@@ -56,15 +100,22 @@ export function ModelDialog({ onClose }: ModelDialogProps): React.JSX.Element {
 
   useKeypress(
     (key) => {
-      if (key.name === 'escape') {
-        if (view === 'manual') {
-          setView('main');
-        } else {
-          onClose();
+      // If we are in OpenAI mode with SimpleInput, it handles its own keys via useInput.
+      // But we need to ensure we don't conflict or handle Esc twice if SimpleInput is focused.
+      // SimpleInput's useInput will capture keys.
+      // However, this global keypress handler also captures keys.
+      // If isOpenAI, we disable this global handler or let SimpleInput handle it?
+      if (!isOpenAI) {
+        if (key.name === 'escape') {
+          if (view === 'manual') {
+            setView('main');
+          } else {
+            onClose();
+          }
         }
       }
     },
-    { isActive: true },
+    { isActive: !isOpenAI },
   );
 
   const mainOptions = useMemo(() => {
@@ -167,22 +218,67 @@ export function ModelDialog({ onClose }: ModelDialogProps): React.JSX.Element {
     [config, onClose],
   );
 
+  const handleSubmitCustomModel = useCallback(
+    (model: string) => {
+      if (config && model.trim()) {
+        config.setModel(model.trim());
+        const event = new ModelSlashCommandEvent(model.trim());
+        logModelSlashCommand(config, event);
+      }
+      onClose();
+    },
+    [config, onClose],
+  );
+
   let header;
   let subheader;
 
+  const isGemini = providerConfig?.provider === LlmProviderId.GEMINI;
+
   // Do not show any header or subheader since it's already showing preview model
   // options
-  if (shouldShowPreviewModels) {
+  if (shouldShowPreviewModels && isGemini) {
     header = undefined;
     subheader = undefined;
     // When a user has the access but has not enabled the preview features.
-  } else if (config?.getHasAccessToPreviewModel()) {
+  } else if (config?.getHasAccessToPreviewModel() && isGemini) {
     header = 'Gemini 3 is now available.';
     subheader =
       'Enable "Preview features" in /settings.\nLearn more at https://goo.gle/enable-preview-features';
-  } else {
+  } else if (isGemini) {
     header = 'Gemini 3 is coming soon.';
     subheader = undefined;
+  }
+
+  if (isOpenAI) {
+    return (
+      <Box
+        borderStyle="round"
+        borderColor={theme.border.default}
+        flexDirection="column"
+        padding={1}
+        width="100%"
+      >
+        <Text bold>OpenAI Compatible Provider</Text>
+        <Box marginTop={1}>
+          <Text>Current Model: </Text>
+          <Text color={theme.text.primary || 'green'}>{preferredModel}</Text>
+        </Box>
+        <Box marginTop={1}>
+          <Text>Enter new model name:</Text>
+        </Box>
+        <Box marginTop={0}>
+          <SimpleInput
+            defaultValue={preferredModel}
+            onSubmit={handleSubmitCustomModel}
+            onCancel={onClose}
+          />
+        </Box>
+        <Box marginTop={1} flexDirection="column">
+          <Text color={theme.text.secondary}>(Press Esc to close)</Text>
+        </Box>
+      </Box>
+    );
   }
 
   return (

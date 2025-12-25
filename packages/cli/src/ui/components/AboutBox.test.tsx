@@ -23,6 +23,7 @@ describe('AboutBox', () => {
     selectedAuthType: 'oauth',
     gcpProject: '',
     ideClient: '',
+    provider: 'gemini',
   };
 
   it('renders with required props', () => {
@@ -40,6 +41,9 @@ describe('AboutBox', () => {
   it.each([
     ['userEmail', 'test@example.com', 'User Email'],
     ['gcpProject', 'my-project', 'GCP Project'],
+    ['provider', 'openai_compatible', 'Provider'],
+    ['effectiveModel', 'gpt-4', 'Effective Model'],
+    ['baseUrlHost', 'api.openai.com', 'Base URL Host'],
     ['ideClient', 'vscode', 'IDE Client'],
   ])('renders optional prop %s', (prop, value, label) => {
     const props = { ...defaultProps, [prop]: value };

@@ -24,6 +24,7 @@ import * as ServerConfig from '@terminai/core';
 import { isWorkspaceTrusted } from './trustedFolders.js';
 import { ExtensionManager } from './extension-manager.js';
 import { RESUME_LATEST } from '../utils/sessionUtils.js';
+import { LlmProviderId } from '@terminai/core';
 
 vi.mock('./trustedFolders.js', () => ({
   isWorkspaceTrusted: vi
@@ -662,7 +663,7 @@ describe('Hierarchical Memory Loading (config.ts) - Placeholder Suite', () => {
         name: 'ext1',
         id: 'ext1-id',
         version: '1.0.0',
-        contextFiles: ['/path/to/ext1/GEMINI.md'],
+        contextFiles: ['/path/to/ext1/terminaI.md'],
         isActive: true,
       },
       {
@@ -2048,11 +2049,113 @@ describe('loadCliConfig fileFiltering', () => {
           fileFiltering: { [property]: value },
         },
       };
-      const argv = await parseArguments(settings);
+      process.argv = ['node', 'script.js'];
+      const argv = await parseArguments({} as Settings);
       const config = await loadCliConfig(settings, 'test-session', argv);
       expect(getter(config)).toBe(value);
     },
   );
+});
+
+describe('loadCliConfig LLM provider configuration', () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    vi.mocked(os.homedir).mockReturnValue('/mock/home/user');
+    vi.stubEnv('GEMINI_API_KEY', 'test-api-key');
+    vi.spyOn(ExtensionManager.prototype, 'getExtensions').mockReturnValue([]);
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+  });
+
+  it('should configure OpenAI-compatible provider when llm.provider=openai_compatible', async () => {
+    process.argv = ['node', 'script.js'];
+    const argv = await parseArguments({} as Settings);
+    const settings: Settings = {
+      llm: {
+        provider: 'openai_compatible',
+        openaiCompatible: {
+          baseUrl: 'https://api.example.com/v1',
+          model: 'gpt-4',
+          auth: { type: 'api-key', envVarName: 'OPENAI_API_KEY' },
+        },
+        headers: { 'X-Custom': 'value' },
+      },
+    };
+    const config = await loadCliConfig(settings, 'test-session', argv);
+    const providerConfig = config.getProviderConfig();
+    expect(providerConfig.provider).toBe(LlmProviderId.OPENAI_COMPATIBLE);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const pc = providerConfig as any;
+    expect(pc.baseUrl).toBe('https://api.example.com/v1');
+    expect(pc.model).toBe('gpt-4');
+    expect(pc.auth).toEqual({
+      type: 'api-key',
+      apiKey: undefined,
+      envVarName: 'OPENAI_API_KEY',
+    });
+    expect(pc.headers).toEqual({ 'X-Custom': 'value' });
+  });
+
+  it('should resolve apiKey when envVarName is set and env var exists', async () => {
+    vi.stubEnv('CUSTOM_OPENAI_KEY', 'resolved-key');
+    process.argv = ['node', 'script.js'];
+    const argv = await parseArguments({} as Settings);
+    const settings: Settings = {
+      llm: {
+        provider: 'openai_compatible',
+        openaiCompatible: {
+          baseUrl: 'https://api.example.com/v1',
+          model: 'gpt-4',
+          auth: { type: 'api-key', envVarName: 'CUSTOM_OPENAI_KEY' },
+        },
+      },
+    };
+    const config = await loadCliConfig(settings, 'test-session', argv);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const providerConfig = config.getProviderConfig() as any;
+    expect(providerConfig.auth?.apiKey).toBe('resolved-key');
+  });
+
+  it('should pass through llm.headers', async () => {
+    process.argv = ['node', 'script.js'];
+    const argv = await parseArguments({} as Settings);
+    const settings: Settings = {
+      llm: {
+        provider: 'openai_compatible',
+        openaiCompatible: {
+          baseUrl: 'https://api.example.com/v1',
+          model: 'gpt-4',
+        },
+        headers: { Authorization: 'Bearer token', 'X-API-Key': 'key' },
+      },
+    };
+    const config = await loadCliConfig(settings, 'test-session', argv);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const providerConfig = config.getProviderConfig() as any;
+    expect(providerConfig.headers).toEqual({
+      Authorization: 'Bearer token',
+      'X-API-Key': 'key',
+    });
+  });
+
+  it('should throw error if openai_compatible provider is missing required fields', async () => {
+    process.argv = ['node', 'script.js'];
+    const argv = await parseArguments({} as Settings);
+    const settings: Settings = {
+      llm: {
+        provider: 'openai_compatible',
+        openaiCompatible: {
+          // Missing baseUrl and model
+        },
+      },
+    };
+    await expect(loadCliConfig(settings, 'test-session', argv)).rejects.toThrow(
+      'llm.provider is set to openai_compatible, but llm.openaiCompatible.baseUrl and a model (llm.openaiCompatible.model or --model) are required.',
+    );
+  });
 });
 
 describe('Output format', () => {

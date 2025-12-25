@@ -147,6 +147,7 @@ export type {
 } from './mcp/token-storage/types.js';
 export { MCPOAuthTokenStorage } from './mcp/oauth-token-storage.js';
 export type { MCPOAuthConfig } from './mcp/oauth-provider.js';
+export * from './core/providerTypes.js'; // Export provider types
 export type {
   OAuthAuthorizationServerMetadata,
   OAuthProtectedResourceMetadata,
