@@ -65,4 +65,4 @@ The upgraded TerminaI doesn't blindly use code for everything. It adapts:
 
 ## Implementation
 
-See [tasks_oi.md](../tasks_oi.md) for the detailed implementation plan.
+See [tasks_oi.md](../.local/tasks_oi.md) for the detailed implementation plan.
