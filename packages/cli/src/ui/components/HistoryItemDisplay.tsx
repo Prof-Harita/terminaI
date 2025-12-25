@@ -111,6 +111,9 @@ export const HistoryItemDisplay: React.FC<HistoryItemDisplayProps> = ({
           gcpProject={itemForDisplay.gcpProject}
           ideClient={itemForDisplay.ideClient}
           userEmail={itemForDisplay.userEmail}
+          provider={itemForDisplay.provider}
+          effectiveModel={itemForDisplay.effectiveModel}
+          baseUrlHost={itemForDisplay.baseUrlHost}
         />
       )}
       {itemForDisplay.type === 'help' && commands && (

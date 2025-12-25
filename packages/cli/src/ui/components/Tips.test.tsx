@@ -12,7 +12,7 @@ import type { Config } from '@terminai/core';
 
 describe('Tips', () => {
   it.each([
-    [0, '3. Create GEMINI.md files'],
+    [0, '3. Create terminaI.md files'],
     [5, '3. /help for more information'],
   ])('renders correct tips when file count is %i', (count, expectedText) => {
     const config = {

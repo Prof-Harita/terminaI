@@ -491,7 +491,7 @@ My code memory
 
   it('should load extension context file paths', async () => {
     const extensionFilePath = await createTestFile(
-      path.join(testRootDir, 'extensions/ext1/GEMINI.md'),
+      path.join(testRootDir, 'extensions/ext1/terminaI.md'),
       'Extension memory content',
     );
 
@@ -546,7 +546,7 @@ included directory memory
   });
 
   it('should handle multiple directories and files in parallel correctly', async () => {
-    // Create multiple test directories with GEMINI.md files
+    // Create multiple test directories with terminaI.md files
     const numDirs = 5;
     const createdFiles: string[] = [];
 
@@ -647,7 +647,7 @@ included directory memory
   describe('loadEnvironmentMemory', () => {
     it('should load extension memory', async () => {
       const extFile = await createTestFile(
-        path.join(testRootDir, 'ext', 'GEMINI.md'),
+        path.join(testRootDir, 'ext', 'terminaI.md'),
         'Extension content',
       );
       const mockExtensionLoader = new SimpleExtensionLoader([

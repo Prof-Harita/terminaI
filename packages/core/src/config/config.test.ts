@@ -25,6 +25,7 @@ import {
   AuthType,
   createContentGeneratorConfig,
 } from '../core/contentGenerator.js';
+import { LlmProviderId } from '../core/providerTypes.js';
 import { GeminiClient } from '../core/client.js';
 import { GitService } from '../services/gitService.js';
 import { ShellTool } from '../tools/shell.js';
@@ -94,8 +95,8 @@ vi.mock('../tools/read-many-files');
 vi.mock('../tools/memoryTool', () => ({
   MemoryTool: vi.fn(),
   setGeminiMdFilename: vi.fn(),
-  getCurrentGeminiMdFilename: vi.fn(() => 'GEMINI.md'), // Mock the original filename
-  DEFAULT_CONTEXT_FILENAME: 'GEMINI.md',
+  getCurrentGeminiMdFilename: vi.fn(() => 'terminaI.md'), // Mock the original filename
+  DEFAULT_CONTEXT_FILENAME: 'terminaI.md',
   GEMINI_DIR: '.gemini',
 }));
 
@@ -361,7 +362,7 @@ describe('Server Config (config.ts)', () => {
         config,
         authType,
       );
-      // Verify that contentGeneratorConfig is updated
+      // Verify that   * Whenever the user memory (terminaI.md files) is updated.
       expect(config.getContentGeneratorConfig()).toEqual(mockContentConfig);
       expect(GeminiClient).toHaveBeenCalledWith(config);
     });
@@ -1906,7 +1907,9 @@ describe('Config JIT Initialization', () => {
       getEnvironmentMemory: vi
         .fn()
         .mockReturnValue('Environment Memory\n\nMCP Instructions'),
-      getLoadedPaths: vi.fn().mockReturnValue(new Set(['/path/to/GEMINI.md'])),
+      getLoadedPaths: vi
+        .fn()
+        .mockReturnValue(new Set(['/path/to/terminaI.md'])),
     };
     (ContextManager as unknown as Mock).mockImplementation(
       () => mockContextManager,
@@ -1935,7 +1938,7 @@ describe('Config JIT Initialization', () => {
 
     // Verify state update (delegated to ContextManager)
     expect(config.getGeminiMdFileCount()).toBe(1);
-    expect(config.getGeminiMdFilePaths()).toEqual(['/path/to/GEMINI.md']);
+    expect(config.getGeminiMdFilePaths()).toEqual(['/path/to/terminaI.md']);
   });
 
   it('should NOT initialize ContextManager when experimentalJitContext is disabled', async () => {
@@ -1954,5 +1957,55 @@ describe('Config JIT Initialization', () => {
 
     expect(ContextManager).not.toHaveBeenCalled();
     expect(config.getUserMemory()).toBe('Initial Memory');
+  });
+
+  describe('Provider Configuration', () => {
+    const testBaseParams: ConfigParameters = {
+      cwd: '/tmp',
+      targetDir: '/tmp',
+      debugMode: false,
+      sessionId: 'test',
+      model: 'gemini-pro',
+    };
+
+    it('should default to Gemini provider', () => {
+      const config = new Config(testBaseParams);
+      expect(config.getProviderConfig()).toEqual({
+        provider: LlmProviderId.GEMINI,
+      });
+    });
+
+    it('should return correct capabilities for Gemini', () => {
+      const config = new Config(testBaseParams);
+      const capabilities = config.getProviderCapabilities();
+      expect(capabilities).toEqual({
+        supportsTools: true,
+        supportsStreaming: true,
+        supportsEmbeddings: true,
+        supportsJsonSchema: true,
+        supportsCitations: true,
+        supportsImages: true,
+      });
+    });
+
+    it('should return correct capabilities for OpenAI-compatible', () => {
+      const config = new Config({
+        ...testBaseParams,
+        providerConfig: {
+          provider: LlmProviderId.OPENAI_COMPATIBLE,
+          baseUrl: 'https://api.example.com',
+          model: 'gpt-4',
+        },
+      });
+      const capabilities = config.getProviderCapabilities();
+      expect(capabilities).toEqual({
+        supportsTools: true,
+        supportsStreaming: true,
+        supportsEmbeddings: false,
+        supportsJsonSchema: false,
+        supportsCitations: false,
+        supportsImages: false,
+      });
+    });
   });
 });

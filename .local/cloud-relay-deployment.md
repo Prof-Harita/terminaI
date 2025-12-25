@@ -144,9 +144,28 @@ Expected response:
 ```json
 {
   "status": "ok",
-  "sessions": 0,
+  "sessionsTotal": 0,
+  "sessionsWithHost": 0,
+  "sessionsWithClient": 0,
   "connections": 0
 }
+```
+
+### Metrics Endpoint (Prometheus)
+
+```bash
+curl https://terminai-relay-XXXXX-uc.a.run.app/metrics
+```
+
+Returns Prometheus-style metrics:
+
+```
+# HELP relay_active_connections Total active WebSocket connections
+relay_active_connections 5
+# HELP relay_active_sessions Total active sessions
+relay_active_sessions 3
+# HELP relay_sessions_with_host Sessions with active host
+relay_sessions_with_host 2
 ```
 
 ### Test WebSocket Connection
@@ -188,17 +207,27 @@ server).
 
 ### Environment Variables
 
-| Variable | Default | Description         |
-| -------- | ------- | ------------------- |
-| `PORT`   | `8080`  | HTTP/WebSocket port |
+| Variable                                | Default | Description                            |
+| --------------------------------------- | ------- | -------------------------------------- |
+| `PORT`                                  | `8080`  | HTTP/WebSocket port                    |
+| `ALLOW_INSECURE_RELAY_V1`               | `false` | Enable v1 protocol fallback (insecure) |
+| `MAX_GLOBAL_SESSIONS`                   | `1000`  | Maximum concurrent sessions            |
+| `MAX_CONNECTIONS_PER_IP`                | `10`    | Max connections per IP                 |
+| `MAX_NEW_CONNECTIONS_PER_IP_PER_MINUTE` | `30`    | Rate limit for new connections         |
+| `MAX_PAYLOAD_BYTES`                     | `5MB`   | Maximum WebSocket message size         |
+| `MAX_MSGS_PER_SEC_PER_CONNECTION`       | `10`    | Messages/sec per connection            |
+| `MAX_BYTES_PER_SEC_PER_CONNECTION`      | `1MB`   | Bytes/sec per connection               |
+| `MAX_MSGS_PER_SEC_PER_IP`               | `100`   | Messages/sec per IP                    |
+| `MAX_BYTES_PER_SEC_PER_IP`              | `10MB`  | Bytes/sec per IP                       |
 
 ### Built-in Limits
 
-| Limit              | Value     | Purpose                         |
+| Limit              | Default   | Purpose                         |
 | ------------------ | --------- | ------------------------------- |
 | Max sessions       | 1000      | Prevents resource exhaustion    |
 | Max connections/IP | 10        | Prevents single-IP abuse        |
-| Rate limit         | 30/min/IP | Prevents connection spam        |
+| Connection rate    | 30/min/IP | Prevents connection spam        |
+| Message rate       | 10/sec    | Prevents message spam           |
 | Heartbeat          | 30s ping  | Detects dead connections        |
 | Timeout            | 60s       | Closes unresponsive connections |
 
@@ -263,12 +292,17 @@ Check that `--timeout` is set to 3600 (1 hour) in deployment.
 
 ## Security Notes
 
-1. **No authentication required** — The relay is intentionally open
-2. **E2E encryption** — All traffic is AES-256-GCM encrypted client-to-agent
-3. **Key never sent to server** — The encryption key is in the URL fragment
+1. **Protocol v2 by default** — Uses epoch-based anti-replay; old clients
+   rejected
+2. **Pairing required** — 6-digit code shown on host, must match in browser
+3. **No authentication required** — The relay is intentionally open
+4. **E2E encryption** — All traffic is AES-256-GCM encrypted client-to-agent
+5. **Key never sent to server** — The encryption key is in the URL fragment
    (`#key=...`)
-4. **Rate limiting** — Built-in protection against abuse
-5. **No data storage** — Relay is stateless, messages pass through only
+6. **Rate limiting** — Built-in protection against abuse
+7. **No data storage** — Relay is stateless, messages pass through only
+8. **v1 fallback** — Set `ALLOW_INSECURE_RELAY_V1=true` only for transitional
+   deployments
 
 ---
 

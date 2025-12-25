@@ -9,7 +9,7 @@ import { expect, describe, it } from 'vitest';
 import { performInit } from './init.js';
 
 describe('performInit', () => {
-  it('returns info if GEMINI.md already exists', () => {
+  it('returns info if terminaI.md already exists', () => {
     const result = performInit(true);
 
     expect(result.type).toBe('message');
@@ -19,7 +19,7 @@ describe('performInit', () => {
     }
   });
 
-  it('returns submit_prompt if GEMINI.md does not exist', () => {
+  it('returns submit_prompt if terminaI.md does not exist', () => {
     const result = performInit(false);
     expect(result.type).toBe('submit_prompt');
 

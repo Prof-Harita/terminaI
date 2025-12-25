@@ -139,6 +139,106 @@ export type DnsResolutionOrder = 'ipv4first' | 'verbatim';
  * `as const` is crucial for TypeScript to infer the most specific types possible.
  */
 const SETTINGS_SCHEMA = {
+  llm: {
+    type: 'object',
+    label: 'LLM Configuration',
+    category: 'Model',
+    requiresRestart: true,
+    default: {},
+    description: 'LLM provider configuration.',
+    showInDialog: false,
+    properties: {
+      provider: {
+        type: 'enum',
+        label: 'Provider',
+        category: 'Model',
+        requiresRestart: true,
+        default: 'gemini',
+        options: [
+          { value: 'gemini', label: 'Gemini' },
+          { value: 'openai_compatible', label: 'OpenAI Compatible' },
+          { value: 'anthropic', label: 'Anthropic' },
+        ],
+        description: 'Select the LLM provider.',
+        showInDialog: true,
+      },
+      headers: {
+        type: 'object',
+        label: 'Custom Headers',
+        category: 'Model',
+        requiresRestart: true,
+        default: {},
+        description: 'Custom headers for LLM requests.',
+        showInDialog: false,
+        additionalProperties: { type: 'string' },
+      },
+      openaiCompatible: {
+        type: 'object',
+        label: 'OpenAI Compatible Settings',
+        category: 'Model',
+        requiresRestart: true,
+        default: {},
+        description: 'Settings for OpenAI-compatible provider.',
+        showInDialog: false,
+        properties: {
+          baseUrl: {
+            type: 'string',
+            label: 'Base URL',
+            category: 'Model',
+            requiresRestart: true,
+            default: undefined as string | undefined,
+            description: 'API Base URL.',
+            showInDialog: true,
+          },
+          model: {
+            type: 'string',
+            label: 'Model ID',
+            category: 'Model',
+            requiresRestart: true,
+            default: undefined as string | undefined,
+            description: 'The model ID (e.g. gpt-4, llama-3).',
+            showInDialog: true,
+          },
+          auth: {
+            type: 'object',
+            label: 'Authentication',
+            category: 'Model',
+            requiresRestart: true,
+            default: {},
+            description: 'Authentication settings.',
+            showInDialog: false,
+            properties: {
+              type: {
+                type: 'enum',
+                label: 'Auth Type',
+                category: 'Model',
+                requiresRestart: true,
+                default: 'none',
+                options: [
+                  { value: 'none', label: 'None' },
+                  { value: 'api-key', label: 'API Key' },
+                  { value: 'bearer', label: 'Bearer Token' },
+                ],
+                description: 'Authentication type.',
+                showInDialog: true,
+              },
+              envVarName: {
+                type: 'string',
+                label: 'API Key Env Var',
+                category: 'Model',
+                requiresRestart: true,
+                default: undefined as string | undefined,
+                description:
+                  'Name of the environment variable for the API key.',
+                showInDialog: true,
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+
   // Maintained for compatibility/criticality
   mcpServers: {
     type: 'object',
@@ -410,7 +510,7 @@ const SETTINGS_SCHEMA = {
         requiresRestart: false,
         default: false,
         description:
-          'Hide the context summary (GEMINI.md, MCP servers) above the input.',
+          'Hide the context summary (terminaI.md, MCP servers) above the input.',
         showInDialog: true,
       },
       footer: {
@@ -939,7 +1039,7 @@ const SETTINGS_SCHEMA = {
         requiresRestart: false,
         default: false,
         description: oneLine`
-          Controls how /memory refresh loads GEMINI.md files.
+          Controls how /memory refresh loads terminaI.md files.
           When true, include directories are scanned; when false, only the current directory is used.
         `,
         showInDialog: true,

@@ -19,6 +19,9 @@ interface AboutBoxProps {
   gcpProject: string;
   ideClient: string;
   userEmail?: string;
+  provider?: string;
+  effectiveModel?: string;
+  baseUrlHost?: string;
 }
 
 export const AboutBox: React.FC<AboutBoxProps> = ({
@@ -30,6 +33,9 @@ export const AboutBox: React.FC<AboutBoxProps> = ({
   gcpProject,
   ideClient,
   userEmail,
+  provider,
+  effectiveModel,
+  baseUrlHost,
 }) => (
   <Box
     borderStyle="round"
@@ -129,6 +135,42 @@ export const AboutBox: React.FC<AboutBoxProps> = ({
         </Box>
         <Box>
           <Text color={theme.text.primary}>{gcpProject}</Text>
+        </Box>
+      </Box>
+    )}
+    {provider && (
+      <Box flexDirection="row">
+        <Box width="35%">
+          <Text bold color={theme.text.link}>
+            Provider
+          </Text>
+        </Box>
+        <Box>
+          <Text color={theme.text.primary}>{provider}</Text>
+        </Box>
+      </Box>
+    )}
+    {effectiveModel && (
+      <Box flexDirection="row">
+        <Box width="35%">
+          <Text bold color={theme.text.link}>
+            Effective Model
+          </Text>
+        </Box>
+        <Box>
+          <Text color={theme.text.primary}>{effectiveModel}</Text>
+        </Box>
+      </Box>
+    )}
+    {baseUrlHost && (
+      <Box flexDirection="row">
+        <Box width="35%">
+          <Text bold color={theme.text.link}>
+            Base URL Host
+          </Text>
+        </Box>
+        <Box>
+          <Text color={theme.text.primary}>{baseUrlHost}</Text>
         </Box>
       </Box>
     )}

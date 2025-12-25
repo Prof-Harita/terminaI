@@ -68,8 +68,8 @@ export function createShowMemoryAction(
         type: MessageType.INFO,
         content:
           fileCount > 0
-            ? 'Hierarchical memory (GEMINI.md or other context files) is loaded but content is empty.'
-            : 'No hierarchical memory (GEMINI.md or other context files) is currently loaded.',
+            ? 'Hierarchical memory (terminaI.md or other context files) is loaded but content is empty.'
+            : 'No hierarchical memory (terminaI.md or other context files) is currently loaded.',
         timestamp: new Date(),
       });
     }

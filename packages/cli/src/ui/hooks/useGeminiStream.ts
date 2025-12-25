@@ -78,11 +78,21 @@ enum StreamProcessingStatus {
   Error,
 }
 
-function showCitations(settings: LoadedSettings): boolean {
+function showCitations(settings: LoadedSettings, config?: Config): boolean {
+  // Check if settings explicitly disable citations
   const enabled = settings?.merged?.ui?.showCitations;
-  if (enabled !== undefined) {
-    return enabled;
+  if (enabled !== undefined && !enabled) {
+    return false;
   }
+
+  // Check if provider supports citations
+  if (config) {
+    const capabilities = config.getProviderCapabilities?.();
+    if (capabilities && !capabilities.supportsCitations) {
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -654,7 +664,7 @@ export const useGeminiStream = (
 
   const handleCitationEvent = useCallback(
     (text: string, userMessageTimestamp: number) => {
-      if (!showCitations(settings)) {
+      if (!showCitations(settings, config)) {
         return;
       }
 
@@ -664,7 +674,7 @@ export const useGeminiStream = (
       }
       addItem({ type: MessageType.INFO, text }, userMessageTimestamp);
     },
-    [addItem, pendingHistoryItemRef, setPendingHistoryItem, settings],
+    [addItem, pendingHistoryItemRef, setPendingHistoryItem, settings, config],
   );
 
   const handleFinishedEvent = useCallback(

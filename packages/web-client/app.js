@@ -18,6 +18,15 @@ const relayUrl = fragment.get('relay');
 const sessionId = fragment.get('session');
 const keyBase64 = fragment.get('key');
 
+// Strip fragment to prevent key leakage
+if (relayUrl && sessionId && keyBase64) {
+  history.replaceState(
+    null,
+    '',
+    window.location.pathname + window.location.search,
+  );
+}
+
 function setStatus(text, color = 'var(--muted)') {
   statusDot.style.background = color;
   statusText.textContent = text;
@@ -31,8 +40,15 @@ if (relayUrl && sessionId && keyBase64) {
     keyBase64,
     (msg) => handleA2aEvent(msg), // onMessage
     (text, color) => setStatus(text, color), // onStatus
+    () => renderPairingPrompt(), // onPairingRequired
   );
   relayClient.connect();
+  // Wait for handshake before allowing UI interactions
+  setTimeout(() => {
+    if (relayClient && relayClient.state !== 'READY') {
+      setStatus('Waiting for handshake...', 'var(--muted)');
+    }
+  }, 1000);
 }
 
 function appendMessage(role, text) {
@@ -135,6 +151,90 @@ function ensureAssistantMessage() {
 
 function clearAssistantMessage() {
   currentAssistantEl = null;
+}
+
+function renderPairingPrompt() {
+  // Remove any existing pairing prompt
+  const existing = document.getElementById('pairing-prompt');
+  if (existing) existing.remove();
+
+  const wrapper = document.createElement('div');
+  wrapper.id = 'pairing-prompt';
+  wrapper.className = 'message ai';
+  wrapper.style.maxWidth = '100%';
+
+  const title = document.createElement('div');
+  title.textContent = 'Pairing Required';
+  title.style.fontWeight = '700';
+  title.style.marginBottom = '6px';
+
+  const body = document.createElement('div');
+  body.textContent =
+    'Enter the 6-digit pairing code shown on the host terminal:';
+  body.style.marginBottom = '10px';
+
+  const codeInput = document.createElement('input');
+  codeInput.type = 'text';
+  codeInput.placeholder = 'Enter code (6 digits)';
+  codeInput.inputMode = 'numeric';
+  codeInput.pattern = '\\d*';
+  codeInput.maxLength = 6;
+  codeInput.style.width = '100%';
+  codeInput.style.marginBottom = '10px';
+  codeInput.style.padding = '10px 12px';
+  codeInput.style.borderRadius = '12px';
+  codeInput.style.border = '1px solid var(--border)';
+  codeInput.style.background = 'rgba(255,255,255,0.03)';
+  codeInput.style.color = 'var(--text)';
+  codeInput.style.fontSize = '18px';
+  codeInput.style.textAlign = 'center';
+  codeInput.style.letterSpacing = '0.3em';
+
+  const submitBtn = document.createElement('button');
+  submitBtn.textContent = 'Pair';
+  submitBtn.style.width = '100%';
+  submitBtn.disabled = true;
+
+  const validateCode = () => {
+    const val = (codeInput.value || '').replace(/\D/g, '');
+    codeInput.value = val.slice(0, 6);
+    return codeInput.value.length === 6;
+  };
+
+  codeInput.addEventListener('input', () => {
+    submitBtn.disabled = !validateCode();
+  });
+
+  submitBtn.addEventListener('click', async () => {
+    const code = codeInput.value.trim();
+    if (code.length !== 6) return;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Pairing...';
+    try {
+      await relayClient.sendPairingCode(code);
+      // Success will be handled by PAIR_ACK message
+      wrapper.remove();
+    } catch (e) {
+      submitBtn.textContent = 'Pair';
+      submitBtn.disabled = false;
+      console.error('Pairing error:', e);
+    }
+  });
+
+  // Allow Enter key to submit
+  codeInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !submitBtn.disabled) {
+      submitBtn.click();
+    }
+  });
+
+  wrapper.appendChild(title);
+  wrapper.appendChild(body);
+  wrapper.appendChild(codeInput);
+  wrapper.appendChild(submitBtn);
+  chat.appendChild(wrapper);
+  chat.scrollTop = chat.scrollHeight;
+  codeInput.focus();
 }
 
 function renderConfirmation({ callId, prompt, requiresPin, pinLength }) {

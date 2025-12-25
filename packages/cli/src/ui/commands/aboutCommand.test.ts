@@ -98,6 +98,9 @@ describe('aboutCommand', () => {
         gcpProject: 'test-gcp-project',
         ideClient: 'test-ide',
         userEmail: 'test-email@example.com',
+        provider: 'gemini',
+        effectiveModel: 'test-model',
+        baseUrlHost: undefined,
       },
       expect.any(Number),
     );

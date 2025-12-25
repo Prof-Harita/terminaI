@@ -151,7 +151,7 @@ The file has the following structure:
       "command": "node my-server.js"
     }
   },
-  "contextFileName": "GEMINI.md",
+  "contextFileName": "terminaI.md",
   "excludeTools": ["run_shell_command"]
 }
 ```
@@ -173,7 +173,7 @@ The file has the following structure:
     `trust`.
 - `contextFileName`: The name of the file that contains the context for the
   extension. This will be used to load the context from the extension directory.
-  If this property is not used but a `GEMINI.md` file is present in your
+  If this property is not used but a `terminaI.md` file is present in your
   extension directory, then that file will be loaded.
 - `excludeTools`: An array of tool names to exclude from the model. You can also
   specify command-specific restrictions for tools that support it, like the

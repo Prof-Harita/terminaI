@@ -128,7 +128,7 @@ function loadExtension(extensionDir: string): GeminiCLIExtension | null {
 
 function getContextFileNames(config: ExtensionConfig): string[] {
   if (!config.contextFileName) {
-    return ['GEMINI.md'];
+    return ['terminaI.md'];
   } else if (!Array.isArray(config.contextFileName)) {
     return [config.contextFileName];
   }

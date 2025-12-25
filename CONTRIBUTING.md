@@ -96,11 +96,9 @@ agree that your contributions are licensed under the same terms.
 
 - Please adhere to the coding style, patterns, and conventions used throughout
   the existing codebase.
-- Consult
-  [GEMINI.md](https://github.com/google-gemini/gemini-cli/blob/main/GEMINI.md)
-  (typically found in the project root) for specific instructions related to
-  AI-assisted development, including conventions for React, comments, and Git
-  usage.
+- Consult [terminaI.md](terminaI.md) (typically found in the project root) for
+  specific instructions related to AI-assisted development, including
+  conventions for React, comments, and Git usage.
 - **Imports:** Pay special attention to import paths. The project uses ESLint to
   enforce restrictions on relative imports between packages.
 
@@ -233,8 +231,7 @@ sandbox.
 
 ### Manual publish
 
-We publish an artifact for each commit to our internal registry. But if you need
-to manually cut a local build, then run the following commands:
+If you need to manually cut a local build, then run the following commands:
 
 ```
 npm run clean
@@ -316,9 +313,6 @@ Before submitting your documentation pull request, please:
 2. Review your changes for clarity and accuracy.
 3. Check that all links work correctly.
 4. Ensure any code examples are tested and functional.
-5. Sign the
-   [Contributor License Agreement (CLA)](https://cla.developers.google.com/) if
-   you haven't already.
 
 ### Need help?
 

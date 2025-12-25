@@ -211,16 +211,16 @@ describe('bfsFileSearch', () => {
     for (let i = 0; i < numTargetDirs; i++) {
       // Add target files in some directories
       fileCreationPromises.push(
-        createTestFile('content', `dir${i}`, 'GEMINI.md'),
+        createTestFile('content', `dir${i}`, 'terminaI.md'),
       );
       fileCreationPromises.push(
-        createTestFile('content', `dir${i}`, 'subdir1', 'GEMINI.md'),
+        createTestFile('content', `dir${i}`, 'subdir1', 'terminaI.md'),
       );
     }
     const expectedFiles = await Promise.all(fileCreationPromises);
 
     const result = await bfsFileSearch(testRootDir, {
-      fileName: 'GEMINI.md',
+      fileName: 'terminaI.md',
       // Provide a generous maxDirs limit to ensure it doesn't prematurely stop
       // in this large test case. Total dirs created is 200.
       maxDirs: 250,
