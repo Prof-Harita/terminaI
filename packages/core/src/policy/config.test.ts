@@ -279,7 +279,7 @@ describe('createPolicyEngineConfig', () => {
       ApprovalMode.AUTO_EDIT,
     );
     const rule = config.rules?.find(
-      (r) => r.toolName === 'replace' && r.decision === PolicyDecision.ALLOW,
+      (r) => r.toolName === 'edit_file' && r.decision === PolicyDecision.ALLOW,
     );
     expect(rule).toBeDefined();
     // Priority 15 in default tier → 1.015
@@ -535,7 +535,7 @@ describe('createPolicyEngineConfig', () => {
     // Write tool ASK_USER rules are present (from write.toml)
     const writeToolRules = config.rules?.filter(
       (r) =>
-        ['run_shell_command'].includes(r.toolName || '') &&
+        ['run_terminal_command'].includes(r.toolName || '') &&
         r.decision === PolicyDecision.ASK_USER,
     );
     expect(writeToolRules).toBeDefined();
