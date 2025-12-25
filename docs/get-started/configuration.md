@@ -96,6 +96,40 @@ their corresponding top-level category object in your `settings.json` file.
 
 <!-- SETTINGS-AUTOGEN:START -->
 
+#### `llm`
+
+- **`llm.provider`** (enum):
+  - **Description:** Select the LLM provider.
+  - **Default:** `"gemini"`
+  - **Values:** `"gemini"`, `"openai_compatible"`, `"anthropic"`
+  - **Requires restart:** Yes
+
+- **`llm.headers`** (object):
+  - **Description:** Custom headers for LLM requests.
+  - **Default:** `{}`
+  - **Requires restart:** Yes
+
+- **`llm.openaiCompatible.baseUrl`** (string):
+  - **Description:** API Base URL.
+  - **Default:** `undefined`
+  - **Requires restart:** Yes
+
+- **`llm.openaiCompatible.model`** (string):
+  - **Description:** The model ID (e.g. gpt-4, llama-3).
+  - **Default:** `undefined`
+  - **Requires restart:** Yes
+
+- **`llm.openaiCompatible.auth.type`** (enum):
+  - **Description:** Authentication type.
+  - **Default:** `"none"`
+  - **Values:** `"none"`, `"api-key"`, `"bearer"`
+  - **Requires restart:** Yes
+
+- **`llm.openaiCompatible.auth.envVarName`** (string):
+  - **Description:** Name of the environment variable for the API key.
+  - **Default:** `undefined`
+  - **Requires restart:** Yes
+
 #### `general`
 
 - **`general.previewFeatures`** (boolean):
