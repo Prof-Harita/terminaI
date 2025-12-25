@@ -50,6 +50,7 @@ vi.mock('@terminai/core', async () => {
       initialize: vi.fn(),
     })),
     createToolRegistry: vi.fn().mockResolvedValue({}),
+    getVersion: vi.fn().mockResolvedValue('0.0.0-test'),
   };
 });
 
