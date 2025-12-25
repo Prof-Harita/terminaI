@@ -1,4 +1,3 @@
-
                                  Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
@@ -199,4 +198,47 @@
    distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
-   limitations under the License.
+    limitations under the License.
+
+===============================================================================
+TRADEMARK NOTICE
+===============================================================================
+
+"TerminaI" is a trademark of Prof-Harita (Nittala Venkata Sastry). 
+
+While the SOURCE CODE in this repository is licensed under the Apache License 
+2.0 (as stated above), the TERMINAI NAME, LOGO, and BRAND IDENTITY are NOT 
+licensed for unrestricted use.
+
+The Apache 2.0 license grants you rights to use, modify, and distribute the 
+code. However, it does NOT grant trademark rights. Section 6 of the Apache 
+License explicitly states: "This License does not grant permission to use the 
+trade names, trademarks, service marks, or product names of the Licensor."
+
+PERMITTED TRADEMARK USES:
+  - Referring to the TerminaI project in documentation or articles
+  - Linking to the official TerminaI repository
+  - Academic, educational, or press references to TerminaI
+  - Stating that your work is "based on TerminaI" or "compatible with TerminaI"
+
+PROHIBITED TRADEMARK USES (without written permission):
+  - Using "TerminaI" as the name of a competing product or service
+  - Using the TerminaI logo or brand assets in your product
+  - Creating confusion about whether your product is the official TerminaI
+  - Implying endorsement or official status without permission
+
+FORKS AND DERIVATIVE WORKS:
+If you create a fork or derivative work (which the Apache 2.0 license permits), 
+you MUST:
+  - Use a different name (e.g., "MyTerminal" or "MyTerminal based on TerminaI")
+  - Not use the TerminaI logo or brand identity
+  - Clearly state that it is a fork/derivative and not official
+  - Follow all Apache 2.0 license requirements for the code
+
+COMMERCIAL TRADEMARK LICENSING:
+For commercial use of the TerminaI trademark, custom licensing, or partnership 
+inquiries, please contact: sastry.nittala.nv@gmail.com
+
+See TRADEMARK.md for complete trademark usage guidelines.
+
+===============================================================================
