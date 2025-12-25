@@ -149,6 +149,9 @@
     ],
     "*.{json,md}": [
       "prettier --write"
+    ],
+    "schemas/settings.schema.json": [
+      "npm run docs:settings"
     ]
   }
 }

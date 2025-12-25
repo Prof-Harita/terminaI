@@ -1296,23 +1296,6 @@
           "markdownDescription": "Enable the hooks system for intercepting and customizing Gemini CLI behavior. When enabled, hooks configured in settings will execute at appropriate lifecycle events (BeforeTool, AfterTool, BeforeModel, etc.). Requires MessageBus integration.\n\n- Category: `Advanced`\n- Requires restart: `yes`\n- Default: `false`",
           "default": false,
           "type": "boolean"
-        },
-        "guiAutomation": {
-          "title": "GUI Automation",
-          "description": "Settings for desktop GUI automation (ui.* tools).",
-          "markdownDescription": "Settings for desktop GUI automation (ui.* tools).\\n\\n- Category: `Tools`\\n- Requires restart: `yes`\\n- Default: `{}`",
-          "default": {},
-          "type": "object",
-          "properties": {
-            "enabled": {
-              "title": "Enable GUI Automation",
-              "description": "Enable desktop GUI automation tools (ui.click, ui.type, ui.snapshot, etc.). Default is false for security.",
-              "markdownDescription": "Enable desktop GUI automation tools (ui.click, ui.type, ui.snapshot, etc.). Default is false for security.\\n\\n- Category: `Tools`\\n- Requires restart: `yes`\\n- Default: `false`",
-              "default": false,
-              "type": "boolean"
-            }
-          },
-          "additionalProperties": false
         }
       },
       "additionalProperties": false
