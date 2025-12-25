@@ -52,7 +52,7 @@ jobs:
       - name: 'Checkout'
         uses: 'actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8' # ratchet:actions/checkout@v5
         with:
-          ref: "${{ github.event.inputs.ref }}"
+          ref: '${{ github.event.inputs.ref }}'
           fetch-depth: 0
 
       - name: 'Setup Node.js'
@@ -64,15 +64,15 @@ jobs:
       - name: 'configure .npmrc'
         uses: './.github/actions/setup-npmrc'
         with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
 
       - name: 'Install Script Dependencies'
         run: 'npm ci'
 
       - name: 'Configure Git User'
         env:
-          GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          REPOSITORY: "${{ github.repository }}"
+          GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          REPOSITORY: '${{ github.repository }}'
         run: |-
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -82,13 +82,13 @@ jobs:
       - name: 'Create Patch'
         id: 'create_patch'
         env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          GH_TOKEN: "${{ secrets.RELEASE_PAT }}"
-          CLI_PACKAGE_NAME: "${{ vars.CLI_PACKAGE_NAME }}"
-          PATCH_COMMIT: "${{ github.event.inputs.commit }}"
-          PATCH_CHANNEL: "${{ github.event.inputs.channel }}"
-          ORIGINAL_PR: "${{ github.event.inputs.original_pr }}"
-          DRY_RUN: "${{ github.event.inputs.dry_run }}"
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          GH_TOKEN: '${{ secrets.RELEASE_PAT }}'
+          CLI_PACKAGE_NAME: '${{ vars.CLI_PACKAGE_NAME }}'
+          PATCH_COMMIT: '${{ github.event.inputs.commit }}'
+          PATCH_CHANNEL: '${{ github.event.inputs.channel }}'
+          ORIGINAL_PR: '${{ github.event.inputs.original_pr }}'
+          DRY_RUN: '${{ github.event.inputs.dry_run }}'
         continue-on-error: true
         run: |
           # Capture output and display it in logs using tee
@@ -109,16 +109,16 @@ jobs:
       - name: 'Comment on Original PR'
         if: 'always() && inputs.original_pr'
         env:
-          GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          ORIGINAL_PR: "${{ github.event.inputs.original_pr }}"
-          EXIT_CODE: "${{ steps.create_patch.outputs.EXIT_CODE }}"
-          COMMIT: "${{ github.event.inputs.commit }}"
-          CHANNEL: "${{ github.event.inputs.channel }}"
-          REPOSITORY: "${{ github.repository }}"
-          GITHUB_RUN_ID: "${{ github.run_id }}"
-          LOG_CONTENT: "${{ env.LOG_CONTENT }}"
-          TARGET_REF: "${{ github.event.inputs.ref }}"
-          ENVIRONMENT: "${{ github.event.inputs.environment }}"
+          GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          ORIGINAL_PR: '${{ github.event.inputs.original_pr }}'
+          EXIT_CODE: '${{ steps.create_patch.outputs.EXIT_CODE }}'
+          COMMIT: '${{ github.event.inputs.commit }}'
+          CHANNEL: '${{ github.event.inputs.channel }}'
+          REPOSITORY: '${{ github.repository }}'
+          GITHUB_RUN_ID: '${{ github.run_id }}'
+          LOG_CONTENT: '${{ env.LOG_CONTENT }}'
+          TARGET_REF: '${{ github.event.inputs.ref }}'
+          ENVIRONMENT: '${{ github.event.inputs.environment }}'
         continue-on-error: true
         run: |
           git checkout "${TARGET_REF}"
@@ -127,7 +127,7 @@ jobs:
       - name: 'Fail Workflow if Main Task Failed'
         if: 'always() && steps.create_patch.outputs.EXIT_CODE != 0'
         env:
-          EXIT_CODE: "${{ steps.create_patch.outputs.EXIT_CODE }}"
+          EXIT_CODE: '${{ steps.create_patch.outputs.EXIT_CODE }}'
         run: |
           echo "Patch creation failed with exit code: ${EXIT_CODE}"
           echo "Check the logs above and the comment posted to the original PR for details."
