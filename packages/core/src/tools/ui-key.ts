@@ -29,7 +29,7 @@ class UiKeyToolInvocation extends BaseToolInvocation<UiKeyArgs, ToolResult> {
     return `Press keys: ${JSON.stringify(this.params.keys)}`;
   }
 
-  async execute(): Promise<ToolResult> {
+  async execute(_signal: AbortSignal): Promise<ToolResult> {
     const svc = DesktopAutomationService.getInstance();
     const result = await svc.key(this.params);
     return formatUiResult(result, 'UiKey');

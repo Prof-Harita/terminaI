@@ -32,7 +32,7 @@ class UiQueryToolInvocation extends BaseToolInvocation<
     return `Querying UI elements: ${this.params.selector}`;
   }
 
-  async execute(): Promise<ToolResult> {
+  async execute(_signal: AbortSignal): Promise<ToolResult> {
     const svc = DesktopAutomationService.getInstance();
     const result = await svc.query(this.params);
     return formatUiResult(result, 'UiQuery');

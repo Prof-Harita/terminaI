@@ -32,7 +32,7 @@ class UiClickXyToolInvocation extends BaseToolInvocation<
     return `Clicking at (${this.params.x}, ${this.params.y})`;
   }
 
-  async execute(): Promise<ToolResult> {
+  async execute(_signal: AbortSignal): Promise<ToolResult> {
     const svc = DesktopAutomationService.getInstance();
     const result = await svc.clickXy(this.params);
     return formatUiResult(result, 'UiClickXy');

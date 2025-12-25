@@ -84,7 +84,7 @@ priority = 10
 
 [[rule]]
 toolName = "ui.click_xy"
-decision = "ask_user"
+decision = "deny"
 priority = 10
 
 [[rule]]

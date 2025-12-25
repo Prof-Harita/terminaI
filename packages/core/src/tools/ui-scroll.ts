@@ -32,7 +32,7 @@ class UiScrollToolInvocation extends BaseToolInvocation<
     return `Scroll ${this.params.target || 'active element'} by (${this.params.deltaX}, ${this.params.deltaY})`;
   }
 
-  async execute(): Promise<ToolResult> {
+  async execute(_signal: AbortSignal): Promise<ToolResult> {
     const svc = DesktopAutomationService.getInstance();
     const result = await svc.scroll(this.params);
     return formatUiResult(result, 'UiScroll');

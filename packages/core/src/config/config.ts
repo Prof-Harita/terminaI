@@ -46,6 +46,8 @@ import { UiSnapshotTool } from '../tools/ui-snapshot.js';
 import { UiClickTool } from '../tools/ui-click.js';
 import { UiTypeTool } from '../tools/ui-type.js';
 import { UiQueryTool } from '../tools/ui-query.js';
+import { UiDescribeTool } from '../tools/ui-describe.js';
+import { UiHealthTool } from '../tools/ui-health.js';
 import { UiCapabilitiesTool } from '../tools/ui-capabilities.js';
 import { UiKeyTool } from '../tools/ui-key.js';
 import { UiScrollTool } from '../tools/ui-scroll.js';
@@ -1713,6 +1715,8 @@ export class Config {
     // Register GUI Automation Tools
     registerCoreTool(UiSnapshotTool, this.messageBus);
     registerCoreTool(UiClickTool, this.messageBus);
+    registerCoreTool(UiDescribeTool, this.messageBus);
+    registerCoreTool(UiHealthTool, this.messageBus);
     registerCoreTool(UiTypeTool, this.messageBus);
     registerCoreTool(UiQueryTool, this.messageBus);
     registerCoreTool(UiCapabilitiesTool, this.messageBus);

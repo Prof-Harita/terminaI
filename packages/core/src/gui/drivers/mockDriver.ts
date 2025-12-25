@@ -1,16 +1,43 @@
-import { DesktopDriver } from './types';
-import {
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import type {
+  DesktopDriver,
+  DriverConnectionStatus,
+  DriverHealth,
+} from './types.js';
+import type {
   DriverCapabilities,
   VisualDOMSnapshot,
   UiActionResult,
-} from '../protocol/types';
-import { UiSnapshotArgs, UiClickArgs } from '../protocol/schemas';
+} from '../protocol/types.js';
+import type {
+  UiSnapshotArgs,
+  UiClickArgs,
+  UiTypeArgs,
+  UiKeyArgs,
+  UiScrollArgs,
+  UiFocusArgs,
+  UiClickXyArgs,
+} from '../protocol/schemas.js';
 
 export class MockDriver implements DesktopDriver {
-  async connect(): Promise<void> {}
+  readonly name = 'mock';
+  readonly kind = 'mock';
+  readonly version = '0.0.1';
+
+  async connect(): Promise<DriverConnectionStatus> {
+    return { connected: true, version: this.version };
+  }
+
   async disconnect(): Promise<void> {}
-  async isHealthy(): Promise<boolean> {
-    return true;
+
+  async getHealth(): Promise<DriverHealth> {
+    return { status: 'healthy', details: 'Mock driver always healthy' };
   }
 
   async getCapabilities(): Promise<DriverCapabilities> {
@@ -26,7 +53,7 @@ export class MockDriver implements DesktopDriver {
     };
   }
 
-  async snapshot(args: UiSnapshotArgs): Promise<VisualDOMSnapshot> {
+  async snapshot(_args: UiSnapshotArgs): Promise<VisualDOMSnapshot> {
     return {
       snapshotId: 'mock-' + Date.now(),
       timestamp: new Date().toISOString(),
@@ -53,7 +80,7 @@ export class MockDriver implements DesktopDriver {
     };
   }
 
-  async click(args: UiClickArgs): Promise<UiActionResult> {
+  async click(_args: UiClickArgs): Promise<UiActionResult> {
     return {
       status: 'success',
       driver: {
@@ -65,7 +92,7 @@ export class MockDriver implements DesktopDriver {
     };
   }
 
-  async clickXy(args: any): Promise<UiActionResult> {
+  async clickXy(_args: UiClickXyArgs): Promise<UiActionResult> {
     return {
       status: 'success',
       driver: {
@@ -76,7 +103,7 @@ export class MockDriver implements DesktopDriver {
       },
     };
   }
-  async type(args: any): Promise<UiActionResult> {
+  async type(_args: UiTypeArgs): Promise<UiActionResult> {
     return {
       status: 'success',
       driver: {
@@ -87,7 +114,7 @@ export class MockDriver implements DesktopDriver {
       },
     };
   }
-  async key(args: any): Promise<UiActionResult> {
+  async key(_args: UiKeyArgs): Promise<UiActionResult> {
     return {
       status: 'success',
       driver: {
@@ -98,7 +125,7 @@ export class MockDriver implements DesktopDriver {
       },
     };
   }
-  async scroll(args: any): Promise<UiActionResult> {
+  async scroll(_args: UiScrollArgs): Promise<UiActionResult> {
     return {
       status: 'success',
       driver: {
@@ -109,7 +136,7 @@ export class MockDriver implements DesktopDriver {
       },
     };
   }
-  async focus(args: any): Promise<UiActionResult> {
+  async focus(_args: UiFocusArgs): Promise<UiActionResult> {
     return {
       status: 'success',
       driver: {

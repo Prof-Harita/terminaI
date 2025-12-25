@@ -27,6 +27,7 @@ export const WEB_SEARCH_TOOL_NAME = 'search_web';
 export const DELEGATE_TO_AGENT_TOOL_NAME = 'delegate_to_agent';
 export const GET_INTERNAL_DOCS_TOOL_NAME = 'get_internal_docs';
 
+export const UI_HEALTH_TOOL_NAME = 'ui.health';
 export const UI_CAPABILITIES_TOOL_NAME = 'ui.capabilities';
 export const UI_SNAPSHOT_TOOL_NAME = 'ui.snapshot';
 export const UI_QUERY_TOOL_NAME = 'ui.query';
@@ -41,6 +42,7 @@ export const UI_ASSERT_TOOL_NAME = 'ui.assert';
 export const UI_CLICK_XY_TOOL_NAME = 'ui.click_xy';
 
 export const UI_TOOL_NAMES = [
+  UI_HEALTH_TOOL_NAME,
   UI_CAPABILITIES_TOOL_NAME,
   UI_SNAPSHOT_TOOL_NAME,
   UI_QUERY_TOOL_NAME,
@@ -74,7 +76,7 @@ export const ALL_BUILTIN_TOOL_NAMES = [
   WEB_FETCH_TOOL_NAME,
   WEB_SEARCH_TOOL_NAME,
   DELEGATE_TO_AGENT_TOOL_NAME,
-  DELEGATE_TO_AGENT_TOOL_NAME,
+
   GET_INTERNAL_DOCS_TOOL_NAME,
   ...UI_TOOL_NAMES,
 ];

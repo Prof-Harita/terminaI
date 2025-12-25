@@ -32,7 +32,7 @@ class UiSnapshotToolInvocation extends BaseToolInvocation<
     return `Capturing UI snapshot (scope=${this.params.scope || 'screen'})`;
   }
 
-  async execute(): Promise<ToolResult> {
+  async execute(_signal: AbortSignal): Promise<ToolResult> {
     const svc = DesktopAutomationService.getInstance();
     const snap = await svc.snapshot(this.params);
     const result = {

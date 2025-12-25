@@ -19,6 +19,7 @@ import type {
   VisualDOMSnapshot,
   UiActionResult,
 } from '../protocol/types.js';
+import { UiActionResultSchema } from '../protocol/schemas.js';
 import type {
   UiClickArgs,
   UiTypeArgs,
@@ -30,11 +31,15 @@ import type {
 } from '../protocol/schemas.js';
 
 export class LinuxAtspiDriver implements DesktopDriver {
+  readonly name = 'linux-atspi';
+  readonly kind = 'native';
+  readonly version = '1.0.0';
+
   private process?: ChildProcess;
   private requestId = 0;
   private pendingRequests = new Map<
     number,
-    { resolve: (value: any) => void; reject: (reason?: any) => void }
+    { resolve: (value: unknown) => void; reject: (reason?: unknown) => void }
   >();
   private rl?: readline.Interface;
   private sidecarPath: string;
@@ -157,6 +162,18 @@ export class LinuxAtspiDriver implements DesktopDriver {
 
       const request = JSON.stringify({ jsonrpc: '2.0', method, params, id });
       this.process!.stdin!.write(request + '\n');
+    }).then((result: unknown) => {
+      // Basic schema validation for commonly returned types
+      if (method !== 'snapshot' && method !== 'get_capabilities') {
+        const parsed = UiActionResultSchema.safeParse(result);
+        if (!parsed.success) {
+          console.warn(
+            'Driver response validation failed for ' + method + ':',
+            parsed.error,
+          );
+        }
+      }
+      return result as T;
     });
   }
 }

@@ -32,7 +32,7 @@ class UiClickToolInvocation extends BaseToolInvocation<
     return `Click on target: ${this.params.target}`;
   }
 
-  async execute(): Promise<ToolResult> {
+  async execute(_signal: AbortSignal): Promise<ToolResult> {
     const svc = DesktopAutomationService.getInstance();
     const result = await svc.click(this.params);
     return formatUiResult(result, 'UiClick');

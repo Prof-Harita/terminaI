@@ -13,6 +13,7 @@ import type {
   UiActionResult,
   ElementNode,
   DriverCapabilities,
+  DriverDescriptor,
 } from '../protocol/types.js';
 import type { ResolvedElement } from '../selectors/resolve.js';
 import type {
@@ -34,6 +35,8 @@ export class DesktopAutomationService {
   private lastSnapshot?: VisualDOMSnapshot;
   private lastSnapshotTime: number = 0;
   private static readonly SNAPSHOT_TTL_MS = 200; // Cache valid for 200ms
+  // Default to true for now to allow out-of-the-box usage until config is wired
+  private enabled = true;
 
   private constructor() {
     this.driver = getDesktopDriver();
@@ -46,11 +49,51 @@ export class DesktopAutomationService {
     return DesktopAutomationService.instance;
   }
 
+  setEnabled(enabled: boolean): void {
+    this.enabled = enabled;
+  }
+
   async getCapabilities(): Promise<DriverCapabilities> {
+    await this.ensureConnected();
     return this.driver.getCapabilities();
   }
 
+  async getDriverDescriptor(): Promise<DriverDescriptor> {
+    await this.ensureConnected();
+    const caps = await this.driver.getCapabilities();
+    return {
+      name: this.driver.name,
+      kind: this.driver.kind,
+      version: this.driver.version,
+      capabilities: caps,
+    };
+  }
+
+  private async ensureConnected(): Promise<void> {
+    if (!this.enabled) {
+      throw new Error('GUI Automation is disabled by configuration.');
+    }
+    try {
+      const health = await this.driver.getHealth();
+      if (health.status !== 'healthy') {
+        console.log('Driver not healthy, attempting to connect...');
+        const status = await this.driver.connect();
+        if (!status.connected) {
+          throw new Error(`Failed to connect to driver: ${status.error}`);
+        }
+      }
+    } catch (error) {
+      // If getHealth fails (e.g. process dead), try to reconnect once
+      console.warn('Driver health check failed, reconnecting:', error);
+      const status = await this.driver.connect();
+      if (!status.connected) {
+        throw new Error(`Driver unavailable: ${status.error}`);
+      }
+    }
+  }
+
   async snapshot(args: UiSnapshotArgs): Promise<VisualDOMSnapshot> {
+    await this.ensureConnected();
     const snap = await this.driver.snapshot(args);
     this.lastSnapshot = snap;
     this.lastSnapshotTime = Date.now();
@@ -145,10 +188,12 @@ export class DesktopAutomationService {
   }
 
   async key(args: UiKeyArgs): Promise<UiActionResult> {
+    await this.ensureConnected();
     return this.driver.key(args);
   }
 
   async scroll(args: UiScrollArgs): Promise<UiActionResult> {
+    await this.ensureConnected();
     let targetId: string | undefined;
     if (args.target) {
       const resolved = await this.resolveTargetForAction(args.target);
@@ -159,21 +204,29 @@ export class DesktopAutomationService {
   }
 
   async focus(args: UiFocusArgs): Promise<UiActionResult> {
+    await this.ensureConnected();
     const { targetId } = await this.resolveTargetForAction(args.target);
     const refinedArgs = { ...args, target: targetId ?? args.target };
     return this.driver.focus(refinedArgs);
   }
 
   async clickXy(args: UiClickXyArgs): Promise<UiActionResult> {
+    await this.ensureConnected();
     return this.driver.clickXy(args);
   }
 
-  async waitFor(args: UiWaitArgs): Promise<UiActionResult> {
+  async waitFor(
+    args: UiWaitArgs,
+    signal?: AbortSignal,
+  ): Promise<UiActionResult> {
     const start = Date.now();
     const timeout = args.timeoutMs || 5000;
 
     // Polling loop
     while (Date.now() - start < timeout) {
+      if (signal?.aborted) {
+        throw new Error('Wait operation aborted');
+      }
       const snapshot = await this.ensureSnapshot(true); // Force fresh
       const matches = resolveSelector(snapshot, args.selector);
       const exists = matches.length > 0;
@@ -285,7 +338,7 @@ export class DesktopAutomationService {
     } else if (match.platformIds?.legacyId) {
       robustId = `win32:legacyId=${match.platformIds.legacyId}`;
     } else if (match.platformIds?.atspiPath) {
-      robustId = `atspi:path=${match.platformIds.atspiPath}`;
+      robustId = `atspi:atspiPath="${match.platformIds.atspiPath}"`;
     }
 
     return { snapshot: snap, targetNode: match, targetId: robustId, matches };

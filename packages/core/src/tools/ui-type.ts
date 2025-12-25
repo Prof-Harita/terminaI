@@ -31,7 +31,7 @@ class UiTypeToolInvocation extends BaseToolInvocation<UiTypeArgs, ToolResult> {
     }" into target: ${this.params.target || 'focused element'}`;
   }
 
-  async execute(): Promise<ToolResult> {
+  async execute(_signal: AbortSignal): Promise<ToolResult> {
     const svc = DesktopAutomationService.getInstance();
     const result = await svc.type(this.params);
     return formatUiResult(result, 'UiType');

@@ -1,13 +1,20 @@
 /**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/**
  * Selector Resolver
  *
  * Resolves a selector string or AST against a VisualDOMSnapshot tree.
  */
 
-import { ElementNode, VisualDOMSnapshot } from '../protocol/types';
-import { parseSelector } from './parser';
-import { matchSelector } from './matcher';
-import { SelectorNode } from './ast';
+import type { ElementNode, VisualDOMSnapshot } from '../protocol/types.js';
+import { parseSelector } from './parser.js';
+import { matchSelector } from './matcher.js';
+import type { SelectorNode } from './ast.js';
 
 export interface ResolvedElement {
   node: ElementNode;

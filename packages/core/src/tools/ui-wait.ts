@@ -29,9 +29,9 @@ class UiWaitToolInvocation extends BaseToolInvocation<UiWaitArgs, ToolResult> {
     return `Waiting for ${this.params.selector} to be ${this.params.state || 'visible'}`;
   }
 
-  async execute(): Promise<ToolResult> {
+  async execute(signal: AbortSignal): Promise<ToolResult> {
     const svc = DesktopAutomationService.getInstance();
-    const result = await svc.waitFor(this.params);
+    const result = await svc.waitFor(this.params, signal);
     return formatUiResult(result, 'UiWait');
   }
 }

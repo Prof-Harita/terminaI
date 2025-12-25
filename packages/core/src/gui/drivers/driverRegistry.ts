@@ -1,8 +1,15 @@
-import { DesktopDriver } from './types';
-import { LinuxAtspiDriver } from './linuxAtspiDriver';
-import { WindowsUiaDriver } from './windowsUiaDriver';
-import { MockDriver } from './mockDriver';
-import * as os from 'os';
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import type { DesktopDriver } from './types.js';
+import { LinuxAtspiDriver } from './linuxAtspiDriver.js';
+import { WindowsUiaDriver } from './windowsUiaDriver.js';
+
+import * as os from 'node:os';
 
 let instance: DesktopDriver | undefined;
 
@@ -16,12 +23,9 @@ export function getDesktopDriver(): DesktopDriver {
   } else if (platform === 'win32') {
     instance = new WindowsUiaDriver();
   } else {
-    // Fallback or Mock (or throw?)
-    // For now, let's use MockDriver if env var says so, or just log generic
-    console.warn(
-      `GUI Automation: Platform ${platform} not explicitly supported, using MockDriver.`,
+    throw new Error(
+      `GUI Automation: Platform ${platform} is not supported. Only 'linux' and 'win32' are supported.`,
     );
-    instance = new MockDriver();
   }
 
   return instance;

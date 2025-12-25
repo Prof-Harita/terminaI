@@ -1,60 +1,75 @@
+
 import sys
 import json
-import logging
-from typing import Dict, Any, Optional
-
-# Configure logging to stderr so stdout is clean for JSON-RPC
-logging.basicConfig(stream=sys.stderr, level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger('atspi-server')
+import traceback
+from atspi_client import AtspiClient
 
 class JsonRpcServer:
-    def __init__(self, handler: Any):
-        self.handler = handler
+    def __init__(self):
+        self.client = AtspiClient()
+        self.methods = {
+            "get_capabilities": self.client.get_capabilities,
+            "snapshot": self.client.get_snapshot,
+            "click": self.client.click,
+            "type": self.client.type_text,
+            "key": self.client.press_key,
+            "scroll": self.client.scroll,
+            "focus": self.client.focus,
+            "click_xy": self.client.click_xy,  # Expose explicit coordinate click
 
     def run(self):
-        logger.info("Starting JSON-RPC server on stdin/stdout")
-        while True:
+        # Unbuffered stdin/stdout
+        sys.stdin.reconfigure(encoding='utf-8')
+        sys.stdout.reconfigure(encoding='utf-8')
+        
+        for line in sys.stdin:
+            line = line.strip()
+            if not line:
+                continue
+            
             try:
-                line = sys.stdin.readline()
-                if not line:
-                    break
-                
                 request = json.loads(line)
-                response = self.handle_request(request)
-                if response:
-                    print(json.dumps(response), flush=True)
+                self.handle_request(request)
             except json.JSONDecodeError:
-                logger.error("Invalid JSON received")
+                self.send_error(None, -32700, "Parse error")
             except Exception as e:
-                logger.error(f"Error processing request: {e}")
+                self.send_error(None, -32603, f"Internal error: {str(e)}")
 
-    def handle_request(self, request: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-        if 'method' not in request or 'id' not in request:
-            return None # Ignore notifications or invalid requests for now
+    def handle_request(self, request):
+        req_id = request.get("id")
+        method = request.get("method")
+        params = request.get("params", {})
 
-        req_id = request['id']
-        method_name = request['method']
-        params = request.get('params', {})
+        if method not in self.methods:
+            self.send_error(req_id, -32601, f"Method not found: {method}")
+            return
 
         try:
-            if not hasattr(self.handler, method_name):
-                raise ValueError(f"Method not found: {method_name}")
-            
-            method = getattr(self.handler, method_name)
-            result = method(**params)
-            
-            return {
-                "jsonrpc": "2.0",
-                "result": result,
-                "id": req_id
-            }
+            result = self.methods[method](params)
+            self.send_response(req_id, result)
         except Exception as e:
-            logger.exception(f"Exception during method {method_name}")
-            return {
-                "jsonrpc": "2.0",
-                "error": {
-                    "code": -32000,
-                    "message": str(e)
-                },
-                "id": req_id
-            }
+            traceback.print_exc(file=sys.stderr)
+            self.send_error(req_id, -32000, str(e))
+
+    def send_response(self, req_id, result):
+        response = {
+            "jsonrpc": "2.0",
+            "result": result,
+            "id": req_id
+        }
+        print(json.dumps(response), flush=True)
+
+    def send_error(self, req_id, code, message):
+        response = {
+            "jsonrpc": "2.0",
+            "error": {
+                "code": code,
+                "message": message
+            },
+            "id": req_id
+        }
+        print(json.dumps(response), flush=True)
+
+if __name__ == "__main__":
+    server = JsonRpcServer()
+    server.run()

@@ -32,7 +32,7 @@ class UiAssertToolInvocation extends BaseToolInvocation<
     return `Asserting: ${this.params.assertion} on ${this.params.target}`;
   }
 
-  async execute(): Promise<ToolResult> {
+  async execute(_signal: AbortSignal): Promise<ToolResult> {
     const svc = DesktopAutomationService.getInstance();
     const result = await svc.assert(this.params);
     return formatUiResult(result, 'UiAssert');

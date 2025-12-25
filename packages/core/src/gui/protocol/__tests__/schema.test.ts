@@ -1,10 +1,17 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { describe, it, expect } from 'vitest';
 import {
   UiClickSchema,
   UiTypeSchema,
   UiSnapshotSchema,
   UiQuerySchema,
-} from '../schemas';
+} from '../schemas.js';
 
 describe('DAP Schemas', () => {
   describe('UiClickSchema', () => {

@@ -1,4 +1,11 @@
 /**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/**
  * Desktop Automation Protocol (DAP) Zod Schemas
  *
  * Runtime validation for tool arguments and driver responses.
@@ -7,14 +14,23 @@
 import { z } from 'zod';
 
 // Reuse common shapes
-/*
-const BoundsSchema = z.object({
-  x: z.number(),
-  y: z.number(),
-  w: z.number(),
-  h: z.number(),
+const DriverCapabilitiesSchema = z.object({
+  canSnapshot: z.boolean(),
+  canClick: z.boolean(),
+  canType: z.boolean(),
+  canScroll: z.boolean(),
+  canKey: z.boolean(),
+  canOcr: z.boolean(),
+  canScreenshot: z.boolean(),
+  canInjectInput: z.boolean(),
 });
-*/
+
+const DriverDescriptorSchema = z.object({
+  name: z.string(),
+  kind: z.enum(['native', 'remote', 'mock']),
+  version: z.string(),
+  capabilities: DriverCapabilitiesSchema,
+});
 
 // Tool Argument Schemas
 
@@ -33,10 +49,7 @@ export const UiQuerySchema = z.object({
 });
 
 export const UiDescribeSchema = z.object({
-  element: z.union([
-    z.string(), // selector
-    z.object({ snapshotId: z.string(), elementId: z.string() }), // ElementRef
-  ]),
+  target: z.string(), // Selector is preferred, or serialized ElementRef
 });
 
 export const UiClickSchema = z.object({
@@ -105,4 +118,42 @@ export type UiScrollArgs = z.infer<typeof UiScrollSchema>;
 export type UiFocusArgs = z.infer<typeof UiFocusSchema>;
 export type UiWaitArgs = z.infer<typeof UiWaitSchema>;
 export type UiAssertArgs = z.infer<typeof UiAssertSchema>;
+export type UiDescribeArgs = z.infer<typeof UiDescribeSchema>;
 export type UiClickXyArgs = z.infer<typeof UiClickXySchema>;
+
+export const UiActionResultSchema = z.object({
+  status: z.enum(['success', 'error']),
+  driver: DriverDescriptorSchema,
+  message: z.string().optional(),
+  resolvedTarget: z
+    .object({
+      elementId: z.string(),
+      bounds: z
+        .object({
+          x: z.number(),
+          y: z.number(),
+          w: z.number(),
+          h: z.number(),
+        })
+        .optional(),
+      role: z.string(),
+      name: z.string().optional(),
+      confidence: z.number(),
+    })
+    .optional(),
+  evidence: z
+    .object({
+      snapshotId: z.string(),
+      screenshotHash: z.string().optional(),
+      cropHash: z.string().optional(),
+      redactions: z.boolean().optional(),
+    })
+    .optional(),
+  verification: z
+    .object({
+      passed: z.boolean(),
+      details: z.string(),
+    })
+    .optional(),
+  data: z.unknown().optional(),
+});

@@ -1,4 +1,11 @@
 /**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/**
  * Desktop Automation Protocol (DAP) Types
  *
  * These types define the data structures exchanged between the DesktopAutomationService

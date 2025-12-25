@@ -48,7 +48,7 @@ export abstract class UiToolBase<
     }
 
     return {
-      llmContent: { text: jsonContent }, // Using text part for JSON
+      llmContent: jsonContent,
       returnDisplay: md,
       error: success
         ? undefined

@@ -39,6 +39,10 @@ export interface DriverHealth {
 }
 
 export interface DesktopDriver {
+  readonly name: string;
+  readonly kind: 'native' | 'remote' | 'mock';
+  readonly version: string;
+
   /**
    * Initialize the driver (spawn processes, connect buses).
    */

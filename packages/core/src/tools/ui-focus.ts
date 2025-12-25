@@ -32,7 +32,7 @@ class UiFocusToolInvocation extends BaseToolInvocation<
     return `Focus on: ${this.params.target}`;
   }
 
-  async execute(): Promise<ToolResult> {
+  async execute(_signal: AbortSignal): Promise<ToolResult> {
     const svc = DesktopAutomationService.getInstance();
     const result = await svc.focus(this.params);
     return formatUiResult(result, 'UiFocus');

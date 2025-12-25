@@ -1,4 +1,11 @@
 /**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/**
  * Selector Parser (v1)
  *
  * Parses a string selector into a SelectorNode AST.
@@ -12,7 +19,7 @@
  * Example: `uia:role=Button && name="Submit" ?? ocr:"Submit"`
  */
 
-import { SelectorNode, ConditionNode, SelectorPrefix } from './ast';
+import type { SelectorNode, ConditionNode, SelectorPrefix } from './ast.js';
 
 export class SelectorParseError extends Error {
   constructor(
@@ -51,7 +58,7 @@ class Parser {
 
   private parseChain(): SelectorNode {
     // Parse combinator chain (A >> B)
-    let left = this.parseSingleSelector();
+    const left = this.parseSingleSelector();
 
     this.skipWhitespace();
     while (this.match('>>')) {
@@ -176,7 +183,7 @@ class Parser {
     return {
       type: 'attribute',
       name: key,
-      operator: op as any,
+      operator: op as '=' | '~=' | '^=' | '$=',
       value,
     };
   }

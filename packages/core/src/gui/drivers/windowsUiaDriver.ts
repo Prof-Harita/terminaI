@@ -30,6 +30,10 @@ import type {
 } from '../protocol/schemas.js';
 
 export class WindowsUiaDriver implements DesktopDriver {
+  readonly name = 'windows-uia';
+  readonly kind = 'native';
+  readonly version = '1.0.0';
+
   private process?: ChildProcess;
   private requestId = 0;
   private pendingRequests = new Map<

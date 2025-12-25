@@ -32,19 +32,14 @@ class UiCapabilitiesToolInvocation extends BaseToolInvocation<
     return `Checking driver capabilities`;
   }
 
-  async execute(): Promise<ToolResult> {
+  async execute(_signal: AbortSignal): Promise<ToolResult> {
     const svc = DesktopAutomationService.getInstance();
-    const caps = await svc.getCapabilities();
+    const descriptor = await svc.getDriverDescriptor();
     return formatUiResult(
       {
         status: 'success',
-        driver: {
-          name: 'mock',
-          kind: 'mock',
-          version: '0',
-          capabilities: caps,
-        },
-        data: { capabilities: caps },
+        driver: descriptor,
+        data: { capabilities: descriptor.capabilities },
       },
       'UiCapabilities',
     );

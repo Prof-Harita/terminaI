@@ -1,12 +1,19 @@
 /**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/**
  * Selector Matcher
  *
  * Matches an ElementNode against a SelectorNode (single segment, not chain).
  * Returns a confidence score if matched, or 0 if not.
  */
 
-import { ElementNode } from '../protocol/types';
-import { SelectorNode, ConditionNode } from './ast';
+import type { ElementNode } from '../protocol/types.js';
+import type { SelectorNode, ConditionNode } from './ast.js';
 
 export interface MatchResult {
   matches: boolean;
@@ -122,8 +129,10 @@ function getAttributeValue(
     case 'atspiPath':
       return element.platformIds?.atspiPath;
     // ... add others
+    // ... add others
+    default:
+      return undefined;
   }
-  return undefined;
 }
 
 function checkOperator(actual: string, expected: string, op: string): boolean {

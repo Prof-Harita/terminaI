@@ -66,7 +66,7 @@ export function formatUiResult(
   }
 
   return {
-    llmContent: { text: jsonContent },
+    llmContent: jsonContent,
     returnDisplay: md,
     error: success ? undefined : { message: result.message || 'Unknown error' },
     metadata: {

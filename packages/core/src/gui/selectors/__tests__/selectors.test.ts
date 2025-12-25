@@ -1,8 +1,15 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { describe, it, expect } from 'vitest';
-import { parseSelector } from '../parser';
-import { matchSelector } from '../matcher';
-import { resolveSelector } from '../resolve';
-import { ElementNode, VisualDOMSnapshot } from '../../protocol/types';
+import { parseSelector } from '../parser.js';
+import { matchSelector } from '../matcher.js';
+import { resolveSelector } from '../resolve.js';
+import type { ElementNode, VisualDOMSnapshot } from '../../protocol/types.js';
 
 describe('Selector Engine', () => {
   describe('Parser', () => {
@@ -78,7 +85,16 @@ describe('Selector Engine', () => {
         name: 'm',
         kind: 'mock',
         version: '1',
-        capabilities: {} as any,
+        capabilities: {
+          canSnapshot: true,
+          canClick: true,
+          canType: true,
+          canScroll: true,
+          canKey: true,
+          canOcr: false,
+          canScreenshot: false,
+          canInjectInput: true,
+        },
       },
     };
 
