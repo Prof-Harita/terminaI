@@ -547,6 +547,11 @@ export interface ToolResult {
     message: string; // raw error message
     type?: ToolErrorType; // An optional machine-readable error type (e.g., 'FILE_NOT_FOUND').
   };
+
+  /**
+   * Additional metadata about the tool execution (e.g. audit hashes, verification details).
+   */
+  metadata?: Record<string, unknown>;
 }
 
 /**

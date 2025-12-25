@@ -12,6 +12,80 @@
       "type": "string",
       "default": "https://raw.githubusercontent.com/google-gemini/gemini-cli/main/schemas/settings.schema.json"
     },
+    "llm": {
+      "title": "LLM Configuration",
+      "description": "LLM provider configuration.",
+      "markdownDescription": "LLM provider configuration.\n\n- Category: `Model`\n- Requires restart: `yes`\n- Default: `{}`",
+      "default": {},
+      "type": "object",
+      "properties": {
+        "provider": {
+          "title": "Provider",
+          "description": "Select the LLM provider.",
+          "markdownDescription": "Select the LLM provider.\n\n- Category: `Model`\n- Requires restart: `yes`\n- Default: `gemini`",
+          "default": "gemini",
+          "type": "string",
+          "enum": ["gemini", "openai_compatible", "anthropic"]
+        },
+        "headers": {
+          "title": "Custom Headers",
+          "description": "Custom headers for LLM requests.",
+          "markdownDescription": "Custom headers for LLM requests.\n\n- Category: `Model`\n- Requires restart: `yes`\n- Default: `{}`",
+          "default": {},
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "openaiCompatible": {
+          "title": "OpenAI Compatible Settings",
+          "description": "Settings for OpenAI-compatible provider.",
+          "markdownDescription": "Settings for OpenAI-compatible provider.\n\n- Category: `Model`\n- Requires restart: `yes`\n- Default: `{}`",
+          "default": {},
+          "type": "object",
+          "properties": {
+            "baseUrl": {
+              "title": "Base URL",
+              "description": "API Base URL.",
+              "markdownDescription": "API Base URL.\n\n- Category: `Model`\n- Requires restart: `yes`",
+              "type": "string"
+            },
+            "model": {
+              "title": "Model ID",
+              "description": "The model ID (e.g. gpt-4, llama-3).",
+              "markdownDescription": "The model ID (e.g. gpt-4, llama-3).\n\n- Category: `Model`\n- Requires restart: `yes`",
+              "type": "string"
+            },
+            "auth": {
+              "title": "Authentication",
+              "description": "Authentication settings.",
+              "markdownDescription": "Authentication settings.\n\n- Category: `Model`\n- Requires restart: `yes`\n- Default: `{}`",
+              "default": {},
+              "type": "object",
+              "properties": {
+                "type": {
+                  "title": "Auth Type",
+                  "description": "Authentication type.",
+                  "markdownDescription": "Authentication type.\n\n- Category: `Model`\n- Requires restart: `yes`\n- Default: `none`",
+                  "default": "none",
+                  "type": "string",
+                  "enum": ["none", "api-key", "bearer"]
+                },
+                "envVarName": {
+                  "title": "API Key Env Var",
+                  "description": "Name of the environment variable for the API key.",
+                  "markdownDescription": "Name of the environment variable for the API key.\n\n- Category: `Model`\n- Requires restart: `yes`",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
     "mcpServers": {
       "title": "MCP Servers",
       "description": "Configuration for MCP servers.",

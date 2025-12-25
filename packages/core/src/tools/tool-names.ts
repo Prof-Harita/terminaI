@@ -27,6 +27,34 @@ export const WEB_SEARCH_TOOL_NAME = 'search_web';
 export const DELEGATE_TO_AGENT_TOOL_NAME = 'delegate_to_agent';
 export const GET_INTERNAL_DOCS_TOOL_NAME = 'get_internal_docs';
 
+export const UI_CAPABILITIES_TOOL_NAME = 'ui.capabilities';
+export const UI_SNAPSHOT_TOOL_NAME = 'ui.snapshot';
+export const UI_QUERY_TOOL_NAME = 'ui.query';
+export const UI_DESCRIBE_TOOL_NAME = 'ui.describe';
+export const UI_CLICK_TOOL_NAME = 'ui.click';
+export const UI_TYPE_TOOL_NAME = 'ui.type';
+export const UI_KEY_TOOL_NAME = 'ui.key';
+export const UI_SCROLL_TOOL_NAME = 'ui.scroll';
+export const UI_FOCUS_TOOL_NAME = 'ui.focus';
+export const UI_WAIT_TOOL_NAME = 'ui.wait';
+export const UI_ASSERT_TOOL_NAME = 'ui.assert';
+export const UI_CLICK_XY_TOOL_NAME = 'ui.click_xy';
+
+export const UI_TOOL_NAMES = [
+  UI_CAPABILITIES_TOOL_NAME,
+  UI_SNAPSHOT_TOOL_NAME,
+  UI_QUERY_TOOL_NAME,
+  UI_DESCRIBE_TOOL_NAME,
+  UI_CLICK_TOOL_NAME,
+  UI_TYPE_TOOL_NAME,
+  UI_KEY_TOOL_NAME,
+  UI_SCROLL_TOOL_NAME,
+  UI_FOCUS_TOOL_NAME,
+  UI_WAIT_TOOL_NAME,
+  UI_ASSERT_TOOL_NAME,
+  UI_CLICK_XY_TOOL_NAME,
+];
+
 export const ALL_BUILTIN_TOOL_NAMES = [
   REPL_TOOL_NAME,
   SHELL_TOOL_NAME,
@@ -46,7 +74,9 @@ export const ALL_BUILTIN_TOOL_NAMES = [
   WEB_FETCH_TOOL_NAME,
   WEB_SEARCH_TOOL_NAME,
   DELEGATE_TO_AGENT_TOOL_NAME,
+  DELEGATE_TO_AGENT_TOOL_NAME,
   GET_INTERNAL_DOCS_TOOL_NAME,
+  ...UI_TOOL_NAMES,
 ];
 
 interface IsValidToolNameOptions {

@@ -71,3 +71,38 @@ required_context = ["environment"]
 toolName = "web_fetch"
 decision = "ask_user"
 priority = 10
+
+[[rule]]
+toolName = "ui.snapshot"
+decision = "ask_user"
+priority = 10
+
+[[rule]]
+toolName = "ui.click"
+decision = "ask_user"
+priority = 10
+
+[[rule]]
+toolName = "ui.click_xy"
+decision = "ask_user"
+priority = 10
+
+[[rule]]
+toolName = "ui.type"
+decision = "ask_user"
+priority = 10
+
+[[rule]]
+toolName = "ui.key"
+decision = "ask_user"
+priority = 10
+
+[[rule]]
+toolName = "ui.scroll"
+decision = "ask_user"
+priority = 10
+
+[[rule]]
+toolName = "ui.focus"
+decision = "ask_user"
+priority = 10

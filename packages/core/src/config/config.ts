@@ -42,6 +42,17 @@ import { WebFetchTool } from '../tools/web-fetch.js';
 import { MemoryTool, setGeminiMdFilename } from '../tools/memoryTool.js';
 import { WebSearchTool } from '../tools/web-search.js';
 import { ReplTool } from '../tools/repl.js';
+import { UiSnapshotTool } from '../tools/ui-snapshot.js';
+import { UiClickTool } from '../tools/ui-click.js';
+import { UiTypeTool } from '../tools/ui-type.js';
+import { UiQueryTool } from '../tools/ui-query.js';
+import { UiCapabilitiesTool } from '../tools/ui-capabilities.js';
+import { UiKeyTool } from '../tools/ui-key.js';
+import { UiScrollTool } from '../tools/ui-scroll.js';
+import { UiFocusTool } from '../tools/ui-focus.js';
+import { UiWaitTool } from '../tools/ui-wait.js';
+import { UiAssertTool } from '../tools/ui-assert.js';
+import { UiClickXyTool } from '../tools/ui-click-xy.js';
 import { GeminiClient } from '../core/client.js';
 import { BaseLlmClient } from '../core/baseLlmClient.js';
 import type { HookDefinition, HookEventName } from '../hooks/types.js';
@@ -1698,6 +1709,19 @@ export class Config {
     }
     // Register REPL tool for Persistent REPL architecture
     registerCoreTool(ReplTool, this);
+
+    // Register GUI Automation Tools
+    registerCoreTool(UiSnapshotTool, this.messageBus);
+    registerCoreTool(UiClickTool, this.messageBus);
+    registerCoreTool(UiTypeTool, this.messageBus);
+    registerCoreTool(UiQueryTool, this.messageBus);
+    registerCoreTool(UiCapabilitiesTool, this.messageBus);
+    registerCoreTool(UiKeyTool, this.messageBus);
+    registerCoreTool(UiScrollTool, this.messageBus);
+    registerCoreTool(UiFocusTool, this.messageBus);
+    registerCoreTool(UiWaitTool, this.messageBus);
+    registerCoreTool(UiAssertTool, this.messageBus);
+    registerCoreTool(UiClickXyTool, this.messageBus);
 
     // Register Subagents as Tools
     // Register DelegateToAgentTool if agents are enabled

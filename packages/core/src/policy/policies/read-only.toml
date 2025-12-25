@@ -59,3 +59,23 @@ priority = 50
 toolName = "SubagentInvocation"
 decision = "allow"
 priority = 50
+
+[[rule]]
+toolName = "ui.query"
+decision = "allow"
+priority = 50
+
+[[rule]]
+toolName = "ui.capabilities"
+decision = "allow"
+priority = 50
+
+[[rule]]
+toolName = "ui.wait"
+decision = "allow"
+priority = 50
+
+[[rule]]
+toolName = "ui.assert"
+decision = "allow"
+priority = 50

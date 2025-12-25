@@ -1,0 +1,3 @@
+pyatspi
+dbus-python
+PyGObject
