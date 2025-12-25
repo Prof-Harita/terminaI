@@ -89,7 +89,9 @@ jobs:
           channel: '${{ github.event.inputs.channel }}'
           version: '${{ github.event.inputs.rollback_destination }}'
           dry-run: '${{ github.event.inputs.dry-run }}'
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
           npm-token: '${{ secrets.NPM_TOKEN }}'
+          cli-package-name: '${{ vars.CLI_PACKAGE_NAME }}'
           core-package-name: '${{ vars.CORE_PACKAGE_NAME }}'
           a2a-package-name: '${{ vars.A2A_PACKAGE_NAME }}'
 
@@ -98,7 +100,6 @@ jobs:
         id: 'cli-token'
         with:
           package-name: '${{ vars.CLI_PACKAGE_NAME }}'
-          github-token: '${{ secrets.GITHUB_TOKEN }}'
           npm-token: '${{ secrets.NPM_TOKEN }}'
 
       - name: 'Deprecate Cli Npm Package'
@@ -116,7 +117,6 @@ jobs:
         id: 'core-token'
         with:
           package-name: '${{ vars.CLI_PACKAGE_NAME }}'
-          github-token: '${{ secrets.GITHUB_TOKEN }}'
           npm-token: '${{ secrets.NPM_TOKEN }}'
 
       - name: 'Deprecate Core Npm Package'
@@ -134,7 +134,6 @@ jobs:
         id: 'a2a-token'
         with:
           package-name: '${{ vars.A2A_PACKAGE_NAME }}'
-          github-token: '${{ secrets.GITHUB_TOKEN }}'
           npm-token: '${{ secrets.NPM_TOKEN }}'
 
       - name: 'Deprecate A2A Server Npm Package'
