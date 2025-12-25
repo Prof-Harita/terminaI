@@ -42,14 +42,14 @@ jobs:
     environment: "${{ github.event.inputs.environment || 'prod' }}"
 
     outputs:
-      STABLE_VERSION: '${{ steps.versions.outputs.STABLE_VERSION }}'
-      STABLE_SHA: '${{ steps.versions.outputs.STABLE_SHA }}'
-      PREVIOUS_STABLE_TAG: '${{ steps.versions.outputs.PREVIOUS_STABLE_TAG }}'
-      PREVIEW_VERSION: '${{ steps.versions.outputs.PREVIEW_VERSION }}'
-      PREVIEW_SHA: '${{ steps.versions.outputs.PREVIEW_SHA }}'
-      PREVIOUS_PREVIEW_TAG: '${{ steps.versions.outputs.PREVIOUS_PREVIEW_TAG }}'
-      NEXT_NIGHTLY_VERSION: '${{ steps.versions.outputs.NEXT_NIGHTLY_VERSION }}'
-      PREVIOUS_NIGHTLY_TAG: '${{ steps.versions.outputs.PREVIOUS_NIGHTLY_TAG }}'
+      STABLE_VERSION: "${{ steps.versions.outputs.STABLE_VERSION }}"
+      STABLE_SHA: "${{ steps.versions.outputs.STABLE_SHA }}"
+      PREVIOUS_STABLE_TAG: "${{ steps.versions.outputs.PREVIOUS_STABLE_TAG }}"
+      PREVIEW_VERSION: "${{ steps.versions.outputs.PREVIEW_VERSION }}"
+      PREVIEW_SHA: "${{ steps.versions.outputs.PREVIEW_SHA }}"
+      PREVIOUS_PREVIEW_TAG: "${{ steps.versions.outputs.PREVIOUS_PREVIEW_TAG }}"
+      NEXT_NIGHTLY_VERSION: "${{ steps.versions.outputs.NEXT_NIGHTLY_VERSION }}"
+      PREVIOUS_NIGHTLY_TAG: "${{ steps.versions.outputs.PREVIOUS_NIGHTLY_TAG }}"
 
     steps:
       - name: 'Checkout'
@@ -70,16 +70,16 @@ jobs:
       - name: 'Print Inputs'
         shell: 'bash'
         env:
-          JSON_INPUTS: '${{ toJSON(inputs) }}'
+          JSON_INPUTS: "${{ toJSON(inputs) }}"
         run: 'echo "$JSON_INPUTS"'
 
       - name: 'Calculate Versions and SHAs'
         id: 'versions'
         env:
-          GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-          STABLE_OVERRIDE: '${{ github.event.inputs.stable_version_override }}'
-          PREVIEW_OVERRIDE: '${{ github.event.inputs.preview_version_override }}'
-          REF_INPUT: '${{ github.event.inputs.ref }}'
+          GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          STABLE_OVERRIDE: "${{ github.event.inputs.stable_version_override }}"
+          PREVIEW_OVERRIDE: "${{ github.event.inputs.preview_version_override }}"
+          REF_INPUT: "${{ github.event.inputs.ref }}"
         run: |
           set -e
           STABLE_COMMAND="node scripts/get-release-version.js --type=stable"
@@ -129,15 +129,15 @@ jobs:
 
       - name: 'Display Pending Updates'
         env:
-          STABLE_VERSION: '${{ steps.versions.outputs.STABLE_VERSION }}'
-          STABLE_SHA: '${{ steps.versions.outputs.STABLE_SHA }}'
-          PREVIOUS_STABLE_TAG: '${{ steps.versions.outputs.PREVIOUS_STABLE_TAG }}'
-          PREVIEW_VERSION: '${{ steps.versions.outputs.PREVIEW_VERSION }}'
-          PREVIEW_SHA: '${{ steps.versions.outputs.PREVIEW_SHA }}'
-          PREVIOUS_PREVIEW_TAG: '${{ steps.versions.outputs.PREVIOUS_PREVIEW_TAG }}'
-          NEXT_NIGHTLY_VERSION: '${{ steps.versions.outputs.NEXT_NIGHTLY_VERSION }}'
-          PREVIOUS_NIGHTLY_TAG: '${{ steps.versions.outputs.PREVIOUS_NIGHTLY_TAG }}'
-          INPUT_REF: '${{ github.event.inputs.ref }}'
+          STABLE_VERSION: "${{ steps.versions.outputs.STABLE_VERSION }}"
+          STABLE_SHA: "${{ steps.versions.outputs.STABLE_SHA }}"
+          PREVIOUS_STABLE_TAG: "${{ steps.versions.outputs.PREVIOUS_STABLE_TAG }}"
+          PREVIEW_VERSION: "${{ steps.versions.outputs.PREVIEW_VERSION }}"
+          PREVIEW_SHA: "${{ steps.versions.outputs.PREVIEW_SHA }}"
+          PREVIOUS_PREVIEW_TAG: "${{ steps.versions.outputs.PREVIOUS_PREVIEW_TAG }}"
+          NEXT_NIGHTLY_VERSION: "${{ steps.versions.outputs.NEXT_NIGHTLY_VERSION }}"
+          PREVIOUS_NIGHTLY_TAG: "${{ steps.versions.outputs.PREVIOUS_NIGHTLY_TAG }}"
+          INPUT_REF: "${{ github.event.inputs.ref }}"
         run: |
           echo "Release Plan:"
           echo "-----------"
@@ -154,7 +154,7 @@ jobs:
           echo "  - Previous Tag: ${PREVIOUS_NIGHTLY_TAG}"
 
   test:
-    name: 'Test ${{ matrix.channel }}'
+    name: 'Test ${{ matrix.channel }}"
     needs: 'calculate-versions'
     runs-on: 'ubuntu-latest'
     strategy:
@@ -162,21 +162,21 @@ jobs:
       matrix:
         include:
           - channel: 'stable'
-            sha: '${{ needs.calculate-versions.outputs.STABLE_SHA }}'
+            sha: "${{ needs.calculate-versions.outputs.STABLE_SHA }}"
           - channel: 'preview'
-            sha: '${{ needs.calculate-versions.outputs.PREVIEW_SHA }}'
+            sha: "${{ needs.calculate-versions.outputs.PREVIEW_SHA }}"
           - channel: 'nightly'
-            sha: '${{ github.event.inputs.ref }}'
+            sha: "${{ github.event.inputs.ref }}"
     steps:
       - name: 'Checkout Ref'
         uses: 'actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8'
         with:
-          ref: '${{ github.event.inputs.ref }}'
+          ref: "${{ github.event.inputs.ref }}"
 
       - name: 'Checkout correct SHA'
         uses: 'actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8'
         with:
-          ref: '${{ matrix.sha }}'
+          ref: "${{ matrix.sha }}"
           path: 'release'
           fetch-depth: 0
 
@@ -191,10 +191,10 @@ jobs:
         run: 'npm ci'
 
       - name: 'Run Tests'
-        if: '${{ github.event.inputs.force_skip_tests != 'true' }}'
+        if: "${{ github.event.inputs.force_skip_tests != 'true' }}"
         uses: './.github/actions/run-tests'
         with:
-          gemini_api_key: '${{ secrets.GEMINI_API_KEY }}'
+          gemini_api_key: "${{ secrets.GEMINI_API_KEY }}"
           working-directory: './release'
 
   publish-preview:
@@ -210,12 +210,12 @@ jobs:
       - name: 'Checkout Ref'
         uses: 'actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8'
         with:
-          ref: '${{ github.event.inputs.ref }}'
+          ref: "${{ github.event.inputs.ref }}"
 
       - name: 'Checkout correct SHA'
         uses: 'actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8'
         with:
-          ref: '${{ needs.calculate-versions.outputs.PREVIEW_SHA }}'
+          ref: "${{ needs.calculate-versions.outputs.PREVIEW_SHA }}"
           path: 'release'
           fetch-depth: 0
 
@@ -232,29 +232,29 @@ jobs:
       - name: 'Publish Release'
         uses: './.github/actions/publish-release'
         with:
-          release-version: '${{ needs.calculate-versions.outputs.PREVIEW_VERSION }}'
-          release-tag: 'v${{ needs.calculate-versions.outputs.PREVIEW_VERSION }}'
+          release-version: "${{ needs.calculate-versions.outputs.PREVIEW_VERSION }}"
+          release-tag: 'v${{ needs.calculate-versions.outputs.PREVIEW_VERSION }}"
           npm-tag: 'preview'
-          npm-token: '${{ secrets.NPM_TOKEN }}'
-          github-token: '${{ secrets.GITHUB_TOKEN }}'
-          dry-run: '${{ github.event.inputs.dry_run }}'
-          previous-tag: '${{ needs.calculate-versions.outputs.PREVIOUS_PREVIEW_TAG }}'
+          npm-token: "${{ secrets.NPM_TOKEN }}"
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          dry-run: "${{ github.event.inputs.dry_run }}"
+          previous-tag: "${{ needs.calculate-versions.outputs.PREVIOUS_PREVIEW_TAG }}"
           working-directory: './release'
-          gemini_api_key: '${{ secrets.GEMINI_API_KEY }}'
-          force-skip-tests: '${{ github.event.inputs.force_skip_tests }}'
-          npm-registry-publish-url: '${{ vars.NPM_REGISTRY_PUBLISH_URL }}'
-          npm-registry-url: '${{ vars.NPM_REGISTRY_URL }}'
-          npm-registry-scope: '${{ vars.NPM_REGISTRY_SCOPE }}'
-          cli-package-name: '${{ vars.CLI_PACKAGE_NAME }}'
-          core-package-name: '${{ vars.CORE_PACKAGE_NAME }}'
-          a2a-package-name: '${{ vars.A2A_PACKAGE_NAME }}'
+          gemini_api_key: "${{ secrets.GEMINI_API_KEY }}"
+          force-skip-tests: "${{ github.event.inputs.force_skip_tests }}"
+          npm-registry-publish-url: "${{ vars.NPM_REGISTRY_PUBLISH_URL }}"
+          npm-registry-url: "${{ vars.NPM_REGISTRY_URL }}"
+          npm-registry-scope: "${{ vars.NPM_REGISTRY_SCOPE }}"
+          cli-package-name: "${{ vars.CLI_PACKAGE_NAME }}"
+          core-package-name: "${{ vars.CORE_PACKAGE_NAME }}"
+          a2a-package-name: "${{ vars.A2A_PACKAGE_NAME }}"
 
       - name: 'Create Issue on Failure'
-        if: '${{ failure() && github.event.inputs.dry_run == false }}'
+        if: "${{ failure() && github.event.inputs.dry_run == false }}"
         env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-          RELEASE_TAG: 'v${{ needs.calculate-versions.outputs.PREVIEW_VERSION }}'
-          DETAILS_URL: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          RELEASE_TAG: 'v${{ needs.calculate-versions.outputs.PREVIEW_VERSION }}"
+          DETAILS_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         run: |
           gh issue create \
             --title 'Promote Release Failed for ${RELEASE_TAG} on $(date +'%Y-%m-%d')' \
@@ -274,12 +274,12 @@ jobs:
       - name: 'Checkout Ref'
         uses: 'actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8'
         with:
-          ref: '${{ github.event.inputs.ref }}'
+          ref: "${{ github.event.inputs.ref }}"
 
       - name: 'Checkout correct SHA'
         uses: 'actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8'
         with:
-          ref: '${{ needs.calculate-versions.outputs.STABLE_SHA }}'
+          ref: "${{ needs.calculate-versions.outputs.STABLE_SHA }}"
           path: 'release'
           fetch-depth: 0
 
@@ -296,29 +296,29 @@ jobs:
       - name: 'Publish Release'
         uses: './.github/actions/publish-release'
         with:
-          release-version: '${{ needs.calculate-versions.outputs.STABLE_VERSION }}'
-          release-tag: 'v${{ needs.calculate-versions.outputs.STABLE_VERSION }}'
+          release-version: "${{ needs.calculate-versions.outputs.STABLE_VERSION }}"
+          release-tag: 'v${{ needs.calculate-versions.outputs.STABLE_VERSION }}"
           npm-tag: 'latest'
-          npm-token: '${{ secrets.NPM_TOKEN }}'
-          github-token: '${{ secrets.GITHUB_TOKEN }}'
-          dry-run: '${{ github.event.inputs.dry_run }}'
-          previous-tag: '${{ needs.calculate-versions.outputs.PREVIOUS_STABLE_TAG }}'
+          npm-token: "${{ secrets.NPM_TOKEN }}"
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          dry-run: "${{ github.event.inputs.dry_run }}"
+          previous-tag: "${{ needs.calculate-versions.outputs.PREVIOUS_STABLE_TAG }}"
           working-directory: './release'
-          gemini_api_key: '${{ secrets.GEMINI_API_KEY }}'
-          force-skip-tests: '${{ github.event.inputs.force_skip_tests }}'
-          npm-registry-publish-url: '${{ vars.NPM_REGISTRY_PUBLISH_URL }}'
-          npm-registry-url: '${{ vars.NPM_REGISTRY_URL }}'
-          npm-registry-scope: '${{ vars.NPM_REGISTRY_SCOPE }}'
-          cli-package-name: '${{ vars.CLI_PACKAGE_NAME }}'
-          core-package-name: '${{ vars.CORE_PACKAGE_NAME }}'
-          a2a-package-name: '${{ vars.A2A_PACKAGE_NAME }}'
+          gemini_api_key: "${{ secrets.GEMINI_API_KEY }}"
+          force-skip-tests: "${{ github.event.inputs.force_skip_tests }}"
+          npm-registry-publish-url: "${{ vars.NPM_REGISTRY_PUBLISH_URL }}"
+          npm-registry-url: "${{ vars.NPM_REGISTRY_URL }}"
+          npm-registry-scope: "${{ vars.NPM_REGISTRY_SCOPE }}"
+          cli-package-name: "${{ vars.CLI_PACKAGE_NAME }}"
+          core-package-name: "${{ vars.CORE_PACKAGE_NAME }}"
+          a2a-package-name: "${{ vars.A2A_PACKAGE_NAME }}"
 
       - name: 'Create Issue on Failure'
-        if: '${{ failure() && github.event.inputs.dry_run == false }}'
+        if: "${{ failure() && github.event.inputs.dry_run == false }}"
         env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-          RELEASE_TAG: 'v${{ needs.calculate-versions.outputs.STABLE_VERSION }}'
-          DETAILS_URL: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          RELEASE_TAG: 'v${{ needs.calculate-versions.outputs.STABLE_VERSION }}"
+          DETAILS_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         run: |
           gh issue create \
             --title 'Promote Release Failed for ${RELEASE_TAG} on $(date +'%Y-%m-%d')' \
@@ -337,7 +337,7 @@ jobs:
       - name: 'Checkout Ref'
         uses: 'actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8'
         with:
-          ref: '${{ github.event.inputs.ref }}'
+          ref: "${{ github.event.inputs.ref }}"
 
       - name: 'Setup Node.js'
         uses: 'actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020'
@@ -365,8 +365,8 @@ jobs:
 
       - name: 'Commit and Push package versions'
         env:
-          BRANCH_NAME: '${{ steps.release_branch.outputs.BRANCH_NAME }}'
-          DRY_RUN: '${{ github.event.inputs.dry_run }}'
+          BRANCH_NAME: "${{ steps.release_branch.outputs.BRANCH_NAME }}"
+          DRY_RUN: "${{ github.event.inputs.dry_run }}"
         run: |-
           git add package.json packages/*/package.json
           if [ -f package-lock.json ]; then
@@ -383,18 +383,18 @@ jobs:
       - name: 'Create and Merge Pull Request'
         uses: './.github/actions/create-pull-request'
         with:
-          branch-name: '${{ steps.release_branch.outputs.BRANCH_NAME }}'
-          pr-title: 'chore(release): bump version to ${{ needs.calculate-versions.outputs.NEXT_NIGHTLY_VERSION }}'
+          branch-name: "${{ steps.release_branch.outputs.BRANCH_NAME }}"
+          pr-title: 'chore(release): bump version to ${{ needs.calculate-versions.outputs.NEXT_NIGHTLY_VERSION }}"
           pr-body: 'Automated version bump to prepare for the next nightly release.'
-          github-token: '${{ secrets.RELEASE_PAT }}'
-          dry-run: '${{ github.event.inputs.dry_run }}'
+          github-token: "${{ secrets.RELEASE_PAT }}"
+          dry-run: "${{ github.event.inputs.dry_run }}"
 
       - name: 'Create Issue on Failure'
-        if: '${{ failure() && github.event.inputs.dry_run == false }}'
+        if: "${{ failure() && github.event.inputs.dry_run == false }}"
         env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-          RELEASE_TAG: 'v${{ needs.calculate-versions.outputs.NEXT_NIGHTLY_VERSION }}'
-          DETAILS_URL: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          RELEASE_TAG: 'v${{ needs.calculate-versions.outputs.NEXT_NIGHTLY_VERSION }}"
+          DETAILS_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         run: |
           gh issue create \
             --title 'Promote Release Failed for ${RELEASE_TAG} on $(date +'%Y-%m-%d')' \
