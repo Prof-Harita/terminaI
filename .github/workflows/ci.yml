@@ -49,7 +49,7 @@ jobs:
     name: 'Lint'
     runs-on: 'ubuntu-latest'
     needs: 'merge_queue_skipper'
-    if: ${{ needs.merge_queue_skipper.outputs.skip == 'false' }}
+    if: ${{ needs.merge_queue_skipper.outputs.skip != 'true' }}
     steps:
       - name: 'Checkout'
         uses: 'actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8' # ratchet:actions/checkout@v5
@@ -116,7 +116,7 @@ jobs:
     needs:
       - 'lint'
       - 'merge_queue_skipper'
-    if: ${{ needs.merge_queue_skipper.outputs.skip == 'false' }}
+    if: ${{ needs.merge_queue_skipper.outputs.skip != 'true' }}
     permissions:
       contents: 'read'
       checks: 'write'
@@ -181,7 +181,7 @@ jobs:
     needs:
       - 'lint'
       - 'merge_queue_skipper'
-    if: ${{ needs.merge_queue_skipper.outputs.skip == 'false' }}
+    if: ${{ needs.merge_queue_skipper.outputs.skip != 'true' }}
     permissions:
       contents: 'read'
       checks: 'write'
@@ -255,7 +255,7 @@ jobs:
     name: 'CodeQL'
     runs-on: 'ubuntu-latest'
     needs: 'merge_queue_skipper'
-    if: ${{ needs.merge_queue_skipper.outputs.skip == 'false' }}
+    if: ${{ needs.merge_queue_skipper.outputs.skip != 'true' }}
     permissions:
       actions: 'read'
       contents: 'read'
@@ -278,7 +278,7 @@ jobs:
   bundle_size:
     name: 'Check Bundle Size'
     needs: 'merge_queue_skipper'
-    if: ${{ github.event_name == 'pull_request' && needs.merge_queue_skipper.outputs.skip == 'false' }}
+    if: ${{ github.event_name == 'pull_request' && needs.merge_queue_skipper.outputs.skip != 'true' }}
     runs-on: 'ubuntu-latest'
     permissions:
       contents: 'read' # For checkout
@@ -303,7 +303,7 @@ jobs:
     name: 'Slow Test - Win'
     runs-on: 'windows-latest'
     needs: 'merge_queue_skipper'
-    if: ${{ needs.merge_queue_skipper.outputs.skip == 'false' }}
+    if: ${{ needs.merge_queue_skipper.outputs.skip != 'true' }}
     continue-on-error: true
 
     steps:
