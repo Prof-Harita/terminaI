@@ -1,3 +1,5 @@
+import { RelayClient } from './relay-client.js';
+
 const chat = document.getElementById('chat');
 const input = document.getElementById('input');
 const sendButton = document.getElementById('send');
@@ -7,9 +9,30 @@ const statusText = document.getElementById('status-text');
 let activeTaskId = null;
 let currentAssistantEl = null;
 
+// Relay State
+let relayClient = null;
+
+// Check for Relay Params
+const fragment = new URLSearchParams(window.location.hash.substring(1));
+const relayUrl = fragment.get('relay');
+const sessionId = fragment.get('session');
+const keyBase64 = fragment.get('key');
+
 function setStatus(text, color = 'var(--muted)') {
   statusDot.style.background = color;
   statusText.textContent = text;
+}
+
+if (relayUrl && sessionId && keyBase64) {
+  console.log('Using Cloud Relay Mode');
+  relayClient = new RelayClient(
+    relayUrl,
+    sessionId,
+    keyBase64,
+    (msg) => handleA2aEvent(msg), // onMessage
+    (text, color) => setStatus(text, color), // onStatus
+  );
+  relayClient.connect();
 }
 
 function appendMessage(role, text) {
@@ -22,6 +45,9 @@ function appendMessage(role, text) {
 }
 
 function getToken() {
+  // If using Relay, we don't need a token
+  if (relayClient) return 'relay-mode';
+
   const url = new URL(window.location.href);
   const token = url.searchParams.get('token');
   if (token) {
@@ -199,6 +225,12 @@ function renderConfirmation({ callId, prompt, requiresPin, pinLength }) {
 }
 
 async function postStream(body) {
+  // If Relay Mode
+  if (relayClient) {
+    await relayClient.send(body);
+    return { ok: true, relayMode: true };
+  }
+
   const token = getToken();
   if (!token) {
     setStatus('Missing token (open /ui?token=...)', 'var(--danger)');
@@ -264,6 +296,8 @@ async function sendToolConfirmation(callId, approved, pin) {
   };
 
   const response = await postStream(body);
+  if (response.relayMode) return;
+
   if (!response.ok || !response.body) {
     appendMessage(
       'error',
@@ -325,6 +359,7 @@ function handleA2aEvent(evt) {
   if (result.final === true) {
     setStatus('Connected', 'var(--accent)');
     clearAssistantMessage();
+    // Re-enable send button if disabled?
   }
 }
 
@@ -356,6 +391,8 @@ async function sendMessage() {
 
   try {
     const response = await postStream(body);
+    if (response.relayMode) return;
+
     if (!response.ok || !response.body) {
       appendMessage(
         'error',

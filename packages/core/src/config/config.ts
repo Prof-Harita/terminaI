@@ -250,6 +250,7 @@ export interface ConfigParameters {
   debugMode: boolean;
   question?: string;
   previewMode?: boolean;
+  webRemoteRelayUrl?: string;
 
   coreTools?: string[];
   allowedTools?: string[];
@@ -364,6 +365,7 @@ export class Config {
   private readonly debugMode: boolean;
   private readonly question: string | undefined;
   private previewMode: boolean;
+  private readonly webRemoteRelayUrl: string | undefined;
 
   private readonly coreTools: string[] | undefined;
   private readonly allowedTools: string[] | undefined;
@@ -482,6 +484,7 @@ export class Config {
     this.debugMode = params.debugMode;
     this.question = params.question;
     this.previewMode = params.previewMode ?? false;
+    this.webRemoteRelayUrl = params.webRemoteRelayUrl;
 
     this.coreTools = params.coreTools;
     this.allowedTools = params.allowedTools;
@@ -726,6 +729,10 @@ export class Config {
 
   getContentGenerator(): ContentGenerator {
     return this.contentGenerator;
+  }
+
+  getWebRemoteRelayUrl(): string | undefined {
+    return this.webRemoteRelayUrl;
   }
 
   async refreshAuth(authMethod: AuthType) {

@@ -14,14 +14,8 @@ inputs:
   github-token:
     description: 'The GitHub token for creating the release.'
     required: true
-  wombat-token-core:
-    description: 'The npm token for the wombat @google/gemini-cli-core'
-    required: true
-  wombat-token-cli:
-    description: 'The npm token for wombat @google/gemini-cli'
-    required: true
-  wombat-token-a2a-server:
-    description: 'The npm token for the @google/gemini-cli-a2a-server package.'
+  npm-token:
+    description: 'The npm token for publishing'
     required: true
   cli-package-name:
     description: 'The name of the cli package.'
@@ -61,10 +55,7 @@ runs:
       id: 'core-token'
       with:
         package-name: '${{ inputs.core-package-name }}'
-        github-token: '${{ inputs.github-token }}'
-        wombat-token-core: '${{ inputs.wombat-token-core }}'
-        wombat-token-cli: '${{ inputs.wombat-token-cli }}'
-        wombat-token-a2a-server: '${{ inputs.wombat-token-a2a-server }}'
+        npm-token: '${{ inputs.npm-token }}'
 
     - name: 'Change tag for CORE'
       if: |-
@@ -81,10 +72,7 @@ runs:
       id: 'cli-token'
       with:
         package-name: '${{ inputs.cli-package-name }}'
-        github-token: '${{ inputs.github-token }}'
-        wombat-token-core: '${{ inputs.wombat-token-core }}'
-        wombat-token-cli: '${{ inputs.wombat-token-cli }}'
-        wombat-token-a2a-server: '${{ inputs.wombat-token-a2a-server }}'
+        npm-token: '${{ inputs.npm-token }}'
 
     - name: 'Change tag for CLI'
       if: |-
@@ -101,10 +89,7 @@ runs:
       id: 'a2a-token'
       with:
         package-name: '${{ inputs.a2a-package-name }}'
-        github-token: '${{ inputs.github-token }}'
-        wombat-token-core: '${{ inputs.wombat-token-core }}'
-        wombat-token-cli: '${{ inputs.wombat-token-cli }}'
-        wombat-token-a2a-server: '${{ inputs.wombat-token-a2a-server }}'
+        npm-token: '${{ inputs.npm-token }}'
 
     - name: 'Change tag for a2a'
       if: |-

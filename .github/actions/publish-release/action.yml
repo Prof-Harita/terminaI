@@ -8,14 +8,8 @@ inputs:
   npm-tag:
     description: 'The npm tag to publish with (e.g., latest, preview, nightly).'
     required: true
-  wombat-token-core:
-    description: 'The npm token for the cli-core package.'
-    required: true
-  wombat-token-cli:
-    description: 'The npm token for the cli package.'
-    required: true
-  wombat-token-a2a-server:
-    description: 'The npm token for the a2a package.'
+  npm-token:
+    description: 'The npm token for publishing.'
     required: true
   github-token:
     description: 'The GitHub token for creating the release.'
@@ -146,20 +140,10 @@ runs:
         registry-url: '${{inputs.npm-registry-publish-url}}'
         scope: '${{inputs.npm-registry-scope}}'
 
-    - name: 'Get core Token'
-      uses: './.github/actions/npm-auth-token'
-      id: 'core-token'
-      with:
-        package-name: '${{ inputs.core-package-name }}'
-        github-token: '${{ inputs.github-token }}'
-        wombat-token-core: '${{ inputs.wombat-token-core }}'
-        wombat-token-cli: '${{ inputs.wombat-token-cli }}'
-        wombat-token-a2a-server: '${{ inputs.wombat-token-a2a-server }}'
-
     - name: '📦 Publish CORE to NPM'
       working-directory: '${{ inputs.working-directory }}'
       env:
-        NODE_AUTH_TOKEN: '${{ steps.core-token.outputs.auth-token }}'
+        NODE_AUTH_TOKEN: '${{ inputs.npm-token }}'
       shell: 'bash'
       run: |
         npm publish \
@@ -178,20 +162,10 @@ runs:
         --workspace="${{ inputs.a2a-package-name }}" \
         --save-exact
 
-    - name: 'Get CLI Token'
-      uses: './.github/actions/npm-auth-token'
-      id: 'cli-token'
-      with:
-        package-name: '${{ inputs.cli-package-name }}'
-        github-token: '${{ inputs.github-token }}'
-        wombat-token-core: '${{ inputs.wombat-token-core }}'
-        wombat-token-cli: '${{ inputs.wombat-token-cli }}'
-        wombat-token-a2a-server: '${{ inputs.wombat-token-a2a-server }}'
-
     - name: '📦 Publish CLI'
       working-directory: '${{ inputs.working-directory }}'
       env:
-        NODE_AUTH_TOKEN: '${{ steps.cli-token.outputs.auth-token }}'
+        NODE_AUTH_TOKEN: '${{ inputs.npm-token }}'
       shell: 'bash'
       run: |
         npm publish \
@@ -200,20 +174,10 @@ runs:
           --no-tag
         npm dist-tag rm ${{ inputs.cli-package-name }} false --silent
 
-    - name: 'Get a2a-server Token'
-      uses: './.github/actions/npm-auth-token'
-      id: 'a2a-token'
-      with:
-        package-name: '${{ inputs.a2a-package-name }}'
-        github-token: '${{ inputs.github-token }}'
-        wombat-token-core: '${{ inputs.wombat-token-core }}'
-        wombat-token-cli: '${{ inputs.wombat-token-cli }}'
-        wombat-token-a2a-server: '${{ inputs.wombat-token-a2a-server }}'
-
     - name: '📦 Publish a2a'
       working-directory: '${{ inputs.working-directory }}'
       env:
-        NODE_AUTH_TOKEN: '${{ steps.a2a-token.outputs.auth-token }}'
+        NODE_AUTH_TOKEN: '${{ inputs.npm-token }}'
       shell: 'bash'
       # Tag staging for initial release
       run: |
@@ -242,9 +206,9 @@ runs:
         version: '${{ inputs.release-version }}'
         dry-run: '${{ inputs.dry-run }}'
         github-token: '${{ inputs.github-token }}'
-        wombat-token-core: '${{ inputs.wombat-token-core }}'
-        wombat-token-cli: '${{ inputs.wombat-token-cli }}'
-        wombat-token-a2a-server: '${{ inputs.wombat-token-a2a-server }}'
+        wombat-token-core: 'na'
+        wombat-token-cli: 'na'
+        wombat-token-a2a-server: 'na'
         cli-package-name: '${{ inputs.cli-package-name }}'
         core-package-name: '${{ inputs.core-package-name }}'
         a2a-package-name: '${{ inputs.a2a-package-name }}'

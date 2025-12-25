@@ -81,6 +81,7 @@ export async function loadConfig(
       : settings.checkpointing?.enabled,
     previewFeatures: settings.general?.previewFeatures,
     interactive: true,
+    webRemoteRelayUrl: process.env['WEB_REMOTE_RELAY_URL'],
   };
 
   const fileService = new FileDiscoveryService(workspaceDir);

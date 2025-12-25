@@ -122,6 +122,7 @@
     "@terminai/cli": "file:./packages/cli",
     "@terminai/a2a-server": "file:./packages/a2a-server",
     "@terminai/core": "file:./packages/core",
+    "@terminai/cloud-relay": "file:./packages/cloud-relay",
     "yargs": "^17.7.2"
   },
   "dependencies": {

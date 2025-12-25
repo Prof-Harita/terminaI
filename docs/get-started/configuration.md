@@ -291,10 +291,6 @@ their corresponding top-level category object in your `settings.json` file.
   - **Description:** Maximum words to speak in voice replies.
   - **Default:** `30`
 
-Note: voice mode currently supports **TTS-only spoken replies**. Push-to-talk
-audio capture and STT transcription are not yet wired in the CLI, but the
-settings are reserved for future support.
-
 #### `ide`
 
 - **`ide.enabled`** (boolean):

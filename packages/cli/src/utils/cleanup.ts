@@ -11,13 +11,13 @@ import {
   Storage,
   shutdownTelemetry,
   isTelemetrySdkInitialized,
- computerSessionManager } from '@terminai/core';
+  computerSessionManager,
+} from '@terminai/core';
 import type { Config } from '@terminai/core';
 
 const cleanupFunctions: Array<(() => void) | (() => Promise<void>)> = [];
 const syncCleanupFunctions: Array<() => void> = [];
 let configForTelemetry: Config | null = null;
-
 
 export function registerCleanup(fn: (() => void) | (() => Promise<void>)) {
   cleanupFunctions.push(fn);

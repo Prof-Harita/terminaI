@@ -189,7 +189,8 @@ const MAX_RETRY_EVENTS = 100;
 // Singleton class for batch posting log events to Clearcut. When a new event comes in, the elapsed time
 // is checked and events are flushed to Clearcut if at least a minute has passed since the last flush.
 export class ClearcutLogger {
-  private static instance: ClearcutLogger;
+  // Singleton disabled for sovereign fork - keeping declaration for potential re-enablement
+  // private static _instance: ClearcutLogger;
   private config?: Config;
   private sessionData: EventValue[] = [];
   private promptId: string = '';
@@ -234,19 +235,15 @@ export class ClearcutLogger {
     }
   }
 
-  static getInstance(config?: Config): ClearcutLogger | undefined {
-    if (config === undefined || !config?.getUsageStatisticsEnabled())
-      return undefined;
-    if (!ClearcutLogger.instance) {
-      ClearcutLogger.instance = new ClearcutLogger(config);
-    }
-    return ClearcutLogger.instance;
+  static getInstance(_config?: Config): ClearcutLogger | undefined {
+    // Disabled for sovereign fork
+    return undefined;
   }
 
   /** For testing purposes only. */
   static clearInstance(): void {
-    // @ts-expect-error - ClearcutLogger is a singleton, but we need to clear it for tests.
-    ClearcutLogger.instance = undefined;
+    // Disabled for sovereign fork - singleton not used
+    // ClearcutLogger._instance = undefined;
   }
 
   enqueueHelper(event: LogEvent): void {

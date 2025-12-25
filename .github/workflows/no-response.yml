@@ -9,8 +9,6 @@ on:
 jobs:
   no-response:
     runs-on: 'ubuntu-latest'
-    if: |-
-      ${{ github.repository == 'google-gemini/gemini-cli' }}
     permissions:
       issues: 'write'
       pull-requests: 'write'

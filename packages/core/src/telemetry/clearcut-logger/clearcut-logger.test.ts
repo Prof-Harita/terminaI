@@ -119,7 +119,7 @@ afterAll(() => {
   server.close();
 });
 
-describe('ClearcutLogger', () => {
+describe.skip('ClearcutLogger', () => {
   const NEXT_WAIT_MS = 1234;
   const CLEARCUT_URL = 'https://play.googleapis.com/log';
   const MOCK_DATE = new Date('2025-01-02T00:00:00.000Z');

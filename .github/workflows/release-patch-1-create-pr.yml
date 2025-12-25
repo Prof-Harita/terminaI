@@ -83,7 +83,7 @@ jobs:
         id: 'create_patch'
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-          GH_TOKEN: '${{ secrets.GEMINI_CLI_ROBOT_GITHUB_PAT }}'
+          GH_TOKEN: '${{ secrets.RELEASE_PAT }}'
           CLI_PACKAGE_NAME: '${{ vars.CLI_PACKAGE_NAME }}'
           PATCH_COMMIT: '${{ github.event.inputs.commit }}'
           PATCH_CHANNEL: '${{ github.event.inputs.channel }}'

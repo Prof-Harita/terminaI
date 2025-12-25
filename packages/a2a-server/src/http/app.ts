@@ -34,6 +34,7 @@ import type { Command, CommandArgument } from '../commands/types.js';
 import { GitService } from '@terminai/core';
 import { createAuthMiddleware, loadAuthVerifier } from './auth.js';
 import { createCorsAllowlist } from './cors.js';
+import { connectToRelay } from './relay.js';
 // import { createReplayProtection } from './replay.js'; // TODO: Re-enable when body streaming conflict is resolved
 
 function resolveWebClientPath(): string | null {
@@ -271,6 +272,13 @@ export async function createApp() {
 
     const appBuilder = new A2AExpressApp(requestHandler);
     expressApp = appBuilder.setupRoutes(expressApp, '');
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const relayUrl = (config as any).getWebRemoteRelayUrl();
+    if (relayUrl) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      connectToRelay(relayUrl, requestHandler);
+    }
 
     expressApp.get('/healthz', (_req, res) => {
       res.status(200).json({ status: 'ok' });

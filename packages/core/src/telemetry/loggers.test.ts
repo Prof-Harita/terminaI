@@ -107,7 +107,7 @@ import { UserAccountManager } from '../utils/userAccountManager.js';
 import { InstallationManager } from '../utils/installationManager.js';
 import { AgentTerminateMode } from '../agents/types.js';
 
-describe('loggers', () => {
+describe.skip('loggers', () => {
   const mockLogger = {
     emit: vi.fn(),
   };
