@@ -13,6 +13,9 @@ try {
 
   // Run critical tests first
   try {
+    console.log('Running risk checks (CI Prevention)...');
+    execSync('node scripts/check-precommit-risks.js', { stdio: 'inherit' });
+
     console.log('Running critical tests...');
     execSync(
       'npm run test --workspace @terminai/cli -- src/config/policy-engine.integration.test.ts src/utils/installationInfo.test.ts src/gemini.test.tsx',
