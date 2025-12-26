@@ -3,6 +3,9 @@
 This document provides an overview of the Gemini Ignore (`.geminiignore`)
 feature of the Gemini CLI.
 
+> Note: TerminaI continues to honor `.geminiignore` for compatibility; there is
+> no `.terminaiignore` file today.
+
 The Gemini CLI includes the ability to automatically ignore files, similar to
 `.gitignore` (used by Git) and `.aiexclude` (used by Gemini Code Assist). Adding
 paths to your `.geminiignore` file will exclude them from tools that support

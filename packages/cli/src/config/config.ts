@@ -505,6 +505,7 @@ export async function loadCliConfig(
   const debugMode = isDebugMode(argv);
 
   if (argv.sandbox) {
+    process.env['TERMINAI_SANDBOX'] = 'true';
     process.env['GEMINI_SANDBOX'] = 'true';
   }
 

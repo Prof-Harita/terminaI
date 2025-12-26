@@ -14,6 +14,9 @@ core instructions will apply unless you include them yourself.
 This feature is intended for advanced users who need to enforce strict,
 project-specific behavior or create a customized persona.
 
+> Note: The preferred binary name is `terminai`; the `gemini` alias is kept for
+> compatibility.
+
 > Tip: You can export the current default system prompt to a file first, review
 > it, and then selectively modify or replace it (see
 > [“Export the default prompt”](#export-the-default-prompt-recommended)).
@@ -24,12 +27,12 @@ If you want a ready-to-use TerminaI operator prompt, see the example file:
 ## How to enable
 
 You can set the environment variable temporarily in your shell, or persist it
-via a `.gemini/.env` file. See
+via a `.terminai/.env` file. See
 [Persisting Environment Variables](../get-started/authentication.md#persisting-environment-variables).
 
-- Use the project default path (`.gemini/system.md`):
+- Use the project default path (`.terminai/system.md`):
   - `TERMINAI_SYSTEM_MD=true` or `TERMINAI_SYSTEM_MD=1`
-  - The CLI reads `./.gemini/system.md` (relative to your current project
+  - The CLI reads `./.terminai/system.md` (relative to your current project
     directory).
 
 - Use a custom file path:
@@ -47,12 +50,12 @@ error with: `missing system prompt file '<path>'`.
 ## Quick examples
 
 - One‑off session using a project file:
-  - `TERMINAI_SYSTEM_MD=1 gemini`
-- Persist for a project using `.gemini/.env`:
-  - Create `.gemini/system.md`, then add to `.gemini/.env`:
+  - `TERMINAI_SYSTEM_MD=1 terminai`
+- Persist for a project using `.terminai/.env`:
+  - Create `.terminai/system.md`, then add to `.terminai/.env`:
     - `TERMINAI_SYSTEM_MD=1`
 - Use a custom file under your home directory:
-  - `TERMINAI_SYSTEM_MD=~/prompts/SYSTEM.md gemini`
+  - `TERMINAI_SYSTEM_MD=~/prompts/SYSTEM.md terminai`
 
 ## UI indicator
 
@@ -65,9 +68,9 @@ Before overriding, export the current default prompt so you can review required
 safety and workflow rules.
 
 - Write the built‑in prompt to the project default path:
-  - `TERMINAI_WRITE_SYSTEM_MD=1 gemini`
+  - `TERMINAI_WRITE_SYSTEM_MD=1 terminai`
 - Or write to a custom path:
-  - `TERMINAI_WRITE_SYSTEM_MD=~/prompts/DEFAULT_SYSTEM.md gemini`
+  - `TERMINAI_WRITE_SYSTEM_MD=~/prompts/DEFAULT_SYSTEM.md terminai`
 
 This creates the file and writes the current built‑in system prompt to it.
 
@@ -88,10 +91,10 @@ terminaI.md focused on high‑level guidance and project specifics.
 
 - Error: `missing system prompt file '…'`
   - Ensure the referenced path exists and is readable.
-  - For `TERMINAI_SYSTEM_MD=1|true`, create `./.gemini/system.md` in your
+  - For `TERMINAI_SYSTEM_MD=1|true`, create `./.terminai/system.md` in your
     project.
 - Override not taking effect
-  - Confirm the variable is loaded (use `.gemini/.env` or export in your shell).
+  - Confirm the variable is loaded (use `.terminai/.env` or export in your shell).
   - Paths are resolved from the current working directory; try an absolute path.
 - Restore defaults
   - Unset `TERMINAI_SYSTEM_MD` or set it to `0`/`false`.

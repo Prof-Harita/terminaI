@@ -23,10 +23,10 @@ Gemini CLI uses `settings.json` files for persistent configuration. There are
 three locations for these files:
 
 - **User settings file:**
-  - **Location:** `~/.gemini/settings.json` (where `~` is your home directory).
+  - **Location:** `~/.terminai/settings.json` (where `~` is your home directory).
   - **Scope:** Applies to all Gemini CLI sessions for the current user.
 - **Project settings file:**
-  - **Location:** `.gemini/settings.json` within your project's root directory.
+  - **Location:** `.terminai/settings.json` within your project's root directory.
   - **Scope:** Applies only when running Gemini CLI from that specific project.
     Project settings override user settings.
 - **System settings file:**
@@ -47,13 +47,14 @@ resolved when the settings are loaded. For example, if you have an environment
 variable `MY_API_TOKEN`, you could use it in `settings.json` like this:
 `"apiKey": "$MY_API_TOKEN"`.
 
-### The `.gemini` directory in your project
+### The `.terminai` directory in your project
 
-In addition to a project settings file, a project's `.gemini` directory can
-contain other project-specific files related to Gemini CLI's operation, such as:
+In addition to a project settings file, a project's `.terminai` directory can
+contain other project-specific files related to Gemini CLI's operation (legacy
+`.gemini` is still read), such as:
 
 - [Custom sandbox profiles](#sandboxing) (e.g.,
-  `.gemini/sandbox-macos-custom.sb`, `.gemini/sandbox.Dockerfile`).
+  `.terminai/sandbox-macos-custom.sb`, `.terminai/sandbox.Dockerfile`).
 
 ### Available settings in `settings.json`:
 
@@ -351,7 +352,7 @@ contain other project-specific files related to Gemini CLI's operation, such as:
   - **Description:** Specifies environment variables that should be excluded
     from being loaded from project `.env` files. This prevents project-specific
     environment variables (like `DEBUG=true`) from interfering with gemini-cli
-    behavior. Variables from `.gemini/.env` files are never excluded.
+    behavior. Variables from `.terminai/.env` files are never excluded.
   - **Default:** `["DEBUG", "DEBUG_MODE"]`
   - **Example:**
     ```json
@@ -429,7 +430,7 @@ The CLI keeps a history of shell commands you run. To avoid conflicts between
 different projects, this history is stored in a project-specific directory
 within your user's home folder.
 
-- **Location:** `~/.gemini/tmp/<project_hash>/shell_history`
+- **Location:** `~/.terminai/tmp/<project_hash>/shell_history`
   - `<project_hash>` is a unique identifier generated from your project's root
     path.
   - The history is stored in a file named `shell_history`.
@@ -452,7 +453,7 @@ loading order is:
 **Environment variable exclusion:** Some environment variables (like `DEBUG` and
 `DEBUG_MODE`) are automatically excluded from being loaded from project `.env`
 files to prevent interference with gemini-cli behavior. Variables from
-`.gemini/.env` files are never excluded. You can customize this behavior using
+`.terminai/.env` files are never excluded. You can customize this behavior using
 the `excludedProjectEnvVars` setting in your `settings.json` file.
 
 - **`TERMINAI_API_KEY`** (Required):
@@ -517,15 +518,15 @@ the `excludedProjectEnvVars` setting in your `settings.json` file.
     operations.
   - `strict`: Uses a strict profile that declines operations by default.
   - `<profile_name>`: Uses a custom profile. To define a custom profile, create
-    a file named `sandbox-macos-<profile_name>.sb` in your project's `.gemini/`
-    directory (e.g., `my-project/.gemini/sandbox-macos-custom.sb`).
+    a file named `sandbox-macos-<profile_name>.sb` in your project's `.terminai/`
+    directory (e.g., `my-project/.terminai/sandbox-macos-custom.sb`).
 - **`DEBUG` or `DEBUG_MODE`** (often used by underlying libraries or the CLI
   itself):
   - Set to `true` or `1` to enable verbose debug logging, which can be helpful
     for troubleshooting.
   - **Note:** These variables are automatically excluded from project `.env`
     files by default to prevent interference with gemini-cli behavior. Use
-    `.gemini/.env` files if you need to set these for gemini-cli specifically.
+    `.terminai/.env` files if you need to set these for gemini-cli specifically.
 - **`NO_COLOR`**:
   - Set to any value to disable all color output in the CLI.
 - **`CLI_TITLE`**:
@@ -535,14 +536,14 @@ the `excludedProjectEnvVars` setting in your `settings.json` file.
   - This is useful for development and testing.
 - **`TERMINAI_SYSTEM_MD`**:
   - Overrides the base system prompt with the contents of a Markdown file.
-  - If set to `1` or `true`, it uses the file at `.gemini/system.md`.
+  - If set to `1` or `true`, it uses the file at `.terminai/system.md`.
   - If set to a file path, it uses that file. The path can be absolute or
     relative. `~` is supported for the home directory.
   - The specified file must exist.
 - **`TERMINAI_WRITE_SYSTEM_MD`**:
   - Writes the default system prompt to a file. This is useful for getting a
     template to customize.
-  - If set to `1` or `true`, it writes to `.gemini/system.md`.
+  - If set to `1` or `true`, it writes to `.terminai/system.md`.
   - If set to a file path, it writes to that path. The path can be absolute or
     relative. `~` is supported for the home directory. **Note: This will
     overwrite the file if it already exists.**
@@ -562,7 +563,7 @@ for that specific session.
   - Starts an interactive session with the provided prompt as the initial input.
   - The prompt is processed within the interactive session, not before it.
   - Cannot be used when piping input from stdin.
-  - Example: `gemini -i "explain this code"`
+- Example: `terminai -i "explain this code"`
 - **`--sandbox`** (**`-s`**):
   - Enables sandbox mode for this session.
 - **`--sandbox-image`**:
@@ -592,8 +593,8 @@ for that specific session.
 - **`--extensions <extension_name ...>`** (**`-e <extension_name ...>`**):
   - Specifies a list of extensions to use for the session. If not provided, all
     available extensions are used.
-  - Use the special term `gemini -e none` to disable all extensions.
-  - Example: `gemini -e my-extension -e my-other-extension`
+- Use the special term `terminai -e none` to disable all extensions.
+- Example: `terminai -e my-extension -e my-other-extension`
 - **`--list-extensions`** (**`-l`**):
   - Lists all available extensions and exits.
 - **`--include-directories <dir1,dir2,...>`**:
@@ -722,7 +723,7 @@ Sandboxing is disabled by default, but you can enable it in a few ways:
 By default, it uses a pre-built `gemini-cli-sandbox` Docker image.
 
 For project-specific sandboxing needs, you can create a custom Dockerfile at
-`.gemini/sandbox.Dockerfile` in your project's root directory. This Dockerfile
+`.terminai/sandbox.Dockerfile` in your project's root directory. This Dockerfile
 can be based on the base sandbox image:
 
 ```dockerfile
@@ -734,12 +735,12 @@ FROM gemini-cli-sandbox
 # COPY ./my-config /app/my-config
 ```
 
-When `.gemini/sandbox.Dockerfile` exists, you can use `BUILD_SANDBOX`
+When `.terminai/sandbox.Dockerfile` exists, you can use `BUILD_SANDBOX`
 environment variable when running Gemini CLI to automatically build the custom
 sandbox image:
 
 ```bash
-BUILD_SANDBOX=1 gemini -s
+BUILD_SANDBOX=1 terminai -s
 ```
 
 ## Usage statistics

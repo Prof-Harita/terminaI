@@ -89,9 +89,9 @@ risk.
 
 To store your API keys securely, you can:
 
-- **Use a `.env` file:** Create a `.env` file in your project's `.gemini`
-  directory (`.gemini/.env`) and store your keys there. Gemini CLI will
-  automatically load these variables.
+- **Use a `.env` file:** Create a `.env` file in your project's `.terminai`
+  directory (`.terminai/.env`; legacy `.gemini/.env` is still read) and store
+  your keys there. TerminaI will automatically load these variables.
 - **Use your system's keyring:** For the most secure storage, use your operating
   system's secret management tool (like macOS Keychain, Windows Credential
   Manager, or a secret manager on Linux). You can then have your scripts or
@@ -101,8 +101,8 @@ To store your API keys securely, you can:
 
 The Gemini CLI configuration is stored in two `settings.json` files:
 
-1.  In your home directory: `~/.gemini/settings.json`.
-2.  In your project's root directory: `./.gemini/settings.json`.
+1.  In your home directory: `~/.terminai/settings.json`.
+2.  In your project's root directory: `./.terminai/settings.json`.
 
 Refer to [Gemini CLI Configuration](./get-started/configuration.md) for more
 details.

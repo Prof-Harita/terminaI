@@ -80,27 +80,27 @@ describe('loadSandboxConfig', () => {
     expect(config).toBeUndefined();
   });
 
-  describe('with GEMINI_SANDBOX environment variable', () => {
-    it('should use docker if GEMINI_SANDBOX=docker and it exists', async () => {
-      process.env['GEMINI_SANDBOX'] = 'docker';
+  describe('with TERMINAI_SANDBOX environment variable', () => {
+    it('should use docker if TERMINAI_SANDBOX=docker and it exists', async () => {
+      process.env['TERMINAI_SANDBOX'] = 'docker';
       mockedCommandExistsSync.mockReturnValue(true);
       const config = await loadSandboxConfig({}, {});
       expect(config).toEqual({ command: 'docker', image: 'default/image' });
       expect(mockedCommandExistsSync).toHaveBeenCalledWith('docker');
     });
 
-    it('should throw if GEMINI_SANDBOX is an invalid command', async () => {
-      process.env['GEMINI_SANDBOX'] = 'invalid-command';
+    it('should throw if TERMINAI_SANDBOX is an invalid command', async () => {
+      process.env['TERMINAI_SANDBOX'] = 'invalid-command';
       await expect(loadSandboxConfig({}, {})).rejects.toThrow(
         "Invalid sandbox command 'invalid-command'. Must be one of docker, podman, sandbox-exec",
       );
     });
 
-    it('should throw if GEMINI_SANDBOX command does not exist', async () => {
-      process.env['GEMINI_SANDBOX'] = 'docker';
+    it('should throw if TERMINAI_SANDBOX command does not exist', async () => {
+      process.env['TERMINAI_SANDBOX'] = 'docker';
       mockedCommandExistsSync.mockReturnValue(false);
       await expect(loadSandboxConfig({}, {})).rejects.toThrow(
-        "Missing sandbox command 'docker' (from GEMINI_SANDBOX)",
+        "Missing sandbox command 'docker' (from TERMINAI_SANDBOX or GEMINI_SANDBOX)",
       );
     });
   });
@@ -146,8 +146,8 @@ describe('loadSandboxConfig', () => {
       mockedOsPlatform.mockReturnValue('linux');
       mockedCommandExistsSync.mockReturnValue(false);
       await expect(loadSandboxConfig({}, { sandbox: true })).rejects.toThrow(
-        'GEMINI_SANDBOX is true but failed to determine command for sandbox; ' +
-          'install docker or podman or specify command in GEMINI_SANDBOX',
+        'TERMINAI_SANDBOX is true but failed to determine command for sandbox; ' +
+          'install docker or podman or specify command in TERMINAI_SANDBOX (or GEMINI_SANDBOX for legacy)',
       );
     });
   });
@@ -165,7 +165,7 @@ describe('loadSandboxConfig', () => {
       await expect(
         loadSandboxConfig({}, { sandbox: 'podman' }),
       ).rejects.toThrow(
-        "Missing sandbox command 'podman' (from GEMINI_SANDBOX)",
+        "Missing sandbox command 'podman' (from TERMINAI_SANDBOX or GEMINI_SANDBOX)",
       );
     });
 
@@ -179,16 +179,16 @@ describe('loadSandboxConfig', () => {
   });
 
   describe('image configuration', () => {
-    it('should use image from GEMINI_SANDBOX_IMAGE env var if set', async () => {
-      process.env['GEMINI_SANDBOX_IMAGE'] = 'env/image';
-      process.env['GEMINI_SANDBOX'] = 'docker';
+    it('should use image from TERMINAI_SANDBOX_IMAGE env var if set', async () => {
+      process.env['TERMINAI_SANDBOX_IMAGE'] = 'env/image';
+      process.env['TERMINAI_SANDBOX'] = 'docker';
       mockedCommandExistsSync.mockReturnValue(true);
       const config = await loadSandboxConfig({}, {});
       expect(config).toEqual({ command: 'docker', image: 'env/image' });
     });
 
     it('should use image from package.json if env var is not set', async () => {
-      process.env['GEMINI_SANDBOX'] = 'docker';
+      process.env['TERMINAI_SANDBOX'] = 'docker';
       mockedCommandExistsSync.mockReturnValue(true);
       const config = await loadSandboxConfig({}, {});
       expect(config).toEqual({ command: 'docker', image: 'default/image' });
@@ -196,7 +196,7 @@ describe('loadSandboxConfig', () => {
 
     it('should return undefined if command is found but no image is configured', async () => {
       mockedGetPackageJson.mockResolvedValue({}); // no sandboxImageUri
-      process.env['GEMINI_SANDBOX'] = 'docker';
+      process.env['TERMINAI_SANDBOX'] = 'docker';
       mockedCommandExistsSync.mockReturnValue(true);
       const config = await loadSandboxConfig({}, {});
       expect(config).toBeUndefined();

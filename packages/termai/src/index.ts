@@ -15,14 +15,14 @@ import { applyTerminaiEnvAliases } from '@terminai/core';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const systemPath = join(__dirname, 'system.md');
 
-applyTerminaiEnvAliases();
-
-if (!process.env['GEMINI_SYSTEM_MD']) {
-  process.env['GEMINI_SYSTEM_MD'] = systemPath;
+if (!process.env['TERMINAI_SYSTEM_MD']) {
+  process.env['TERMINAI_SYSTEM_MD'] = systemPath;
 }
 
 // Disable CLI auto-relaunch to fix startup hang in wrapper mode
-process.env['GEMINI_CLI_NO_RELAUNCH'] = 'true';
+process.env['TERMINAI_CLI_NO_RELAUNCH'] = 'true';
+
+applyTerminaiEnvAliases();
 
 const require = createRequire(import.meta.url);
 const cliEntry = require.resolve('@terminai/cli/dist/index.js');

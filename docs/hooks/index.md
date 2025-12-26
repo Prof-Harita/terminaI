@@ -56,7 +56,7 @@ scripts:
 ```json
 {
   "type": "command",
-  "command": "$TERMINAI_PROJECT_DIR/.gemini/hooks/my-hook.sh",
+  "command": "$TERMINAI_PROJECT_DIR/.terminai/hooks/my-hook.sh",
   "timeout": 30000
 }
 ```
@@ -417,9 +417,9 @@ precedence rules.
 Hook configurations are applied in the following order of execution (lower
 numbers run first):
 
-1.  **Project settings:** `.gemini/settings.json` in your project directory
+1.  **Project settings:** `.terminai/settings.json` in your project directory
     (highest priority)
-2.  **User settings:** `~/.gemini/settings.json`
+2.  **User settings:** `~/.terminai/settings.json`
 3.  **System settings:** `/etc/gemini-cli/settings.json`
 4.  **Extensions:** Internal hooks defined by installed extensions (lowest
     priority)
@@ -509,7 +509,7 @@ You can temporarily enable or disable individual hooks using commands:
 These commands allow you to control hook execution without editing configuration
 files. The hook name should match the `name` field in your hook configuration.
 Changes made via these commands are persisted to your global User settings
-(`~/.gemini/settings.json`).
+(`~/.terminai/settings.json`).
 
 ### Disabled hooks configuration
 
@@ -542,7 +542,7 @@ This command:
 - Converts event names (`PreToolUse` → `BeforeTool`, etc.)
 - Translates tool names (`Bash` → `run_shell_command`, `replace` → `replace`)
 - Updates matcher patterns
-- Writes to `.gemini/settings.json`
+- Writes to `.terminai/settings.json`
 
 ### Event name mapping
 

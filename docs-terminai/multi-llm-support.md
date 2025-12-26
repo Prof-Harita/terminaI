@@ -244,7 +244,7 @@ sequenceDiagram
 | `TERMINAI_API_KEY`  | Gemini API key                              |
 
 Legacy compatibility: Gemini-prefixed environment variables (including
-`TERMINAI_GEMINI_BASE_URL`) are aliased to Terminai-prefixed equivalents.
+`GEMINI_BASE_URL`) are aliased to Terminai-prefixed equivalents.
 
 ## Testing Strategy
 

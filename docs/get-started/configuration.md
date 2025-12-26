@@ -51,11 +51,11 @@ locations for these files:
     settings have the lowest precedence and are intended to be overridden by
     user, project, or system override settings.
 - **User settings file:**
-  - **Location:** `~/.gemini/settings.json` (where `~` is your home directory).
+  - **Location:** `~/.terminai/settings.json` (where `~` is your home directory).
   - **Scope:** Applies to all Gemini CLI sessions for the current user. User
     settings override system defaults.
 - **Project settings file:**
-  - **Location:** `.gemini/settings.json` within your project's root directory.
+  - **Location:** `.terminai/settings.json` within your project's root directory.
   - **Scope:** Applies only when running Gemini CLI from that specific project.
     Project settings override user settings and system defaults.
 - **System settings file:**
@@ -81,13 +81,14 @@ this: `"apiKey": "$MY_API_TOKEN"`. Additionally, each extension can have its own
 > CLI in a corporate environment, please see the
 > [Enterprise Configuration](../cli/enterprise.md) documentation.
 
-### The `.gemini` directory in your project
+### The `.terminai` directory in your project
 
-In addition to a project settings file, a project's `.gemini` directory can
-contain other project-specific files related to Gemini CLI's operation, such as:
+In addition to a project settings file, a project's `.terminai` directory can
+contain other project-specific files related to Gemini CLI's operation (legacy
+`.gemini` is still read), such as:
 
 - [Custom sandbox profiles](#sandboxing) (e.g.,
-  `.gemini/sandbox-macos-custom.sb`, `.gemini/sandbox.Dockerfile`).
+  `.terminai/sandbox-macos-custom.sb`, `.terminai/sandbox.Dockerfile`).
 
 ### Available settings in `settings.json`
 
@@ -1114,7 +1115,7 @@ The CLI keeps a history of shell commands you run. To avoid conflicts between
 different projects, this history is stored in a project-specific directory
 within your user's home folder.
 
-- **Location:** `~/.gemini/tmp/<project_hash>/shell_history`
+- **Location:** `~/.terminai/tmp/<project_hash>/shell_history`
   - `<project_hash>` is a unique identifier generated from your project's root
     path.
   - The history is stored in a file named `shell_history`.
@@ -1139,7 +1140,7 @@ loading order is:
 **Environment variable exclusion:** Some environment variables (like `DEBUG` and
 `DEBUG_MODE`) are automatically excluded from being loaded from project `.env`
 files to prevent interference with gemini-cli behavior. Variables from
-`.gemini/.env` files are never excluded. You can customize this behavior using
+`.terminai/.env` files are never excluded. You can customize this behavior using
 the `advanced.excludedEnvVars` setting in your `settings.json` file.
 
 - **`TERMINAI_API_KEY`**:
@@ -1207,14 +1208,14 @@ the `advanced.excludedEnvVars` setting in your `settings.json` file.
   - Accepts `true`, `false`, `docker`, `podman`, or a custom command string.
 - **`TERMINAI_SYSTEM_MD`**:
   - Replaces the built‑in system prompt with content from a Markdown file.
-  - `true`/`1`: Use project default path `./.gemini/system.md`.
+  - `true`/`1`: Use project default path `./.terminai/system.md`.
   - Any other string: Treat as a path (relative/absolute supported, `~`
     expands).
   - `false`/`0` or unset: Use the built‑in prompt. See
     [System Prompt Override](../cli/system-prompt.md).
 - **`TERMINAI_WRITE_SYSTEM_MD`**:
   - Writes the current built‑in system prompt to a file for review.
-  - `true`/`1`: Write to `./.gemini/system.md`. Otherwise treat the value as a
+  - `true`/`1`: Write to `./.terminai/system.md`. Otherwise treat the value as a
     path.
   - Run the CLI once with this set to generate the file.
 - **`SEATBELT_PROFILE`** (macOS specific):
@@ -1225,15 +1226,15 @@ the `advanced.excludedEnvVars` setting in your `settings.json` file.
     operations.
   - `strict`: Uses a strict profile that declines operations by default.
   - `<profile_name>`: Uses a custom profile. To define a custom profile, create
-    a file named `sandbox-macos-<profile_name>.sb` in your project's `.gemini/`
-    directory (e.g., `my-project/.gemini/sandbox-macos-custom.sb`).
+    a file named `sandbox-macos-<profile_name>.sb` in your project's `.terminai/`
+    directory (e.g., `my-project/.terminai/sandbox-macos-custom.sb`).
 - **`DEBUG` or `DEBUG_MODE`** (often used by underlying libraries or the CLI
   itself):
   - Set to `true` or `1` to enable verbose debug logging, which can be helpful
     for troubleshooting.
   - **Note:** These variables are automatically excluded from project `.env`
     files by default to prevent interference with gemini-cli behavior. Use
-    `.gemini/.env` files if you need to set these for gemini-cli specifically.
+    `.terminai/.env` files if you need to set these for gemini-cli specifically.
 - **`NO_COLOR`**:
   - Set to any value to disable all color output in the CLI.
 - **`CLI_TITLE`**:
@@ -1401,7 +1402,7 @@ conventions and context.
   general). The exact concatenation order and final context can be inspected
   using the `/memory show` command. The typical loading order is:
   1.  **Global context file:**
-      - Location: `~/.gemini/<configured-context-filename>` (e.g.,
+      - Location: `~/.terminai/<configured-context-filename>` (e.g.,
         `~/.terminai/terminaI.md` in your user home directory).
       - Scope: Provides default instructions for all your projects.
   2.  **Project root and ancestors context files:**
@@ -1454,7 +1455,7 @@ Sandboxing is disabled by default, but you can enable it in a few ways:
 By default, it uses a pre-built `gemini-cli-sandbox` Docker image.
 
 For project-specific sandboxing needs, you can create a custom Dockerfile at
-`.gemini/sandbox.Dockerfile` in your project's root directory. This Dockerfile
+`.terminai/sandbox.Dockerfile` in your project's root directory. This Dockerfile
 can be based on the base sandbox image:
 
 ```dockerfile
@@ -1466,7 +1467,7 @@ FROM gemini-cli-sandbox
 # COPY ./my-config /app/my-config
 ```
 
-When `.gemini/sandbox.Dockerfile` exists, you can use `BUILD_SANDBOX`
+When `.terminai/sandbox.Dockerfile` exists, you can use `BUILD_SANDBOX`
 environment variable when running Gemini CLI to automatically build the custom
 sandbox image:
 

@@ -24,8 +24,11 @@ vi.mock('@terminai/a2a-server', () => ({
 }));
 
 describe('webRemoteServer', () => {
-  const originalEnvToken = process.env['GEMINI_WEB_REMOTE_TOKEN'];
-  const originalEnvOrigins = process.env['GEMINI_WEB_REMOTE_ALLOWED_ORIGINS'];
+  const originalEnvToken = process.env['TERMINAI_WEB_REMOTE_TOKEN'];
+  const originalEnvTokenLegacy = process.env['GEMINI_WEB_REMOTE_TOKEN'];
+  const originalEnvOrigins = process.env['TERMINAI_WEB_REMOTE_ALLOWED_ORIGINS'];
+  const originalEnvOriginsLegacy =
+    process.env['GEMINI_WEB_REMOTE_ALLOWED_ORIGINS'];
 
   beforeEach(() => {
     createAppSpy.mockReset();
@@ -34,18 +37,31 @@ describe('webRemoteServer', () => {
     loadRemoteAuthStateSpy.mockReset();
     saveRemoteAuthStateSpy.mockReset();
     getRemoteAuthPathSpy.mockClear();
+    delete process.env['TERMINAI_WEB_REMOTE_TOKEN'];
     delete process.env['GEMINI_WEB_REMOTE_TOKEN'];
+    delete process.env['TERMINAI_WEB_REMOTE_ALLOWED_ORIGINS'];
     delete process.env['GEMINI_WEB_REMOTE_ALLOWED_ORIGINS'];
   });
 
   afterEach(() => {
     if (originalEnvToken !== undefined) {
-      process.env['GEMINI_WEB_REMOTE_TOKEN'] = originalEnvToken;
+      process.env['TERMINAI_WEB_REMOTE_TOKEN'] = originalEnvToken;
+    } else {
+      delete process.env['TERMINAI_WEB_REMOTE_TOKEN'];
+    }
+    if (originalEnvTokenLegacy !== undefined) {
+      process.env['GEMINI_WEB_REMOTE_TOKEN'] = originalEnvTokenLegacy;
     } else {
       delete process.env['GEMINI_WEB_REMOTE_TOKEN'];
     }
     if (originalEnvOrigins !== undefined) {
-      process.env['GEMINI_WEB_REMOTE_ALLOWED_ORIGINS'] = originalEnvOrigins;
+      process.env['TERMINAI_WEB_REMOTE_ALLOWED_ORIGINS'] = originalEnvOrigins;
+    } else {
+      delete process.env['TERMINAI_WEB_REMOTE_ALLOWED_ORIGINS'];
+    }
+    if (originalEnvOriginsLegacy !== undefined) {
+      process.env['GEMINI_WEB_REMOTE_ALLOWED_ORIGINS'] =
+        originalEnvOriginsLegacy;
     } else {
       delete process.env['GEMINI_WEB_REMOTE_ALLOWED_ORIGINS'];
     }
@@ -94,6 +110,9 @@ describe('webRemoteServer', () => {
     expect(result.port).toBe(41242);
     expect(result.url).toMatch(
       /^http:\/\/127\.0\.0\.1:41242\/ui\?token=[0-9a-f]{64}$/,
+    );
+    expect(process.env['TERMINAI_WEB_REMOTE_ALLOWED_ORIGINS']).toBe(
+      'https://example.com',
     );
     expect(process.env['GEMINI_WEB_REMOTE_ALLOWED_ORIGINS']).toBe(
       'https://example.com',

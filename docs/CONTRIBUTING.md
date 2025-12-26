@@ -144,7 +144,7 @@ DEBUG=1 gemini
 ```
 
 **Note:** If you have `DEBUG=true` in a project's `.env` file, it won't affect
-gemini-cli due to automatic exclusion. Use `.gemini/.env` files for gemini-cli
+gemini-cli due to automatic exclusion. Use `.terminai/.env` files for gemini-cli
 specific debug settings.
 
 ### React DevTools
@@ -181,7 +181,7 @@ used for the CLI's interface, is compatible with React DevTools version 4.x.
 
 #### macOS Seatbelt
 
-On macOS, `gemini` uses Seatbelt (`sandbox-exec`) under a `permissive-open`
+On macOS, `terminai` uses Seatbelt (`sandbox-exec`) under a `permissive-open`
 profile (see `packages/cli/src/utils/sandbox-macos-permissive-open.sb`) that
 restricts writes to the project folder but otherwise allows all other operations
 and outbound network traffic ("open") by default. You can switch to a
@@ -192,8 +192,8 @@ operations and outbound network traffic ("closed") by default by setting
 Available built-in profiles are `{permissive,restrictive}-{open,closed,proxied}`
 (see below for proxied networking). You can also switch to a custom profile
 `SEATBELT_PROFILE=<profile>` if you also create a file
-`.gemini/sandbox-macos-<profile>.sb` under your project settings directory
-`.gemini`.
+`.terminai/sandbox-macos-<profile>.sb` under your project settings directory
+(`.terminai`; legacy `.gemini` is still read).
 
 #### Container-based sandboxing (all platforms)
 
@@ -213,10 +213,11 @@ as you start/stop Gemini CLI. Files created within the sandbox should be
 automatically mapped to your user/group on host machine. You can easily specify
 additional mounts, ports, or environment variables by setting
 `SANDBOX_{MOUNTS,PORTS,ENV}` as needed. You can also fully customize the sandbox
-for your projects by creating the files `.gemini/sandbox.Dockerfile` and/or
-`.gemini/sandbox.bashrc` under your project settings directory (`.gemini`) and
-running `gemini` with `BUILD_SANDBOX=1` to trigger building of your custom
-sandbox.
+for your projects by creating the files `.terminai/sandbox.Dockerfile` and/or
+`.terminai/sandbox.bashrc` under your project settings directory (`.terminai`;
+legacy `.gemini` is still read) and running `terminai` with `BUILD_SANDBOX=1`
+to trigger building of your custom sandbox (the `gemini` alias is still
+supported).
 
 #### Proxied networking
 
