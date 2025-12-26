@@ -297,8 +297,8 @@ defaults unchanged.
 **Design choice:** use an env var first (minimal UI/setting changes), then
 optionally a settings field.
 
-**Proposed env var:** `TERMINAI_GEMINI_BASE_URL` (or reuse `GEMINI_BASE_URL` if
-you prefer, but avoid ambiguous names).
+**Proposed env var:** `TERMINAI_BASE_URL` (or reuse `TERMINAI_BASE_URL` if you
+prefer, but avoid ambiguous names).
 
 **Files to edit:**
 

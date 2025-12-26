@@ -27,6 +27,7 @@ import {
   recordToolCallInteractions,
   ThinkingOrchestrator,
   BrainModelAdapter,
+  Logger,
 } from '@terminai/core';
 import { isSlashCommand } from './ui/utils/commandUtils.js';
 import type { LoadedSettings } from './config/settings.js';
@@ -251,11 +252,19 @@ export async function runNonInteractive({
         query = processedQuery as Part[];
       }
 
+      // Log full event for Phase 1
+      const logger = new Logger(config.getSessionId(), config.storage);
+      await logger.initialize();
+
       // Task 2.1: Hook Framework Selector / Thinking Orchestrator
       const orchestrator = new ThinkingOrchestrator(
         config,
         new BrainModelAdapter(geminiClient, config),
+        logger,
       );
+
+      await logger.logEventFull('user_prompt', { prompt: input });
+
       const brainResult = await orchestrator.executeTask(
         input,
         abortController.signal,

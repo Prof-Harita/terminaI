@@ -1,0 +1,906 @@
+[
+  {
+    "id": "APP_ISSUES_001",
+    "bucket": "Application Issues",
+    "sub_category": "Snap Sandboxing",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "GIMP (Snap)"
+    },
+    "interaction": {
+      "user_query": "I installed GIMP from the software store. When I try to save my image to my USB stick, the stick doesn't show up in the save dialog. But I can see it in my file manager!",
+      "ai_response": "This is a Snap sandbox restriction. By default, Snaps can't access removable media.\n\n**Fix:**\n```bash\nsudo snap connect gimp:removable-media\n```\n\n**Or use the GUI:**\n1. Open 'Ubuntu Software'\n2. Find GIMP in 'Installed' apps\n3. Click 'Permissions'\n4. Enable 'Read/write files on removable storage devices'\n\nThe USB drive should now appear in GIMP's file dialogs."
+    },
+    "technical_tags": ["snap", "sandboxing", "removable-media", "permissions"],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_002",
+    "bucket": "Application Issues",
+    "sub_category": "AppImage Dependencies",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "BalenaEtcher (AppImage)"
+    },
+    "interaction": {
+      "user_query": "I downloaded the BalenaEtcher AppImage. I made it executable, but when I double-click it, absolutely nothing happens. No error, nothing.",
+      "ai_response": "Ubuntu 24.04 (and 22.04+) does not install `libfuse2` by default, which AppImages require to run.\n\n**Fix:**\nInstall the required library:\n```bash\nsudo apt update\nsudo apt install libfuse2\n```\n\nTry running the AppImage again; it should launch immediately."
+    },
+    "technical_tags": ["appimage", "libfuse2", "dependencies", "ubuntu-24.04"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_003",
+    "bucket": "Application Issues",
+    "sub_category": "Flatpak Permissions",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "VLC (Flatpak)"
+    },
+    "interaction": {
+      "user_query": "I'm using VLC installed via Flatpak on Fedora. I can't seem to open video files that are stored on my second hard drive (/mnt/data).",
+      "ai_response": "Flatpaks are sandboxed and often only have access to your home folder by default. You need to grant access to the other drive.\n\n**Easiest Fix:**\nInstall **Flatseal** from the software center. Open it, select VLC, and add `/mnt/data` (or 'All System Files') to the **Filesystem** permissions.\n\n**Command Line Fix:**\n```bash\nflatpak override --user --filesystem=/mnt/data org.videolan.VLC\n```"
+    },
+    "technical_tags": ["flatpak", "flatseal", "permissions", "filesystem"],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_004",
+    "bucket": "Application Issues",
+    "sub_category": "Snap Performance",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox (Snap)"
+    },
+    "interaction": {
+      "user_query": "Why does Firefox take like 10 seconds to open on a cold boot? It's really annoying compared to Windows.",
+      "ai_response": "This is a known issue with the Snap version of Firefox, primarily due to decompression speed and initializing the sandbox environment on the first run.\n\n**Workarounds:**\n1. **Patience:** Subsequent launches are usually instant.\n2. **Switch to Deb:** You can replace the Snap with the official Mozilla PPA version or the standard .deb if you prefer faster cold starts, though Ubuntu defaults to Snap for security and updates."
+    },
+    "technical_tags": ["snap", "performance", "firefox", "slow-startup"],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_005",
+    "bucket": "Application Issues",
+    "sub_category": "Dependency Hell",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "External .deb"
+    },
+    "interaction": {
+      "user_query": "I'm trying to install a .deb file I downloaded for a printer driver. `dpkg -i` says 'dependency problems - leaving unconfigured'.",
+      "ai_response": "`dpkg` doesn't automatically download missing dependencies. You need to ask `apt` to fix the broken state.\n\n**Fix:**\nRun this command immediately after the failed install:\n```bash\nsudo apt --fix-broken install\n```\nThis will download the missing dependencies and complete the configuration of your printer driver."
+    },
+    "technical_tags": ["dpkg", "apt", "dependencies", "fix-broken"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_006",
+    "bucket": "Application Issues",
+    "sub_category": "Flatpak Theming",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Calculator (Flatpak)"
+    },
+    "interaction": {
+      "user_query": "I switched my system theme to Dark Mode, but my Flatpak apps (like Calculator) are still white and look ugly. How do I make them match?",
+      "ai_response": "Flatpaks don't always inherit the system GTK theme automatically if the theme isn't installed within the Flatpak environment.\n\n**Fix:**\n1. Install a matching Flatpak theme:\n```bash\nflatpak install org.gtk.Gtk3theme.Mint-Y-Dark\n```\n(Replace 'Mint-Y-Dark' with your specific theme name if found).\n\n2. Alternatively, install **Flatseal** and set the environment variable `GTK_THEME=Mint-Y-Dark` for the specific app."
+    },
+    "technical_tags": ["flatpak", "theming", "gtk", "dark-mode"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_007",
+    "bucket": "Application Issues",
+    "sub_category": "Discord Loop",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Discord (.deb)"
+    },
+    "interaction": {
+      "user_query": "Discord won't open. It just shows a grey box saying 'Update Available' but the deb file on the website is the same version I have!",
+      "ai_response": "Discord checks for updates on launch and blocks usage if outdated, but the repo is often slow to update.\n\n**Quick Fix (Edit Config):**\n1. Open `~/.config/discord/settings.json` in a text editor.\n2. Change `\"SKIP_HOST_UPDATE\": false` to `true` (add the line if missing).\n\n**Better Fix:**\nSwitch to the **Flatpak** or **Snap** version of Discord, as these are usually updated much faster than the .deb package."
+    },
+    "technical_tags": ["discord", "update-loop", "config", "workaround"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_008",
+    "bucket": "Application Issues",
+    "sub_category": "Snap Store Error",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "App Center"
+    },
+    "interaction": {
+      "user_query": "I can't update anything. The App Center says 'Unable to update snap-store: cannot refresh \"snap-store\": snap \"snap-store\" has running apps'.",
+      "ai_response": "The App Center (snap-store) cannot update itself while it is running.\n\n**Fix:**\nClose the App Center and run this in the terminal:\n```bash\nsudo killall snap-store\nsudo snap refresh snap-store\n```\nThis forcibly closes the store and updates it in the background."
+    },
+    "technical_tags": [
+      "snap",
+      "snap-store",
+      "update-failure",
+      "process-management"
+    ],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_009",
+    "bucket": "Application Issues",
+    "sub_category": "Steam Proton",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Steam"
+    },
+    "interaction": {
+      "user_query": "I enabled Proton for a Windows game on Steam, but when I click Play, it says 'Launching' then immediately stops. No error window.",
+      "ai_response": "This often happens if the game drive is formatted as NTFS (common if shared with Windows). Proton/Wine struggles with NTFS permissions on Linux.\n\n**Fix:**\n1. Ensure your NTFS drive is mounted with specific options (`uid`, `gid`, `mask`).\n2. **Easier Test:** Move the game to your Linux Home partition (EXT4/Btrfs) and try running it. If it works, the issue is the NTFS mount options."
+    },
+    "technical_tags": ["steam", "proton", "ntfs", "gaming"],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_010",
+    "bucket": "Application Issues",
+    "sub_category": "Repository Key Error",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "APT"
+    },
+    "interaction": {
+      "user_query": "I tried to run `apt update` but I get an error: 'The following signatures couldn't be verified because the public key is not available: NO_PUBKEY...'.",
+      "ai_response": "You have a repository added (probably for a third-party app like Spotify or Chrome) but are missing its GPG security key.\n\n**Fix:**\nCopy the key ID from the error (e.g., `ABC12345`) and run:\n```bash\nsudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys ABC12345\n```\n(Note: `apt-key` is deprecated but still works; the modern way is to download the .gpg key to `/etc/apt/trusted.gpg.d/`)."
+    },
+    "technical_tags": ["apt", "gpg", "keys", "repository"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_011",
+    "bucket": "Application Issues",
+    "sub_category": "Wayland Screen Sharing",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Zoom (Flatpak)"
+    },
+    "interaction": {
+      "user_query": "I can't share my screen on Zoom. The button works but the other person just sees a black screen. I'm on Fedora Workstation.",
+      "ai_response": "Fedora uses Wayland by default, which handles screen sharing differently than X11. Zoom (especially older versions) sometimes struggles with this.\n\n**Fix:**\n1. Log out.\n2. Click the gear icon on the login screen.\n3. Select **'GNOME on Xorg'**.\n4. Log in and try Zoom again.\n\nAlternatively, ensure you are using the Flatpak version of Zoom, which has better Portal support for Wayland screen sharing."
+    },
+    "technical_tags": ["wayland", "zoom", "screen-sharing", "xorg"],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_012",
+    "bucket": "Application Issues",
+    "sub_category": "AppImage Desktop Integration",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Krita (AppImage)"
+    },
+    "interaction": {
+      "user_query": "I use the Krita AppImage. It works great, but I hate navigating to my Downloads folder to run it. How do I put it in my start menu?",
+      "ai_response": "AppImages don't install themselves into the menu automatically.\n\n**Recommended Tool:**\nInstall **AppImageLauncher**. When you open an AppImage, it will ask if you want to 'Integrate and Run'. Click yes, and it will move the file to a central location and add a proper icon to your start menu."
+    },
+    "technical_tags": [
+      "appimage",
+      "desktop-integration",
+      "menu",
+      "appimagelauncher"
+    ],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_013",
+    "bucket": "Application Issues",
+    "sub_category": "PPA Add Error",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Terminal"
+    },
+    "interaction": {
+      "user_query": "I tried `sudo add-apt-repository ppa:some/ppa` on Debian but it says 'command not found'.",
+      "ai_response": "Debian does not support Ubuntu PPAs out of the box, and using them can break your system ('FrankenDebian'). `add-apt-repository` is not installed by default.\n\n**Advice:**\nAvoid using Ubuntu PPAs on Debian. Check if the software is available in the standard Debian repos, or use **Flatpak** or **Snap**, which are safer ways to get newer software on Debian."
+    },
+    "technical_tags": ["debian", "ppa", "add-apt-repository", "compatibility"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_014",
+    "bucket": "Application Issues",
+    "sub_category": "Snap Disk Usage",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Snapd"
+    },
+    "interaction": {
+      "user_query": "My root partition is full! I checked usage and `/var/lib/snapd` is taking up huge amounts of space. Can I delete it?",
+      "ai_response": "Snap keeps older versions of apps by default (usually 3 versions per app), which eats space. Do not delete the folder manually.\n\n**Fix:**\nReduce the retention limit to 2 versions:\n```bash\nsudo snap set system refresh.retain=2\n```\nThen clean up old revisions manually or wait for the system to purge them."
+    },
+    "technical_tags": ["snap", "disk-space", "cleanup", "maintenance"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_015",
+    "bucket": "Application Issues",
+    "sub_category": "Nvidia Drivers",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Drivers"
+    },
+    "interaction": {
+      "user_query": "I installed Ubuntu but my resolution is stuck at 800x600 and games are slow. I have an RTX 3060.",
+      "ai_response": "You are likely running on the generic 'Nouveau' drivers. You need the proprietary Nvidia drivers for proper performance.\n\n**Fix:**\n1. Open **'Software & Updates'**.\n2. Go to the **'Additional Drivers'** tab.\n3. Wait for the list to load, then select the option usually labeled **'Using NVIDIA driver metapackage... (proprietary, tested)'**.\n4. Click Apply Changes and reboot."
+    },
+    "technical_tags": ["nvidia", "drivers", "resolution", "gaming"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_016",
+    "bucket": "Application Issues",
+    "sub_category": "VS Code Permissions",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "VS Code (Flatpak)"
+    },
+    "interaction": {
+      "user_query": "I installed VS Code from Flathub. I'm trying to open a terminal inside VS Code to run `npm install`, but it says 'node: command not found'. I have Node installed on my system!",
+      "ai_response": "The Flatpak version of VS Code is sandboxed and cannot see the development tools (Node, Python, GCC) installed on your host system.\n\n**Fix:**\n1. Use the **Dev Containers** extension within VS Code to develop inside a container.\n2. **Or switch versions:** Uninstall the Flatpak and install the official RPM from Microsoft to get full access to your system's SDKs."
+    },
+    "technical_tags": ["vscode", "flatpak", "sdk-access", "development"],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_017",
+    "bucket": "Application Issues",
+    "sub_category": "File Manager Crash",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Nemo"
+    },
+    "interaction": {
+      "user_query": "Every time I open my 'Videos' folder, the file manager (Nemo) crashes and closes immediately.",
+      "ai_response": "This is usually caused by a bad thumbnail generator trying to preview a corrupt video file.\n\n**Troubleshooting:**\n1. Open a terminal and run `nemo` to see the error output when it crashes.\n2. **Fix:** Clear your thumbnail cache:\n```bash\nrm -rf ~/.cache/thumbnails/*\n```\nIf it persists, try to identify the corrupt file via command line and delete it."
+    },
+    "technical_tags": ["nemo", "crash", "thumbnails", "corrupt-file"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_018",
+    "bucket": "Application Issues",
+    "sub_category": "Python Version Conflict",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Python Pip"
+    },
+    "interaction": {
+      "user_query": "I tried to `pip install requests` but I get 'EnvironmentError: Externally-managed-environment'. What does this mean?",
+      "ai_response": "Newer Linux distros prevent you from running `pip install` globally to avoid breaking system packages.\n\n**Fix:**\nUse a virtual environment (recommended):\n```bash\npython3 -m venv myenv\nsource myenv/bin/activate\npip install requests\n```\nOr use `pipx` for installing command-line tools: `sudo apt install pipx`."
+    },
+    "technical_tags": ["python", "pip", "pep668", "virtualenv"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_019",
+    "bucket": "Application Issues",
+    "sub_category": "Wine Prefix",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Wine"
+    },
+    "interaction": {
+      "user_query": "I messed up my Wine settings trying to install Photoshop. How do I completely reset Wine to default?",
+      "ai_response": "Wine stores all its configuration and virtual C: drive in a hidden folder called `.wine`.\n\n**Fix:**\nDelete the folder (make sure to back up any saved data inside it first):\n```bash\nrm -rf ~/.wine\n```\nThe next time you run `winecfg` or a Windows app, it will regenerate a fresh, clean prefix."
+    },
+    "technical_tags": ["wine", "reset", "configuration", "prefix"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_020",
+    "bucket": "Application Issues",
+    "sub_category": "Browser Hardware Acceleration",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "Watching YouTube in Chrome uses 80% CPU and makes my laptop hot. It runs fine on Windows.",
+      "ai_response": "Hardware video acceleration might not be enabled by default in Chrome on Linux.\n\n**Fix:**\n1. Go to `chrome://flags`.\n2. Search for \"Video Decode\" and set it to **Enabled**.\n3. Search for \"Ozone Platform\" and try setting it to **Auto** or **Wayland** (if using Wayland).\n4. Restart Chrome and check CPU usage again."
+    },
+    "technical_tags": ["chrome", "hardware-acceleration", "cpu-usage", "video"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_101",
+    "bucket": "Application Issues",
+    "sub_category": "Locked Apt Database",
+    "complexity": "Beginner",
+    "user_persona": "Frustrated User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "APT"
+    },
+    "interaction": {
+      "user_query": "I'm trying to install software but I keep getting 'Could not get lock /var/lib/dpkg/lock-frontend'. I rebooted and it's STILL happening! HELP!",
+      "ai_response": "This happens if an update process crashed or is running in the background (like 'Unattended Upgrades').\n\n**Fix:**\n1. Ensure no other update windows are open.\n2. If sure nothing is running, remove the lock:\n```bash\nsudo rm /var/lib/dpkg/lock-frontend\nsudo rm /var/lib/dpkg/lock\nsudo dpkg --configure -a\n```"
+    },
+    "technical_tags": ["apt", "lock-file", "troubleshooting", "error"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_102",
+    "bucket": "Application Issues",
+    "sub_category": "AUR Build Failure",
+    "complexity": "Intermediate",
+    "user_persona": "Frustrated User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Yay / AUR"
+    },
+    "interaction": {
+      "user_query": "Trying to update with `yay` and it fails every time on 'libfoo'. Error: 'One or more PGP signatures could not be verified'. Why is Arch so broken?",
+      "ai_response": "The PGP keys required to build that package aren't in your keyring. This is a security feature, not a bug.\n\n**Fix:**\nImport the missing key (the error usually lists the GPG key ID):\n```bash\ngpg --recv-keys [KEY_ID]\n```\nThen run `yay` again."
+    },
+    "technical_tags": ["arch", "aur", "pgp", "yay", "build-error"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_103",
+    "bucket": "Application Issues",
+    "sub_category": "Flatpak Font Issue",
+    "complexity": "Intermediate",
+    "user_persona": "Frustrated User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "LibreOffice (Flatpak)"
+    },
+    "interaction": {
+      "user_query": "I have a bunch of custom fonts installed in my home folder `.fonts`, but LibreOffice Flatpak can't see ANY of them. It only shows basic system fonts.",
+      "ai_response": "Flatpaks don't always have access to the hidden `~/.fonts` or `~/.local/share/fonts` directories by default.\n\n**Fix:**\nGrant read access to your font folder:\n```bash\nflatpak override --user --filesystem=~/.local/share/fonts org.libreoffice.LibreOffice\n```\nOr use **Flatseal** to add the path globally to 'All Applications'."
+    },
+    "technical_tags": ["flatpak", "fonts", "permissions", "libreoffice"],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_104",
+    "bucket": "Application Issues",
+    "sub_category": "AppImage No Icon",
+    "complexity": "Beginner",
+    "user_persona": "Frustrated User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Standard Notes (AppImage)"
+    },
+    "interaction": {
+      "user_query": "I love AppImages but I hate that they look like a generic gear icon in my dock. How do I fix the ugly icon without hacking text files?",
+      "ai_response": "If you don't use a launcher tool, the system just sees a generic binary.\n\n**Manual Fix:**\nCreate a `.desktop` file in `~/.local/share/applications/`.\n\n**Better Fix:**\nJust install **AppImageLauncher**. It automatically extracts the icon embedded in the AppImage and sets it up correctly in your dock and menu."
+    },
+    "technical_tags": ["appimage", "icons", "desktop-entry", "aesthetics"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_105",
+    "bucket": "Application Issues",
+    "sub_category": "Snap Firefox Download Fail",
+    "complexity": "Beginner",
+    "user_persona": "Frustrated User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox (Snap)"
+    },
+    "interaction": {
+      "user_query": "I tried to save a PDF to my `/tmp` folder from Firefox and it failed. It says 'Permission denied'. It's my own computer!",
+      "ai_response": "Snaps use a private `/tmp` directory for security isolation. They cannot see the system's global `/tmp`.\n\n**Fix:**\nSave the file to your **Downloads** or **Home** folder instead. If you absolutely need to use `/tmp`, you'd have to use a non-Snap browser, but changing the save location is much safer and easier."
+    },
+    "technical_tags": ["snap", "firefox", "permissions", "tmp-directory"],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_201",
+    "bucket": "Application Issues",
+    "sub_category": "Installing Flatseal",
+    "complexity": "Beginner",
+    "user_persona": "Curious User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Flatseal"
+    },
+    "interaction": {
+      "user_query": "Everyone keeps mentioning Flatseal to fix permissions. How do I actually install it on Ubuntu?",
+      "ai_response": "Flatseal is itself a Flatpak app. If you haven't enabled Flatpak on Ubuntu yet:\n\n1. **Enable Flatpak:**\n   ```bash\n   sudo apt install flatpak\n   ```\n2. **Add Flathub Repo:**\n   ```bash\n   flatpak remote-add --if-not-exists flathub [https://flathub.org/repo/flathub.flatpakrepo](https://flathub.org/repo/flathub.flatpakrepo)\n   ```\n3. **Install Flatseal:**\n   ```bash\n   flatpak install flathub com.github.tchx84.Flatseal\n   ```\nOnce installed, launch it from your apps menu."
+    },
+    "technical_tags": ["flatseal", "installation", "guide", "setup"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_202",
+    "bucket": "Application Issues",
+    "sub_category": "Verify ISO Checksum",
+    "complexity": "Intermediate",
+    "user_persona": "Security Conscious",
+    "system_context": {
+      "distro": "Any Linux",
+      "app_version": "Terminal"
+    },
+    "interaction": {
+      "user_query": "I downloaded a Linux ISO but I want to make sure it's not corrupted before I burn it. How do I check the SHA256 sum?",
+      "ai_response": "1. Open a terminal in the folder where the ISO is.\n2. Run this command:\n   ```bash\n   sha256sum filename.iso\n   ```\n3. Compare the long string of text it outputs with the SHA256 hash provided on the website where you downloaded it. If they match exactly, the file is good."
+    },
+    "technical_tags": ["sha256", "verification", "security", "terminal"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_203",
+    "bucket": "Application Issues",
+    "sub_category": "Switching from Snap to Deb",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I want to remove the Firefox Snap and install the classic .deb version. What is the correct way to do this so Ubuntu doesn't reinstall the Snap automatically?",
+      "ai_response": "1. **Remove the Snap:**\n   ```bash\n   sudo snap remove firefox\n   ```\n2. **Add the Mozilla PPA:**\n   ```bash\n   sudo add-apt-repository ppa:mozillateam/ppa\n   ```\n3. **Prioritize the PPA:**\n   Create a file at `/etc/apt/preferences.d/mozilla-firefox` with:\n   ```\n   Package: firefox*\n   Pin: release o=LP-PPA-mozillateam\n   Pin-Priority: 1001\n   ```\n4. **Install:** `sudo apt install firefox`"
+    },
+    "technical_tags": ["firefox", "apt-pinning", "ppa", "replacement"],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_204",
+    "bucket": "Application Issues",
+    "sub_category": "Make AppImage Executable",
+    "complexity": "Beginner",
+    "user_persona": "Newcomer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "File Manager"
+    },
+    "interaction": {
+      "user_query": "I downloaded a file ending in .AppImage. How do I run it? Double clicking does nothing.",
+      "ai_response": "AppImages are not executable by default for security.\n\n**GUI Method:**\n1. Right-click the file -> **Properties**.\n2. Go to the **Permissions** tab.\n3. Check the box **'Allow executing file as program'**.\n4. Close and double-click to run.\n\n**Terminal Method:**\n```bash\nchmod +x application.AppImage\n./application.AppImage\n```"
+    },
+    "technical_tags": ["appimage", "permissions", "chmod", "basics"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_301",
+    "bucket": "Application Issues",
+    "sub_category": "Snap vs Flatpak Spotify",
+    "complexity": "Intermediate",
+    "user_persona": "Music Lover",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Spotify"
+    },
+    "interaction": {
+      "user_query": "I want to install Spotify. Should I use the Snap version that comes with Ubuntu or set up Flatpak? Which one works better?",
+      "ai_response": "Both are official/verified, but they have slight differences:\n\n* **Snap:** Pre-installed backend on Ubuntu, so it's 'click and install'. Sometimes slower to launch. Integrates well with Ubuntu media keys.\n* **Flatpak:** Often has slightly faster startup times. Sandbox permissions are easier to manage with Flatseal.\n\n**Recommendation:** Stick with **Snap** on Ubuntu for simplicity unless you notice slow startup speeds, then try Flatpak."
+    },
+    "technical_tags": [
+      "spotify",
+      "comparison",
+      "snap-vs-flatpak",
+      "recommendation"
+    ],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_302",
+    "bucket": "Application Issues",
+    "sub_category": "Steam Native vs Runtime",
+    "complexity": "Intermediate",
+    "user_persona": "Gamer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Steam"
+    },
+    "interaction": {
+      "user_query": "On Arch, I see `steam` and `steam-native-runtime`. Which one should I be using for the least amount of headaches?",
+      "ai_response": "**Use `steam` (The Runtime).**\n\nThe standard Steam Runtime bundles its own libraries (Ubuntu-based) to ensure games run as developers intended. `steam-native-runtime` forces Steam to use your system's Arch libraries, which can break older games or cause compatibility issues whenever Arch updates system packages. Only use Native if the Runtime fails."
+    },
+    "technical_tags": ["steam", "arch", "native-runtime", "gaming"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_303",
+    "bucket": "Application Issues",
+    "sub_category": "Best Video Editor Install",
+    "complexity": "Beginner",
+    "user_persona": "Content Creator",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Kdenlive"
+    },
+    "interaction": {
+      "user_query": "I want to install Kdenlive. The version in `apt` seems old. Should I use Snap, Flatpak, or AppImage?",
+      "ai_response": "**Recommendation: AppImage or Flatpak.**\n\n* **AppImage:** The Kdenlive team officially recommends this. You download one file, it contains the exact dependencies they tested, and it doesn't touch your system.\n* **Flatpak:** Also very well maintained and auto-updates.\n* **Apt:** usually outdated on LTS releases.\n\nGo with the **AppImage** from their website for the most stable experience."
+    },
+    "technical_tags": ["kdenlive", "versioning", "appimage", "recommendation"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_401",
+    "bucket": "Application Issues",
+    "sub_category": "Auto-Remove Dependencies",
+    "complexity": "Beginner",
+    "user_persona": "Efficiency Nut",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "APT"
+    },
+    "interaction": {
+      "user_query": "I uninstalled a bunch of apps, but I think they left a lot of unused libraries behind. What's the command to clean that up?",
+      "ai_response": "Use the autoremove command:\n\n```bash\nsudo apt autoremove\n```\n\nThis scans for packages that were installed as dependencies for other apps but are no longer needed by anything on your system and removes them to free up space."
+    },
+    "technical_tags": ["apt", "cleanup", "autoremove", "maintenance"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_402",
+    "bucket": "Application Issues",
+    "sub_category": "Update All Flatpaks",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Flatpak"
+    },
+    "interaction": {
+      "user_query": "Is there a single command to update all my Flatpaks at once without opening the software center?",
+      "ai_response": "Yes, simply run:\n\n```bash\nflatpak update\n```\n\nIt will list all available updates for your installed Flatpaks and runtimes and ask for confirmation (press Y)."
+    },
+    "technical_tags": ["flatpak", "updates", "cli", "maintenance"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_403",
+    "bucket": "Application Issues",
+    "sub_category": "Alias for AppImages",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Bash"
+    },
+    "interaction": {
+      "user_query": "I have an AppImage I use daily. I'm tired of typing the full path `./Downloads/app-v1.2.3.AppImage`. How can I make a shortcut command?",
+      "ai_response": "Add an alias to your shell configuration.\n\n1. Open `.bashrc` (or `.zshrc`):\n   ```bash\n   nano ~/.bashrc\n   ```\n2. Add this line at the bottom:\n   ```bash\n   alias myapp='/home/username/Downloads/app-v1.2.3.AppImage'\n   ```\n3. Save and reload:\n   ```bash\n   source ~/.bashrc\n   ```\nNow just type `myapp` to launch it."
+    },
+    "technical_tags": ["alias", "bash", "productivity", "terminal"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_404",
+    "bucket": "Application Issues",
+    "sub_category": "Clean Snap Cache",
+    "complexity": "Intermediate",
+    "user_persona": "Disk Space Saver",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Snapd"
+    },
+    "interaction": {
+      "user_query": "I noticed `/var/lib/snapd/cache` is huge. Is there a safe way to clean up old snap download data?",
+      "ai_response": "Yes, you don't need the cached download files once the snaps are installed.\n\n**Cleanup Command:**\nThere isn't a native `snap clean` command, but you can safely remove the cache files:\n```bash\nsudo rm /var/lib/snapd/cache/*\n```\nThis does not remove installed apps, just the downloaded `.snap` files used for installation."
+    },
+    "technical_tags": ["snap", "cleanup", "cache", "maintenance"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_405",
+    "bucket": "Application Issues",
+    "sub_category": "Kill Unresponsive App",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "System"
+    },
+    "interaction": {
+      "user_query": "My web browser is completely frozen and won't close when I click X. How do I force kill it without restarting the computer?",
+      "ai_response": "**Method 1: xkill**\n1. Open a terminal.\n2. Type `xkill` and press Enter.\n3. Your cursor will turn into an X. Click the frozen window to kill it instantly.\n\n**Method 2: System Monitor**\nOpen 'System Monitor', find the browser process, right-click it, and select 'Kill Process'."
+    },
+    "technical_tags": [
+      "xkill",
+      "frozen-app",
+      "troubleshooting",
+      "process-management"
+    ],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_406",
+    "bucket": "Application Issues",
+    "sub_category": "Automated Updates",
+    "complexity": "Intermediate",
+    "user_persona": "Set and Forget",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Unattended Upgrades"
+    },
+    "interaction": {
+      "user_query": "I want my Debian server to install security updates automatically so I don't have to remember.",
+      "ai_response": "Install the **unattended-upgrades** package:\n\n```bash\nsudo apt install unattended-upgrades\nsudo dpkg-reconfigure -plow unattended-upgrades\n```\n\nSelect 'Yes' when prompted. It will now check for and install security updates daily automatically."
+    },
+    "technical_tags": ["automation", "security", "updates", "server"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_407",
+    "bucket": "Application Issues",
+    "sub_category": "Check GPU Usage",
+    "complexity": "Intermediate",
+    "user_persona": "Gamer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Nvidia Settings"
+    },
+    "interaction": {
+      "user_query": "How do I check if my game is actually using my Nvidia GPU and not the integrated graphics?",
+      "ai_response": "**Command Line:**\nRun `nvidia-smi`. It lists all processes currently running on the GPU.\n\n**GUI:**\nOpen **NVIDIA X Server Settings**. If you see your game listed in the processes or GPU utilization goes up when the game is running, it's working."
+    },
+    "technical_tags": ["nvidia", "monitoring", "gpu", "gaming"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_408",
+    "bucket": "Application Issues",
+    "sub_category": "Flatpak Orphan Removal",
+    "complexity": "Intermediate",
+    "user_persona": "Efficiency Nut",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Flatpak"
+    },
+    "interaction": {
+      "user_query": "I uninstalled a bunch of Flatpak games. Do they leave unused runtimes (like older GL drivers) behind?",
+      "ai_response": "Yes, Flatpak keeps runtimes that were dependencies. To remove runtimes that are no longer used by any installed app:\n\n```bash\nflatpak uninstall --unused\n```\n\nThis is similar to `apt autoremove` but for Flatpaks."
+    },
+    "technical_tags": ["flatpak", "cleanup", "unused-runtimes", "maintenance"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_409",
+    "bucket": "Application Issues",
+    "sub_category": "Debian Backports",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "APT"
+    },
+    "interaction": {
+      "user_query": "I need a newer kernel for my wifi card but I want to stay on Debian Stable. How do I get it?",
+      "ai_response": "Enable the **Backports** repository.\n\n1. Add this to `/etc/apt/sources.list`:\n   `deb http://deb.debian.org/debian bookworm-backports main`\n2. Update:\n   `sudo apt update`\n3. Install the newer kernel:\n   `sudo apt install -t bookworm-backports linux-image-amd64`"
+    },
+    "technical_tags": ["debian", "backports", "kernel", "newer-software"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_410",
+    "bucket": "Application Issues",
+    "sub_category": "Grub Timeout",
+    "complexity": "Intermediate",
+    "user_persona": "Impatience",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "GRUB"
+    },
+    "interaction": {
+      "user_query": "The boot menu (Grub) sits there for 10 seconds every time I turn on my PC. How do I make it faster?",
+      "ai_response": "1. Edit the config file:\n   ```bash\n   sudo nano /etc/default/grub\n   ```\n2. Change `GRUB_TIMEOUT=10` to `GRUB_TIMEOUT=2` (don't set to 0 or it's hard to access recovery).\n3. Apply changes:\n   ```bash\n   sudo update-grub\n   ```"
+    },
+    "technical_tags": ["grub", "boot-time", "config", "efficiency"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_411",
+    "bucket": "Application Issues",
+    "sub_category": "Missing libssl1.1",
+    "complexity": "Advanced",
+    "user_persona": "Frustrated User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Legacy App"
+    },
+    "interaction": {
+      "user_query": "I'm trying to run an older proprietary app and it says 'error while loading shared libraries: libssl.so.1.1'. I tried apt install libssl1.1 but it's not found!",
+      "ai_response": "Ubuntu 22.04 moved to OpenSSL 3.0, so `libssl1.1` is deprecated and removed from official repos.\n\n**Fix:**\nYou must download the `.deb` from the older Ubuntu 20.04 (Focal) security repo manually:\n1. Download `libssl1.1_1.1.1f..._amd64.deb` from security.ubuntu.com.\n2. Install it: `sudo dpkg -i libssl1.1*.deb`"
+    },
+    "technical_tags": ["libssl", "dependency-hell", "legacy", "manual-install"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_412",
+    "bucket": "Application Issues",
+    "sub_category": "AppImage FUSE Error",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Osu! (AppImage)"
+    },
+    "interaction": {
+      "user_query": "I'm getting 'dlopen(): error loading libfuse.so.2: AppImages require FUSE to run'. I already installed `fuse3`!",
+      "ai_response": "AppImages specifically rely on the older FUSE 2 interface, not FUSE 3 (which is default on 24.04).\n\n**Fix:**\nYou need the specific library:\n```bash\nsudo apt install libfuse2\n```\n(Note: In some newer contexts it might be `libfuse2t64`, but usually `libfuse2` pulls the right package)."
+    },
+    "technical_tags": ["appimage", "libfuse2", "compatibility", "error"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_413",
+    "bucket": "Application Issues",
+    "sub_category": "Repository 404 Error",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 23.10",
+      "app_version": "APT"
+    },
+    "interaction": {
+      "user_query": "I haven't used this laptop in a year. I ran `apt update` and everything is 404 Not Found. Is my internet broken?",
+      "ai_response": "If you are on an old non-LTS release (like 23.10), it has reached 'End of Life' (EOL) and the repositories have been moved to the archives.\n\n**Fix:**\nYou need to upgrade to a supported release. Since `apt` is broken, you must edit `/etc/apt/sources.list` and change all URLs from `archive.ubuntu.com` to `old-releases.ubuntu.com`, then run `apt update` and `do-release-upgrade`."
+    },
+    "technical_tags": ["eol", "repositories", "upgrade", "404"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_414",
+    "bucket": "Application Issues",
+    "sub_category": "File Permission Denied",
+    "complexity": "Beginner",
+    "user_persona": "Newcomer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Bash"
+    },
+    "interaction": {
+      "user_query": "I copied a file from my friend's USB drive to my desktop, but I can't edit it. It says 'Read-only'.",
+      "ai_response": "You likely don't own the file permissions.\n\n**Fix:**\nTake ownership of the file:\n```bash\nsudo chown $USER:$USER ~/Desktop/filename.txt\n```\nThen ensure you have write access:\n```bash\nchmod +w ~/Desktop/filename.txt\n```"
+    },
+    "technical_tags": ["permissions", "chown", "chmod", "file-management"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_415",
+    "bucket": "Application Issues",
+    "sub_category": "Flatpak Apps Not in Menu",
+    "complexity": "Intermediate",
+    "user_persona": "Frustrated User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Flatpak"
+    },
+    "interaction": {
+      "user_query": "I installed apps with `flatpak install`, and they run from the terminal, but they aren't showing up in my Gnome Application menu.",
+      "ai_response": "This happens if the environment paths aren't set correctly after installing Flatpak, often requiring a log out.\n\n**Fix:**\n1. Log out and log back in.\n2. If they still don't appear, ensure the export path is correct:\n   `export XDG_DATA_DIRS=\"$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share\"`"
+    },
+    "technical_tags": ["flatpak", "menu", "environment-variables", "xdg"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_416",
+    "bucket": "Application Issues",
+    "sub_category": "Login Loop",
+    "complexity": "Advanced",
+    "user_persona": "Panic Mode",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Gnome"
+    },
+    "interaction": {
+      "user_query": "I type my password, the screen goes black, and then it brings me right back to the login screen. I can't get to my desktop!",
+      "ai_response": "This 'Login Loop' is often caused by a botched driver install or a permissions error in your home directory.\n\n**Fix:**\n1. Press `Ctrl+Alt+F3` to get a terminal.\n2. Login.\n3. Check ownership of `.Xauthority`:\n   ```bash\n   ls -l .Xauthority\n   ```\n   If it says `root`, change it back to you:\n   ```bash\n   sudo chown $USER:$USER .Xauthority\n   ```\n4. Reboot."
+    },
+    "technical_tags": ["login-loop", "xauthority", "permissions", "crash"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_417",
+    "bucket": "Application Issues",
+    "sub_category": "Sound Output Missing",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Pipewire"
+    },
+    "interaction": {
+      "user_query": "I plugged in my HDMI monitor but the sound is still coming from my laptop speakers. It doesn't switch automatically.",
+      "ai_response": "You need to manually select the output device.\n\n**Fix:**\n1. Open **Settings** -> **Sound**.\n2. Under **Output Device**, click the dropdown (or list) and select 'HDMI / DisplayPort'.\n3. Adjust the volume slider to ensure it's not muted."
+    },
+    "technical_tags": ["sound", "pipewire", "hdmi", "settings"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_418",
+    "bucket": "Application Issues",
+    "sub_category": "Default Browser Stickiness",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "I set Chrome as default in Chrome's settings, but when I click links in email, Firefox still opens.",
+      "ai_response": "Linux desktop environments handle default apps separately from the browser's internal settings.\n\n**Fix:**\n1. Open system **Settings**.\n2. Go to **Default Applications**.\n3. Change **Web** from Firefox to Google Chrome."
+    },
+    "technical_tags": ["default-apps", "browser", "settings", "gnome"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_419",
+    "bucket": "Application Issues",
+    "sub_category": "Dual Boot Time Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Dual Booter",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "System Clock"
+    },
+    "interaction": {
+      "user_query": "Every time I switch from Windows to Linux, my clock is wrong by exactly 5 hours.",
+      "ai_response": "Linux stores time in UTC on the motherboard; Windows stores it in Local Time.\n\n**Fix:**\nTell Linux to use Local Time to match Windows:\n```bash\ntimedatectl set-local-rtc 1 --adjust-system-clock\n```"
+    },
+    "technical_tags": ["time", "dual-boot", "windows", "timedatectl"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_420",
+    "bucket": "Application Issues",
+    "sub_category": "Corrupted Snap",
+    "complexity": "Intermediate",
+    "user_persona": "Frustrated User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Snapd"
+    },
+    "interaction": {
+      "user_query": "I can't run or refresh any snaps. I get 'cannot communicate with server: Post ... dial unix /run/snapd.socket: connect: connection refused'.",
+      "ai_response": "The Snap daemon (`snapd`) has crashed or is not running.\n\n**Fix:**\nRestart the service:\n```bash\nsudo systemctl restart snapd\n```\nIf that fails, check status:\n```bash\nsystemctl status snapd\n```"
+    },
+    "technical_tags": ["snapd", "service", "crash", "systemctl"],
+    "friction_type": "user_error"
+  }
+]

@@ -150,7 +150,7 @@ This results in the following merged configuration:
   - **Linux**: `/etc/gemini-cli/settings.json`
   - **Windows**: `C:\ProgramData\gemini-cli\settings.json`
   - **macOS**: `/Library/Application Support/GeminiCli/settings.json`
-  - The path can be overridden using the `GEMINI_CLI_SYSTEM_SETTINGS_PATH`
+  - The path can be overridden using the `TERMINAI_CLI_SYSTEM_SETTINGS_PATH`
     environment variable.
 - **Control**: This file should be managed by system administrators and
   protected with appropriate file permissions to prevent unauthorized
@@ -161,7 +161,7 @@ configuration patterns described below.
 
 ### Enforcing system settings with a wrapper script
 
-While the `GEMINI_CLI_SYSTEM_SETTINGS_PATH` environment variable provides
+While the `TERMINAI_CLI_SYSTEM_SETTINGS_PATH` environment variable provides
 flexibility, a user could potentially override it to point to a different
 settings file, bypassing the centrally managed configuration. To mitigate this,
 enterprises can deploy a wrapper script or alias that ensures the environment
@@ -181,23 +181,23 @@ that appears earlier in the user's `PATH` than the actual Gemini CLI binary
 
 # Enforce the path to the corporate system settings file.
 # This ensures that the company's configuration is always applied.
-export GEMINI_CLI_SYSTEM_SETTINGS_PATH="/etc/gemini-cli/settings.json"
+export TERMINAI_CLI_SYSTEM_SETTINGS_PATH="/etc/gemini-cli/settings.json"
 
-# Find the original gemini executable.
+# Find the original terminai executable.
 # This is a simple example; a more robust solution might be needed
 # depending on the installation method.
-REAL_GEMINI_PATH=$(type -aP gemini | grep -v "^$(type -P gemini)$" | head -n 1)
+REAL_TERMINAI_PATH=$(type -aP gemini | grep -v "^$(type -P gemini)$" | head -n 1)
 
-if [ -z "$REAL_GEMINI_PATH" ]; then
+if [ -z "$REAL_TERMINAI_PATH" ]; then
   echo "Error: The original 'gemini' executable was not found." >&2
   exit 1
 fi
 
 # Pass all arguments to the real Gemini CLI executable.
-exec "$REAL_GEMINI_PATH" "$@"
+exec "$REAL_TERMINAI_PATH" "$@"
 ```
 
-By deploying this script, the `GEMINI_CLI_SYSTEM_SETTINGS_PATH` is set within
+By deploying this script, the `TERMINAI_CLI_SYSTEM_SETTINGS_PATH` is set within
 the script's environment, and the `exec` command replaces the script process
 with the actual Gemini CLI process, which inherits the environment variable.
 This makes it significantly more difficult for a user to bypass the enforced

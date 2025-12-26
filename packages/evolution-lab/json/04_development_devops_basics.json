@@ -1,0 +1,432 @@
+[
+  {
+    "id": "DEV_DEVOPS_001",
+    "bucket": "Development & DevOps",
+    "sub_category": "Docker",
+    "complexity": "Beginner",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Docker 26.0"
+    },
+    "interaction": {
+      "user_query": "I just installed Docker on Ubuntu 24.04. Every time I run `docker ps`, I get 'permission denied while trying to connect to the Docker daemon socket'. I don't want to use sudo for every command.",
+      "ai_response": "The error occurs because the Docker daemon socket is owned by `root`, and other users can only access it via the `docker` group.\n\n**Fix:**\n1. Add your user to the docker group:\n   ```bash\n   sudo usermod -aG docker $USER\n   ```\n2. **Log out and log back in** (or restart) to apply group membership changes.\n\n**Verification:**\n```bash\ngroups # Should output 'docker'\ndocker run hello-world\n```"
+    },
+    "technical_tags": ["docker", "permissions", "usermod", "daemon"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_002",
+    "bucket": "Development & DevOps",
+    "sub_category": "Git",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Git 2.44"
+    },
+    "interaction": {
+      "user_query": "I'm trying to push to a private GitHub repo over HTTPS, but I keep getting `Support for password authentication was removed`. I typed my GitHub password correctly.",
+      "ai_response": "GitHub removed support for account passwords over HTTPS in 2021. You must use a Personal Access Token (PAT) or switch to SSH.\n\n**Solution (PAT):**\n1. Go to GitHub Settings -> Developer Settings -> Personal Access Tokens -> Tokens (classic).\n2. Generate a token with `repo` scope.\n3. When `git push` prompts for a password, paste the **token** instead of your account password.\n\n**Better Long-term Fix (Credential Helper):**\n```bash\ngit config --global credential.helper store\n# The next time you push, it will save the token.\n```"
+    },
+    "technical_tags": ["git", "authentication", "github", "https"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "DEV_DEVOPS_003",
+    "bucket": "Development & DevOps",
+    "sub_category": "PostgreSQL",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "PostgreSQL 16"
+    },
+    "interaction": {
+      "user_query": "I installed Postgres 16 on my Debian server. I can connect locally, but when I try to connect from my laptop using pgAdmin, I get 'Connection refused'. The firewall is open on port 5432.",
+      "ai_response": "By default, PostgreSQL listens only on `localhost`. You need to modify two configuration files.\n\n**1. Edit `postgresql.conf`:**\n```bash\nsudo nano /etc/postgresql/16/main/postgresql.conf\n```\nChange `listen_addresses = 'localhost'` to `listen_addresses = '*'`.\n\n**2. Edit `pg_hba.conf`:**\n```bash\nsudo nano /etc/postgresql/16/main/pg_hba.conf\n```\nAdd this line to allow external IPv4 connections (replace `0.0.0.0/0` with your specific IP for security):\n`host    all             all             0.0.0.0/0            scram-sha-256`\n\n**3. Restart:**\n```bash\nsudo systemctl restart postgresql\n```"
+    },
+    "technical_tags": ["postgresql", "networking", "config", "pg_hba"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_004",
+    "bucket": "Development & DevOps",
+    "sub_category": "SSH",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "OpenSSH 9.7"
+    },
+    "interaction": {
+      "user_query": "I have an SSH key pair generated. I copied the public key to the server using `ssh-copy-id`. However, it still asks for a password when I login. `UsePAM` is yes in sshd_config.",
+      "ai_response": "This is usually a permissions issue on the server side. SSH is strict about file ownership and modes.\n\n**Fix on Server:**\nCheck permissions for the `.ssh` directory and `authorized_keys` file.\n```bash\nchmod 700 ~/.ssh\nchmod 600 ~/.ssh/authorized_keys\nchown -R $USER:$USER ~/.ssh\n```\n\nAlso, ensure `/etc/ssh/sshd_config` has:\n`PubkeyAuthentication yes`\n\nRestart sshd if you changed the config:\n`sudo systemctl restart sshd`"
+    },
+    "technical_tags": ["ssh", "permissions", "chmod", "authentication"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_005",
+    "bucket": "Development & DevOps",
+    "sub_category": "Python",
+    "complexity": "Beginner",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Python 3.10"
+    },
+    "interaction": {
+      "user_query": "I tried to run `pip install requests` but got an 'externally-managed-environment' error. I just want to install a package for a quick script.",
+      "ai_response": "Newer Linux distributions prevent global pip installs to avoid conflicting with system package managers (apt). You should use a virtual environment.\n\n**Recommended approach:**\n```bash\npython3 -m venv myenv\nsource myenv/bin/activate\npip install requests\n```\n\n**Alternative (User install):**\nIf you really need it for your user without a venv (not recommended for dev projects):\n```bash\npip install requests --break-system-packages\n```\n*(Note: Avoid this if possible; stick to venv)*."
+    },
+    "technical_tags": ["python", "pip", "virtualenv", "pep668"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "DEV_DEVOPS_101",
+    "bucket": "Development & DevOps",
+    "sub_category": "Docker",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Docker Compose v2"
+    },
+    "interaction": {
+      "user_query": "I'm running `docker compose up -d`. The container starts but exits immediately with code 0. `docker logs` is empty. How do I debug a silent exit?",
+      "ai_response": "A container exiting with code 0 means the main process finished successfully. Docker containers only run as long as the PID 1 process is alive.\n\n**Common Cause:** You might be using an image (like `ubuntu` or `node`) without a long-running foreground command.\n\n**Fixes:**\n1. **Check Command:** Ensure your `CMD` or `entrypoint` starts a server (e.g., `node server.js` not just `node`).\n2. **Keep Alive (Debug):** Add `tty: true` to your compose file or run with a keep-alive command to inspect:\n   ```yaml\n   command: tail -f /dev/null\n   ```\n3. **Foreground:** Ensure the app isn't daemonizing itself (e.g., `nginx -g 'daemon off;'`)."
+    },
+    "technical_tags": [
+      "docker",
+      "debugging",
+      "containers",
+      "process-management"
+    ],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_102",
+    "bucket": "Development & DevOps",
+    "sub_category": "Git",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "macOS/Linux",
+      "app_version": "Git 2.40"
+    },
+    "interaction": {
+      "user_query": "I accidentally committed a large 500MB tar file to my repo. I removed it in the next commit, but `.git` folder size is still huge. How do I scrub this file from history completely?",
+      "ai_response": "Simply deleting the file in a new commit doesn't remove it from git history. You need `git filter-repo` (modern replacement for filter-branch) or BFG.\n\n**Using git-filter-repo (Recommended):**\n1. Install: `pip install git-filter-repo`\n2. Analyze: `git filter-repo --analyze`\n3. **Delete:**\n   ```bash\n   git filter-repo --path path/to/largefile.tar --invert-paths\n   ```\n4. Force push: `git push origin --force --all`\n\n*Warning: This rewrites history for all collaborators.*"
+    },
+    "technical_tags": ["git", "history-rewrite", "maintenance", "optimization"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_103",
+    "bucket": "Development & DevOps",
+    "sub_category": "Node.js",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "npm 10"
+    },
+    "interaction": {
+      "user_query": "I keep getting EACCES errors when installing global npm packages. I tried `sudo npm install`, but now my permissions are messed up. How do I fix this cleanly?",
+      "ai_response": "Using `sudo` with npm is discouraged as it creates root-owned files in your home directory.\n\n**Fix Permissions:**\n```bash\nsudo chown -R $USER:$(id -gn $USER) ~/.npm\n```\n\n**Prevent Future Issues (Change Default Directory):**\n1. Make a directory for global packages:\n   ```bash\n   mkdir ~/.npm-global\n   npm config set prefix '~/.npm-global'\n   ```\n2. Add to PATH in `~/.bashrc` (or `.zshrc`):\n   ```bash\n   export PATH=~/.npm-global/bin:$PATH\n   ```\n3. `source ~/.bashrc`\nNow you can `npm install -g package` without sudo."
+    },
+    "technical_tags": ["node", "npm", "permissions", "environment"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_104",
+    "bucket": "Development & DevOps",
+    "sub_category": "SSH",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "OpenSSH"
+    },
+    "interaction": {
+      "user_query": "I need to git pull from a private repo *inside* a remote server I'm SSH'd into. I don't want to copy my private key to that server. How do I use my local key?",
+      "ai_response": "You need **SSH Agent Forwarding**.\n\n1. **On Local Machine:**\n   Add your key to the agent:\n   ```bash\n   ssh-add ~/.ssh/id_rsa\n   ```\n   Verify with `ssh-add -l`.\n\n2. **Connect with Forwarding:**\n   ```bash\n   ssh -A user@remote-server\n   ```\n   (Or add `ForwardAgent yes` to `~/.ssh/config` for that host).\n\n3. **Test on Remote:**\n   Run `ssh -T git@github.com` on the server. It should authenticate using your local key.\n\n*Security Note: Only use agent forwarding with trusted servers.*"
+    },
+    "technical_tags": ["ssh", "agent-forwarding", "security", "git"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "DEV_DEVOPS_105",
+    "bucket": "Development & DevOps",
+    "sub_category": "MySQL",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "MySQL 8.0"
+    },
+    "interaction": {
+      "user_query": "I lost the MySQL root password on my dev machine. I can't login. How do I reset it without reinstalling?",
+      "ai_response": "You can reset the password by starting MySQL in safe mode.\n\n1. **Stop MySQL:**\n   `sudo systemctl stop mysql`\n2. **Start without permission checks:**\n   `sudo mysqld_safe --skip-grant-tables &`\n3. **Login (no password needed):**\n   `mysql -u root`\n4. **Reset Password (SQL):**\n   ```sql\n   FLUSH PRIVILEGES;\n   ALTER USER 'root'@'localhost' IDENTIFIED BY 'NewPassword';\n   FLUSH PRIVILEGES;\n   EXIT;\n   ```\n5. **Restart Normally:**\n   `sudo killall mysqld`\n   `sudo systemctl start mysql`"
+    },
+    "technical_tags": ["mysql", "recovery", "security", "administration"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_201",
+    "bucket": "Development & DevOps",
+    "sub_category": "Docker",
+    "complexity": "Beginner",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Any Linux",
+      "app_version": "Docker 26.0"
+    },
+    "interaction": {
+      "user_query": "How do I create a simple Dockerfile for a Python script? I just want to run `main.py` which uses `pandas`.",
+      "ai_response": "Here is a standard `Dockerfile` for a Python app.\n\n**1. Create `requirements.txt`:**\n```\npandas\n```\n\n**2. Create `Dockerfile`:**\n```dockerfile\n# Use a lightweight Python base image\nFROM python:3.9-slim\n\n# Set working directory\nWORKDIR /app\n\n# Copy requirements first to leverage caching\nCOPY requirements.txt .\n\n# Install dependencies\nRUN pip install --no-cache-dir -r requirements.txt\n\n# Copy source code\nCOPY main.py .\n\n# Command to run\nCMD [\"python\", \"main.py\"]\n```\n\n**3. Build and Run:**\n```bash\ndocker build -t my-python-app .\ndocker run my-python-app\n```"
+    },
+    "technical_tags": ["docker", "python", "dockerfile", "containerization"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_202",
+    "bucket": "Development & DevOps",
+    "sub_category": "VS Code",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "VS Code 1.88"
+    },
+    "interaction": {
+      "user_query": "How do I set up VS Code to edit files directly on my remote Linux server over SSH without using VNC?",
+      "ai_response": "Use the **Remote - SSH** extension. It is far superior to editing files via SFTP.\n\n**Steps:**\n1. Install the \"Remote - SSH\" extension by Microsoft in VS Code.\n2. Click the green remote icon (bottom left) -> **Connect to Host**.\n3. Enter `user@your-server-ip`.\n4. It will install a small VS Code server agent on the remote machine.\n5. Once connected, use **File -> Open Folder** to browse the remote filesystem.\n\n*Pro-tip:* Set up SSH keys first so you don't have to type your password every time."
+    },
+    "technical_tags": ["vscode", "ssh", "remote-dev", "ide"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_203",
+    "bucket": "Development & DevOps",
+    "sub_category": "System",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "systemd"
+    },
+    "interaction": {
+      "user_query": "I have a python script `/opt/scripts/monitor.py`. How do I make it run automatically on boot using systemd?",
+      "ai_response": "Create a systemd service unit file.\n\n**1. Create file:**\n`sudo nano /etc/systemd/system/monitor.service`\n\n**2. Content:**\n```ini\n[Unit]\nDescription=My Monitor Script\nAfter=network.target\n\n[Service]\nUser=myuser\nWorkingDirectory=/opt/scripts\nExecStart=/usr/bin/python3 /opt/scripts/monitor.py\nRestart=always\nRestartSec=5\n\n[Install]\nWantedBy=multi-user.target\n```\n\n**3. Enable and Start:**\n```bash\nsudo systemctl daemon-reload\nsudo systemctl enable monitor.service\nsudo systemctl start monitor.service\n```"
+    },
+    "technical_tags": ["systemd", "boot", "automation", "python"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_204",
+    "bucket": "Development & DevOps",
+    "sub_category": "Git",
+    "complexity": "Beginner",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Linux",
+      "app_version": "Git"
+    },
+    "interaction": {
+      "user_query": "How do I ignore the `node_modules` folder in Git? I already committed it by mistake.",
+      "ai_response": "You need to add it to `.gitignore` and remove the cached files from the index.\n\n**1. Create .gitignore:**\n```bash\necho \"node_modules/\" >> .gitignore\n```\n\n**2. Remove from git (keep local files):**\n```bash\ngit rm -r --cached node_modules\n```\n\n**3. Commit:**\n```bash\ngit commit -m \"Stop tracking node_modules\"\n```\n\nNow git ignores the folder, but the files remain on your disk."
+    },
+    "technical_tags": ["git", "gitignore", "cleanup", "version-control"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_205",
+    "bucket": "Development & DevOps",
+    "sub_category": "Networking",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "UFW"
+    },
+    "interaction": {
+      "user_query": "I'm setting up a web server. How do I configure UFW to allow SSH, HTTP, and HTTPS but block everything else?",
+      "ai_response": "UFW (Uncomplicated Firewall) is great for this. Always allow SSH first to avoid locking yourself out.\n\n**Commands:**\n```bash\nsudo ufw default deny incoming\nsudo ufw default allow outgoing\n\n# Allow SSH (Port 22)\nsudo ufw allow ssh\n# Or if using custom SSH port: sudo ufw allow 2222/tcp\n\n# Allow Web Traffic\nsudo ufw allow http  # Port 80\nsudo ufw allow https # Port 443\n\n# Enable\nsudo ufw enable\n```\n**Check status:** `sudo ufw status verbose`"
+    },
+    "technical_tags": ["firewall", "ufw", "security", "networking"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_301",
+    "bucket": "Development & DevOps",
+    "sub_category": "Docker",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Podman/Docker"
+    },
+    "interaction": {
+      "user_query": "I'm on Fedora 40. Should I use Podman or install Docker CE? What's the practical difference for a developer?",
+      "ai_response": "Fedora comes with **Podman** installed by default. \n\n**Recommendation:** Try Podman first. It is daemonless and rootless by default (better security). \n\n**Comparison:**\n* **CLI:** Podman is almost a drop-in replacement (`alias docker=podman`).\n* **Docker Compose:** Podman now supports `podman-compose` or the native docker-compose extension, but it can be finicky with complex networks compared to Docker CE.\n* **Socket:** Docker requires a daemon; Podman uses a fork/exec model.\n\n**Verdict:** Use **Podman** for running single containers or simple pods. Install **Docker CE** (via upstream repo) if you rely heavily on complex `docker-compose` stacks or 3rd party tools that strictly expect the Docker socket."
+    },
+    "technical_tags": ["docker", "podman", "fedora", "comparison"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_302",
+    "bucket": "Development & DevOps",
+    "sub_category": "Web Server",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Nginx / Apache"
+    },
+    "interaction": {
+      "user_query": "I'm hosting a simple static site and a reverse proxy for a Node app. Should I use Nginx or Apache?",
+      "ai_response": "**Recommendation: Nginx.**\n\n**Why Nginx?**\n* **Performance:** Nginx is event-driven and handles high concurrency better with lower memory usage, which is ideal for static files.\n* **Reverse Proxy:** Nginx configuration for reverse proxying (passing requests to Node.js) is generally simpler and more performant than Apache's `mod_proxy`.\n\n**Why Apache?**\n* Choose Apache only if you need `.htaccess` files for per-directory configuration overrides (common in shared hosting or legacy PHP apps). Since you control the server, Nginx's central config is cleaner."
+    },
+    "technical_tags": ["nginx", "apache", "web-server", "architecture"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_303",
+    "bucket": "Development & DevOps",
+    "sub_category": "Databases",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Linux",
+      "app_version": "Postgres/MySQL"
+    },
+    "interaction": {
+      "user_query": "I need to store a lot of JSON data but also relational data. Should I use MongoDB or PostgreSQL?",
+      "ai_response": "**Recommendation: PostgreSQL.**\n\n**Reasoning:**\nPostgreSQL has mature, high-performance JSON support (`JSONB` type). It allows you to query, index, and manipulate JSON documents almost as fast as MongoDB, while preserving ACID compliance and relational integrity for the rest of your data.\n\n**Use MongoDB if:**\n* You need sharding/scaling out of the box for massive write throughput.\n* Your schema is truly unstructured and varies wildly per record.\n\n**Use Postgres if:**\n* You need complex joins between JSON and relational tables.\n* Data integrity is critical."
+    },
+    "technical_tags": ["postgresql", "mongodb", "json", "database-design"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_304",
+    "bucket": "Development & DevOps",
+    "sub_category": "Terminal",
+    "complexity": "Beginner",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu",
+      "app_version": "Bash/Zsh"
+    },
+    "interaction": {
+      "user_query": "I see everyone using Zsh and Oh My Zsh. Is it worth switching from Bash?",
+      "ai_response": "**Yes, for development productivity.**\n\n**Benefits of Zsh + Oh My Zsh:**\n* **Auto-completion:** Much smarter than Bash. It can navigate flags, directories, and git commands visually.\n* **Git Integration:** The prompt shows the current branch and status (dirty/clean) automatically.\n* **Plugins:** `zsh-autosuggestions` (ghost text based on history) and `zsh-syntax-highlighting` are huge time savers.\n\n**How to switch:**\n`sudo apt install zsh`\n`sh -c \"$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)\"`"
+    },
+    "technical_tags": ["zsh", "bash", "productivity", "shell"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_305",
+    "bucket": "Development & DevOps",
+    "sub_category": "Python",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Linux",
+      "app_version": "Python"
+    },
+    "interaction": {
+      "user_query": "Should I use `conda` or `venv` + `pip` for general Python development?",
+      "ai_response": "**Recommendation: `venv` + `pip` (or `poetry`) for standard dev; `conda` for Data Science.**\n\n* **venv/pip:** Standard, lightweight, built into Python. Best for web dev (Django/Flask) and automation scripts. Combine with `pyenv` to manage Python versions.\n* **Conda:** Handles binary dependencies (C libraries) exceptionally well. If you are using NumPy, SciPy, or TensorFlow and struggle with compilation errors during install, Conda is the lifesaver.\n* **Poetry:** Consider this if you need robust dependency locking and publishing features."
+    },
+    "technical_tags": ["python", "conda", "pip", "environment-management"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_401",
+    "bucket": "Development & DevOps",
+    "sub_category": "SSH",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Any Linux",
+      "app_version": "OpenSSH"
+    },
+    "interaction": {
+      "user_query": "I manage 10 different servers. I'm tired of typing `ssh user@ip -i ~/.ssh/key` every time. How can I speed this up?",
+      "ai_response": "Use the **SSH Config** file (`~/.ssh/config`).\n\n**Setup:**\nCreate/Edit `~/.ssh/config`:\n```ssh\nHost web\n    HostName 192.168.1.10\n    User myuser\n    IdentityFile ~/.ssh/web_key\n\nHost db\n    HostName 192.168.1.20\n    User admin\n    IdentityFile ~/.ssh/db_key\n```\n\n**Usage:**\nNow you just type `ssh web` or `ssh db`. You can also add `ForwardAgent` or `Port` settings here per host."
+    },
+    "technical_tags": ["ssh", "ssh-config", "automation", "workflow"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_402",
+    "bucket": "Development & DevOps",
+    "sub_category": "Docker",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Linux",
+      "app_version": "Docker"
+    },
+    "interaction": {
+      "user_query": "My disk is filling up with old Docker images and stopped containers. Is there a command to clean everything up automatically?",
+      "ai_response": "Yes, use `docker system prune`.\n\n**Standard cleanup (safe):**\n```bash\ndocker system prune\n```\nRemoves stopped containers, dangling images (tagged `<none>`), and unused networks.\n\n**Deep cleanup (aggressive):**\n```bash\ndocker system prune -a --volumes\n```\n* `-a`: Removes **all** images not used by a currently running container (not just dangling ones).\n* `--volumes`: Removes unnamed volumes.\n\n*Warning: Do not use `-a` if you want to keep cached images for faster rebuilds.*"
+    },
+    "technical_tags": ["docker", "maintenance", "disk-space", "automation"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_403",
+    "bucket": "Development & DevOps",
+    "sub_category": "Git",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Linux",
+      "app_version": "Git"
+    },
+    "interaction": {
+      "user_query": "I want to run my linter automatically before I commit. If the linter fails, the commit should stop.",
+      "ai_response": "Use **Git Hooks**. specifically the `pre-commit` hook.\n\n**Manual Setup:**\n1. Create file `.git/hooks/pre-commit`.\n2. Add script:\n   ```bash\n   #!/bin/sh\n   npm run lint\n   if [ $? -ne 0 ]; then\n       echo \"Linting failed! Commit aborted.\"\n       exit 1\n   fi\n   ```\n3. Make executable: `chmod +x .git/hooks/pre-commit`.\n\n**Better Setup:**\nUse a framework like `pre-commit` (Python) or `husky` (Node.js) to manage this easily and share it with your team."
+    },
+    "technical_tags": ["git", "hooks", "automation", "linting"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_404",
+    "bucket": "Development & DevOps",
+    "sub_category": "Bash Scripting",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu",
+      "app_version": "Bash"
+    },
+    "interaction": {
+      "user_query": "I have a script that fails sometimes, but I don't know why. How can I make bash print every command before executing it so I can debug?",
+      "ai_response": "Enable **debug mode** (xtrace).\n\n**Option 1: Run the script with -x**\n```bash\nbash -x myscript.sh\n```\n\n**Option 2: Add to script header**\nChange the shebang to `#!/bin/bash -x` or add `set -x` at the top of the script.\n\nThis will print every command (with variable expansion) to stderr before execution. Use `set +x` to disable it for specific sections."
+    },
+    "technical_tags": ["bash", "debugging", "scripting", "automation"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_405",
+    "bucket": "Development & DevOps",
+    "sub_category": "Backups",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Cron"
+    },
+    "interaction": {
+      "user_query": "How do I schedule a daily backup of my `/var/www` folder to a tar file at 3 AM?",
+      "ai_response": "Use the user crontab.\n\n1. **Edit crontab:**\n   ```bash\n   crontab -e\n   ```\n2. **Add entry:**\n   ```cron\n   0 3 * * * tar -zcf /backups/www-$(date +\\%F).tar.gz /var/www\n   ```\n\n**Explanation:**\n* `0 3 * * *`: Runs at 03:00 every day.\n* `$(date +\\%F)`: Appends the date (YYYY-MM-DD) to the filename.\n* Ensure the `/backups` directory exists and is writable by the user running the cron job."
+    },
+    "technical_tags": ["cron", "backups", "automation", "schedule"],
+    "friction_type": "config_issue"
+  }
+]

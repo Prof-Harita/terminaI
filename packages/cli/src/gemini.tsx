@@ -65,6 +65,7 @@ import {
   fireSessionEndHook,
   getVersion,
   ApprovalMode,
+  DesktopAutomationService,
 } from '@terminai/core';
 import {
   initializeApp,
@@ -99,6 +100,7 @@ import { createPolicyUpdater } from './config/policy.js';
 import { requestConsentNonInteractive } from './config/extensions/consent.js';
 import { ScrollProvider } from './ui/contexts/ScrollProvider.js';
 import { isAlternateBufferEnabled } from './ui/hooks/useAlternateBuffer.js';
+import { cleanupOldLogs } from './utils/logCleanup.js';
 
 import { setupTerminalAndTheme } from './utils/terminalTheme.js';
 import { profiler } from './ui/components/DebugProfiler.js';
@@ -467,6 +469,12 @@ export async function main() {
     const config = await loadCliConfig(settings.merged, sessionId, argv);
     loadConfigHandle?.end();
 
+    // Enable GUI automation if configured
+    if (settings.merged.tools?.guiAutomation?.enabled) {
+      DesktopAutomationService.getInstance().setEnabled(true);
+      debugLogger.log('GUI Automation enabled');
+    }
+
     let onboardingVoiceOverrides: VoiceOverrides | undefined;
     if (config.isInteractive() && isFirstRun()) {
       const onboardingResult = await runOnboardingFlow();
@@ -586,6 +594,13 @@ export async function main() {
       await cleanupExpiredSessions(config, settings.merged);
     } catch (e) {
       debugLogger.error('Failed to cleanup expired sessions:', e);
+    }
+
+    // Cleanup old session logs
+    try {
+      await cleanupOldLogs(config);
+    } catch (e) {
+      debugLogger.error('Failed to cleanup old session logs:', e);
     }
 
     if (config.getListExtensions()) {

@@ -1,0 +1,1536 @@
+[
+  {
+    "id": "PROD_DOC_501",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Document Security",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LibreOffice 7.3"
+    },
+    "interaction": {
+      "user_query": "I have a Writer doc with sensitive info. How do I password protect it so no one else can open it?",
+      "ai_response": "You can encrypt the file directly when saving.\n\n1. Go to **File > Save As**.\n2. Check the box labeled **Save with password** at the bottom of the dialog.\n3. Click **Save**.\n4. Enter your desired password in the popup window and confirm it.\n\n**Tip:** If you lose this password, the data is unrecoverable."
+    },
+    "technical_tags": [
+      "password-protection",
+      "encryption",
+      "libreoffice-writer"
+    ],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_502",
+    "bucket": "Productivity & Documents",
+    "sub_category": "PDF Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "QPDF 11.9.0"
+    },
+    "interaction": {
+      "user_query": "Is there a command line tool to remove a password from a PDF if I know the password? I don't want to type it every time I open the bank statement.",
+      "ai_response": "Yes, `qpdf` is excellent for this.\n\n**Command:**\n```bash\nqpdf --password=YOUR_PASSWORD --decrypt input.pdf output.pdf\n```\n\nReplace `YOUR_PASSWORD` with the actual password. The `output.pdf` will open without requiring a password."
+    },
+    "technical_tags": ["pdf-decryption", "cli", "qpdf"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_503",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "LibreOffice 7.5"
+    },
+    "interaction": {
+      "user_query": "How do I stop LibreOffice from saving my name in the file properties? I want to share a doc anonymously.",
+      "ai_response": "You can strip personal data from the file before sharing.\n\n1. Go to **File > Properties > General**.\n2. Uncheck **Apply user data**.\n3. Alternatively, go to **Tools > Options > LibreOffice > Security**.\n4. Click **Options** under 'Security Options and Warnings'.\n5. Check **Remove personal information on saving**.\n\nThis prevents your name (set in User Data) from being attached to the metadata."
+    },
+    "technical_tags": ["metadata", "privacy", "libreoffice"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_504",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Document Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "GPG 2.2.40"
+    },
+    "interaction": {
+      "user_query": "I want to encrypt a whole folder of PDFs before emailing them. Can I use GPG for this?",
+      "ai_response": "It's easier to zip the folder first, then encrypt the archive, or encrypt files individually. To encrypt a single file symmetrically (password only):\n\n```bash\ngpg -c document.pdf\n```\n\nThis creates `document.pdf.gpg`. The recipient needs the password and can run `gpg document.pdf.gpg` to decrypt it."
+    },
+    "technical_tags": ["gpg", "encryption", "cli"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_505",
+    "bucket": "Productivity & Documents",
+    "sub_category": "PDF Security",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Master PDF Editor 5"
+    },
+    "interaction": {
+      "user_query": "How do I redact text in a PDF permanently? I drew a black box over it in a viewer but the text is still selectable underneath.",
+      "ai_response": "Drawing a box doesn't remove the underlying text data. You need a tool that supports true redaction.\n\n**Using Master PDF Editor:**\n1. Go to **Document > Redact**.\n2. Select the area to redact.\n3. Apply the redaction.\n\nAlternatively, use `pdf-redact-tools` in the terminal or convert the page to an image and back to PDF (flattening), though you lose text searchability:\n```bash\nconvert -density 300 input.pdf -quality 100 output.pdf\n```"
+    },
+    "technical_tags": ["redaction", "pdf-security", "master-pdf-editor"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_506",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice Calc",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "LibreOffice 24.2"
+    },
+    "interaction": {
+      "user_query": "I password protected a sheet in Calc, but now I can't edit any cells even with the password. What did I miss?",
+      "ai_response": "Protecting a sheet locks all cells by default. You must unlock specific cells *before* protecting the sheet.\n\n1. Unprotect the sheet (**Tools > Protect Sheet**).\n2. Select the cells you want to be editable.\n3. Right-click > **Format Cells** > **Cell Protection** tab.\n4. Uncheck **Protected**.\n5. Now re-protect the sheet. Only the cells you unchecked will be editable."
+    },
+    "technical_tags": ["calc", "cell-protection", "permissions"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_507",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Evince 46.0"
+    },
+    "interaction": {
+      "user_query": "Evince keeps showing my recently opened documents in the overview. How do I clear this history for privacy?",
+      "ai_response": "Evince uses the system-wide 'Recent Files' list.\n\n1. Open **Settings** (GNOME Control Center).\n2. Go to **Privacy** > **File History & Trash**.\n3. You can turn off **File History** completely or click **Clear History** to wipe the current list.\n\nTo clear just specific items via command line: `rm ~/.local/share/recently-used.xbel` (this clears ALL recent files for all GTK apps)."
+    },
+    "technical_tags": ["recent-files", "privacy", "gnome"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_508",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Document Conversion",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "LibreOffice 7.3"
+    },
+    "interaction": {
+      "user_query": "Can I check if a DOCX file has any hidden macros before I open it in LibreOffice?",
+      "ai_response": "LibreOffice disables macros by default for security, but you can inspect the file without opening it essentially.\n\n1. DOCX/DOCM files are just zip archives. Rename `file.docx` to `file.zip`.\n2. Open it with Archive Manager.\n3. Look for a `macros` folder or `vbaProject.bin` inside `word/`.\n\nIf those exist, the file contains macros. In LibreOffice settings, ensure **Security > Macro Security** is set to **High** to prevent automatic execution."
+    },
+    "technical_tags": ["macros", "security", "docx"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_509",
+    "bucket": "Productivity & Documents",
+    "sub_category": "PDF Editing",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LibreOffice Draw"
+    },
+    "interaction": {
+      "user_query": "I opened a PDF in LibreOffice Draw to sign it, but the fonts look weird. Is it safe to save it back as PDF?",
+      "ai_response": "When you open a PDF in Draw, it imports it as a graphic/vector object, which can mess up fonts if they aren't embedded or installed on your system. \n\nIf formatting changes, it is **not** safe to save if you need to preserve the exact legal layout. Use a dedicated PDF annotator like **Xournal++** or **Okular** to add a signature layer on top without altering the underlying PDF structure."
+    },
+    "technical_tags": ["pdf-import", "fonts", "libreoffice-draw"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_510",
+    "bucket": "Productivity & Documents",
+    "sub_category": "File Locking",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "LibreOffice 7.4"
+    },
+    "interaction": {
+      "user_query": "I keep getting a 'Document is locked for editing by Unknown User' error even though I'm the only one here. How do I force open it?",
+      "ai_response": "This usually happens if LibreOffice crashed previously and left a lock file behind.\n\n1. Enable 'Show Hidden Files' in your file manager (Ctrl+H).\n2. Look for a file named `.~lock.FILENAME.odt#` in the same folder as your document.\n3. Delete that lock file.\n4. Open the document again."
+    },
+    "technical_tags": ["file-locking", "hidden-files", "crash-recovery"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_511",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Encryption",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "VeraCrypt 1.26"
+    },
+    "interaction": {
+      "user_query": "I want to store my financial spreadsheets in a secure container. Is VeraCrypt overkill for a few ODS files?",
+      "ai_response": "VeraCrypt is excellent but might be heavy for just a few files. A lighter alternative for Linux users is **fscrypt** (if using ext4/btrfs) or simply using **LibreOffice's built-in GPG support**.\n\nHowever, if you want a mounted container: \n1. Install VeraCrypt.\n2. Create a small (e.g., 100MB) file container.\n3. Mount it, save your ODS files inside, and dismount.\nThis protects metadata and filenames, which LibreOffice's password protection does not."
+    },
+    "technical_tags": ["veracrypt", "encryption", "secure-storage"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_512",
+    "bucket": "Productivity & Documents",
+    "sub_category": "PDF Signatures",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Okular 24.02"
+    },
+    "interaction": {
+      "user_query": "I see a 'Digitally Sign' option in Okular but it's greyed out. What package am I missing?",
+      "ai_response": "You likely need the NSS (Network Security Services) tools or `poppler-utils` backend support, but usually, this requires a certificate store to be accessible.\n\n1. Ensure `nss` is installed: `sudo dnf install nss`.\n2. You must have a signing certificate available in the NSS database (Firefox often manages this).\n3. Check Okular settings under **Settings > Configure Okular > PDF** to point to the correct certificate database (usually `~/.pki/nssdb`)."
+    },
+    "technical_tags": ["digital-signature", "nss", "okular"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_513",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Metadata",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "ExifTool 12.40"
+    },
+    "interaction": {
+      "user_query": "Can I see exactly what info is hidden in my PDF file before I upload it?",
+      "ai_response": "Yes, `exiftool` is the best utility for this.\n\n1. Install it: `sudo apt install libimage-exiftool-perl`\n2. Run: `exiftool filename.pdf`\n\nIt will list Author, Creator, Creation Date, and sometimes software paths. To strip common metadata:\n```bash\nexiftool -all= filename.pdf\n```"
+    },
+    "technical_tags": ["metadata", "exiftool", "privacy"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_514",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice Writer",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "LibreOffice 7.3"
+    },
+    "interaction": {
+      "user_query": "Writer keeps asking to 'Update Links' when I open a document I downloaded. Is this a security risk?",
+      "ai_response": "It can be. Automatic link updates could ping a remote server, revealing your IP address.\n\nTo disable this:\n1. Go to **Tools > Options > LibreOffice Writer > General**.\n2. Under **Update Links when loading**, uncheck 'Automatically'.\n3. You can also review links in **Edit > Links to External Files**."
+    },
+    "technical_tags": ["external-links", "security", "writer"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_515",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Backups",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "LibreOffice 24.2"
+    },
+    "interaction": {
+      "user_query": "I accidentally overwrote a file. Does LibreOffice keep previous versions somewhere?",
+      "ai_response": "By default, LibreOffice doesn't keep version history *unless* you enabled it.\n\nCheck here:\n1. Look in **Tools > Options > Load/Save > General**.\n2. Is **Always create backup copy** checked?\n\nIf yes, check the backup folder path listed in **Tools > Options > LibreOffice > Paths** (usually `~/.config/libreoffice/4/user/backup`). The file will have a `.bak` extension."
+    },
+    "technical_tags": ["backups", "recovery", "config"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_516",
+    "bucket": "Productivity & Documents",
+    "sub_category": "PDF Security",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "PDFtk"
+    },
+    "interaction": {
+      "user_query": "I need to set a PDF so it can be opened but NOT printed. How do I set these specific permissions?",
+      "ai_response": "You can set 'owner' permissions using `pdftk`.\n\n```bash\npdftk input.pdf output protected.pdf owner_pw YOUR_ADMIN_PASS allow Copying ScreenReaders\n```\n\nThis example allows copying text and screen readers but *omits* 'Printing'.\n**Warning:** Many Linux PDF viewers (like standard Okular/Evince) ignore these DRM-style flags and will let the user print anyway. This is mostly respected by Adobe software."
+    },
+    "technical_tags": ["pdftk", "permissions", "drm"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_517",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Fonts",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Font Viewer"
+    },
+    "interaction": {
+      "user_query": "I downloaded a font that looks suspicious (it's an .exe file). How do I safely install fonts on Fedora?",
+      "ai_response": "Do **not** run the .exe. That is likely malware or a Windows installer. Fonts should be `.ttf` or `.otf` files.\n\nTo install safely:\n1. Find a `.ttf` or `.otf` version.\n2. Double click it to open **Gnome Font Viewer**.\n3. Click **Install**.\n\nAlternatively, copy the font file to `~/.local/share/fonts/` and run `fc-cache -f -v`."
+    },
+    "technical_tags": ["fonts", "security", "malware-avoidance"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_518",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice Base",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "LibreOffice Base"
+    },
+    "interaction": {
+      "user_query": "Is the built-in HSQLDB in LibreOffice Base secure for storing personal contact info?",
+      "ai_response": "The default HSQLDB embedded engine is not encrypted. If someone gets the `.odb` file, they can open it and see the data.\n\nFor better security/stability, switch to the **Firebird Embedded** engine (experimental in older LO, standard in newer) or connect Base to an external encrypted database (like PostgreSQL or MariaDB) if you need robust security."
+    },
+    "technical_tags": ["database-security", "hsqldb", "firebird"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_519",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Collabora/Online",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Collabora Online"
+    },
+    "interaction": {
+      "user_query": "I'm hosting my own document server. How do I ensure my docs aren't cached unencrypted on the server temp folders?",
+      "ai_response": "If you are running Collabora Online (COOL) or Nextcloud Office:\n\n1. Check your `coolwsd.xml` configuration.\n2. Ensure SSL is enabled (termination at proxy or internal).\n3. Use filesystem encryption (like LUKS) on the server partition where `/tmp` and `/var/lib/coolwsd` reside.\n\nThe application itself usually relies on the underlying OS for storage security."
+    },
+    "technical_tags": ["self-hosting", "server-security", "encryption"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_520",
+    "bucket": "Productivity & Documents",
+    "sub_category": "OCR",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "OCRFeeder"
+    },
+    "interaction": {
+      "user_query": "I scanned my passport to a PDF. If I use OCR on it, does the text data get sent to a cloud server?",
+      "ai_response": "If you use local Linux tools like `OCRFeeder`, `gImageReader`, or command-line `tesseract`, the processing happens entirely on your machine. No data leaves your computer.\n\nAvoid using online \"Free PDF to Word\" websites for sensitive ID documents."
+    },
+    "technical_tags": ["ocr", "privacy", "offline-tools"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_601",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Cloud Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Nextcloud Client"
+    },
+    "interaction": {
+      "user_query": "I was editing a file on my laptop, but when I opened it on my desktop, the changes weren't there. I use Nextcloud.",
+      "ai_response": "This is likely a sync conflict or delay.\n\n1. Check the Nextcloud icon in the system tray on the laptop—is it green (synced)?\n2. Did you close the file on the laptop? LibreOffice lock files can sometimes prevent sync until the file is closed.\n3. Check for a file named `Conflict...` in the folder.\n4. Force a sync: click the tray icon -> **Force sync now**."
+    },
+    "technical_tags": ["nextcloud", "sync-issues", "file-locking"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_602",
+    "bucket": "Productivity & Documents",
+    "sub_category": "File Sharing",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "LibreOffice 24.2"
+    },
+    "interaction": {
+      "user_query": "I saved a file to my Google Drive via the GNOME Online Accounts integration, but LibreOffice says 'Read Only' when I open it.",
+      "ai_response": "LibreOffice sometimes treats GVFS (Gnome Virtual File System) mounts as read-only to prevent data loss on unstable connections.\n\n**Workaround:**\n1. Copy the file from the Google Drive folder to your local Documents folder.\n2. Edit the file locally.\n3. Copy it back to the Drive folder when finished.\n\nAlternatively, try opening it directly from LibreOffice's **Open Remote** dialog if you configure Google Drive there."
+    },
+    "technical_tags": ["gvfs", "google-drive", "read-only"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_603",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Syncthing",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Syncthing 1.27"
+    },
+    "interaction": {
+      "user_query": "I'm using Syncthing to sync my 'Documents' folder between my phone and PC. LibreOffice keeps creating `.~lock` files that sync to my phone and it's annoying. Can I ignore them?",
+      "ai_response": "Yes, you should definitely ignore lock files in Syncthing.\n\n1. Open the Syncthing Web GUI (`localhost:8384`).\n2. Click on the **Documents** folder > **Edit** > **Ignore Patterns**.\n3. Add the following line:\n```\n.~lock.*\n```\n4. Save. This prevents temporary lock files from propagating to other devices."
+    },
+    "technical_tags": ["syncthing", "ignore-patterns", "file-locking"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_604",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Dropbox",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Dropbox"
+    },
+    "interaction": {
+      "user_query": "The Dropbox icon is missing from my taskbar so I can't tell if my PDFs are synced.",
+      "ai_response": "This is a common issue with Dropbox on certain desktop environments (like Cinnamon or GNOME) due to tray icon changes.\n\n**Fix:**\n1. Install the `libappindicator` support: `sudo apt install gir1.2-appindicator3-1`\n2. If that fails, run Dropbox with this env variable:\n`dbus-launch dropbox start`\n3. Alternatively, check sync status via CLI: `dropbox status`."
+    },
+    "technical_tags": ["dropbox", "system-tray", "ui-glitch"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_605",
+    "bucket": "Productivity & Documents",
+    "sub_category": "SMB/Samba",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LibreOffice 7.3"
+    },
+    "interaction": {
+      "user_query": "I can open files from my NAS (SMB share), but saving takes forever or fails. It says 'General Error'.",
+      "ai_response": "LibreOffice sometimes struggles with direct saves to SMB shares mounted via GVFS.\n\n**Solution:**\n1. Mount the share via `/etc/fstab` (cifs) for a stable system-level mount, rather than clicking in the file manager.\n2. In LibreOffice, go to **Tools > Options > Load/Save > General** and uncheck **Use Lock file** (risky if multiple users edit at once).\n3. Or, disable file locking on the NAS side (oplocks)."
+    },
+    "technical_tags": ["samba", "network-share", "save-error"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_606",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Font Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Font Manager"
+    },
+    "interaction": {
+      "user_query": "I wrote a document on my desktop using 'Calibri', but on my laptop running Debian, the layout is broken. The font seems to be missing.",
+      "ai_response": "Calibri is a Microsoft font and isn't installed by default on Debian.\n\n**Fix:**\n1. Enable the `contrib` and `non-free` repositories in `/etc/apt/sources.list`.\n2. Run `sudo apt update`.\n3. Install the font package: `sudo apt install ttf-mscorefonts-installer`.\n\nFor consistent layouts across devices, consider using open fonts like **Liberation Sans** or **Noto Sans**."
+    },
+    "technical_tags": ["fonts", "compatibility", "mscorefonts"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_607",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Mobile Compatibility",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "LibreOffice Impress"
+    },
+    "interaction": {
+      "user_query": "I made a presentation in Impress. Will it play correctly on my Android phone?",
+      "ai_response": "It depends on the viewer you use on Android.\n\n1. For best results, use the **Collabora Office** app on Android.\n2. If using other apps, export your presentation to PDF as a backup (**File > Export as PDF**). Most mobile PDF viewers can display slides perfectly, though animations won't work."
+    },
+    "technical_tags": ["impress", "android", "export-pdf"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_608",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Version Control",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Git"
+    },
+    "interaction": {
+      "user_query": "Can I use Git to track changes in my .odt files? I see binary garbage when I look at the diff.",
+      "ai_response": ".odt files are zipped XMLs, so Git treats them as binary.\n\n**Solution:**\nUse a text-based converter for diffing.\n1. Configure git to use `odt2txt`.\n2. Add this to `.gitattributes`: `*.odt diff=odt`\n3. Add this to git config:\n```\n[diff \"odt\"]\n  textconv=odt2txt\n```\nNow `git diff` will show you the text changes."
+    },
+    "technical_tags": ["git", "version-control", "odt"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_609",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Dual Boot",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "LibreOffice"
+    },
+    "interaction": {
+      "user_query": "I edit files on an NTFS partition shared with Windows. Sometimes Linux says 'Read-only file system' when I try to save.",
+      "ai_response": "This happens if Windows didn't shut down completely (Fast Startup/Hibernation).\n\n**Fix:**\n1. Boot into Windows.\n2. Disable 'Fast Startup' in Power Options.\n3. Run `chkdsk /f` on the drive if needed.\n4. Shut down completely (Shift + Click Shutdown).\n5. Boot back into Linux. The NTFS partition should now be writable."
+    },
+    "technical_tags": ["dual-boot", "ntfs", "fast-startup"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_610",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Email",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Thunderbird"
+    },
+    "interaction": {
+      "user_query": "When I email an ODT file to my boss, he says he can't open it. How do I fix this automatically?",
+      "ai_response": "Your boss likely uses Microsoft Word and doesn't have ODF support installed or updated.\n\n**Best practice:**\n1. Go to **File > Save As**.\n2. Choose **Word 2007-365 (.docx)** from the format list.\n3. Send that file.\n\n**Warning:** Check formatting before sending, as conversion isn't always 100% perfect."
+    },
+    "technical_tags": ["interoperability", "file-formats", "docx"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_611",
+    "bucket": "Productivity & Documents",
+    "sub_category": "SSHFS",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "SSHFS"
+    },
+    "interaction": {
+      "user_query": "I mounted my work server with SSHFS to edit a PDF. It's incredibly slow to scroll through pages. Why?",
+      "ai_response": "PDF viewers often try to read the whole file or jump around to render pages (random access). Over a network mount like SSHFS, this causes high latency.\n\n**Fix:**\nCopy the file to `/tmp`, edit/view it locally, then copy it back.\n\nAlternatively, use the `sshfs -o cache=yes,kernel_cache` options to improve read performance, but local copying is safest."
+    },
+    "technical_tags": ["sshfs", "network-latency", "pdf-viewing"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_612",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Backup",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Déjà Dup"
+    },
+    "interaction": {
+      "user_query": "I want to back up my 'Documents' folder to Google Drive automatically. Does Ubuntu have a built-in tool?",
+      "ai_response": "Yes, **Backups** (Déjà Dup) is built-in.\n\n1. Open **Backups** from the app menu.\n2. Choose **Folders to Save** (select Documents).\n3. Under **Storage Location**, select **Google Drive**.\n4. Enable **Automatic Backup**.\n\nIt encrypts your data before uploading, so keep your encryption password safe!"
+    },
+    "technical_tags": ["backups", "deja-dup", "google-drive"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_613",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Collaboration",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "LibreOffice Writer"
+    },
+    "interaction": {
+      "user_query": "Can two people edit the same ODT file at the same time on a shared folder?",
+      "ai_response": "Not with standard LibreOffice Desktop. The first person gets write access; the second gets 'Read Only'.\n\nFor real-time collaboration, you need:\n1. **LibreOffice Online / Collabora** running on a server.\n2. Or Google Docs / Office 365 in a browser.\n\nDo not try to bypass the lock file, or you will corrupt the document."
+    },
+    "technical_tags": ["collaboration", "file-locking", "concurrent-editing"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_614",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Printing",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "CUPS"
+    },
+    "interaction": {
+      "user_query": "My printer is connected to my desktop. How do I print from my laptop running Debian on the same wifi?",
+      "ai_response": "You need to share the printer via CUPS.\n\n**On the Desktop (Host):**\n1. Go to Settings > Printers > Additional Printer Settings (or `localhost:631`).\n2. Check **Publish shared printers connected to this system**.\n\n**On the Laptop:**\n1. Go to Settings > Printers > Add Printer.\n2. It should auto-discover the network printer.\n\nEnsure firewall (port 631) allows traffic."
+    },
+    "technical_tags": ["printing", "cups", "network-sharing"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_615",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Sync Conflicts",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Dropbox"
+    },
+    "interaction": {
+      "user_query": "Dropbox created a 'Conflicted Copy' of my spreadsheet. How do I merge the two versions in LibreOffice?",
+      "ai_response": "Calc has a compare feature.\n\n1. Open the *current* version (the one you want to keep).\n2. Go to **Edit > Track Changes > Compare Document**.\n3. Select the 'Conflicted Copy' file.\n4. A dialog will appear letting you accept or reject differences between the two files."
+    },
+    "technical_tags": ["conflict-resolution", "merge", "calc"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_616",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Remote Desktop",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Remmina"
+    },
+    "interaction": {
+      "user_query": "I RDP into my work Windows PC to use Excel. How do I copy text from Linux LibreOffice and paste it into the remote Excel?",
+      "ai_response": "You need to ensure clipboard sync is enabled in your RDP client.\n\n**In Remmina:**\n1. Edit the connection profile.\n2. Go to the **Advanced** tab.\n3. Ensure **Share Clipboard** is checked.\n\nIf it stops working, sometimes toggling it off/on or restarting Remmina helps. Note that copying complex images/tables often fails; stick to plain text."
+    },
+    "technical_tags": ["rdp", "clipboard-sharing", "remmina"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_617",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Bluetooth Transfer",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Gnome Bluetooth"
+    },
+    "interaction": {
+      "user_query": "I'm trying to send a PDF from my phone to my Fedora laptop via Bluetooth, but it fails immediately.",
+      "ai_response": "By default, receiving files might be disabled or hidden.\n\n1. Open **Settings > Bluetooth** and ensure your PC is visible.\n2. Open **Settings > Sharing**.\n3. Enable **Bluetooth Sharing**.\n4. Ensure **Save Received Files to Downloads** is set.\n\nIf the 'Sharing' panel is missing, you might need to install `gnome-user-share`."
+    },
+    "technical_tags": ["bluetooth", "file-transfer", "gnome"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_618",
+    "bucket": "Productivity & Documents",
+    "sub_category": "WebDAV",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Nautilus"
+    },
+    "interaction": {
+      "user_query": "I mounted a WebDAV share in Files (Nautilus). I can see my PDFs, but search doesn't find any text inside them.",
+      "ai_response": "Nautilus/Files search relies on `tracker` which indexes *local* files. It does not index remote network shares (WebDAV/SMB) content to save bandwidth.\n\n**Workaround:**\nYou cannot search contents remotely. You must download the files to a local folder to index and search their contents."
+    },
+    "technical_tags": ["search", "webdav", "indexing"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_619",
+    "bucket": "Productivity & Documents",
+    "sub_category": "USB Drives",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Nemo"
+    },
+    "interaction": {
+      "user_query": "I saved a document to a USB stick, pulled it out, and now the file is empty (0 bytes). Why?",
+      "ai_response": "You likely removed the USB stick before the data was actually written (cached).\n\n**Always** click the 'Eject' icon next to the USB drive in the file manager and wait for the notification 'Safe to remove' or for the icon to disappear. This ensures the 'write buffer' is flushed to the disk."
+    },
+    "technical_tags": ["usb", "data-loss", "caching"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_620",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Time Zones",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "LibreOffice Calc"
+    },
+    "interaction": {
+      "user_query": "I share a spreadsheet with a colleague in London. The dates/times shift when I open it. Is this a bug?",
+      "ai_response": "This happens if the cells are formatted as 'Date/Time' and the system timezones differ. \n\n**Fix:**\n1. Check **Tools > Options > LibreOffice Calc > Calculate**.\n2. Ensure the settings for date handling are consistent.\n\nIdeally, store raw timestamps in UTC and use cell formatting to display local time, or treat them as text if no calculation is needed."
+    },
+    "technical_tags": ["timezone", "calc", "date-format"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_701",
+    "bucket": "Productivity & Documents",
+    "sub_category": "MS Office Compatibility",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LibreOffice Writer"
+    },
+    "interaction": {
+      "user_query": "I opened a DOCX resume template and the text boxes are all over the place. How do I fix this?",
+      "ai_response": "DOCX floating text boxes are notorious for breaking in LibreOffice.\n\n**Tips:**\n1. Right-click the misbehaving box, choose **Properties**, and check the **Anchor** setting. Changing it to 'As Character' often stabilizes position.\n2. If you need 100% fidelity, try using **OnlyOffice Desktop Editors** or **WPS Office** (available as snaps/flatpaks), as they have better render engines for complex MS Word layouts."
+    },
+    "technical_tags": ["compatibility", "docx", "formatting"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_702",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Mail Merge",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "LibreOffice Writer"
+    },
+    "interaction": {
+      "user_query": "I need to do a mail merge using a CSV file of client addresses. The wizard is confusing. Steps?",
+      "ai_response": "1. Open Writer.\n2. **Tools > Mail Merge Wizard**.\n3. **Step 3 (Insert Address Block)** > Click **Select Address List**.\n4. Click **Add** and select your CSV.\n5. Matches fields (Name -> First Name, etc).\n6. Drag the address block onto your page.\n7. Finish the wizard and print/save merged documents.\n\n*Note:* Ensure your CSV is UTF-8 encoded to avoid character glitches."
+    },
+    "technical_tags": ["mail-merge", "csv", "writer"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_703",
+    "bucket": "Productivity & Documents",
+    "sub_category": "PDF Forms",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Xournal++"
+    },
+    "interaction": {
+      "user_query": "I have a fillable PDF form for HR, but I can't type in the boxes in Xournal++. It just wants to draw.",
+      "ai_response": "Xournal++ is primarily for handwriting/annotation, not XFA/AcroForm filling.\n\n**Solution:**\nUse **LibreOffice Draw**, **Evince**, or **Okular**.\nIn Evince/Document Viewer:\n1. Open PDF.\n2. The fields should be highlighted in light blue.\n3. Click and type.\n4. Save as a copy to burn in the text."
+    },
+    "technical_tags": ["pdf-forms", "xournalpp", "evince"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_704",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Spreadsheet Formulas",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "LibreOffice Calc"
+    },
+    "interaction": {
+      "user_query": "I'm trying to use VLOOKUP from an Excel file I was sent, but I keep getting #N/A or #VALUE errors.",
+      "ai_response": "Check the separators. Excel often uses commas `,` for arguments, but depending on your Locale setting in Linux, LibreOffice might expect semicolons `;`.\n\n**Check:**\n1. Go to **Tools > Options > LibreOffice Calc > Formula**.\n2. See what 'Function parameter separator' is set to.\n3. Also check if the data types match (e.g., looking up a number stored as text)."
+    },
+    "technical_tags": ["calc", "vlookup", "locale-settings"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_705",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Presentation",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "LibreOffice Impress"
+    },
+    "interaction": {
+      "user_query": "I have to give a talk. How do I make Impress show my notes on the laptop screen but just the slides on the projector?",
+      "ai_response": "This is the **Presenter Console**.\n\n1. Connect the projector and ensure 'Join Displays' (Mirroring) is **OFF** in Ubuntu Display Settings. You need extended desktop.\n2. In Impress, go to **Slide Show > Slide Show Settings**.\n3. Under 'Presentation Display', select the external screen/projector.\n4. Start the slideshow (F5). Your laptop should now show the timer, next slide, and notes."
+    },
+    "technical_tags": ["impress", "presenter-mode", "multi-monitor"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_706",
+    "bucket": "Productivity & Documents",
+    "sub_category": "PDF Export",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "LibreOffice Writer"
+    },
+    "interaction": {
+      "user_query": "I need to send a PDF that is 'Archivable' (PDF/A). Just clicking the PDF button doesn't seem to do it.",
+      "ai_response": "1. Go to **File > Export As > Export as PDF**.\n2. In the General tab, check the box **Archive (PDF/A)**.\n3. Usually select PDF/A-1b or 2b for broad compatibility.\n4. Click Export.\n\nThis embeds all fonts and removes features incompatible with long-term archiving."
+    },
+    "technical_tags": ["pdf-a", "archiving", "export"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_707",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Macro Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "LibreOffice Calc"
+    },
+    "interaction": {
+      "user_query": "My work has an Excel sheet with macros. When I enable macros in Calc, nothing happens or it crashes.",
+      "ai_response": "LibreOffice has partial support for VBA, but it's not perfect.\n\n1. Go to **Tools > Options > Load/Save > VBA Properties**.\n2. Ensure **Executable code** is checked.\n3. If it still fails, the macro likely uses Windows-specific calls (ActiveX, COM) that don't exist in Linux. You will need to rewrite the macro in LibreOffice Basic or Python, or run the file in a Windows VM."
+    },
+    "technical_tags": ["vba", "macros", "compatibility"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_708",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Scanned Documents",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Simple Scan"
+    },
+    "interaction": {
+      "user_query": "I scanned 10 pages of a contract into separate JPEGs. How do I combine them into one PDF easily?",
+      "ai_response": "You can use `img2pdf` (command line) or just LibreOffice Draw.\n\n**CLI (Fastest):**\n`sudo apt install img2pdf`\n`img2pdf *.jpg -o contract.pdf`\n\n**GUI:**\n1. Open LibreOffice Writer.\n2. Drag and drop all images in.\n3. **File > Export as PDF**."
+    },
+    "technical_tags": ["scanning", "pdf-creation", "cli"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_709",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Pivot Tables",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "LibreOffice Calc"
+    },
+    "interaction": {
+      "user_query": "I created a Pivot Table in Calc. How do I refresh it when I add new data rows? It doesn't update automatically.",
+      "ai_response": "Pivot Tables in Calc (and Excel) don't auto-update.\n\n1. Click anywhere inside the Pivot Table.\n2. Right-click and select **Refresh**.\n3. If you added rows *outside* the original selected range, right-click > **Properties** > **Source** and update the cell range (e.g., extend `$A$1:$D$50` to `$A$1:$D$100`)."
+    },
+    "technical_tags": ["calc", "pivot-table", "data-analysis"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_710",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Annotations",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Okular"
+    },
+    "interaction": {
+      "user_query": "I made comments on a PDF using Okular. My coworker on Windows using Adobe Reader says he can't see them.",
+      "ai_response": "By default, Okular might store annotations in a separate local file (`.xml`) rather than embedding them in the PDF.\n\n**Fix:**\nWhen saving, use **File > Save As** to create a new PDF. This forces the annotations to be embedded into the PDF file structure itself, making them visible in other viewers."
+    },
+    "technical_tags": ["annotations", "compatibility", "okular"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_711",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Templates",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "LibreOffice Writer"
+    },
+    "interaction": {
+      "user_query": "I made a letterhead template. How do I save it so it appears in the 'My Templates' list when I start Writer?",
+      "ai_response": "1. Set up your document styles/layout.\n2. Go to **File > Templates > Save as Template**.\n3. Give it a name and select a category (e.g., 'My Templates').\n4. (Optional) Check 'Set as default template' if you want this for *every* new doc.\n5. Click **Save**."
+    },
+    "technical_tags": ["templates", "productivity", "writer"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_712",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Track Changes",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LibreOffice Writer"
+    },
+    "interaction": {
+      "user_query": "I turned on Track Changes, but the deleted text just disappears instead of crossing out. I need to see what was cut.",
+      "ai_response": "You might be in 'Show Final' mode.\n\n1. Go to **View > Track Changes**.\n2. Ensure **Show** is enabled.\n3. Also check **Tools > Options > LibreOffice Writer > Changes** to ensure 'Deletions' are set to a visible attribute (like Strikethrough) and not 'Hidden'."
+    },
+    "technical_tags": ["track-changes", "editing", "writer"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_713",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Digital Signatures",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "LibreOffice"
+    },
+    "interaction": {
+      "user_query": "Can I use my national ID card (smart card) to sign LibreOffice documents?",
+      "ai_response": "Yes, if your smart card reader drivers (OpenSC/PCSClite) are working.\n\n1. Ensure your card is detected: `pkcs11-tool -L`.\n2. In LibreOffice: **File > Digital Signatures > Digital Signatures**.\n3. Click **Sign Document**.\n4. It should prompt for your PIN if the certificate store is linked correctly to your system's PKCS#11 module."
+    },
+    "technical_tags": ["smart-card", "digital-signature", "pkcs11"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_714",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Page Numbering",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "LibreOffice Writer"
+    },
+    "interaction": {
+      "user_query": "I want page numbers to start on Page 3 (skipping the title page and TOC). How?",
+      "ai_response": "This requires a Style Break.\n\n1. Go to the bottom of Page 2.\n2. **Insert > More Breaks > Manual Break**.\n3. Select **Page Break**.\n4. Style: **Default Page Style** (or whatever you use for body).\n5. Check **Change page number** and set it to **1**.\n6. Now insert the footer/page number on Page 3. It won't appear on pages 1-2 if they use a different style (e.g., 'First Page')."
+    },
+    "technical_tags": ["formatting", "page-numbers", "styles"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_715",
+    "bucket": "Productivity & Documents",
+    "sub_category": "CSV Import",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "LibreOffice Calc"
+    },
+    "interaction": {
+      "user_query": "When I open a CSV, it puts everything into one column instead of separating it.",
+      "ai_response": "The 'Text Import' dialog settings are incorrect.\n\n1. When the import window pops up, look at **Separator Options**.\n2. Uncheck 'Space' or 'Tab' if checked.\n3. Check **Comma** (or Semicolon, depending on your file).\n4. Look at the preview pane at the bottom to verify columns are split correctly before clicking OK."
+    },
+    "technical_tags": ["csv", "data-import", "calc"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_716",
+    "bucket": "Productivity & Documents",
+    "sub_category": "PDF Compression",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Ghostscript"
+    },
+    "interaction": {
+      "user_query": "My PDF is 50MB and I need to email it (max 20MB). How do I shrink it?",
+      "ai_response": "Use Ghostscript (`gs`) for efficient compression:\n\n```bash\ngs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH -sOutputFile=small.pdf input.pdf\n```\n\n`-dPDFSETTINGS=/ebook` gives good quality at 150dpi. Use `/screen` for 72dpi (lower quality)."
+    },
+    "technical_tags": ["compression", "ghostscript", "cli"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_717",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Dictionary/Spellcheck",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "LibreOffice"
+    },
+    "interaction": {
+      "user_query": "LibreOffice marks every word as a typo. I think it's missing the English dictionary.",
+      "ai_response": "Debian separates dictionaries into packages.\n\n1. Close LibreOffice.\n2. Open terminal and install the dictionary:\n`sudo apt install hunspell-en-us` (or `myspell-en-us`)\n3. Reopen LibreOffice. Go to **Tools > Options > Language Settings > Languages** and ensure English (USA) has a checkmark icon next to it."
+    },
+    "technical_tags": ["spellcheck", "dictionaries", "localization"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_718",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Watermarks",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "LibreOffice Writer"
+    },
+    "interaction": {
+      "user_query": "How do I add a 'DRAFT' watermark diagonally across the page?",
+      "ai_response": "1. Go to **Format > Watermark**.\n2. Type 'DRAFT'.\n3. Choose font, angle (45°), and transparency.\n4. Click OK.\n\nThis inserts it into the page background."
+    },
+    "technical_tags": ["watermark", "formatting", "writer"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_719",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Master Pages",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LibreOffice Impress"
+    },
+    "interaction": {
+      "user_query": "I want to put my company logo on every slide in the same spot. Pasting it on every slide is tedious.",
+      "ai_response": "Use the Slide Master.\n\n1. Go to **View > Master Slide**.\n2. Paste your logo on the master slide layout.\n3. Position it.\n4. Click **Close Master View**.\n\nNow the logo appears on all slides using that master."
+    },
+    "technical_tags": ["impress", "master-slide", "templates"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_720",
+    "bucket": "Productivity & Documents",
+    "sub_category": "ODF Repair",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "LibreOffice"
+    },
+    "interaction": {
+      "user_query": "My important .odt file is corrupt and won't open. Is there any way to get the text back?",
+      "ai_response": "Since .odt is a zip file, try manual extraction.\n\n1. Make a copy: `cp file.odt file.zip`.\n2. Unzip it: `unzip file.zip`.\n3. Open `content.xml` in a text editor.\n4. It will be messy XML, but your text is there inside `<text:p>` tags. You can copy/paste it out or use a tool like `xmlstarlet` to extract just the text content."
+    },
+    "technical_tags": ["data-recovery", "corrupt-file", "xml"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_801",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Household Budget",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LibreOffice Calc"
+    },
+    "interaction": {
+      "user_query": "I'm making a budget. How do I make the total sum turn red if I go over $2000?",
+      "ai_response": "Use Conditional Formatting.\n\n1. Select the total cell.\n2. Go to **Format > Conditional > Condition**.\n3. Set condition: 'Cell value' 'is greater than' '2000'.\n4. Under 'Apply Style', choose 'Bad' or click 'New Style' to set font color to Red.\n5. Click OK."
+    },
+    "technical_tags": ["calc", "conditional-formatting", "budgeting"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_802",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Recipe Management",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "LibreOffice Writer"
+    },
+    "interaction": {
+      "user_query": "I'm typing recipes. I want to insert a fraction like ½ without typing 1/2. How?",
+      "ai_response": "LibreOffice usually auto-corrects 1/2 to ½. If not:\n\n1. Go to **Insert > Special Character**.\n2. Search for '1/2' or look in the 'Number Forms' subset.\n3. Select ½ and Insert.\n\n**Tip:** Verify AutoCorrect options in **Tools > AutoCorrect > AutoCorrect Options > Replace**."
+    },
+    "technical_tags": ["formatting", "special-characters", "writer"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_803",
+    "bucket": "Productivity & Documents",
+    "sub_category": "School Work",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "LibreOffice Math"
+    },
+    "interaction": {
+      "user_query": "I need to write a math formula for homework (quadratic equation) in Writer. It looks ugly just typing it.",
+      "ai_response": "Use the formula editor.\n\n1. Go to **Insert > OLE Object > Formula Object**.\n2. In the bottom pane, type:\n`x = {-b +- sqrt{b^2 - 4ac}} over {2a}`\n3. It will render beautifully in the document body."
+    },
+    "technical_tags": ["math", "formulas", "latex-alternative"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_804",
+    "bucket": "Productivity & Documents",
+    "sub_category": "E-books",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Calibre"
+    },
+    "interaction": {
+      "user_query": "I have a PDF book but I want to read it on my Kindle. How do I convert it to epub or mobi?",
+      "ai_response": "Calibre is the best tool for this.\n\n1. Install: `sudo apt install calibre`\n2. Add the PDF to your library.\n3. Click **Convert Books**.\n4. Set Output format (top right) to **MOBI** or **AZW3** (for Kindle).\n5. Click OK.\n\n*Note:* PDF conversion can sometimes result in weird line breaks."
+    },
+    "technical_tags": ["ebooks", "conversion", "calibre"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_805",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Labels",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "LibreOffice Writer"
+    },
+    "interaction": {
+      "user_query": "I need to print address labels for Christmas cards. Does Writer have templates for Avery labels?",
+      "ai_response": "Yes, it has a built-in wizard.\n\n1. **File > New > Labels**.\n2. Select **Brand** (e.g., Avery Letter Size).\n3. Select **Type** (look for the code on your label box, e.g., 5160).\n4. Type your text or link a database.\n5. Click **New Document**. It will create a grid matching your labels."
+    },
+    "technical_tags": ["printing", "labels", "templates"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_806",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Photo Albums",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "LibreOffice Draw"
+    },
+    "interaction": {
+      "user_query": "I want to arrange some family photos on a page to print. Should I use Writer or Draw?",
+      "ai_response": "**LibreOffice Draw** is much better for this.\n\nIn Writer, images move text around. In Draw, you can place, resize, and rotate images freely on the canvas without worrying about text wrapping or margins."
+    },
+    "technical_tags": ["layout", "images", "draw"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_807",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Genealogy",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Gramps"
+    },
+    "interaction": {
+      "user_query": "I'm tracking my family tree. Can I export a chart to PDF to print at a shop?",
+      "ai_response": "Yes, if using Gramps:\n\n1. Go to **Reports > Graphical Reports > Ancestor Tree**.\n2. In the options, set the **Destination** to 'PDF file'.\n3. Under **Paper Options**, choose a large size (like A0 or ANSI E) if the tree is big, or the shop will have to scale it."
+    },
+    "technical_tags": ["genealogy", "printing", "gramps"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_808",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Home Inventory",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LibreOffice Calc"
+    },
+    "interaction": {
+      "user_query": "I'm making a list of serial numbers for insurance. How do I attach photos of the items into the spreadsheet cells?",
+      "ai_response": "It's best not to embed high-res photos directly into cells as it bloats the file.\n\n**Better approach:**\n1. **Insert > Image**.\n2. Right-click the image > **Anchor > To Cell (resize with cell)**.\n3. Now when you sort or filter rows, the image will move with the item data."
+    },
+    "technical_tags": ["calc", "images", "inventory"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_809",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Journaling",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "RedNotebook"
+    },
+    "interaction": {
+      "user_query": "I want a digital diary. Writer is too plain. Is there something better?",
+      "ai_response": "**RedNotebook** is great for this.\n\n`sudo dnf install rednotebook`\n\nIt organizes entries by date, supports tags (like #vacation), allows inserting images, and exports to PDF. It saves data as plain text/yaml, so it's future-proof."
+    },
+    "technical_tags": ["journaling", "rednotebook", "apps"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_810",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Letters",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "LibreOffice Writer"
+    },
+    "interaction": {
+      "user_query": "I'm writing a formal complaint. How do I verify my grammar? Spellcheck isn't catching bad grammar.",
+      "ai_response": "LibreOffice has a basic grammar checker (LightProof), but for better results, install **LanguageTool**.\n\n1. Install the extension: `sudo apt install libreoffice-languagetool` (or download the OXT from the website).\n2. Restart LibreOffice.\n3. It will underline complex grammar errors in blue."
+    },
+    "technical_tags": ["grammar", "languagetool", "extensions"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_901",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Legacy Formats",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LibreOffice"
+    },
+    "interaction": {
+      "user_query": "I found some old Lotus 1-2-3 (.wk1) files on a floppy. Can Linux open these?",
+      "ai_response": "Yes, LibreOffice Calc has impressive legacy filters.\n\n1. Open Calc.\n2. **File > Open**.\n3. Select the .wk1 file.\n\nIf that fails, use `gnumeric`, which often handles obscure legacy spreadsheet formats even better than LibreOffice."
+    },
+    "technical_tags": ["legacy-files", "lotus-123", "gnumeric"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_902",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Large Files",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "LibreOffice Writer"
+    },
+    "interaction": {
+      "user_query": "I have a 300-page document with tons of images. Writer is super laggy.",
+      "ai_response": "1. Go to **Tools > Options > LibreOffice > View**.\n2. Uncheck **Use Skia for all rendering** (sometimes causes lag on certain GPUs) or try forcing it enabled.\n3. Increase cache: **Tools > Options > LibreOffice > Memory** (in older versions) or **Graphics Cache**.\n4. **Workaround:** Hide images while editing via **View > Images and Charts** (uncheck it)."
+    },
+    "technical_tags": ["performance", "optimization", "gpu-acceleration"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_903",
+    "bucket": "Productivity & Documents",
+    "sub_category": "CLI Printing",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "CUPS"
+    },
+    "interaction": {
+      "user_query": "I broke my GUI but need to print a PDF resume ASAP from the terminal.",
+      "ai_response": "Use `lp`.\n\n1. List printers: `lpstat -p`\n2. Print: `lp -d PRINTER_NAME filename.pdf`\n3. If you want double-sided: `lp -d PRINTER_NAME -o sides=two-sided-long-edge filename.pdf`"
+    },
+    "technical_tags": ["cli", "printing", "emergency"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_904",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Corrupt PDF",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Mutool"
+    },
+    "interaction": {
+      "user_query": "I downloaded a PDF but viewers say it's damaged. Is it salvageable?",
+      "ai_response": "Try using `mutool` (part of mupdf-tools) to clean it.\n\n```bash\nmutool clean input.pdf repaired.pdf\n```\n\nThis rewrites the file structure and fixes common syntax errors."
+    },
+    "technical_tags": ["pdf-repair", "mutool", "cli"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_905",
+    "bucket": "Productivity & Documents",
+    "sub_category": "RTL Languages",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "LibreOffice Writer"
+    },
+    "interaction": {
+      "user_query": "I'm trying to mix English and Arabic in a document, but the cursor jumps around and direction is wrong.",
+      "ai_response": "You need to enable Complex Text Layout (CTL).\n\n1. **Tools > Options > Language Settings > Languages**.\n2. Check **Show UI elements for Bi-Directional writing**.\n3. Under 'Default Languages', enable CTL (Complex Text Layout) and select Arabic.\n4. Use the new Right-to-Left buttons on the toolbar to set paragraph direction correctly."
+    },
+    "technical_tags": ["localization", "arabic", "bi-directional"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_906",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Markdown",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Pop!_OS",
+      "app_version": "Typora"
+    },
+    "interaction": {
+      "user_query": "I keep hearing about Markdown. Can I use it to write PDFs?",
+      "ai_response": "Yes, you write in Markdown and export to PDF.\n\nUsing a tool like **Typora**, **Obsidian**, or **MarkText**:\n1. Write your text with simple syntax (`# Heading`, `**bold**`).\n2. **File > Export > PDF**.\n\nIt handles formatting automatically, so you don't have to fiddle with margins and fonts."
+    },
+    "technical_tags": ["markdown", "pdf-generation", "alternatives"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_907",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Headless Conversion",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "LibreOffice Headless"
+    },
+    "interaction": {
+      "user_query": "I have 100 .doc files I need to convert to PDF. I don't want to open them one by one.",
+      "ai_response": "Use LibreOffice headless mode in the terminal:\n\n```bash\nlibreoffice --headless --convert-to pdf *.doc\n```\n\nThis will batch convert all of them in the current folder."
+    },
+    "technical_tags": ["batch-processing", "cli", "automation"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_908",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Accessibility",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Orca"
+    },
+    "interaction": {
+      "user_query": "I use the Orca screen reader. LibreOffice isn't reading the menus to me.",
+      "ai_response": "LibreOffice needs the GTK3 or GTK4 integration for accessibility hooks.\n\n1. Ensure `libreoffice-gtk3` is installed.\n2. Start LibreOffice with `SAL_USE_VCLPLUGIN=gtk3 libreoffice` if it's defaulting to something else (like gen or kf5).\n3. Check **Tools > Options > Accessibility** and ensure 'Support assistive technology tools' is checked."
+    },
+    "technical_tags": ["accessibility", "screen-reader", "orca"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_909",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Barcode Generation",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "LibreOffice Draw"
+    },
+    "interaction": {
+      "user_query": "I need to generate a QR code for my wifi to put on the fridge.",
+      "ai_response": "LibreOffice can do this natively now.\n\n1. Open Writer or Draw.\n2. **Insert > Object > QR and Barcode**.\n3. Type your wifi string: `WIFI:S:MySSID;T:WPA;P:MyPassword;;`\n4. Click OK. It generates a vector QR code."
+    },
+    "technical_tags": ["qr-code", "generator", "tools"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_910",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Dark Mode",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "LibreOffice"
+    },
+    "interaction": {
+      "user_query": "I enabled Dark Mode in Ubuntu, but the paper in Writer is still blindingly white.",
+      "ai_response": "1. Go to **Tools > Options > LibreOffice > Application Colors**.\n2. Change 'Document background' to a dark gray.\n3. Alternatively, newer versions have a setting **View > Mode > Dark** (experimental in some versions) which automatically inverts the canvas."
+    },
+    "technical_tags": ["dark-mode", "theming", "eye-strain"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_911",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LaTeX",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "TexLive"
+    },
+    "interaction": {
+      "user_query": "I'm trying to compile a .tex file but it complains about missing `article.cls`.",
+      "ai_response": "You are missing the base LaTeX packages.\n\n1. Install the core group: `sudo pacman -S texlive-core`.\n2. For a complete setup (recommended to avoid missing font/package errors): `sudo pacman -S texlive-meta` (Note: this is a large download)."
+    },
+    "technical_tags": ["latex", "compilation", "dependencies"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_912",
+    "bucket": "Productivity & Documents",
+    "sub_category": "EPUB Editing",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Sigil"
+    },
+    "interaction": {
+      "user_query": "I downloaded an EPUB but the chapters are out of order. Can I fix it?",
+      "ai_response": "Use **Sigil**.\n\n1. `sudo apt install sigil`.\n2. Open the EPUB.\n3. On the left 'Book Browser', drag and drop the XHTML files into the correct order.\n4. Save. You can also edit the Table of Contents via **Tools > Table of Contents > Generate Table of Contents**."
+    },
+    "technical_tags": ["epub", "editing", "sigil"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_913",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Kiosk Mode",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Evince"
+    },
+    "interaction": {
+      "user_query": "I want to display a PDF brochure on a screen in our shop lobby, full screen, looping.",
+      "ai_response": "Evince supports presentation mode.\n\ncommand:\n`evince --presentation --preview brochure.pdf`\n\nHowever, for auto-advancing and looping, `impressive` (PDF presentation tool) is better:\n`impressive -a 10 -w brochure.pdf` (Advances every 10 seconds, wraps around)."
+    },
+    "technical_tags": ["kiosk", "presentation", "digital-signage"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_914",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Plotting",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Gnuplot"
+    },
+    "interaction": {
+      "user_query": "Calc charts are too basic for my data. I need to script a 3D surface plot.",
+      "ai_response": "**Gnuplot** is the standard for this.\n\n1. Create a data file `data.txt`.\n2. Create a script `plot.gp`:\n```\nset hidden3d\nsplot \"data.txt\" with lines\n```\n3. Run `gnuplot -p plot.gp`."
+    },
+    "technical_tags": ["plotting", "data-visualization", "gnuplot"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_915",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Scanning",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "SANE"
+    },
+    "interaction": {
+      "user_query": "My scanner works with `lsusb` but Simple Scan says 'No Scanners Detected'.",
+      "ai_response": "It might be a permissions issue.\n\n1. Check if you are in the `scanner` group (or `lp`):\n`groups $USER`\n2. If not, add yourself: `sudo usermod -aG scanner $USER`\n3. Log out and back in.\n\nAlso check if you need the `libsane-hpaio` plugin if it's an HP device."
+    },
+    "technical_tags": ["scanning", "permissions", "hardware"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_916",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Vector Graphics",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Inkscape"
+    },
+    "interaction": {
+      "user_query": "I need to edit a logo SVG file. LibreOffice Draw opens it but messes up gradients.",
+      "ai_response": "**Inkscape** is the proper tool for SVG editing.\n\n`sudo apt install inkscape`\n\nLibreOffice Draw converts SVGs to its internal format, often losing complex effects. Inkscape is a native SVG editor."
+    },
+    "technical_tags": ["svg", "inkscape", "design"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_917",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Audio Notes",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Xournal++"
+    },
+    "interaction": {
+      "user_query": "Can I record audio while I take notes in class? I type slow.",
+      "ai_response": "Yes, **Xournal++** has this feature.\n\n1. Click the **Record** button (Microphone icon) in the toolbar.\n2. Take your notes.\n3. When you play it back, clicking a specific note you wrote will jump the audio to the moment you wrote it."
+    },
+    "technical_tags": ["note-taking", "audio-recording", "xournalpp"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_918",
+    "bucket": "Productivity & Documents",
+    "sub_category": "BibTeX",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "JabRef"
+    },
+    "interaction": {
+      "user_query": "I have a BibTeX file for my thesis citations. How do I manage it easily with a GUI?",
+      "ai_response": "**JabRef** is the standard Java-based GUI for BibTeX.\n\n1. Install: `sudo dnf install jabref` (or via Flatpak).\n2. Open your `.bib` file.\n3. You can search online databases (Google Scholar, DOI) directly inside JabRef to auto-populate entries."
+    },
+    "technical_tags": ["bibliography", "latex", "research"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_919",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Faxing",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Efax-gtk"
+    },
+    "interaction": {
+      "user_query": "Believe it or not, I need to send a fax. I have a USB modem. Can Linux do this?",
+      "ai_response": "Yes, `efax-gtk` provides a GUI for this.\n\n1. Install: `sudo apt install efax-gtk`.\n2. Configure it to use your modem device (usually `/dev/ttyACM0` or `/dev/ttyUSB0`).\n3. You can print directly to the 'Fax' printer it creates from LibreOffice."
+    },
+    "technical_tags": ["legacy-hardware", "fax", "telephony"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_920",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Mind Mapping",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Freeplane"
+    },
+    "interaction": {
+      "user_query": "I need to brainstorm ideas visually. Is there a tool for mind maps?",
+      "ai_response": "Try **Freeplane** or **View Your Mind (VYM)**.\n\n`sudo apt install freeplane`\n\nIt allows you to create nodes using keyboard shortcuts (Insert/Enter) very quickly and export to PDF or image."
+    },
+    "technical_tags": ["mind-mapping", "brainstorming", "tools"],
+    "friction_type": "user_error"
+  }
+]

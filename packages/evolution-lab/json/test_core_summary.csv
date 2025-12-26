@@ -1,0 +1,85 @@
+ID,Bucket,Complexity,Popularity,Question
+APP_ISSUES_003,Application Issues,1,4,I'm using VLC installed via Flatpak on Fedora. I can't seem to open video files that are stored on m
+APP_ISSUES_004,Application Issues,1,4,Why does Firefox take like 10 seconds to open on a cold boot? It's really annoying compared to Windo
+APP_ISSUES_007,Application Issues,1,4,Discord won't open. It just shows a grey box saying 'Update Available' but the deb file on the websi
+APP_ISSUES_005,Application Issues,2,4,I'm trying to install a .deb file I downloaded for a printer driver. `dpkg -i` says 'dependency prob
+APP_ISSUES_010,Application Issues,2,4,I tried to run `apt update` but I get an error: 'The following signatures couldn't be verified becau
+APP_ISSUES_011,Application Issues,2,4,I can't share my screen on Zoom. The button works but the other person just sees a black screen. I'm
+APP_ISSUES_416,Application Issues,3,4,"I type my password, the screen goes black, and then it brings me right back to the login screen. I c"
+APP_ISSUES_409,Application Issues,3,3,I need a newer kernel for my wifi card but I want to stay on Debian Stable. How do I get it?
+APP_ISSUES_504,Application Issues,3,3,I keep getting a GPG error about 'NO_PUBKEY' when I try to update my apps. I think I added a repo fo
+AUTO_SCRIPT_001,Automation & Scripting,2,4,"My backup script works fine when I run it manually, but when cron runs it, it fails with 'command no"
+AUTO_SCRIPT_002,Automation & Scripting,2,4,"I'm trying to run a script I just wrote, but I keep getting 'Permission denied', even though I am th"
+AUTO_SCRIPT_101,Automation & Scripting,2,4,I am losing my mind. I put a script in `/etc/cron.daily` but it never runs. The permissions are 755.
+AUTO_SCRIPT_202,Automation & Scripting,3,3,How can I ensure only one instance of my script runs at a time? I want to avoid race conditions if t
+AUTO_SCRIPT_305,Automation & Scripting,3,3,I keep seeing `[[ ]]` vs `[ ]` in scripts. Which one should I use for automation scripts?
+AUTO_SCRIPT_403,Automation & Scripting,3,3,"I need to perform a search and replace on a configuration file string, but the string contains slash"
+COMM_EMAIL_001,Communication & Email,1,4,Thunderbird won't connect to my Gmail. It keeps saying 'Authentication Failed' but my password is de
+COMM_EMAIL_104,Communication & Email,1,4,"I can't send emails! Receiving works fine, but sending gives an SMTP timeout error."
+COMM_EMAIL_202,Communication & Email,1,4,How do I sync my Google Calendar with the Ubuntu calendar app without installing anything extra?
+COMM_EMAIL_023,Communication & Email,2,4,I can receive emails but I cannot send them. SMTP times out.
+COMM_EMAIL_101,Communication & Email,2,4,Why is Linux support for Zoom so bad? I can't share audio when I share my screen!
+COMM_EMAIL_204,Communication & Email,2,4,I want to backup all my Thunderbird emails and settings to a USB drive. Which file do I copy?
+COMM_EMAIL_028,Communication & Email,3,3,I want to encrypt my emails with PGP. How do I set this up in Thunderbird?
+COMM_EMAIL_056,Communication & Email,3,3,"Thunderbird keeps asking for the master password every time I send an email, not just at startup."
+COMM_EMAIL_107,Communication & Email,3,3,I can't open attachments! It says '/tmp/... permission denied' whenever I try to open a PDF.
+DEV_DEVOPS_001,Development & DevOps,1,4,"I just installed Docker on Ubuntu 24.04. Every time I run `docker ps`, I get 'permission denied whil"
+DEV_DEVOPS_005,Development & DevOps,1,4,I tried to run `pip install requests` but got an 'externally-managed-environment' error. I just want
+DEV_DEVOPS_201,Development & DevOps,1,4,How do I create a simple Dockerfile for a Python script? I just want to run `main.py` which uses `pa
+DEV_DEVOPS_002,Development & DevOps,2,4,"I'm trying to push to a private GitHub repo over HTTPS, but I keep getting `Support for password aut"
+DEV_DEVOPS_004,Development & DevOps,2,4,I have an SSH key pair generated. I copied the public key to the server using `ssh-copy-id`. However
+DEV_DEVOPS_103,Development & DevOps,2,4,"I keep getting EACCES errors when installing global npm packages. I tried `sudo npm install`, but no"
+DEV_DEVOPS_101,Development & DevOps,3,4,I'm running `docker compose up -d`. The container starts but exits immediately with code 0. `docker 
+DEV_DEVOPS_104,Development & DevOps,3,3,I need to git pull from a private repo *inside* a remote server I'm SSH'd into. I don't want to copy
+DEV_DEVOPS_301,Development & DevOps,3,3,I'm on Fedora 40. Should I use Podman or install Docker CE? What's the practical difference for a de
+ENT_MEDIA_001,Entertainment & Media,1,4,"Spotify won't open. I click the icon, it bounces for a second, then nothing happens. No error messag"
+ENT_MEDIA_002,Entertainment & Media,1,4,I can't play an MP4 file I downloaded. It says 'missing codec H.264'.
+ENT_MEDIA_008,Entertainment & Media,1,4,Most of my Windows games in Steam are grayed out and I can't install them.
+ENT_MEDIA_003,Entertainment & Media,2,4,Why is Netflix quality so bad? It looks like 720p even though I pay for 4K.
+ENT_MEDIA_007,Entertainment & Media,2,4,YouTube makes my laptop fan spin like crazy. How do I turn on hardware decoding?
+ENT_MEDIA_011,Entertainment & Media,2,4,"My Bluetooth headphones sound like a telephone call, very low quality."
+ENT_MEDIA_046,Entertainment & Media,3,4,League of Legends won't start after the latest Vanguard update.
+ENT_MEDIA_004,Entertainment & Media,3,3,DaVinci Resolve won't launch. Terminal says something about 'libpango' or 'glib' errors.
+ENT_MEDIA_030,Entertainment & Media,3,3,The ads on Spotify are annoying. Is there a way to block them on the desktop app?
+FILE_ORG_001,File Organization,1,4,My USB drive is read-only. I can't delete or add files. It worked fine on Windows yesterday!
+FILE_ORG_002,File Organization,1,4,"I copied some photos to my computer, but now I can't find where they went. Is there a default folder"
+FILE_ORG_003,File Organization,1,4,Why can't I create a new folder inside the 'usr' folder? The option is grayed out.
+FILE_ORG_101,File Organization,2,4,This is driving me crazy! I reinstalled Linux and now I can't open my own documents on my secondary 
+FILE_ORG_201,File Organization,2,4,How do I change the owner of a folder and all the files inside it to me?
+FILE_ORG_203,File Organization,2,4,How can I share a folder on my network so I can see it on my Windows PC?
+FILE_ORG_204,File Organization,3,4,How do I make my secondary hard drive mount automatically when I turn on the computer?
+FILE_ORG_306,File Organization,3,3,Should I use `locate` or `find`? `find` seems so slow.
+FILE_ORG_403,File Organization,3,3,Can I make a script to move all my .mp3 files to Music and .jpg to Pictures automatically?
+LIFE_MGT_001,Life Management,1,4,"I connected my Google Account in Settings and my main calendar shows up, but my wife's shared calend"
+LIFE_MGT_518,Life Management,1,4,I am using Firefox to log into my bank. It keeps asking to 'Save Login'. I clicked 'Never' by mistak
+LIFE_MGT_618,Life Management,1,4,"I'm trying to stream my browser to my friends on Discord, but there is no audio! They see the video "
+LIFE_MGT_101,Life Management,2,4,I keep getting a 'Credentials have expired' notification for Google every single day. I re-login and
+LIFE_MGT_706,Life Management,2,4,"I'm using Zoom for work. When I share my screen, my computer slows to a crawl. I have an NVIDIA card"
+LIFE_MGT_720,Life Management,2,4,I saved my CV as a .docx file to send to a recruiter. They said the formatting is all over the place
+LIFE_MGT_401,Life Management,3,4,I want to automatically backup my Documents to Google Drive every night at 3 AM.
+LIFE_MGT_011,Life Management,3,3,I want to enable online banking features in GnuCash for my Chase account. How do I set up AqBanking?
+LIFE_MGT_017,Life Management,3,3,I want to mount my OneDrive as a local drive so I can access files without downloading them all. How
+PROD_DOC_002,Productivity & Documents,1,4,I opened a Word doc from my boss but the fonts look wrong. It's supposed to be Times New Roman but l
+PROD_DOC_007,Productivity & Documents,1,4,My spell check isn't working in Calc. It marks everything as wrong or does nothing.
+PROD_DOC_009,Productivity & Documents,1,4,LibreOffice is super slow to start up. It takes like 15 seconds to open a blank page.
+PROD_DOC_005,Productivity & Documents,2,4,"When I save as .docx and send it to Windows users, the formatting of my images gets messed up. Shoul"
+PROD_DOC_102,Productivity & Documents,2,4,I am so done with this. My printer works fine on Windows but on Linux it says 'Processing - Not Conn
+PROD_DOC_106,Productivity & Documents,2,4,Why does my Resume look perfect in Writer but when I export to PDF the margins are slightly cut off?
+PROD_DOC_401,Productivity & Documents,3,3,I have 50 .odt files I need to convert to PDF. I don't want to open them one by one.
+PROD_DOC_403,Productivity & Documents,3,3,I want to backup my Documents folder to a zip file every Friday automatically.
+PROD_DOC_505,Productivity & Documents,3,3,How do I redact text in a PDF permanently? I drew a black box over it in a viewer but the text is st
+SYS_TROUBLE_105,System Troubleshooting,2,4,"I can't unmount my external drive. `umount` says 'target is busy', but `lsof` returns absolutely not"
+SYS_TROUBLE_303,System Troubleshooting,2,4,"I have an NVIDIA 3060. Should I finally switch to Wayland on Fedora 40, or stay on X11 for gaming st"
+SYS_TROUBLE_305,System Troubleshooting,2,4,My Snap Firefox startup time is slow. Should I replace it with the Flatpak version or the official t
+SYS_TROUBLE_004,System Troubleshooting,3,4,NVIDIA driver isn't loading after kernel upgrade. `nvidia-smi` returns 'NVIDIA-SMI has failed becaus
+SYS_TROUBLE_006,System Troubleshooting,3,3,"Stuck in GRUB rescue mode with `error: unknown filesystem`. `ls` shows `(hd0,gpt1) (hd0,gpt2)`."
+SYS_TROUBLE_010,System Troubleshooting,3,3,I have a zombie process `[python3] <defunct>` that `kill -9` won't remove. Parent PID is 1.
+WEB_RES_002,Web & Research,1,4,"How do I install Google Chrome on Ubuntu? I can't find it in the Software Center, only Chromium."
+WEB_RES_006,Web & Research,1,4,How do I stop websites from tracking me on Firefox without breaking everything?
+WEB_RES_014,Web & Research,1,4,How do I change the default search engine from Google to DuckDuckGo in Firefox?
+WEB_RES_001,Web & Research,2,4,Why is my CPU at 100% when watching YouTube? My laptop gets super hot and the fans are loud.
+WEB_RES_007,Web & Research,2,4,Firefox Snap is too slow to open. How do I switch to the .deb version?
+WEB_RES_020,Web & Research,2,4,Firefox uses too much RAM. Is there a way to limit it?
+WEB_RES_011,Web & Research,3,3,How do I force VA-API on Chromium with Intel graphics? `chrome://gpu` says Video Decode: Software on
+WEB_RES_021,Web & Research,3,3,I have an NVIDIA card. How do I get hardware video decoding in Firefox?
+WEB_RES_521,Web & Research,3,3,How do I check if Firefox is using the Snap version or the DEB version? I want to avoid Snap for pri

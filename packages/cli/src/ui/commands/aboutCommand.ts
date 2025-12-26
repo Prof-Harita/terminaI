@@ -56,11 +56,13 @@ export const aboutCommand: SlashCommand = {
         if (pc.baseUrl) {
           baseUrlHost = new URL(pc.baseUrl).host;
         }
-      } else if (
-        provider === LlmProviderId.GEMINI &&
-        process.env['TERMINAI_GEMINI_BASE_URL']
-      ) {
-        baseUrlHost = new URL(process.env['TERMINAI_GEMINI_BASE_URL']).host;
+      } else if (provider === LlmProviderId.GEMINI) {
+        const baseUrl =
+          process.env['TERMINAI_BASE_URL'] ||
+          process.env['TERMINAI_GEMINI_BASE_URL'];
+        if (baseUrl) {
+          baseUrlHost = new URL(baseUrl).host;
+        }
       }
     } catch {
       // Ignore invalid URLs

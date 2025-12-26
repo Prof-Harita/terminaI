@@ -55,7 +55,7 @@ Add the hook configuration to `.gemini/settings.json`:
           {
             "name": "tool-logger",
             "type": "command",
-            "command": "$GEMINI_PROJECT_DIR/.gemini/hooks/log-tools.sh",
+            "command": "$TERMINAI_PROJECT_DIR/.gemini/hooks/log-tools.sh",
             "description": "Log all tool executions"
           }
         ]
@@ -115,7 +115,7 @@ exit 0
           {
             "name": "secret-scanner",
             "type": "command",
-            "command": "$GEMINI_PROJECT_DIR/.gemini/hooks/block-secrets.sh",
+            "command": "$TERMINAI_PROJECT_DIR/.gemini/hooks/block-secrets.sh",
             "description": "Prevent committing secrets"
           }
         ]
@@ -172,7 +172,7 @@ exit 0
           {
             "name": "auto-test",
             "type": "command",
-            "command": "$GEMINI_PROJECT_DIR/.gemini/hooks/auto-test.sh",
+            "command": "$TERMINAI_PROJECT_DIR/.gemini/hooks/auto-test.sh",
             "description": "Run tests after code changes"
           }
         ]
@@ -217,7 +217,7 @@ EOF
           {
             "name": "git-context",
             "type": "command",
-            "command": "$GEMINI_PROJECT_DIR/.gemini/hooks/inject-context.sh",
+            "command": "$TERMINAI_PROJECT_DIR/.gemini/hooks/inject-context.sh",
             "description": "Inject git commit history"
           }
         ]
@@ -345,7 +345,7 @@ chmod +x .gemini/hooks/*.js
           {
             "name": "init-assistant",
             "type": "command",
-            "command": "node $GEMINI_PROJECT_DIR/.gemini/hooks/init.js",
+            "command": "node $TERMINAI_PROJECT_DIR/.gemini/hooks/init.js",
             "description": "Initialize Smart Workflow Assistant"
           }
         ]
@@ -358,7 +358,7 @@ chmod +x .gemini/hooks/*.js
           {
             "name": "inject-memories",
             "type": "command",
-            "command": "node $GEMINI_PROJECT_DIR/.gemini/hooks/inject-memories.js",
+            "command": "node $TERMINAI_PROJECT_DIR/.gemini/hooks/inject-memories.js",
             "description": "Inject relevant project memories"
           }
         ]
@@ -371,7 +371,7 @@ chmod +x .gemini/hooks/*.js
           {
             "name": "rag-filter",
             "type": "command",
-            "command": "node $GEMINI_PROJECT_DIR/.gemini/hooks/rag-filter.js",
+            "command": "node $TERMINAI_PROJECT_DIR/.gemini/hooks/rag-filter.js",
             "description": "Filter tools using RAG"
           }
         ]
@@ -384,7 +384,7 @@ chmod +x .gemini/hooks/*.js
           {
             "name": "security-check",
             "type": "command",
-            "command": "node $GEMINI_PROJECT_DIR/.gemini/hooks/security.js",
+            "command": "node $TERMINAI_PROJECT_DIR/.gemini/hooks/security.js",
             "description": "Prevent committing secrets"
           }
         ]
@@ -397,7 +397,7 @@ chmod +x .gemini/hooks/*.js
           {
             "name": "auto-test",
             "type": "command",
-            "command": "node $GEMINI_PROJECT_DIR/.gemini/hooks/auto-test.js",
+            "command": "node $TERMINAI_PROJECT_DIR/.gemini/hooks/auto-test.js",
             "description": "Run tests after code changes"
           }
         ]
@@ -410,7 +410,7 @@ chmod +x .gemini/hooks/*.js
           {
             "name": "record-interaction",
             "type": "command",
-            "command": "node $GEMINI_PROJECT_DIR/.gemini/hooks/record.js",
+            "command": "node $TERMINAI_PROJECT_DIR/.gemini/hooks/record.js",
             "description": "Record interaction for learning"
           }
         ]
@@ -423,7 +423,7 @@ chmod +x .gemini/hooks/*.js
           {
             "name": "consolidate-memories",
             "type": "command",
-            "command": "node $GEMINI_PROJECT_DIR/.gemini/hooks/consolidate.js",
+            "command": "node $TERMINAI_PROJECT_DIR/.gemini/hooks/consolidate.js",
             "description": "Extract and store session learnings"
           }
         ]
@@ -446,7 +446,7 @@ const path = require('path');
 const fs = require('fs');
 
 async function main() {
-  const projectDir = process.env.GEMINI_PROJECT_DIR;
+  const projectDir = process.env.TERMINAI_PROJECT_DIR;
   const chromaPath = path.join(projectDir, '.gemini', 'chroma');
 
   // Ensure chroma directory exists
@@ -506,12 +506,12 @@ async function main() {
   }
 
   // Embed the prompt
-  const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  const genai = new GoogleGenerativeAI(process.env.TERMINAI_API_KEY);
   const model = genai.getGenerativeModel({ model: 'text-embedding-004' });
   const result = await model.embedContent(prompt);
 
   // Search memories
-  const projectDir = process.env.GEMINI_PROJECT_DIR;
+  const projectDir = process.env.TERMINAI_PROJECT_DIR;
   const client = new ChromaClient({
     path: path.join(projectDir, '.gemini', 'chroma'),
   });
@@ -587,7 +587,7 @@ async function main() {
     .join('\n');
 
   // Use fast model to extract task keywords
-  const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  const genai = new GoogleGenerativeAI(process.env.TERMINAI_API_KEY);
   const model = genai.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
 
   const result = await model.generateContent(
@@ -765,8 +765,8 @@ const path = require('path');
 async function main() {
   const input = JSON.parse(await readStdin());
   const { llm_request, llm_response } = input;
-  const projectDir = process.env.GEMINI_PROJECT_DIR;
-  const sessionId = process.env.GEMINI_SESSION_ID;
+  const projectDir = process.env.TERMINAI_PROJECT_DIR;
+  const sessionId = process.env.TERMINAI_SESSION_ID;
 
   const tempFile = path.join(
     projectDir,
@@ -825,8 +825,8 @@ const { ChromaClient } = require('chromadb');
 
 async function main() {
   const input = JSON.parse(await readStdin());
-  const projectDir = process.env.GEMINI_PROJECT_DIR;
-  const sessionId = process.env.GEMINI_SESSION_ID;
+  const projectDir = process.env.TERMINAI_PROJECT_DIR;
+  const sessionId = process.env.TERMINAI_SESSION_ID;
 
   const tempFile = path.join(
     projectDir,
@@ -855,7 +855,7 @@ async function main() {
   }
 
   // Extract memories using LLM
-  const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  const genai = new GoogleGenerativeAI(process.env.TERMINAI_API_KEY);
   const model = genai.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
 
   const prompt = `Extract important project learnings from this session.

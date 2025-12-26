@@ -58,7 +58,7 @@ To explore your configuration options, see
 
 If you want to override the system prompt (for example, to adopt the TerminaI
 operator persona), see
-[System Prompt Override (GEMINI_SYSTEM_MD)](../cli/system-prompt.md) and the
+[System Prompt Override (TERMINAI_SYSTEM_MD)](../cli/system-prompt.md) and the
 [TerminaI system prompt example](../termai-system.md).
 
 ## Use

@@ -1290,6 +1290,23 @@
           "default": true,
           "type": "boolean"
         },
+        "guiAutomation": {
+          "title": "GUI Automation",
+          "description": "Settings for desktop GUI automation (mouse, keyboard control).",
+          "markdownDescription": "Settings for desktop GUI automation (mouse, keyboard control).\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `{}`",
+          "default": {},
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "title": "Enable GUI Automation",
+              "description": "Enable desktop GUI automation tools (ui.click, ui.type, etc.). Requires AT-SPI on Linux.",
+              "markdownDescription": "Enable desktop GUI automation tools (ui.click, ui.type, etc.). Requires AT-SPI on Linux.\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `false`",
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
         "enableHooks": {
           "title": "Enable Hooks System",
           "description": "Enable the hooks system for intercepting and customizing Gemini CLI behavior. When enabled, hooks configured in settings will execute at appropriate lifecycle events (BeforeTool, AfterTool, BeforeModel, etc.). Requires MessageBus integration.",
@@ -1556,6 +1573,33 @@
               "markdownDescription": "Enable the Introspection Agent.\n\n- Category: `Experimental`\n- Requires restart: `yes`\n- Default: `false`",
               "default": false,
               "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "logs": {
+      "title": "Logs",
+      "description": "Session logging and retention settings.",
+      "markdownDescription": "Session logging and retention settings.\n\n- Category: `General`\n- Requires restart: `no`\n- Default: `{}`",
+      "default": {},
+      "type": "object",
+      "properties": {
+        "retention": {
+          "title": "Retention",
+          "description": "Log retention settings.",
+          "markdownDescription": "Log retention settings.\n\n- Category: `General`\n- Requires restart: `no`\n- Default: `{}`",
+          "default": {},
+          "type": "object",
+          "properties": {
+            "days": {
+              "title": "Retention Days",
+              "description": "Number of days to keep session logs.",
+              "markdownDescription": "Number of days to keep session logs.\n\n- Category: `General`\n- Requires restart: `no`\n- Default: `7`",
+              "default": 7,
+              "type": "number"
             }
           },
           "additionalProperties": false

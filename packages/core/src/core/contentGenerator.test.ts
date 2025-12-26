@@ -363,7 +363,7 @@ describe('createContentGenerator', () => {
     );
   });
 
-  it('should set baseUrl when TERMINAI_GEMINI_BASE_URL is set to a valid URL', async () => {
+  it('should set baseUrl when TERMINAI_BASE_URL is set to a valid URL', async () => {
     const mockConfig = {
       getModel: vi.fn().mockReturnValue('gemini-pro'),
       getProxy: vi.fn().mockReturnValue(undefined),
@@ -379,7 +379,7 @@ describe('createContentGenerator', () => {
       models: {},
     } as unknown as GoogleGenAI;
     vi.mocked(GoogleGenAI).mockImplementation(() => mockGenerator as never);
-    vi.stubEnv('TERMINAI_GEMINI_BASE_URL', 'https://custom.gemini.api/');
+    vi.stubEnv('TERMINAI_BASE_URL', 'https://custom.gemini.api/');
 
     const generator = await createContentGenerator(
       {
@@ -403,7 +403,7 @@ describe('createContentGenerator', () => {
     );
   });
 
-  it('should throw error when TERMINAI_GEMINI_BASE_URL is invalid', async () => {
+  it('should throw error when TERMINAI_BASE_URL is invalid', async () => {
     const mockConfig = {
       getModel: vi.fn().mockReturnValue('gemini-pro'),
       getProxy: vi.fn().mockReturnValue(undefined),
@@ -415,7 +415,7 @@ describe('createContentGenerator', () => {
         .mockReturnValue({ provider: LlmProviderId.GEMINI }),
     } as unknown as Config;
 
-    vi.stubEnv('TERMINAI_GEMINI_BASE_URL', 'invalid-url');
+    vi.stubEnv('TERMINAI_BASE_URL', 'invalid-url');
 
     await expect(
       createContentGenerator(
@@ -425,12 +425,10 @@ describe('createContentGenerator', () => {
         },
         mockConfig,
       ),
-    ).rejects.toThrow(
-      'TERMINAI_GEMINI_BASE_URL must start with http:// or https://',
-    );
+    ).rejects.toThrow('TERMINAI_BASE_URL must start with http:// or https://');
   });
 
-  it('should normalize trailing slash in TERMINAI_GEMINI_BASE_URL', async () => {
+  it('should normalize trailing slash in TERMINAI_BASE_URL', async () => {
     const mockConfig = {
       getModel: vi.fn().mockReturnValue('gemini-pro'),
       getProxy: vi.fn().mockReturnValue(undefined),
@@ -446,7 +444,7 @@ describe('createContentGenerator', () => {
       models: {},
     } as unknown as GoogleGenAI;
     vi.mocked(GoogleGenAI).mockImplementation(() => mockGenerator as never);
-    vi.stubEnv('TERMINAI_GEMINI_BASE_URL', 'https://custom.gemini.api/');
+    vi.stubEnv('TERMINAI_BASE_URL', 'https://custom.gemini.api/');
 
     await createContentGenerator(
       {
@@ -464,15 +462,12 @@ describe('createContentGenerator', () => {
     );
   });
 
-  it('should NOT pass baseUrl to OAuth (LOGIN_WITH_GOOGLE) even when TERMINAI_GEMINI_BASE_URL is set', async () => {
+  it('should NOT pass baseUrl to OAuth (LOGIN_WITH_GOOGLE) even when TERMINAI_BASE_URL is set', async () => {
     const mockGenerator = {} as unknown as ContentGenerator;
     vi.mocked(createCodeAssistContentGenerator).mockResolvedValue(
       mockGenerator as never,
     );
-    vi.stubEnv(
-      'TERMINAI_GEMINI_BASE_URL',
-      'https://should-be-ignored.example/',
-    );
+    vi.stubEnv('TERMINAI_BASE_URL', 'https://should-be-ignored.example/');
 
     await createContentGenerator(
       {

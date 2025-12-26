@@ -48,7 +48,7 @@ affect Desktop app connectivity.
 
 ```
 Token Generation (CLI startup with --web-remote):
-1. Check for GEMINI_WEB_REMOTE_TOKEN env var
+1. Check for TERMINAI_WEB_REMOTE_TOKEN env var
 2. If --web-remote-rotate-token: generate new token
 3. If existing ~/.gemini/web-remote-auth.json: use stored hash
 4. Otherwise: generate new token and store hash
@@ -56,7 +56,7 @@ Token Generation (CLI startup with --web-remote):
 Token Storage:
 - Location: ~/.gemini/web-remote-auth.json
 - Format: Scrypt hash (salt + hash, no plaintext)
-- Override: GEMINI_WEB_REMOTE_AUTH_PATH env var
+- Override: TERMINAI_WEB_REMOTE_AUTH_PATH env var
 
 Token Validation (Server):
 1. Extract Bearer token from Authorization header
@@ -74,13 +74,13 @@ Token Validation (Server):
 **Entry Point:**
 [`packages/a2a-server/src/http/app.ts`](file:///home/profharita/Code/terminaI/packages/a2a-server/src/http/app.ts#L195-L401)
 
-| Setting         | Source                                              | Default                       |
-| --------------- | --------------------------------------------------- | ----------------------------- |
-| Port            | `CODER_AGENT_PORT` env                              | `0` (random)                  |
-| Host            | Passed via `startWebRemoteServer()`                 | `localhost`                   |
-| Auth Token      | `GEMINI_WEB_REMOTE_TOKEN` or file                   | **Required**                  |
-| Allowed Origins | `GEMINI_WEB_REMOTE_ALLOWED_ORIGINS` env or settings | `[]`                          |
-| Health Check    | `/healthz`                                          | Status 200, `{"status":"ok"}` |
+| Setting         | Source                                                | Default                       |
+| --------------- | ----------------------------------------------------- | ----------------------------- |
+| Port            | `CODER_AGENT_PORT` env                                | `0` (random)                  |
+| Host            | Passed via `startWebRemoteServer()`                   | `localhost`                   |
+| Auth Token      | `TERMINAI_WEB_REMOTE_TOKEN` or file                   | **Required**                  |
+| Allowed Origins | `TERMINAI_WEB_REMOTE_ALLOWED_ORIGINS` env or settings | `[]`                          |
+| Health Check    | `/healthz`                                            | Status 200, `{"status":"ok"}` |
 
 **Key Endpoints:**
 
@@ -136,7 +136,7 @@ Token Validation (Server):
    allowed
 3. **Loopback origins:** Any loopback-to-loopback request allowed (different
    ports OK)
-4. **Explicit allowlist:** Origins in `GEMINI_WEB_REMOTE_ALLOWED_ORIGINS`
+4. **Explicit allowlist:** Origins in `TERMINAI_WEB_REMOTE_ALLOWED_ORIGINS`
 
 ### CORS Headers
 
@@ -509,12 +509,12 @@ catch (error) {
              │
              ├─▶ Check for --web-remote-token flag
              │   └─▶ YES: Use provided token (not persisted)
-             │       └─▶ Set GEMINI_WEB_REMOTE_TOKEN env var
+             │       └─▶ Set TERMINAI_WEB_REMOTE_TOKEN env var
              │
              ├─▶ Check for --web-remote-rotate-token flag
              │   └─▶ YES: Generate new token, save hash, display token, EXIT
              │
-             ├─▶ Check for GEMINI_WEB_REMOTE_TOKEN env var
+             ├─▶ Check for TERMINAI_WEB_REMOTE_TOKEN env var
              │   └─▶ YES: Use env token (not persisted)
              │
              ├─▶ Check for existing ~/.gemini/web-remote-auth.json

@@ -19,7 +19,7 @@ termai
 If you want to override the system prompt:
 
 ```bash
-export GEMINI_SYSTEM_MD=/path/to/your/system.md
+export TERMINAI_SYSTEM_MD=/path/to/your/system.md
 termai
 ```
 

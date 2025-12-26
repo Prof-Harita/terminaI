@@ -36,8 +36,8 @@ Core building blocks TermAI can leverage with minimal changes:
 
 - **`packages/core` (engine):**
   - System prompt assembly: `packages/core/src/core/prompts.ts` (supports
-    overrides via `GEMINI_SYSTEM_MD` and prompt section toggles via
-    `GEMINI_PROMPT_*`).
+    overrides via `TERMINAI_SYSTEM_MD` and prompt section toggles via
+    `TERMINAI_PROMPT_*`).
   - Environment “setup” context: `packages/core/src/utils/environmentContext.ts`
     (injects date, OS, workspace structure, and `environmentMemory`).
   - Tool system + confirmations/policy: `packages/core/src/tools/*`,
@@ -96,9 +96,9 @@ Tooling Layer
 
 Prefer using existing override points:
 
-- **System prompt override:** `GEMINI_SYSTEM_MD` (load full prompt from a file)
-  and `GEMINI_WRITE_SYSTEM_MD` (dump current base prompt).
-- **Prompt section toggles:** `GEMINI_PROMPT_<SECTION>=0|false` to disable
+- **System prompt override:** `TERMINAI_SYSTEM_MD` (load full prompt from a
+  file) and `TERMINAI_WRITE_SYSTEM_MD` (dump current base prompt).
+- **Prompt section toggles:** `TERMINAI_PROMPT_<SECTION>=0|false` to disable
   upstream sections selectively.
 - **Environment context memory:** `config.getEnvironmentMemory()` is appended in
   `getEnvironmentContext()`; it’s a natural place to inject a compact system
@@ -207,7 +207,7 @@ Security posture upgrades for later phases:
 Order of preference for changes:
 
 1. **Configuration/Prompt overrides** (ship a TermAI `system.md` and set
-   `GEMINI_SYSTEM_MD` in wrappers/docs).
+   `TERMINAI_SYSTEM_MD` in wrappers/docs).
 2. **Small targeted edits** to prompt assembly + environment context to default
    to TermAI behavior.
 3. **New tools** only when the desired orchestration cannot be expressed with

@@ -10,9 +10,12 @@
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { applyTerminaiEnvAliases } from '@terminai/core';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const systemPath = join(__dirname, 'system.md');
+
+applyTerminaiEnvAliases();
 
 if (!process.env['GEMINI_SYSTEM_MD']) {
   process.env['GEMINI_SYSTEM_MD'] = systemPath;

@@ -363,6 +363,11 @@ export interface ConfigParameters {
     approvalPin?: string;
   };
   providerConfig?: ProviderConfig;
+  logs?: {
+    retention?: {
+      days?: number;
+    };
+  };
 }
 
 export class Config {
@@ -491,6 +496,7 @@ export class Config {
   private terminalBackground: string | undefined = undefined;
   private readonly approvalPin: string;
   private readonly providerConfig: ProviderConfig;
+  private readonly logsRetentionDays: number;
 
   constructor(params: ConfigParameters) {
     this.sessionId = params.sessionId;
@@ -649,6 +655,7 @@ export class Config {
     this.providerConfig = params.providerConfig ?? {
       provider: LlmProviderId.GEMINI,
     };
+    this.logsRetentionDays = params.logs?.retention?.days ?? 7;
 
     if (params.contextFileName) {
       setGeminiMdFilename(params.contextFileName);
@@ -873,6 +880,10 @@ export class Config {
       }
     }
     return this.baseLlmClient;
+  }
+
+  getLogsRetentionDays(): number {
+    return this.logsRetentionDays;
   }
 
   getSessionId(): string {

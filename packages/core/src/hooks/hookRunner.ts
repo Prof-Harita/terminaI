@@ -219,6 +219,7 @@ export class HookRunner {
       const env = {
         ...process.env,
         GEMINI_PROJECT_DIR: input.cwd,
+        TERMINAI_PROJECT_DIR: input.cwd,
         CLAUDE_PROJECT_DIR: input.cwd, // For compatibility
       };
 
@@ -362,6 +363,7 @@ export class HookRunner {
     debugLogger.debug(`Expanding hook command: ${command} (cwd: ${input.cwd})`);
     const escapedCwd = escapeShellArg(input.cwd, shellType);
     return command
+      .replace(/\$TERMINAI_PROJECT_DIR/g, () => escapedCwd)
       .replace(/\$GEMINI_PROJECT_DIR/g, () => escapedCwd)
       .replace(/\$CLAUDE_PROJECT_DIR/g, () => escapedCwd); // For compatibility
   }

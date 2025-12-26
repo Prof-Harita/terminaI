@@ -33,7 +33,7 @@ Implement everything still “open” in .local/tasks_open_expansion.md,
 specifically:
 
 A) Gemini baseUrl override hardening (Phase 0) • Add strict
-validation/normalization for TERMINAI_GEMINI_BASE_URL in
+validation/normalization for TERMINAI_BASE_URL in
 packages/core/src/core/contentGenerator.ts: • Only allow http:// or https:// •
 Normalize trailing slash behavior consistently • Fail fast with a clear error
 message (no secrets logged) • Add unit tests in

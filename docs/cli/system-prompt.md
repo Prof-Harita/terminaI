@@ -1,12 +1,12 @@
-# System Prompt Override (GEMINI_SYSTEM_MD)
+# System Prompt Override (TERMINAI_SYSTEM_MD)
 
 The core system instructions that guide Gemini CLI can be completely replaced
 with your own Markdown file. This feature is controlled via the
-`GEMINI_SYSTEM_MD` environment variable.
+`TERMINAI_SYSTEM_MD` environment variable.
 
 ## Overview
 
-The `GEMINI_SYSTEM_MD` variable instructs the CLI to use an external Markdown
+The `TERMINAI_SYSTEM_MD` variable instructs the CLI to use an external Markdown
 file for its system prompt, completely overriding the built-in default. This is
 a full replacement, not a merge. If you use a custom file, none of the original
 core instructions will apply unless you include them yourself.
@@ -28,18 +28,18 @@ via a `.gemini/.env` file. See
 [Persisting Environment Variables](../get-started/authentication.md#persisting-environment-variables).
 
 - Use the project default path (`.gemini/system.md`):
-  - `GEMINI_SYSTEM_MD=true` or `GEMINI_SYSTEM_MD=1`
+  - `TERMINAI_SYSTEM_MD=true` or `TERMINAI_SYSTEM_MD=1`
   - The CLI reads `./.gemini/system.md` (relative to your current project
     directory).
 
 - Use a custom file path:
-  - `GEMINI_SYSTEM_MD=/absolute/path/to/my-system.md`
+  - `TERMINAI_SYSTEM_MD=/absolute/path/to/my-system.md`
   - Relative paths are supported and resolved from the current working
     directory.
   - Tilde expansion is supported (e.g., `~/my-system.md`).
 
 - Disable the override (use built‑in prompt):
-  - `GEMINI_SYSTEM_MD=false` or `GEMINI_SYSTEM_MD=0` or unset the variable.
+  - `TERMINAI_SYSTEM_MD=false` or `TERMINAI_SYSTEM_MD=0` or unset the variable.
 
 If the override is enabled but the target file does not exist, the CLI will
 error with: `missing system prompt file '<path>'`.
@@ -47,17 +47,17 @@ error with: `missing system prompt file '<path>'`.
 ## Quick examples
 
 - One‑off session using a project file:
-  - `GEMINI_SYSTEM_MD=1 gemini`
+  - `TERMINAI_SYSTEM_MD=1 gemini`
 - Persist for a project using `.gemini/.env`:
   - Create `.gemini/system.md`, then add to `.gemini/.env`:
-    - `GEMINI_SYSTEM_MD=1`
+    - `TERMINAI_SYSTEM_MD=1`
 - Use a custom file under your home directory:
-  - `GEMINI_SYSTEM_MD=~/prompts/SYSTEM.md gemini`
+  - `TERMINAI_SYSTEM_MD=~/prompts/SYSTEM.md gemini`
 
 ## UI indicator
 
-When `GEMINI_SYSTEM_MD` is active, the CLI shows a `|⌐■_■|` indicator in the UI
-to signal custom system‑prompt mode.
+When `TERMINAI_SYSTEM_MD` is active, the CLI shows a `|⌐■_■|` indicator in the
+UI to signal custom system‑prompt mode.
 
 ## Export the default prompt (recommended)
 
@@ -65,9 +65,9 @@ Before overriding, export the current default prompt so you can review required
 safety and workflow rules.
 
 - Write the built‑in prompt to the project default path:
-  - `GEMINI_WRITE_SYSTEM_MD=1 gemini`
+  - `TERMINAI_WRITE_SYSTEM_MD=1 gemini`
 - Or write to a custom path:
-  - `GEMINI_WRITE_SYSTEM_MD=~/prompts/DEFAULT_SYSTEM.md gemini`
+  - `TERMINAI_WRITE_SYSTEM_MD=~/prompts/DEFAULT_SYSTEM.md gemini`
 
 This creates the file and writes the current built‑in system prompt to it.
 
@@ -88,9 +88,10 @@ terminaI.md focused on high‑level guidance and project specifics.
 
 - Error: `missing system prompt file '…'`
   - Ensure the referenced path exists and is readable.
-  - For `GEMINI_SYSTEM_MD=1|true`, create `./.gemini/system.md` in your project.
+  - For `TERMINAI_SYSTEM_MD=1|true`, create `./.gemini/system.md` in your
+    project.
 - Override not taking effect
   - Confirm the variable is loaded (use `.gemini/.env` or export in your shell).
   - Paths are resolved from the current working directory; try an absolute path.
 - Restore defaults
-  - Unset `GEMINI_SYSTEM_MD` or set it to `0`/`false`.
+  - Unset `TERMINAI_SYSTEM_MD` or set it to `0`/`false`.

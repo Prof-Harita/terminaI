@@ -1,7 +1,7 @@
 # Voice Guide
 
-> [!NOTE] Voice Mode is currently in **beta**. Full offline STT support is
-> coming soon.
+> [!NOTE] Voice Mode is currently in **beta**. Desktop offers offline STT/TTS;
+> CLI voice is TTS-only with STT planned.
 
 terminaI supports offline voice (download once → offline) via the Desktop app.
 
@@ -38,7 +38,7 @@ terminai --voice
 ```
 
 Or set `voice.enabled` in your settings file (default path:
-`~/.gemini/settings.json`).
+`~/.terminai/settings.json`, legacy `~/.gemini/settings.json` is still read).
 
 ### What it does
 
@@ -86,7 +86,8 @@ with another piper English `.onnx` voice model (keeping the same filename).
 
 ## Configuration (CLI)
 
-Settings live in `~/.gemini/settings.json` (same as upstream). Relevant keys:
+Settings live in `~/.terminai/settings.json` (legacy `~/.gemini/settings.json`
+is still read). Relevant keys:
 
 - `voice.enabled`
 - `voice.pushToTalk.key` (`space` or `ctrl+space`)

@@ -38,7 +38,7 @@ terminai
 ### Option 2: API Key
 
 ```bash
-export GEMINI_API_KEY="YOUR_API_KEY"
+export TERMINAI_API_KEY="YOUR_API_KEY"
 terminai
 ```
 

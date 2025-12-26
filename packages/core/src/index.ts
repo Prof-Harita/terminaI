@@ -56,6 +56,7 @@ export * from './core/apiKeyCredentialStorage.js';
 
 // Export utilities
 export * from './utils/paths.js';
+export * from './utils/envAliases.js';
 export * from './utils/schemaValidator.js';
 export * from './utils/errors.js';
 export * from './utils/exitCodes.js';
@@ -172,3 +173,9 @@ export * from './hooks/types.js';
 // Export stdio utils
 export * from './utils/stdio.js';
 export * from './utils/terminal.js';
+
+// GUI Automation
+export { DesktopAutomationService } from './gui/service/DesktopAutomationService.js';
+
+// Evaluation
+export * from './evaluation/index.js';

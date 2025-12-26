@@ -1,0 +1,172 @@
+[
+  {
+    "id": "PROD_DOC_001",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LibreOffice 7.3"
+    },
+    "interaction": {
+      "user_query": "I can't open my budget.xlsx. It says 'General Error' and there's a weird .~lock.budget.xlsx# file in my folder.",
+      "ai_response": "The `.~lock.budget.xlsx#` file indicates LibreOffice thinks the file is still open, likely from a previous crash.\n\nTo fix:\n1. Press `Ctrl+H` in your file manager to show hidden files\n2. Delete the `.~lock.budget.xlsx#` file\n3. Try opening your document again\n\nThis is a safety mechanism to prevent data corruption but can persist after crashes."
+    },
+    "technical_tags": ["file-locking", "libreoffice-calc", "crash-recovery"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_002",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "LibreOffice 7.3"
+    },
+    "interaction": {
+      "user_query": "All my Word documents look wrong in LibreOffice Writer. The fonts are completely different and the spacing is off.",
+      "ai_response": "This usually happens because Microsoft fonts (like Arial, Times New Roman) aren't installed by default on Linux due to licensing.\n\n**Solution:**\n1. Open a terminal (`Ctrl+Alt+T`)\n2. Run: `sudo apt install ttf-mscorefonts-installer`\n3. Press `Tab` then `Enter` to accept the license agreement\n4. Run: `sudo fc-cache -f -v`\n5. Restart LibreOffice"
+    },
+    "technical_tags": ["fonts", "compatibility", "ms-fonts"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_003",
+    "bucket": "Productivity & Documents",
+    "sub_category": "PDF Viewing",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Evince 46.0"
+    },
+    "interaction": {
+      "user_query": "I'm trying to fill out a government PDF form in Document Viewer, but it won't let me type in the boxes. It just highlights text.",
+      "ai_response": "The default Document Viewer (Evince) has limited support for XFA forms or complex interactive PDFs.\n\n**Recommended Fix:**\nInstall Master PDF Editor (free version) or use LibreOffice Draw:\n1. For a robust solution, try `sudo dnf install master-pdf-editor` (if available in repos) or download the Flatpak.\n2. Alternatively, open the PDF in Chrome/Firefox, which often handle forms better than basic desktop viewers."
+    },
+    "technical_tags": ["pdf-forms", "evince", "xfa-forms"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "PROD_DOC_004",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "LibreOffice 24.2"
+    },
+    "interaction": {
+      "user_query": "How do I save a file as a PDF in Writer? I don't see a 'Save as PDF' option in the menu.",
+      "ai_response": "LibreOffice treats PDF generation as an 'Export' action rather than a 'Save As' action.\n\n**Steps:**\n1. Go to **File > Export As > Export as PDF...**\n2. Or simply click the PDF icon directly on the toolbar (usually looks like a page with a red PDF symbol)."
+    },
+    "technical_tags": ["pdf-export", "ui-navigation", "libreoffice-writer"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_005",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "LibreOffice 24.8"
+    },
+    "interaction": {
+      "user_query": "LibreOffice looks really ugly on my screen. The icons are pixelated and tiny. I have a 4K monitor.",
+      "ai_response": "This is likely a scaling issue with the VCL plugin (the interface renderer).\n\n**Fix:**\n1. Open LibreOffice and go to **Tools > Options > LibreOffice > View**.\n2. Change 'Icon Style' to **SVG** (like Breeze (SVG) or Colibre (SVG)).\n3. If that fails, try forcing the GTK3 backend by launching with: `SAL_USE_VCLPLUGIN=gtk3 libreoffice`"
+    },
+    "technical_tags": ["hidpi", "scaling", "ui-customization"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_006",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "LibreOffice 7.4"
+    },
+    "interaction": {
+      "user_query": "I accidentally set LibreOffice to save everything as .odt but my boss needs .docx. How do I change the default?",
+      "ai_response": "You can change the default save format in the settings:\n\n1. Go to **Tools > Options**.\n2. Navigate to **Load/Save > General**.\n3. Under 'Default File Format and ODF Settings', look for 'Document type' (select Text Document).\n4. Change 'Always save as' to **Word 2007-365 (*.docx)**.\n5. Repeat for Spreadsheet (Excel) and Presentation (PowerPoint) if needed."
+    },
+    "technical_tags": ["file-formats", "compatibility", "default-settings"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_007",
+    "bucket": "Productivity & Documents",
+    "sub_category": "PDF Editing",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LibreOffice Draw"
+    },
+    "interaction": {
+      "user_query": "I opened a PDF in LibreOffice to sign it, but now all the formatting is messed up and the text boxes are everywhere.",
+      "ai_response": "LibreOffice Draw imports PDFs as graphic objects, not as a continuous text stream, which often breaks layout.\n\n**Better Alternative:**\nFor simple signing or annotation without breaking layout, use **Xournal++**:\n1. `sudo apt install xournalpp`\n2. Open your PDF in Xournal++, use the Pen tool to sign or 'Text' tool to fill blanks.\n3. Export back to PDF."
+    },
+    "technical_tags": ["pdf-import", "formatting-issues", "xournalpp"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "PROD_DOC_008",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 39",
+      "app_version": "LibreOffice 7.6"
+    },
+    "interaction": {
+      "user_query": "LibreOffice crashes every time I try to open a specific large spreadsheet with macros.",
+      "ai_response": "If the spreadsheet contains complex VBA macros from Excel, LibreOffice might segfault trying to interpret them.\n\n**Troubleshooting Steps:**\n1. Start LibreOffice in Safe Mode: `libreoffice --safe-mode`\n2. If it opens, disable macro execution: **Tools > Options > Security > Macro Security > Very High**.\n3. Try opening the file again. You may need to rewrite the macros in Python or LibreOffice Basic if you need them."
+    },
+    "technical_tags": ["macros", "crash", "vba-compatibility"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_009",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Scanning",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Simple Scan"
+    },
+    "interaction": {
+      "user_query": "My scanner isn't showing up in Document Scanner, but `lsusb` sees it.",
+      "ai_response": "You might be missing the `sane-airscan` backend, which is required for many modern driverless scanners.\n\n**Try this:**\n1. Install the backend: `sudo apt install sane-airscan`\n2. Check if the scanner is recognized: `scanimage -L`\n3. If it's an HP device, ensure `hplip` is installed: `sudo apt install hplip`"
+    },
+    "technical_tags": ["scanning", "hardware-detection", "sane"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_010",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Text Editor",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Xed"
+    },
+    "interaction": {
+      "user_query": "I can't edit a text file on my external hard drive. It says 'Read-only file system'.",
+      "ai_response": "This usually happens if the drive was not unmounted properly from Windows (NTFS format).\n\n**Fix:**\n1. Plug the drive back into a Windows PC and run `chkdsk /f` on it, then use 'Safely Remove Hardware'.\n2. **Linux-only fix:** Use `ntfsfix`.\n   - Identify drive: `lsblk` (e.g., `/dev/sdb1`)\n   - Run: `sudo ntfsfix /dev/sdb1`\n   - Unmount and remount the drive."
+    },
+    "technical_tags": ["permissions", "ntfs", "external-drive"],
+    "friction_type": "user_error"
+  }
+]

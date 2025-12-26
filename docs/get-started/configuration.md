@@ -45,7 +45,7 @@ locations for these files:
   - **Location:** `/etc/gemini-cli/system-defaults.json` (Linux),
     `C:\ProgramData\gemini-cli\system-defaults.json` (Windows) or
     `/Library/Application Support/GeminiCli/system-defaults.json` (macOS). The
-    path can be overridden using the `GEMINI_CLI_SYSTEM_DEFAULTS_PATH`
+    path can be overridden using the `TERMINAI_CLI_SYSTEM_DEFAULTS_PATH`
     environment variable.
   - **Scope:** Provides a base layer of system-wide default settings. These
     settings have the lowest precedence and are intended to be overridden by
@@ -62,7 +62,7 @@ locations for these files:
   - **Location:** `/etc/gemini-cli/settings.json` (Linux),
     `C:\ProgramData\gemini-cli\settings.json` (Windows) or
     `/Library/Application Support/GeminiCli/settings.json` (macOS). The path can
-    be overridden using the `GEMINI_CLI_SYSTEM_SETTINGS_PATH` environment
+    be overridden using the `TERMINAI_CLI_SYSTEM_SETTINGS_PATH` environment
     variable.
   - **Scope:** Applies to all Gemini CLI sessions on the system, for all users.
     System settings act as overrides, taking precedence over all other settings
@@ -746,6 +746,12 @@ their corresponding top-level category object in your `settings.json` file.
   - **Default:** `true`
   - **Requires restart:** Yes
 
+- **`tools.guiAutomation.enabled`** (boolean):
+  - **Description:** Enable desktop GUI automation tools (ui.click, ui.type,
+    etc.). Requires AT-SPI on Linux.
+  - **Default:** `false`
+  - **Requires restart:** Yes
+
 - **`tools.enableHooks`** (boolean):
   - **Description:** Enable the hooks system for intercepting and customizing
     Gemini CLI behavior. When enabled, hooks configured in settings will execute
@@ -899,6 +905,12 @@ their corresponding top-level category object in your `settings.json` file.
   - **Description:** Enable the Introspection Agent.
   - **Default:** `false`
   - **Requires restart:** Yes
+
+#### `logs`
+
+- **`logs.retention.days`** (number):
+  - **Description:** Number of days to keep session logs.
+  - **Default:** `7`
 
 #### `hooks`
 
@@ -1130,15 +1142,15 @@ files to prevent interference with gemini-cli behavior. Variables from
 `.gemini/.env` files are never excluded. You can customize this behavior using
 the `advanced.excludedEnvVars` setting in your `settings.json` file.
 
-- **`GEMINI_API_KEY`**:
+- **`TERMINAI_API_KEY`**:
   - Your API key for the Gemini API.
   - One of several available [authentication methods](./authentication.md).
   - Set this in your shell profile (e.g., `~/.bashrc`, `~/.zshrc`) or an `.env`
     file.
-- **`GEMINI_MODEL`**:
+- **`TERMINAI_MODEL`**:
   - Specifies the default Gemini model to use.
   - Overrides the hardcoded default
-  - Example: `export GEMINI_MODEL="gemini-2.5-flash"`
+  - Example: `export TERMINAI_MODEL="gemini-2.5-flash"`
 - **`GOOGLE_API_KEY`**:
   - Your Google Cloud API key.
   - Required for using Vertex AI in express mode.
@@ -1162,27 +1174,27 @@ the `advanced.excludedEnvVars` setting in your `settings.json` file.
 - **`OTLP_GOOGLE_CLOUD_PROJECT`**:
   - Your Google Cloud Project ID for Telemetry in Google Cloud
   - Example: `export OTLP_GOOGLE_CLOUD_PROJECT="YOUR_PROJECT_ID"`.
-- **`GEMINI_TELEMETRY_ENABLED`**:
+- **`TERMINAI_TELEMETRY_ENABLED`**:
   - Set to `true` or `1` to enable telemetry. Any other value is treated as
     disabling it.
   - Overrides the `telemetry.enabled` setting.
-- **`GEMINI_TELEMETRY_TARGET`**:
+- **`TERMINAI_TELEMETRY_TARGET`**:
   - Sets the telemetry target (`local` or `gcp`).
   - Overrides the `telemetry.target` setting.
-- **`GEMINI_TELEMETRY_OTLP_ENDPOINT`**:
+- **`TERMINAI_TELEMETRY_OTLP_ENDPOINT`**:
   - Sets the OTLP endpoint for telemetry.
   - Overrides the `telemetry.otlpEndpoint` setting.
-- **`GEMINI_TELEMETRY_OTLP_PROTOCOL`**:
+- **`TERMINAI_TELEMETRY_OTLP_PROTOCOL`**:
   - Sets the OTLP protocol (`grpc` or `http`).
   - Overrides the `telemetry.otlpProtocol` setting.
-- **`GEMINI_TELEMETRY_LOG_PROMPTS`**:
+- **`TERMINAI_TELEMETRY_LOG_PROMPTS`**:
   - Set to `true` or `1` to enable or disable logging of user prompts. Any other
     value is treated as disabling it.
   - Overrides the `telemetry.logPrompts` setting.
-- **`GEMINI_TELEMETRY_OUTFILE`**:
+- **`TERMINAI_TELEMETRY_OUTFILE`**:
   - Sets the file path to write telemetry to when the target is `local`.
   - Overrides the `telemetry.outfile` setting.
-- **`GEMINI_TELEMETRY_USE_COLLECTOR`**:
+- **`TERMINAI_TELEMETRY_USE_COLLECTOR`**:
   - Set to `true` or `1` to enable or disable using an external OTLP collector.
     Any other value is treated as disabling it.
   - Overrides the `telemetry.useCollector` setting.
@@ -1190,17 +1202,17 @@ the `advanced.excludedEnvVars` setting in your `settings.json` file.
   - Your Google Cloud Project Location (e.g., us-central1).
   - Required for using Vertex AI in non-express mode.
   - Example: `export GOOGLE_CLOUD_LOCATION="YOUR_PROJECT_LOCATION"`.
-- **`GEMINI_SANDBOX`**:
+- **`TERMINAI_SANDBOX`**:
   - Alternative to the `sandbox` setting in `settings.json`.
   - Accepts `true`, `false`, `docker`, `podman`, or a custom command string.
-- **`GEMINI_SYSTEM_MD`**:
+- **`TERMINAI_SYSTEM_MD`**:
   - Replaces the built‑in system prompt with content from a Markdown file.
   - `true`/`1`: Use project default path `./.gemini/system.md`.
   - Any other string: Treat as a path (relative/absolute supported, `~`
     expands).
   - `false`/`0` or unset: Use the built‑in prompt. See
     [System Prompt Override](../cli/system-prompt.md).
-- **`GEMINI_WRITE_SYSTEM_MD`**:
+- **`TERMINAI_WRITE_SYSTEM_MD`**:
   - Writes the current built‑in system prompt to a file for review.
   - `true`/`1`: Write to `./.gemini/system.md`. Otherwise treat the value as a
     path.
@@ -1436,7 +1448,7 @@ and file modifications) within a sandboxed environment to protect your system.
 Sandboxing is disabled by default, but you can enable it in a few ways:
 
 - Using `--sandbox` or `-s` flag.
-- Setting `GEMINI_SANDBOX` environment variable.
+- Setting `TERMINAI_SANDBOX` environment variable.
 - Sandbox is enabled when using `--yolo` or `--approval-mode=yolo` by default.
 
 By default, it uses a pre-built `gemini-cli-sandbox` Docker image.

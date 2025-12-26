@@ -42,7 +42,7 @@ locations for these files:
   - **Location:** `/etc/gemini-cli/system-defaults.json` (Linux),
     `C:\ProgramData\gemini-cli\system-defaults.json` (Windows) or
     `/Library/Application Support/GeminiCli/system-defaults.json` (macOS). The
-    path can be overridden using the `GEMINI_CLI_SYSTEM_DEFAULTS_PATH`
+    path can be overridden using the `TERMINAI_CLI_SYSTEM_DEFAULTS_PATH`
     environment variable.
   - **Scope:** Provides a base layer of system-wide default settings. These
     settings have the lowest precedence and are intended to be overridden by
@@ -59,7 +59,7 @@ locations for these files:
   - **Location:** `/etc/gemini-cli/settings.json` (Linux),
     `C:\ProgramData\gemini-cli\settings.json` (Windows) or
     `/Library/Application Support/GeminiCli/settings.json` (macOS). The path can
-    be overridden using the `GEMINI_CLI_SYSTEM_SETTINGS_PATH` environment
+    be overridden using the `TERMINAI_CLI_SYSTEM_SETTINGS_PATH` environment
     variable.
   - **Scope:** Applies to all Gemini CLI sessions on the system, for all users.
     System settings act as overrides, taking precedence over all other settings
@@ -572,15 +572,15 @@ files to prevent interference with gemini-cli behavior. Variables from
 `.gemini/.env` files are never excluded. You can customize this behavior using
 the `excludedProjectEnvVars` setting in your `settings.json` file.
 
-- **`GEMINI_API_KEY`**:
+- **`TERMINAI_API_KEY`**:
   - Your API key for the Gemini API.
   - One of several available [authentication methods](./authentication.md).
   - Set this in your shell profile (e.g., `~/.bashrc`, `~/.zshrc`) or an `.env`
     file.
-- **`GEMINI_MODEL`**:
+- **`TERMINAI_MODEL`**:
   - Specifies the default Gemini model to use.
   - Overrides the hardcoded default
-  - Example: `export GEMINI_MODEL="gemini-2.5-flash"`
+  - Example: `export TERMINAI_MODEL="gemini-2.5-flash"`
 - **`GOOGLE_API_KEY`**:
   - Your Google Cloud API key.
   - Required for using Vertex AI in express mode.
@@ -608,7 +608,7 @@ the `excludedProjectEnvVars` setting in your `settings.json` file.
   - Your Google Cloud Project Location (e.g., us-central1).
   - Required for using Vertex AI in non express mode.
   - Example: `export GOOGLE_CLOUD_LOCATION="YOUR_PROJECT_LOCATION"`.
-- **`GEMINI_SANDBOX`**:
+- **`TERMINAI_SANDBOX`**:
   - Alternative to the `sandbox` setting in `settings.json`.
   - Accepts `true`, `false`, `docker`, `podman`, or a custom command string.
 - **`HTTP_PROXY` / `HTTPS_PROXY`**:
@@ -824,7 +824,7 @@ and file modifications) within a sandboxed environment to protect your system.
 Sandboxing is disabled by default, but you can enable it in a few ways:
 
 - Using `--sandbox` or `-s` flag.
-- Setting `GEMINI_SANDBOX` environment variable.
+- Setting `TERMINAI_SANDBOX` environment variable.
 - Sandbox is enabled when using `--yolo` or `--approval-mode=yolo` by default.
 
 By default, it uses a pre-built `gemini-cli-sandbox` Docker image.

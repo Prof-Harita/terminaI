@@ -19,6 +19,7 @@ import { StepBackEvaluator } from './stepBackEvaluator.js';
 import { REPLManager } from './replManager.js';
 import type { GenerativeModelAdapter } from './riskAssessor.js';
 import { loadSystemSpec } from './systemSpec.js';
+import type { Logger } from '../core/logger.js';
 
 /**
  * Result of a brain execution attempt.
@@ -52,6 +53,7 @@ export class ThinkingOrchestrator {
   constructor(
     private readonly config: Config,
     private readonly model: GenerativeModelAdapter,
+    private readonly logger?: Logger,
   ) {
     this.repl = new REPLManager();
     this.consensus = new ConsensusOrchestrator(model);
@@ -92,6 +94,12 @@ export class ThinkingOrchestrator {
         `[Thinking] Selected framework: ${frameworkId} (${selection?.reasoning || 'Default'})`,
       );
     }
+
+    await this.logger?.logEventFull('thought', {
+      frameworkId,
+      reasoning: selection?.reasoning || 'Default Selection',
+      task,
+    });
 
     switch (frameworkId) {
       case 'FW_CONSENSUS': {

@@ -1,0 +1,1702 @@
+[
+  {
+    "id": "WEB_RES_501",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox 115"
+    },
+    "interaction": {
+      "user_query": "I keep seeing ads on YouTube and random sites. What is the best way to block them on Firefox?",
+      "ai_response": "The standard solution is **uBlock Origin**. It is efficient and open-source.\n\n1. Open the menu (three bars) > **Add-ons and themes**.\n2. Search for `uBlock Origin`.\n3. Click **Add to Firefox**.\n\nIt works immediately without complex configuration."
+    },
+    "technical_tags": ["firefox", "ad-blocking", "ublock-origin"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_502",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Brave Browser"
+    },
+    "interaction": {
+      "user_query": "How do I stop websites from seeing my real IP address using WebRTC in Brave?",
+      "ai_response": "You can change the WebRTC handling policy in Brave settings:\n\n1. Go to `brave://settings/privacy`.\n2. Look for **WebRTC IP Handling Policy**.\n3. Set it to **Disable non-proxied UDP**.\n\nThis prevents local IP leaks while maintaining most functionality."
+    },
+    "technical_tags": ["brave", "webrtc", "privacy"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_503",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Chrome 120"
+    },
+    "interaction": {
+      "user_query": "Chrome saves my history and I don't want that. How do I make it delete everything when I close it?",
+      "ai_response": "You can set Chrome to clear data on exit:\n\n1. Go to `chrome://settings/content/siteData`.\n2. Select **Delete data sites have saved to your device when you close all windows**.\n\nAlternatively, use **Incognito Mode** (Ctrl+Shift+N) for temporary browsing."
+    },
+    "technical_tags": ["chrome", "privacy", "cookies"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_504",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Firefox Nightly"
+    },
+    "interaction": {
+      "user_query": "I want to enable DNS over HTTPS in Firefox to hide my DNS queries from my ISP. Where is that setting?",
+      "ai_response": "1. Go to **Settings** > **Privacy & Security**.\n2. Scroll down to the bottom to **DNS over HTTPS**.\n3. Select **Increased Protection** or **Max Protection**.\n4. Choose a provider like Cloudflare or NextDNS.\n\nVerify it works by visiting https://1.1.1.1/help."
+    },
+    "technical_tags": ["firefox", "dns-over-https", "networking"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_505",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Librewolf"
+    },
+    "interaction": {
+      "user_query": "I'm using Librewolf but some sites break because of the canvas fingerprinting protection. How do I disable it for just one site?",
+      "ai_response": "Librewolf enables `privacy.resistFingerprinting` by default. To allow canvas data for a specific site:\n\n1. Click the **icon just to the left of the URL bar** (usually a shield or permissions icon).\n2. Look for **Extract Canvas Data**.\n3. Allow the permission temporarily.\n\nIf that option isn't visible, you may need to disable `privacy.resistFingerprinting` in `about:config` globally, though this reduces privacy."
+    },
+    "technical_tags": ["librewolf", "fingerprinting", "privacy"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_506",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "Is there a way to manage my passwords in Chrome without sending them to Google?",
+      "ai_response": "Yes, disable the built-in password manager sync and use a local-first extension:\n\n1. Go to `chrome://settings/syncSetup` and turn off **Passwords**.\n2. Install a third-party manager like **Bitwarden** or **KeePassXC-Browser**.\n3. These encrypt your vault locally or on your own terms."
+    },
+    "technical_tags": ["chrome", "passwords", "security"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_507",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Firefox keeps asking to save addresses and credit cards. How do I kill this feature completely?",
+      "ai_response": "Disable autofill in settings:\n\n1. Go to **Settings** > **Privacy & Security**.\n2. Under **Forms and Autofill**, uncheck **Autofill addresses** and **Autofill credit cards**.\n\nTo ensure it stays off, set these in `about:config`:\n- `extensions.formautofill.addresses.enabled` = **false**\n- `extensions.formautofill.creditcards.enabled` = **false**"
+    },
+    "technical_tags": ["firefox", "autofill", "privacy"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_508",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Chromium"
+    },
+    "interaction": {
+      "user_query": "How do I force Chromium to use the system Tor service for all connections?",
+      "ai_response": "Launch Chromium with the proxy server flag pointing to your local Tor SOCKS5 port (usually 9050):\n\n```bash\nchromium --proxy-server=\"socks5://127.0.0.1:9050\"\n```\n\n**Note:** This does not provide the full fingerprinting protection of Tor Browser. Use the official Tor Browser Bundle for maximum anonymity."
+    },
+    "technical_tags": ["chromium", "tor", "proxy"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_509",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I want to stop Facebook from tracking me around the web. What extension does this?",
+      "ai_response": "Mozilla's **Facebook Container** extension is designed for this.\n\n1. Search for 'Facebook Container' in Firefox Add-ons.\n2. Install it.\n3. It isolates Facebook, Instagram, and Messenger into a separate color-coded tab container so they can't see your cookies from other sites."
+    },
+    "technical_tags": ["firefox", "containers", "facebook"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_510",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Edge for Linux"
+    },
+    "interaction": {
+      "user_query": "Does Microsoft Edge on Linux send telemetry to Microsoft? How do I turn it off?",
+      "ai_response": "Yes, it does. You can minimize it:\n\n1. Go to `edge://settings/privacy`.\n2. Under **Optional diagnostic data**, toggle the switch off.\n3. Turn off **Personalize your web experience**.\n\nFor stricter blocking, you may need to block `vortex.data.microsoft.com` in your `/etc/hosts` file."
+    },
+    "technical_tags": ["edge", "telemetry", "privacy"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_511",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Websites keep asking to send me notifications. How do I block these requests permanently?",
+      "ai_response": "1. Go to **Settings** > **Privacy & Security**.\n2. Scroll to **Permissions** > **Notifications**.\n3. Click **Settings...**\n4. Check the box **Block new requests asking to allow notifications**.\n5. Click **Save Changes**."
+    },
+    "technical_tags": ["firefox", "notifications", "ux"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_512",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Firefox ESR"
+    },
+    "interaction": {
+      "user_query": "I want to delete cookies for a specific site without clearing my whole history.",
+      "ai_response": "1. Go to the website.\n2. Click the **lock icon** in the address bar.\n3. Click **Clear Cookies and Site Data**.\n\nAlternatively:\n1. Go to **Settings** > **Privacy & Security** > **Manage Data**.\n2. Search for the domain name.\n3. Click **Remove Selected**."
+    },
+    "technical_tags": ["firefox", "cookies", "management"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_513",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I want to use a custom user.js file to harden Firefox. Where do I put it on Linux?",
+      "ai_response": "The `user.js` file goes into your Firefox profile directory.\n\n1. Find your profile folder: `~/.mozilla/firefox/xxxxxxx.default-release/` (the random string varies).\n2. Place your `user.js` in that folder.\n3. Restart Firefox to apply the settings.\n\nBe careful, as hardened `user.js` files (like Arkenfox) can break many websites."
+    },
+    "technical_tags": ["firefox", "hardening", "configuration"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_514",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "How can I tell if a website is secure in Chrome?",
+      "ai_response": "Look at the left side of the address bar.\n\n- A **Tune icon** (formerly a Lock icon) means the connection is encrypted (HTTPS).\n- If it says **Not Secure**, do not enter passwords or credit card info.\n- Click the icon to view the certificate details and permissions."
+    },
+    "technical_tags": ["chrome", "security", "https"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_515",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Brave"
+    },
+    "interaction": {
+      "user_query": "Brave Shields is breaking a login page I need for work. How do I turn it off temporarily?",
+      "ai_response": "1. Navigate to the broken page.\n2. Click the **Brave Lion icon** in the address bar (right side).\n3. Toggle the switch **Shields are UP** to **Down**.\n\nThe page will reload without trackers blocked."
+    },
+    "technical_tags": ["brave", "shields", "troubleshooting"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_516",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "What is the 'Strict' Enhanced Tracking Protection in Firefox? Should I use it?",
+      "ai_response": "**Strict** mode blocks social media trackers, cross-site tracking cookies, fingerprints, and crypto miners more aggressively.\n\n**Pros:** Better privacy.\n**Cons:** Might break some login buttons or comments sections.\n\nSwitch to it in **Settings** > **Privacy & Security**. If a site breaks, click the shield icon in the URL bar and toggle protection off for that specific site."
+    },
+    "technical_tags": ["firefox", "tracking", "security"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_517",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Firefox Snap"
+    },
+    "interaction": {
+      "user_query": "I'm using the Firefox Snap on Ubuntu. Does it have access to my documents folder if I want to upload a private file?",
+      "ai_response": "By default, the Firefox Snap has restricted access, but it uses the Portal system to access files you explicitly select.\n\nIf you have issues accessing specific external drives, you might need to connect the `removable-media` plug:\n```bash\nsudo snap connect firefox:removable-media\n```"
+    },
+    "technical_tags": ["snap", "permissions", "sandboxing"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_518",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Ungoogled Chromium"
+    },
+    "interaction": {
+      "user_query": "I can't install extensions from the Web Store in Ungoogled Chromium.",
+      "ai_response": "Ungoogled Chromium removes web store integration by default.\n\n1. Enable the flag `chrome://flags/#extension-mime-request-handling` to **Always prompt for install**.\n2. Install the `chromium-web-store` extension manually from GitHub releases to restore update functionality."
+    },
+    "technical_tags": ["chromium", "extensions", "sideloading"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_519",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I clear my cache in Firefox? Some pages are loading old versions.",
+      "ai_response": "1. Press `Ctrl + Shift + Delete`.\n2. Set **Time range to clear** to **Everything**.\n3. Check **Cache** (you can uncheck Cookies/History if you want to keep logins).\n4. Click **OK**."
+    },
+    "technical_tags": ["firefox", "cache", "maintenance"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_520",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "I suspect an extension is spying on me. How do I audit extension permissions in Chrome?",
+      "ai_response": "1. Go to `chrome://extensions`.\n2. Click **Details** on the extension.\n3. Look at **Site access**.\n\nIdeally, change permission to **On click** or **On specific sites** rather than **On all sites** to limit the extension's reach."
+    },
+    "technical_tags": ["chrome", "extensions", "security"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_521",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I check if Firefox is using the Snap version or the DEB version? I want to avoid Snap for privacy reasons.",
+      "ai_response": "Run this in the terminal:\n```bash\nwhich firefox\n```\nIf it returns `/snap/bin/firefox`, it's the Snap.\n\nTo verify the running process:\n```bash\nabout:support\n```\nCheck the **Application Binary** line. If it points to `/snap/...`, you are using Snap."
+    },
+    "technical_tags": ["firefox", "snap", "packaging"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_522",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "I am getting a 'Your connection is not private' error on a government website. How do I fix it?",
+      "ai_response": "This usually means the site has an expired or invalid SSL certificate.\n\n1. Ensure your system clock is correct: `timedatectl status`.\n2. If the clock is right and you trust the site, click **Advanced** on the error page.\n3. Click **Proceed to [website] (unsafe)**.\n\n**Warning:** Do not enter personal data on this connection."
+    },
+    "technical_tags": ["chrome", "ssl", "certificates"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_523",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I disable Pocket in Firefox? I don't want the recommendations.",
+      "ai_response": "1. Type `about:config` in the address bar and accept the risk.\n2. Search for `extensions.pocket.enabled`.\n3. Double-click it to set it to **false**.\n\nPocket will disappear from your homepage and address bar."
+    },
+    "technical_tags": ["firefox", "bloatware", "configuration"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_524",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Tor Browser"
+    },
+    "interaction": {
+      "user_query": "Tor Browser is blocked by AppArmor on my Fedora system. How do I fix the profile?",
+      "ai_response": "This is rare on default Fedora, but if you have custom AppArmor profiles:\n\n1. Check logs: `sudo dmesg | grep apparmor`.\n2. If confirmed, set the profile to complain mode:\n   ```bash\n   sudo aa-complain /path/to/tor-browser/Browser/start-tor-browser\n   ```\n3. Or, disable SELinux temporarily to test if that's actually the blocker (`setenforce 0`)."
+    },
+    "technical_tags": ["security", "apparmor", "selinux"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_525",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Brave"
+    },
+    "interaction": {
+      "user_query": "How do I turn off the crypto rewards stuff in Brave? I just want a browser.",
+      "ai_response": "1. Go to **Settings** > **Brave Rewards**.\n2. Toggle **Use Brave Rewards** to **Off**.\n3. Right-click the Rewards icon in the address bar and select **Hide Brave Rewards button**."
+    },
+    "technical_tags": ["brave", "configuration", "ux"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_526",
+    "bucket": "Web & Research",
+    "sub_category": "Multi-device",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I bookmarked a recipe on my laptop. How do I get it on my Android phone?",
+      "ai_response": "Use Firefox Sync:\n\n1. On your laptop Firefox, click the menu > **Sign In**.\n2. Create a Firefox Account.\n3. On your phone, install Firefox and sign in with the same account.\n4. Bookmarks will sync automatically within a few minutes."
+    },
+    "technical_tags": ["firefox", "sync", "mobile"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_527",
+    "bucket": "Web & Research",
+    "sub_category": "Multi-device",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "Chrome sync is paused every time I restart Linux. Why isn't it saving my login?",
+      "ai_response": "This is often a keyring issue.\n\n1. Ensure `gnome-keyring` is installed: `sudo apt install gnome-keyring`.\n2. Chrome needs to unlock the keyring on login. If you have auto-login enabled on Linux Mint, the keyring isn't unlocked automatically.\n3. Try launching Chrome with `--password-store=gnome` or ensure your login password matches your keyring password."
+    },
+    "technical_tags": ["chrome", "keyring", "sync"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_528",
+    "bucket": "Web & Research",
+    "sub_category": "Multi-device",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I want to host my own Firefox Sync server. Can I configure my desktop client to point to it?",
+      "ai_response": "Yes, via `about:config`:\n\n1. Search for `identity.sync.tokenserver.uri`.\n2. Change the value to your custom server URL (e.g., `https://sync.mydomain.com/token/1.0/sync/1.5`).\n3. Restart Firefox and sign in.\n\nEnsure your self-hosted server version matches the client protocol."
+    },
+    "technical_tags": ["firefox", "self-hosting", "sync"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_529",
+    "bucket": "Web & Research",
+    "sub_category": "Multi-device",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I send a tab from my desktop to my iPad?",
+      "ai_response": "1. Ensure you are signed into Firefox Sync on both devices.\n2. Right-click the tab on Fedora.\n3. Select **Send Tab to Device**.\n4. Choose your iPad from the list.\n5. The tab will open (or appear as a notification) on your iPad."
+    },
+    "technical_tags": ["firefox", "sync", "productivity"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_530",
+    "bucket": "Web & Research",
+    "sub_category": "Multi-device",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Chromium"
+    },
+    "interaction": {
+      "user_query": "I can't sync Chromium with my Google Account anymore. It says the API keys are missing.",
+      "ai_response": "Google removed Sync API access for third-party builds (including standard Chromium on Debian) in 2021.\n\n**Solutions:**\n1. Switch to official **Google Chrome** (`google-chrome-stable`).\n2. Manually compile Chromium with your own Google API keys (advanced).\n3. Use a different browser/sync method."
+    },
+    "technical_tags": ["chromium", "google-api", "sync"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_531",
+    "bucket": "Web & Research",
+    "sub_category": "Multi-device",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I'm switching from Chrome to Firefox. How do I bring my bookmarks over?",
+      "ai_response": "1. Open Firefox.\n2. Press `Ctrl + Shift + O` to open the Library.\n3. Click **Import and Backup** > **Import Data from Another Browser**.\n4. Select **Chrome**.\n5. Ensure Chrome is closed, then proceed."
+    },
+    "technical_tags": ["firefox", "migration", "bookmarks"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_532",
+    "bucket": "Web & Research",
+    "sub_category": "Multi-device",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Manjaro",
+      "app_version": "Vivaldi"
+    },
+    "interaction": {
+      "user_query": "Vivaldi isn't detecting my other devices for sync.",
+      "ai_response": "1. Go to **Settings** > **Sync**.\n2. You must enter your separate **Encryption Password** (different from login password).\n3. Ensure both devices are updated to the latest version.\n4. Sometimes logging out and back in forces a re-handshake."
+    },
+    "technical_tags": ["vivaldi", "sync", "troubleshooting"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_533",
+    "bucket": "Web & Research",
+    "sub_category": "Multi-device",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Can I export my Firefox cookies to use with wget on the command line?",
+      "ai_response": "Yes, use an extension like **Get cookies.txt LOCALLY**.\n\n1. Install the extension.\n2. Go to the site you need auth for.\n3. Export cookies in Netscape format.\n4. Use with wget: `wget --load-cookies=cookies.txt http://example.com/file`"
+    },
+    "technical_tags": ["firefox", "cli", "cookies"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_534",
+    "bucket": "Web & Research",
+    "sub_category": "Multi-device",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "How do I create a backup of my bookmarks to a file? I'm reformatting my PC.",
+      "ai_response": "1. Click the three dots > **Bookmarks and lists** > **Bookmark manager**.\n2. Click the three dots in the blue bar (top right of page).\n3. Select **Export bookmarks**.\n4. Save the HTML file to a USB stick or cloud storage."
+    },
+    "technical_tags": ["chrome", "backup", "bookmarks"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_535",
+    "bucket": "Web & Research",
+    "sub_category": "Multi-device",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Firefox Sync duplicates my bookmarks every time I sync with my old Windows laptop.",
+      "ai_response": "This happens if the databases get out of sync.\n\n1. Install the **Bookmarks Organizer** extension to find and remove duplicates.\n2. To reset the sync state: Sign out on all devices.\n3. On your 'clean' device (Mint), sign in and change your password. This flushes the server data.\n4. Sign back in on other devices."
+    },
+    "technical_tags": ["firefox", "sync", "troubleshooting"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_536",
+    "bucket": "Web & Research",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "I can't share my screen in Google Meet on Ubuntu. The option is greyed out.",
+      "ai_response": "If you are using Wayland (default in Ubuntu 22.04), you need to enable pipewire support.\n\n1. Ensure `chrome://flags/#enable-webrtc-pipewire-capturer` is set to **Enabled**.\n2. If it still fails, switch to Xorg at the login screen (click the gear icon > **Ubuntu on Xorg**) or try Firefox, which handles Wayland sharing better."
+    },
+    "technical_tags": ["chrome", "wayland", "screensharing"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_537",
+    "bucket": "Web & Research",
+    "sub_category": "Work Context",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Microsoft Edge"
+    },
+    "interaction": {
+      "user_query": "I need to use Outlook Web App as if it were a desktop app. Can I do that?",
+      "ai_response": "Yes, Edge supports Progressive Web Apps (PWAs).\n\n1. Log in to Outlook Web.\n2. Click the three dots > **Apps** > **Install this site as an app**.\n3. It will create a desktop shortcut and launch in its own window without browser bars."
+    },
+    "technical_tags": ["edge", "pwa", "productivity"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_538",
+    "bucket": "Web & Research",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "My work requires a smart card to log in to the web portal. Firefox doesn't see it.",
+      "ai_response": "You need the OpenSC middleware and to load the module in Firefox.\n\n1. Install OpenSC: `sudo apt install opensc`.\n2. In Firefox: **Settings** > **Privacy & Security** > **Security Devices**.\n3. Click **Load**.\n4. Module Name: `OpenSC`.\n5. Module filename: `/usr/lib/x86_64-linux-gnu/opensc-pkcs11.so`."
+    },
+    "technical_tags": ["firefox", "smartcard", "security"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_539",
+    "bucket": "Web & Research",
+    "sub_category": "Work Context",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "I need to trust a custom CA certificate for my company's intranet. How do I add it to Chrome on Arch?",
+      "ai_response": "Chrome on Linux uses the system NSS database (`libnss3-tools`).\n\n1. Install tools: `sudo pacman -S nss`.\n2. Import the cert:\n   ```bash\n   certutil -d sql:$HOME/.pki/nssdb -A -t \"C,,\" -n \"Company CA\" -i company_ca.crt\n   ```\n3. Restart Chrome."
+    },
+    "technical_tags": ["chrome", "certificates", "cli"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_540",
+    "bucket": "Web & Research",
+    "sub_category": "Work Context",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I keep my work bookmarks separate from my personal ones?",
+      "ai_response": "Use Firefox Profiles.\n\n1. Type `about:profiles` in the address bar.\n2. Click **Create a New Profile** and name it 'Work'.\n3. Click **Launch profile in new browser**.\n\nYou can bookmark different things in each window, and they won't mix."
+    },
+    "technical_tags": ["firefox", "profiles", "productivity"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_541",
+    "bucket": "Web & Research",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Brave"
+    },
+    "interaction": {
+      "user_query": "Zoom web client audio is crackling on Brave.",
+      "ai_response": "This is often a PulseAudio/PipeWire buffer issue.\n\n1. Try disabling Brave's hardware acceleration in `brave://settings/system`.\n2. If that fails, install `pavucontrol` and ensure the input device isn't set to 'Monitor of...' while in the call."
+    },
+    "technical_tags": ["brave", "audio", "zoom"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_542",
+    "bucket": "Web & Research",
+    "sub_category": "Work Context",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "My company uses a legacy ActiveX site. Is there ANY way to open this on Linux?",
+      "ai_response": "Native Linux browsers cannot run ActiveX (it's Internet Explorer technology). \n\n**Workaround:**\n1. Install VirtualBox or GNOME Boxes.\n2. Install a Windows VM.\n3. Use Edge in 'IE Mode' inside the VM.\n\nUser-agent switchers on Linux will NOT work because the underlying ActiveX controls don't exist."
+    },
+    "technical_tags": ["virtualization", "legacy", "compatibility"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_543",
+    "bucket": "Web & Research",
+    "sub_category": "Work Context",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "How do I print to PDF from Chrome? I need to save receipts.",
+      "ai_response": "1. Press `Ctrl + P`.\n2. In the **Destination** dropdown, select **Save as PDF**.\n3. Click **Save** and choose a folder."
+    },
+    "technical_tags": ["chrome", "pdf", "printing"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_544",
+    "bucket": "Web & Research",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Slack in the browser is super slow. Can I increase the memory limit?",
+      "ai_response": "Browsers manage memory automatically, but you can try forcing process isolation.\n\nHowever, for Slack on Arch, it's better to use the Electron app or a wrapper:\n`yay -S slack-desktop`\n\nThe native app handles resources better than a long-running tab in Firefox."
+    },
+    "technical_tags": ["firefox", "slack", "performance"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_545",
+    "bucket": "Web & Research",
+    "sub_category": "Work Context",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "I need to test my web app on older Chrome versions. How do I install Chrome 110 alongside current?",
+      "ai_response": "Google does not support side-by-side versions easily on Linux.\n\n**Best method:** Use a tool like `google-chrome-stable` for current and `chromium` snapshots for old versions, or run the older version in a Docker container:\n```bash\ndocker run -d -p 3000:3000 selenoid/chrome:110.0\n```"
+    },
+    "technical_tags": ["chrome", "development", "docker"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_546",
+    "bucket": "Web & Research",
+    "sub_category": "Personal/Home",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Netflix keeps saying 'Browser not supported' or giving me an error code.",
+      "ai_response": "You need to enable DRM content.\n\n1. Go to **Settings** > **General**.\n2. Under **Digital Rights Management (DRM) Content**, check **Play DRM-controlled content**.\n3. Wait a moment for Widevine to download, then refresh Netflix."
+    },
+    "technical_tags": ["firefox", "netflix", "drm"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_547",
+    "bucket": "Web & Research",
+    "sub_category": "Personal/Home",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "YouTube 4K videos are stuttering on my AMD card. I think hardware acceleration is off.",
+      "ai_response": "1. Check `chrome://gpu` to see if 'Video Decode' is hardware accelerated.\n2. If not, install media drivers: `sudo dnf install libva-utils mesa-dri-drivers`.\n3. Launch Chrome with flags: \n   `google-chrome --enable-features=VaapiVideoDecodeLinuxGL`\n   (Note: Flag names change frequently; check Arch Wiki for the latest)."
+    },
+    "technical_tags": ["chrome", "gpu", "multimedia"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_548",
+    "bucket": "Web & Research",
+    "sub_category": "Personal/Home",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I make Firefox dark mode? It's blinding me at night.",
+      "ai_response": "1. Open the menu > **Add-ons and themes**.\n2. Click **Themes** on the left.\n3. Enable **Dark**.\n\nAlso, check your Mint system settings: **Themes** > **Controls**, as Firefox often respects the system theme automatically."
+    },
+    "technical_tags": ["firefox", "theming", "ux"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_549",
+    "bucket": "Web & Research",
+    "sub_category": "Personal/Home",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Twitter videos won't play. It says 'The media could not be played'.",
+      "ai_response": "This is usually missing ffmpeg codecs.\n\n1. Ensure you have the `ubuntu-restricted-extras` package installed:\n   `sudo apt install ubuntu-restricted-extras`\n2. Restart Firefox.\n\nIf using the Snap version, it should bundle these, so ensure the Snap is up to date (`sudo snap refresh firefox`)."
+    },
+    "technical_tags": ["firefox", "codecs", "multimedia"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_550",
+    "bucket": "Web & Research",
+    "sub_category": "Personal/Home",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I want Picture-in-Picture to work with my tiling window manager (i3). The window keeps getting tiled.",
+      "ai_response": "You need to set a floating rule for the PiP window in your i3 config (`~/.config/i3/config`).\n\nAdd this line:\n```config\nfor_window [title=\"^Picture-in-Picture$\"] floating enable, sticky enable\n```\nReload i3 (`Mod+Shift+R`)."
+    },
+    "technical_tags": ["i3wm", "firefox", "window-management"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_551",
+    "bucket": "Web & Research",
+    "sub_category": "Personal/Home",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "How do I cast my browser tab to my Chromecast TV?",
+      "ai_response": "1. Click the three dots menu > **Save and share** > **Cast...**.\n2. Select your Chromecast device.\n3. If no device is found, ensure you are on the same Wi-Fi network and that the firewall allows MDNS (fedora defaults might block this)."
+    },
+    "technical_tags": ["chrome", "casting", "networking"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_552",
+    "bucket": "Web & Research",
+    "sub_category": "Personal/Home",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Chromium"
+    },
+    "interaction": {
+      "user_query": "Amazon Prime Video quality is stuck at SD (480p). Why no HD?",
+      "ai_response": "Content providers limit Linux browsers to 480p/720p due to DRM levels (Widevine L3 vs L1). \n\n**Workaround:**\n1. Use Chrome instead of Chromium (sometimes helps).\n2. Use a User-Agent switcher extension to spoof Windows 10/Chrome. This sometimes tricks Amazon into serving HD, but it's not guaranteed."
+    },
+    "technical_tags": ["chromium", "drm", "streaming"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_553",
+    "bucket": "Web & Research",
+    "sub_category": "Personal/Home",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I want to shop on a foreign site. How do I translate the page?",
+      "ai_response": "Firefox has a built-in translation feature now (version 118+).\n\n1. Look for the **Translation icon** (a letter 'A' symbol) in the address bar.\n2. Click **Translate**.\n\nIf you are on an older version or it's missing, install the **TWP - Translate Web Pages** extension."
+    },
+    "technical_tags": ["firefox", "translation", "extensions"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_554",
+    "bucket": "Web & Research",
+    "sub_category": "Personal/Home",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Brave"
+    },
+    "interaction": {
+      "user_query": "Twitch keeps buffering. Is there an extension to fix the player?",
+      "ai_response": "Many users use **Alternate Player for Twitch.tv** extension.\n\n1. Install it from the Chrome Web Store (compatible with Brave).\n2. It replaces the heavy Twitch player with a lightweight one that buffers less and blocks ads better."
+    },
+    "technical_tags": ["brave", "twitch", "performance"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_555",
+    "bucket": "Web & Research",
+    "sub_category": "Personal/Home",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I want to remove the tab bar in Firefox and use a vertical tab extension like Tree Style Tab. How do I hide the top tabs?",
+      "ai_response": "You need to edit `userChrome.css`.\n\n1. Enable `toolkit.legacyUserProfileCustomizations.stylesheets` in `about:config`.\n2. Create `~/.mozilla/firefox/YourProfile/chrome/userChrome.css`.\n3. Add:\n   ```css\n   #TabsToolbar { visibility: collapse !important; }\n   ```\n4. Restart Firefox."
+    },
+    "technical_tags": ["firefox", "css", "customization"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_556",
+    "bucket": "Web & Research",
+    "sub_category": "Edge Cases",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Touchscreen scrolling isn't working smoothly in Firefox on my Dell XPS.",
+      "ai_response": "Ensure you are running natively on Wayland.\n\n1. Open `about:support`.\n2. Check **Window Protocol**. If it says `x11` or `xwayland`, you need to force Wayland.\n3. Close Firefox. Open terminal.\n4. Run: `MOZ_ENABLE_WAYLAND=1 firefox`.\n5. If that fixes it, add that environment variable to your `.bashrc` or desktop entry."
+    },
+    "technical_tags": ["firefox", "wayland", "touchscreen"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_557",
+    "bucket": "Web & Research",
+    "sub_category": "Edge Cases",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "My browser fonts look terrible and jagged. How do I fix the rendering?",
+      "ai_response": "This is usually a FreeType or hinting issue.\n\n1. Install `gnome-tweaks`.\n2. Go to **Fonts**.\n3. Set **Antialiasing** to **Subpixel (for LCD screens)** and **Hinting** to **Slight**.\n4. Restart Chrome."
+    },
+    "technical_tags": ["chrome", "fonts", "ui"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_558",
+    "bucket": "Web & Research",
+    "sub_category": "Edge Cases",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Firefox ESR"
+    },
+    "interaction": {
+      "user_query": "I need to run Firefox in Kiosk mode for a public display. No address bar, no menus.",
+      "ai_response": "Use the `--kiosk` argument.\n\n```bash\nfirefox --kiosk [https://example.com](https://example.com)\n```\n\nTo prevent users from right-clicking or escaping, you may need an extension like **Kiosk Mode** alongside the command line argument."
+    },
+    "technical_tags": ["firefox", "kiosk", "cli"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_559",
+    "bucket": "Web & Research",
+    "sub_category": "Edge Cases",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Vivaldi"
+    },
+    "interaction": {
+      "user_query": "Vivaldi crashes immediately upon opening. I didn't change anything.",
+      "ai_response": "Try launching from the terminal to see the error:\n`vivaldi-stable`\n\nIf you see GPU errors, try disabling hardware acceleration via flag:\n`vivaldi-stable --disable-gpu`\n\nIf it starts, go to settings and turn off hardware acceleration permanently until a driver update fixes it."
+    },
+    "technical_tags": ["vivaldi", "troubleshooting", "gpu"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_560",
+    "bucket": "Web & Research",
+    "sub_category": "Edge Cases",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I accidentally zoomed in way too much and I can't reset it.",
+      "ai_response": "Press `Ctrl + 0` (zero) to reset the zoom level to 100% instantly."
+    },
+    "technical_tags": ["firefox", "shortcuts", "ux"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_561",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I see what certificates are installed in my Firefox? I need to remove an old one.",
+      "ai_response": "1. Go to **Settings** > **Privacy & Security**.\n2. Scroll down to **Certificates** and click **View Certificates**.\n3. Under the **Authorities** tab, you can search for and **Delete** or **Distrust** specific certificates."
+    },
+    "technical_tags": ["firefox", "certificates", "security"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_562",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "How do I force Chrome to use my system DNS resolver instead of its built-in async DNS?",
+      "ai_response": "You can disable the built-in resolver via a command line flag:\n\n```bash\ngoogle-chrome --disable-async-dns-client\n```\n\nThis forces Chrome to use the glibc resolver (`/etc/resolv.conf`)."
+    },
+    "technical_tags": ["chrome", "dns", "networking"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_563",
+    "bucket": "Web & Research",
+    "sub_category": "Multi-device",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "My tabs from my phone aren't showing up in the 'Synced Tabs' section.",
+      "ai_response": "1. Click the **cloud icon** in the toolbar to force a sync.\n2. Check the menu > **History** > **Synced Tabs**.\n3. If still empty, ensure your phone has synced recently (check settings in the mobile app)."
+    },
+    "technical_tags": ["firefox", "sync", "troubleshooting"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_564",
+    "bucket": "Web & Research",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I need to capture a full page screenshot of a long report, but print to PDF cuts it off.",
+      "ai_response": "Use Firefox's built-in screenshot tool:\n\n1. Right-click an empty space on the page.\n2. Select **Take Screenshot**.\n3. Click **Save full page**.\n4. Download the resulting image."
+    },
+    "technical_tags": ["firefox", "screenshots", "productivity"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_565",
+    "bucket": "Web & Research",
+    "sub_category": "Personal/Home",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "How do I enable the dark theme for websites that don't support it natively?",
+      "ai_response": "You can force it in Chrome flags:\n\n1. Go to `chrome://flags/#enable-force-dark`.\n2. Set it to **Enabled**.\n\nAlternatively, for better control, use the **Dark Reader** extension."
+    },
+    "technical_tags": ["chrome", "dark-mode", "accessibility"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_566",
+    "bucket": "Web & Research",
+    "sub_category": "Edge Cases",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Gentoo",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Firefox takes 20 seconds to start. It says 'Reading startup cache'.",
+      "ai_response": "This could be a corrupted startup cache.\n\n1. Go to `about:support`.\n2. Click **Clear startup cache...** at the top right.\n3. Firefox will restart and rebuild the cache."
+    },
+    "technical_tags": ["firefox", "performance", "maintenance"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_567",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Opera"
+    },
+    "interaction": {
+      "user_query": "How do I turn on the free VPN in Opera?",
+      "ai_response": "1. Go to **Settings** > **Privacy & security**.\n2. Toggle **Enable VPN**.\n3. A VPN badge will appear in the address bar. Click it to turn it on/off or change location."
+    },
+    "technical_tags": ["opera", "vpn", "privacy"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_568",
+    "bucket": "Web & Research",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Microsoft Teams in the browser keeps refreshing the page on its own.",
+      "ai_response": "This is a known issue with third-party cookie blocking.\n\n1. Click the shield icon in the address bar.\n2. Turn off **Enhanced Tracking Protection** for `teams.microsoft.com`.\n3. Teams requires cross-site cookies for authentication loops."
+    },
+    "technical_tags": ["firefox", "teams", "cookies"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_569",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I want to block auto-playing videos with sound. They are startling me.",
+      "ai_response": "1. Go to **Settings** > **Privacy & Security** > **Permissions**.\n2. Click **Settings** next to **Autoplay**.\n3. Set default for all websites to **Block Audio and Video**.\n4. Save changes."
+    },
+    "technical_tags": ["firefox", "autoplay", "ux"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_570",
+    "bucket": "Web & Research",
+    "sub_category": "Multi-device",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "I scanned a QR code on my phone to sign in, but Chrome on desktop didn't react.",
+      "ai_response": "Make sure you have bluetooth enabled on both devices if using FIDO/Passkey cross-device auth, or ensure you clicked the 'Yes' prompt on your phone's notification shade."
+    },
+    "technical_tags": ["chrome", "auth", "mobile"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_571",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I want to isolate Google searches in a container, but I want it to open automatically.",
+      "ai_response": "Use the **Google Container** extension (or **Multi-Account Containers**).\n\n1. Install **Multi-Account Containers**.\n2. Open the extension menu, click **Edit Containers**, create one named 'Google'.\n3. Open `google.com` inside it.\n4. Click the extension icon > **Always open this site in...** > **Google**."
+    },
+    "technical_tags": ["firefox", "containers", "privacy"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_572",
+    "bucket": "Web & Research",
+    "sub_category": "Personal/Home",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I make the text bigger on all websites? My eyes aren't what they used to be.",
+      "ai_response": "1. Go to **Settings** > **General**.\n2. Under **Language and Appearance**, look for **Zoom**.\n3. Set **Default zoom** to 110% or 120%.\n4. Check **Zoom text only** if you don't want images to scale up."
+    },
+    "technical_tags": ["firefox", "accessibility", "zoom"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_573",
+    "bucket": "Web & Research",
+    "sub_category": "Edge Cases",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Chromium"
+    },
+    "interaction": {
+      "user_query": "Chromium is tearing when I scroll videos. I have an NVIDIA card.",
+      "ai_response": "Screen tearing often requires enabling 'Force Full Composition Pipeline' in NVIDIA settings, or adjusting the browser:\n\n1. Open `chrome://flags`.\n2. Enable **Smooth Scrolling**.\n3. Try launching with `--use-gl=desktop`."
+    },
+    "technical_tags": ["chromium", "nvidia", "graphics"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_574",
+    "bucket": "Web & Research",
+    "sub_category": "Work Context",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I need to debug a website on a mobile device connected via USB.",
+      "ai_response": "1. Enable USB debugging on your Android phone.\n2. Connect it via USB.\n3. Open `about:debugging` in desktop Firefox.\n4. Click **Connect** next to your device on the left sidebar.\n5. Open a tab on mobile Firefox, and you'll see it listed on desktop to inspect."
+    },
+    "technical_tags": ["firefox", "devtools", "mobile"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_575",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Brave"
+    },
+    "interaction": {
+      "user_query": "How do I use Tor in Brave? I see the option but don't know how to start it.",
+      "ai_response": "1. Click the **Menu** (three bars).\n2. Select **New Private Window with Tor** (or press `Alt + Shift + N`).\n3. Wait for the status to say 'Tor Connected'.\n\nYour IP is now hidden via the Tor network."
+    },
+    "technical_tags": ["brave", "tor", "privacy"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_576",
+    "bucket": "Web & Research",
+    "sub_category": "Multi-device",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "I have 50 tabs open on my phone. How do I open them all on my desktop at once?",
+      "ai_response": "1. Open Chrome on Desktop.\n2. Click the three dots > **History** > **History**.\n3. Click **Tabs from other devices** on the left.\n4. Locate your phone session, click the three dots next to the device name, and select **Open all**."
+    },
+    "technical_tags": ["chrome", "sync", "productivity"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_577",
+    "bucket": "Web & Research",
+    "sub_category": "Personal/Home",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I set Google as my default search engine? It changed to Yahoo.",
+      "ai_response": "1. Go to **Settings** > **Search**.\n2. Under **Default Search Engine**, select **Google** from the dropdown.\n3. While there, uncheck Yahoo from 'Search Shortcuts' if you don't want to use it at all."
+    },
+    "technical_tags": ["firefox", "search", "configuration"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_578",
+    "bucket": "Web & Research",
+    "sub_category": "Edge Cases",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I want to change the download location for just this one file, but it auto-saves.",
+      "ai_response": "You need to change the setting to always ask:\n\n1. Go to **Settings** > **General**.\n2. Under **Downloads**, check **Always ask you where to save files**.\n\nNow a file picker will appear for every download."
+    },
+    "technical_tags": ["firefox", "downloads", "ux"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_579",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I want to spoof my User Agent to look like iPhone on Firefox to test a mobile site.",
+      "ai_response": "1. Type `about:config`.\n2. Create a new String preference named `general.useragent.override`.\n3. Set the value to an iPhone UA string (e.g., `Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)...`).\n\nRemember to clear this preference to return to normal browsing."
+    },
+    "technical_tags": ["firefox", "user-agent", "spoofing"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_580",
+    "bucket": "Web & Research",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "Google Docs offline mode isn't working on Arch.",
+      "ai_response": "1. Install the **Google Docs Offline** extension.\n2. Ensure you are not in Incognito mode.\n3. Go to Drive settings and check the **Offline** box.\n4. You may need to have enough free disk space in your `/home` partition."
+    },
+    "technical_tags": ["chrome", "google-docs", "offline"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_581",
+    "bucket": "Web & Research",
+    "sub_category": "Personal/Home",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I remove a saved credit card from autofill?",
+      "ai_response": "1. Go to **Settings** > **Privacy & Security**.\n2. Scroll to **Forms and Autofill**.\n3. Click **Saved Credit Cards**.\n4. Select the card and click **Remove**."
+    },
+    "technical_tags": ["firefox", "autofill", "security"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_582",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Librewolf"
+    },
+    "interaction": {
+      "user_query": "My bank's website won't load in Librewolf. It just spins.",
+      "ai_response": "Librewolf strips referrers and resists fingerprinting, which banks dislike.\n\n1. Try disabling **Enhanced Tracking Protection** (shield icon).\n2. If that fails, enable WebGL: `webgl.disabled` = `false` in `about:config`.\n3. As a last resort, use a standard Firefox profile for banking."
+    },
+    "technical_tags": ["librewolf", "compatibility", "banking"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_583",
+    "bucket": "Web & Research",
+    "sub_category": "Edge Cases",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I enable the compact density mode in Firefox? It disappeared from the customize menu.",
+      "ai_response": "It's hidden behind a flag now.\n\n1. Open `about:config`.\n2. Set `browser.compactmode.show` to **true**.\n3. Go to **Customize Toolbar** (right-click toolbar).\n4. You can now select **Compact** in the Density dropdown at the bottom."
+    },
+    "technical_tags": ["firefox", "ui", "customization"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_584",
+    "bucket": "Web & Research",
+    "sub_category": "Work Context",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "I need to check the source code of a page. Right-click is disabled by the site.",
+      "ai_response": "Press `Ctrl + U` to view source, or `F12` to open Developer Tools. These keyboard shortcuts usually bypass right-click blockers."
+    },
+    "technical_tags": ["chrome", "devtools", "shortcuts"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_585",
+    "bucket": "Web & Research",
+    "sub_category": "Personal/Home",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Youtube plays but there is no sound in Firefox. Other apps have sound.",
+      "ai_response": "1. Check if the tab is muted (speaker icon on the tab).\n2. Check PulseAudio Volume Control (`pavucontrol`) under **Playback**. Ensure Firefox isn't muted or routed to a dead output.\n3. If you use PipeWire, restart the service: `systemctl --user restart pipewire`."
+    },
+    "technical_tags": ["firefox", "audio", "troubleshooting"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_586",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "How do I check what devices are logged into my Google account from Chrome?",
+      "ai_response": "1. Click your profile picture > **Manage your Google Account**.\n2. Go to **Security** on the left.\n3. Scroll to **Your devices**.\n4. Click **Manage all devices** to see the list and sign out unrecognized ones."
+    },
+    "technical_tags": ["chrome", "security", "account-management"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_587",
+    "bucket": "Web & Research",
+    "sub_category": "Multi-device",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "My history isn't syncing to my new laptop. Both say 'Sync On'.",
+      "ai_response": "1. On the new laptop, go to **Settings** > **Sync** > **Change...**.\n2. Ensure **History** is checked.\n3. If it is, click **Sync Now**.\n4. Note: Sync doesn't transfer *all* history instantly; it prioritizes recent and typed URLs."
+    },
+    "technical_tags": ["firefox", "sync", "troubleshooting"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_588",
+    "bucket": "Web & Research",
+    "sub_category": "Work Context",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I need to run a specific Java applet in the browser. It's for an old switch controller.",
+      "ai_response": "Modern browsers (Firefox 52+) dropped NPAPI Java support years ago.\n\n**Solution:**\n1. Use a dedicated legacy browser like **Pale Moon**.\n2. Or use the manufacturer's standalone Java executable (JNLP) with `icedtea-netx` installed (`sudo apt install icedtea-netx`)."
+    },
+    "technical_tags": ["legacy", "java", "compatibility"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_589",
+    "bucket": "Web & Research",
+    "sub_category": "Personal/Home",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "How do I rename a bookmark? The name is too long in the bar.",
+      "ai_response": "1. Right-click the bookmark on the bar.\n2. Select **Edit**.\n3. Type a shorter Name (or leave it empty to just show the icon).\n4. Click **Save**."
+    },
+    "technical_tags": ["chrome", "bookmarks", "ux"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_590",
+    "bucket": "Web & Research",
+    "sub_category": "Edge Cases",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Some emojis render as empty boxes in Firefox on Fedora.",
+      "ai_response": "You are likely missing the emoji fonts.\n\n1. Install Google Noto Color Emoji:\n   `sudo dnf install google-noto-emoji-fonts`\n2. Restart Firefox. \n3. Firefox should pick them up automatically."
+    },
+    "technical_tags": ["firefox", "fonts", "emoji"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_591",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I disable WebGL completely? I don't want any fingerprinting vector.",
+      "ai_response": "1. Go to `about:config`.\n2. Set `webgl.disabled` to **true**.\n\n**Warning:** This will break Google Maps 3D view, some online games, and modern data visualization sites."
+    },
+    "technical_tags": ["firefox", "webgl", "hardening"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_592",
+    "bucket": "Web & Research",
+    "sub_category": "Work Context",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "I accidentally closed a tab I needed for work! How do I get it back?",
+      "ai_response": "Press `Ctrl + Shift + T`. This reopens the last closed tab. You can press it multiple times to open previously closed tabs in reverse order."
+    },
+    "technical_tags": ["chrome", "shortcuts", "productivity"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_593",
+    "bucket": "Web & Research",
+    "sub_category": "Personal/Home",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Brave"
+    },
+    "interaction": {
+      "user_query": "Brave isn't loading images on Reddit. Just text.",
+      "ai_response": "1. Check **Brave Shields** (Lion icon). If 'Block Scripts' is enabled, images won't load properly.\n2. Ensure you didn't accidentally block images for the site: Right-click page info > **Site Settings** > **Images**."
+    },
+    "technical_tags": ["brave", "images", "troubleshooting"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_594",
+    "bucket": "Web & Research",
+    "sub_category": "Edge Cases",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Firefox Snap"
+    },
+    "interaction": {
+      "user_query": "I can't save files to my /tmp directory from Firefox Snap.",
+      "ai_response": "Snaps use a private `/tmp` directory for security isolation.\n\n**Workaround:**\nSave to your `Downloads` or `Home` folder instead. Files saved to the Snap's `/tmp` are deleted when you close the browser and are not visible to the host system."
+    },
+    "technical_tags": ["snap", "filesystem", "isolation"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_595",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I want to delete my cache automatically, but KEEP my cookies and logins.",
+      "ai_response": "1. Go to **Settings** > **Privacy & Security**.\n2. Under **History**, select **Use custom settings for history**.\n3. Check **Clear history when Firefox closes**.\n4. Click **Settings** next to it.\n5. Check **Cache** but UNCHECK **Cookies** and **Active Logins**."
+    },
+    "technical_tags": ["firefox", "cache", "configuration"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_596",
+    "bucket": "Web & Research",
+    "sub_category": "Work Context",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "How do I create a shortcut to Google Calendar on my desktop?",
+      "ai_response": "1. Open Google Calendar.\n2. Click three dots > **Save and share** > **Create shortcut**.\n3. Check **Open as window**.\n4. Click **Create**."
+    },
+    "technical_tags": ["chrome", "shortcuts", "productivity"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_597",
+    "bucket": "Web & Research",
+    "sub_category": "Multi-device",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Vivaldi"
+    },
+    "interaction": {
+      "user_query": "Vivaldi Notes aren't syncing to my phone.",
+      "ai_response": "1. Ensure you are logged into Vivaldi Sync on both devices.\n2. On desktop, go to **Settings** > **Sync** and ensure **Notes** is checked.\n3. Trigger a manual sync by clicking the cloud icon."
+    },
+    "technical_tags": ["vivaldi", "sync", "notes"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_598",
+    "bucket": "Web & Research",
+    "sub_category": "Personal/Home",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I want to use a proxy ONLY for a specific domain.",
+      "ai_response": "Firefox native settings apply proxies globally.\n\n**Solution:** Use an extension like **FoxyProxy Standard**.\n1. Add your proxy.\n2. Set it to use a 'Pattern' matching `*example.com*`.\n3. Set the mode to **Use proxies based on their pre-defined patterns and priorities**."
+    },
+    "technical_tags": ["firefox", "proxy", "networking"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_599",
+    "bucket": "Web & Research",
+    "sub_category": "Edge Cases",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "The browser interface is too small on my 4K monitor.",
+      "ai_response": "1. Type `about:config`.\n2. Search for `layout.css.devPixelsPerPx`.\n3. Change it from `-1.0` (default) to something like `1.5` or `2.0`.\n4. Adjust until comfortable."
+    },
+    "technical_tags": ["firefox", "hidpi", "scaling"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_600",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "I enabled 'Do Not Track' but I still see targeted ads.",
+      "ai_response": "'Do Not Track' is a voluntary signal that most advertisers ignore.\n\n**Solution:** Install **uBlock Origin** or **Privacy Badger** to actively block the tracking scripts rather than just asking them nicely not to track you."
+    },
+    "technical_tags": ["chrome", "privacy", "ad-blocking"],
+    "friction_type": "user_error"
+  }
+]

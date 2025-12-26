@@ -1290,6 +1290,28 @@ const SETTINGS_SCHEMA = {
         `,
         showInDialog: true,
       },
+      guiAutomation: {
+        type: 'object',
+        label: 'GUI Automation',
+        category: 'Tools',
+        requiresRestart: true,
+        default: {},
+        description:
+          'Settings for desktop GUI automation (mouse, keyboard control).',
+        showInDialog: false,
+        properties: {
+          enabled: {
+            type: 'boolean',
+            label: 'Enable GUI Automation',
+            category: 'Tools',
+            requiresRestart: true,
+            default: false,
+            description:
+              'Enable desktop GUI automation tools (ui.click, ui.type, etc.). Requires AT-SPI on Linux.',
+            showInDialog: true,
+          },
+        },
+      },
       enableHooks: {
         type: 'boolean',
         label: 'Enable Hooks System',
@@ -1634,6 +1656,38 @@ const SETTINGS_SCHEMA = {
             requiresRestart: true,
             default: false,
             description: 'Enable the Introspection Agent.',
+            showInDialog: true,
+          },
+        },
+      },
+    },
+  },
+
+  logs: {
+    type: 'object',
+    label: 'Logs',
+    category: 'General',
+    requiresRestart: false,
+    default: {},
+    description: 'Session logging and retention settings.',
+    showInDialog: true,
+    properties: {
+      retention: {
+        type: 'object',
+        label: 'Retention',
+        category: 'General',
+        requiresRestart: false,
+        default: {},
+        description: 'Log retention settings.',
+        showInDialog: true,
+        properties: {
+          days: {
+            type: 'number',
+            label: 'Retention Days',
+            category: 'General',
+            requiresRestart: false,
+            default: 7,
+            description: 'Number of days to keep session logs.',
             showInDialog: true,
           },
         },

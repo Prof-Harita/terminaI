@@ -349,6 +349,6 @@ Gemini CLI.
   same permissions and impact as if you ran them directly in your terminal.
 
 - **Environment variable:** When a command is executed via `!` or in shell mode,
-  the `GEMINI_CLI=1` environment variable is set in the subprocess's
+  the `TERMINAI_CLI=1` environment variable is set in the subprocess's
   environment. This allows scripts or tools to detect if they are being run from
   within the Gemini CLI.

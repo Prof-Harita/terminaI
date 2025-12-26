@@ -84,6 +84,10 @@ export class Storage {
     return path.join(Storage.getGlobalGeminiDir(), TMP_DIR_NAME);
   }
 
+  static getGlobalLogsDir(): string {
+    return path.join(Storage.getGlobalGeminiDir(), 'logs');
+  }
+
   static getGlobalBinDir(): string {
     return path.join(Storage.getGlobalTempDir(), BIN_DIR_NAME);
   }

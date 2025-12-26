@@ -4,7 +4,8 @@
 
 TerminaI uses the same settings file layout as the upstream Gemini CLI.
 
-- Default path: `~/.gemini/settings.json`
+- Default path: `~/.terminai/settings.json` (legacy `~/.gemini/settings.json` is
+  still read for compatibility)
 
 Common options:
 
@@ -25,8 +26,13 @@ Common options:
 
 Environment variables:
 
-- `GEMINI_API_KEY`
+- `TERMINAI_API_KEY`
   - Uses API-key auth instead of the OAuth browser flow.
+- `TERMINAI_BASE_URL`
+  - Override the Gemini API base URL (validated).
+
+Legacy compatibility: legacy Gemini-prefixed environment variables are aliased
+to their Terminai-prefixed equivalents (Terminai values win when both are set).
 
 ## Web Remote (A2A) token
 
@@ -41,4 +47,5 @@ used by clients.
 
 Desktop stores its own UI settings locally (agent URL/token, workspace path,
 voice toggle/volume). These settings do not replace the agent’s
-`~/.gemini/settings.json`.
+`~/.terminai/settings.json` (legacy `~/.gemini/settings.json` may still be
+read).

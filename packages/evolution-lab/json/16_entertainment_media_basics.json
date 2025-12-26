@@ -1,0 +1,1722 @@
+[
+  {
+    "id": "ENT_MEDIA_001",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Spotify",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Spotify 1.2.31"
+    },
+    "interaction": {
+      "user_query": "Spotify won't open. I click the icon, it bounces for a second, then nothing happens. No error message.",
+      "ai_response": "This is likely the 'singleton lock' issue - Spotify crashed and left a lock file.\n\n**Fix:**\n```bash\nrm -rf ~/.cache/spotify\nrm -rf ~/.config/spotify\n```\n\nThen try launching Spotify again. This clears the corrupted cache and lock files."
+    },
+    "technical_tags": ["spotify", "singleton-lock", "cache-corruption"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "ENT_MEDIA_002",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Video Playback",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Default Video Player"
+    },
+    "interaction": {
+      "user_query": "I can't play an MP4 file I downloaded. It says 'missing codec H.264'.",
+      "ai_response": "Linux Mint requires extra multimedia codecs for proprietary formats like H.264.\n\n**Install codecs:**\n```bash\nsudo apt update\nsudo apt install mint-meta-codecs\n```\nRestart your video player after installation."
+    },
+    "technical_tags": ["codecs", "h264", "mint-meta-codecs"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_003",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Streaming",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox 124"
+    },
+    "interaction": {
+      "user_query": "Why is Netflix quality so bad? It looks like 720p even though I pay for 4K.",
+      "ai_response": "Browsers on Linux are generally restricted to 720p/1080p due to Widevine DRM L1 certification requirements. \n\n**Workaround:**\n1. Install the 'Netflix 1080p' extension in Firefox.\n2. Force 1080p playback using the extension shortcut (`Ctrl + Alt + Shift + S` to verify bitrate)."
+    },
+    "technical_tags": ["netflix", "widevine", "drm", "firefox"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_004",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Video Editing",
+    "complexity": "Advanced",
+    "user_persona": "Content Creator",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "DaVinci Resolve 18.6"
+    },
+    "interaction": {
+      "user_query": "DaVinci Resolve won't launch. Terminal says something about 'libpango' or 'glib' errors.",
+      "ai_response": "DaVinci Resolve bundles old libraries that conflict with Arch's newer system libraries.\n\n**Fix:**\nPreload system libraries instead of the bundled ones:\n```bash\nexport LD_PRELOAD=\"/usr/lib/libglib-2.0.so.0 /usr/lib/libgio-2.0.so.0 /usr/lib/libgmodule-2.0.so.0\"\n/opt/resolve/bin/resolve\n```\nAlternatively, use the `davinci-resolve` AUR package which handles this."
+    },
+    "technical_tags": ["davinci-resolve", "glib-conflict", "library-mismatch"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_005",
+    "bucket": "Entertainment & Media",
+    "sub_category": "OBS Studio",
+    "complexity": "Intermediate",
+    "user_persona": "Streamer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "OBS 30.0"
+    },
+    "interaction": {
+      "user_query": "OBS only shows a black screen when I try to capture a window on Wayland.",
+      "ai_response": "Window capture on Wayland requires PipeWire. Ensure you are using the correct capture source.\n\n**Fix:**\n1. Use the **Screen Capture (PipeWire)** source, not X11 Window Capture.\n2. Ensure `xdg-desktop-portal-gnome` is installed:\n```bash\nsudo apt install xdg-desktop-portal-gnome\n```"
+    },
+    "technical_tags": ["obs", "wayland", "pipewire", "screen-capture"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_006",
+    "bucket": "Entertainment & Media",
+    "sub_category": "VLC",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "VLC 3.0.18"
+    },
+    "interaction": {
+      "user_query": "VLC cannot play a DVD. It just spins and stops.",
+      "ai_response": "Commercial DVDs require the `libdvdcss2` library for decryption, which isn't installed by default on Debian.\n\n**Fix:**\n```bash\nsudo apt install libdvd-pkg\nsudo dpkg-reconfigure libdvd-pkg\n```\nFollow the prompts to download and install the library."
+    },
+    "technical_tags": ["vlc", "dvd", "libdvdcss", "decryption"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_007",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Hardware Acceleration",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "YouTube makes my laptop fan spin like crazy. How do I turn on hardware decoding?",
+      "ai_response": "You need to enable VA-API for your GPU.\n\n**For Intel/AMD:**\n1. Install codecs:\n```bash\nsudo dnf install ffmpeg gstreamer1-plugin-openh264 mozilla-openh264\n```\n2. Verify support:\n```bash\nvainfo\n```\n3. In Firefox `about:config`, set `media.ffmpeg.vaapi.enabled` to `true`."
+    },
+    "technical_tags": ["va-api", "firefox", "hardware-acceleration", "youtube"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_008",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Gaming",
+    "complexity": "Beginner",
+    "user_persona": "Gamer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Steam"
+    },
+    "interaction": {
+      "user_query": "Most of my Windows games in Steam are grayed out and I can't install them.",
+      "ai_response": "You need to enable Steam Play (Proton) for all titles, not just supported ones.\n\n**Steps:**\n1. Go to **Steam > Settings > Compatibility**.\n2. Check **Enable Steam Play for all other titles**.\n3. Restart Steam."
+    },
+    "technical_tags": ["steam", "proton", "compatibility", "gaming"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_009",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Spotify",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Spotify Snap"
+    },
+    "interaction": {
+      "user_query": "Spotify can't find my local MP3 files in the Music folder.",
+      "ai_response": "The Spotify Snap package is sandboxed and can't read your home directory by default.\n\n**Fix:**\nGrant the home permission:\n```bash\nsudo snap connect spotify:home\n```\nRestart Spotify and check Local Files settings again."
+    },
+    "technical_tags": ["spotify", "snap", "permissions", "sandboxing"],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "ENT_MEDIA_010",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Kdenlive",
+    "complexity": "Intermediate",
+    "user_persona": "Editor",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Kdenlive 24.02"
+    },
+    "interaction": {
+      "user_query": "Rendering video takes forever. How do I use my NVidia GPU for rendering?",
+      "ai_response": "You need to select the NVENC profile in rendering settings.\n\n**Steps:**\n1. Click **Render**.\n2. Check **More options**.\n3. Under 'Hardware Acceleration', ensure it is not disabled.\n4. Choose a profile like **Generic (MP4-H264/AAC)** and look for the **NVENC** variant in the list (e.g., `h264_nvenc`)."
+    },
+    "technical_tags": ["kdenlive", "nvenc", "nvidia", "rendering"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_011",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Audio",
+    "complexity": "Intermediate",
+    "user_persona": "Audiophile",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "PipeWire"
+    },
+    "interaction": {
+      "user_query": "My Bluetooth headphones sound like a telephone call, very low quality.",
+      "ai_response": "Your headphones are likely stuck in HSP/HFP (Headset) mode instead of A2DP (High Fidelity).\n\n**Fix:**\n1. Open **Settings > Sound**.\n2. Under Output, select your headphones.\n3. Change the **Configuration/Profile** drop-down from 'Headset Head Unit (HSP/HFP)' to 'High Fidelity Playback (A2DP Sink)'."
+    },
+    "technical_tags": ["bluetooth", "a2dp", "pipewire", "audio-quality"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_012",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Video Playback",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Totem"
+    },
+    "interaction": {
+      "user_query": "Videos look 'torn' horizontally when there is fast movement on screen.",
+      "ai_response": "This is screen tearing. If you are using NVIDIA, you need to enable 'Force Composition Pipeline'.\n\n**Fix:**\n1. Open **NVIDIA X Server Settings**.\n2. Go to **X Server Display Configuration** > **Advanced**.\n3. Check **Force Composition Pipeline**.\n4. Click **Apply** and Save to X Configuration File."
+    },
+    "technical_tags": [
+      "screen-tearing",
+      "nvidia",
+      "vsync",
+      "composition-pipeline"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_013",
+    "bucket": "Entertainment & Media",
+    "sub_category": "MPV",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "mpv 0.37"
+    },
+    "interaction": {
+      "user_query": "MPV interface is tiny on my 4K monitor. How do I scale the on-screen controller?",
+      "ai_response": "You can adjust the OSC scaling in your config file.\n\n**Fix:**\nEdit `~/.config/mpv/mpv.conf` (create if missing) and add:\n```\nscript-opts=osc-scalewindowed=2.0,osc-fullscreen=2.0\n```\nAdjust `2.0` to suit your preference."
+    },
+    "technical_tags": ["mpv", "hidpi", "scaling", "config"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_014",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Streaming",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Disney+"
+    },
+    "interaction": {
+      "user_query": "Disney+ gives me Error 83 when I try to watch in Firefox.",
+      "ai_response": "Error 83 on Linux usually means DRM (Digital Rights Management) content is blocked.\n\n**Fix:**\n1. Open Firefox Settings.\n2. Search for 'DRM'.\n3. Ensure **Play DRM-controlled content** is checked.\n4. Firefox may install the Widevine plugin; restart the browser once done."
+    },
+    "technical_tags": ["disney-plus", "drm", "firefox", "widevine"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_015",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Audacity",
+    "complexity": "Intermediate",
+    "user_persona": "Podcaster",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Audacity 3.4"
+    },
+    "interaction": {
+      "user_query": "I can't record system audio (what I hear) in Audacity.",
+      "ai_response": "On PulseAudio/PipeWire, you need to select the 'Monitor' device to record system output.\n\n**Fix:**\n1. Install PulseAudio Volume Control: `sudo apt install pavucontrol`\n2. Start recording in Audacity.\n3. Open **pavucontrol**, go to the **Recording** tab.\n4. Change Audacity's input from 'Built-in Audio Analog Stereo' to **Monitor of Built-in Audio Analog Stereo**."
+    },
+    "technical_tags": ["audacity", "recording", "pulseaudio", "pavucontrol"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_016",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Steam",
+    "complexity": "Intermediate",
+    "user_persona": "Gamer",
+    "system_context": {
+      "distro": "Manjaro",
+      "app_version": "Steam"
+    },
+    "interaction": {
+      "user_query": "My PS5 controller connects via Bluetooth but Steam doesn't recognize it.",
+      "ai_response": "You might be missing `udev` rules for the controller, or the kernel driver isn't loading.\n\n**Fix:**\n1. Ensure `bluez` is running.\n2. Install `game-devices-udev` (AUR):\n```bash\npamac build game-devices-udev\n```\n3. Reload rules: `sudo udevadm control --reload-rules && sudo udevadm trigger`."
+    },
+    "technical_tags": ["controller", "dualsense", "bluetooth", "udev"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_017",
+    "bucket": "Entertainment & Media",
+    "sub_category": "VLC",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "VLC 3.0.20"
+    },
+    "interaction": {
+      "user_query": "VLC is green screen when playing videos. Audio works fine.",
+      "ai_response": "This is a common hardware acceleration glitch.\n\n**Fix:**\n1. Go to **Tools > Preferences > Input / Codecs**.\n2. Change **Hardware-accelerated decoding** from 'Automatic' to **Disable**.\n3. Click Save and restart VLC."
+    },
+    "technical_tags": [
+      "vlc",
+      "green-screen",
+      "hardware-acceleration",
+      "decoding"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_018",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Music Production",
+    "complexity": "Advanced",
+    "user_persona": "Musician",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Reaper"
+    },
+    "interaction": {
+      "user_query": "Reaper warns about 'Realtime' permissions being denied.",
+      "ai_response": "Your user needs to be in the `realtime` or `audio` group to prioritize audio threads.\n\n**Fix:**\n1. Add user to group:\n```bash\nsudo usermod -aG audio $USER\n```\n2. Edit `/etc/security/limits.d/audio.conf` (create if needed):\n```\n@audio   -  rtprio     95\n@audio   -  memlock    unlimited\n```\n3. Reboot."
+    },
+    "technical_tags": ["reaper", "realtime", "limits", "audio-production"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_019",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Jellyfin",
+    "complexity": "Intermediate",
+    "user_persona": "Home Labber",
+    "system_context": {
+      "distro": "Ubuntu Server 22.04",
+      "app_version": "Jellyfin Docker"
+    },
+    "interaction": {
+      "user_query": "Jellyfin can't transcode video. The logs say 'Permission denied' on /dev/dri/renderD128.",
+      "ai_response": "The Docker container needs access to the render device.\n\n**Fix:**\nEnsure your `docker run` or Compose file includes the device mapping:\n```yaml\ndevices:\n  - /dev/dri/renderD128:/dev/dri/renderD128\n```\nAnd ensure the user running docker has permissions (usually root or in `render` group)."
+    },
+    "technical_tags": ["jellyfin", "transcoding", "docker", "permissions"],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "ENT_MEDIA_020",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Spotify",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Spotify"
+    },
+    "interaction": {
+      "user_query": "I can't install Spotify. It's not in the Software Center.",
+      "ai_response": "Spotify is proprietary and not in Debian main repos. You should use Flatpak.\n\n**Install:**\n1. Install Flatpak:\n```bash\nsudo apt install flatpak\n```\n2. Add Flathub:\n```bash\nflatpak remote-add --if-not-exists flathub [https://flathub.org/repo/flathub.flatpakrepo](https://flathub.org/repo/flathub.flatpakrepo)\n```\n3. Install Spotify:\n```bash\nflatpak install flathub com.spotify.Client\n```"
+    },
+    "technical_tags": ["spotify", "debian", "flatpak", "installation"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_021",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Handbrake",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Handbrake"
+    },
+    "interaction": {
+      "user_query": "I ripped a DVD but the file is huge (4GB). How do I make it smaller for my phone?",
+      "ai_response": "Use Handbrake's presets for efficient compression.\n\n**Steps:**\n1. Open Handbrake and select your file.\n2. On the right, look for **Presets > Devices > General**.\n3. Select **Fast 1080p30** or **HQ 1080p30 Surround**.\n4. Click **Start Encode**."
+    },
+    "technical_tags": ["handbrake", "compression", "encoding", "presets"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "ENT_MEDIA_022",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Video Editing",
+    "complexity": "Intermediate",
+    "user_persona": "Editor",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Kdenlive"
+    },
+    "interaction": {
+      "user_query": "Kdenlive crashes every time I drag a clip to the timeline.",
+      "ai_response": "This is often a GPU processing or theme issue.\n\n**Fix:**\n1. Go to **Settings > Configure Kdenlive > Playback**.\n2. Uncheck **Use GPU processing (Movit library)** if enabled.\n3. Alternatively, try switching the Color Theme in Settings to 'Breeze Dark' if you are on GNOME, as Qt styling can sometimes cause crashes."
+    },
+    "technical_tags": ["kdenlive", "crash", "gpu-processing", "movit"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_023",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Steam",
+    "complexity": "Intermediate",
+    "user_persona": "Gamer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Steam"
+    },
+    "interaction": {
+      "user_query": "Games are stuttering badly. I think they are running on my Intel integrated graphics instead of my NVIDIA card.",
+      "ai_response": "You can force the GPU usage via launch options.\n\n**Fix:**\nRight-click the game in Steam > Properties > Launch Options.\nEnter:\n```\n__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia %command%\n```"
+    },
+    "technical_tags": ["steam", "nvidia", "prime-offload", "hybrid-graphics"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_024",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Browser",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Chromium"
+    },
+    "interaction": {
+      "user_query": "Twitch streams won't load in Chromium. It says 'Error #2000'.",
+      "ai_response": "Chromium on Arch doesn't include proprietary codecs by default.\n\n**Fix:**\nInstall the non-free codecs:\n```bash\nsudo pacman -S chromium\n```\nActually, you likely need to switch to `google-chrome` or install `chromium-codecs-ffmpeg-extra` if available (often not in Arch repos directly). A better fix on Arch is:\n```bash\nyay -S google-chrome\n```\nor use Firefox."
+    },
+    "technical_tags": ["chromium", "codecs", "twitch", "h264"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_025",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Audio",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "PulseAudio"
+    },
+    "interaction": {
+      "user_query": "The volume is too low even at 100%.",
+      "ai_response": "You can enable 'Over-amplification' in Settings.\n\n**Fix:**\n1. Go to **Settings > Sound**.\n2. Look for **Over-amplification** toggle and switch it ON.\n3. This allows volume up to ~150%."
+    },
+    "technical_tags": ["audio", "volume", "over-amplification", "gnome"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_026",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Plex",
+    "complexity": "Intermediate",
+    "user_persona": "Home Labber",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Plex Media Server"
+    },
+    "interaction": {
+      "user_query": "Plex can't see my external hard drive with movies on it.",
+      "ai_response": "This is usually a permissions issue. The `plex` user cannot read your home or mounted media folders.\n\n**Fix:**\n1. Modify permissions (unsafe for home) or better, mount drive to a neutral location like `/media/plex`.\n2. Ensure the plex user has read/execute:\n```bash\nsudo chown -R $USER:plex /media/yourdrive\nsudo chmod -R 755 /media/yourdrive\n```"
+    },
+    "technical_tags": ["plex", "permissions", "mounting", "external-drive"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_027",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Photography",
+    "complexity": "Beginner",
+    "user_persona": "Photographer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Darktable"
+    },
+    "interaction": {
+      "user_query": "Darktable says 'No OpenCL found'. Is that important?",
+      "ai_response": "OpenCL uses your graphics card to speed up photo processing. It is not required but highly recommended for performance.\n\n**Fix:**\nEnsure you have the compute drivers installed. For NVIDIA:\n```bash\nsudo apt install nvidia-compute-utils-535\n```\n(Replace 535 with your driver version)."
+    },
+    "technical_tags": ["darktable", "opencl", "gpu", "performance"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_028",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Video Playback",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "MPV"
+    },
+    "interaction": {
+      "user_query": "How do I make MPV remember the playback position when I close it?",
+      "ai_response": "You need to add a line to the config file.\n\n**Fix:**\nEdit `~/.config/mpv/mpv.conf`:\n```\nsave-position-on-quit\n```"
+    },
+    "technical_tags": ["mpv", "playback-resume", "config"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_029",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Codecs",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "System"
+    },
+    "interaction": {
+      "user_query": "I can't see thumbnails for my video files in the file explorer (Nautilus).",
+      "ai_response": "You might be missing the thumbnailer for ffmpeg.\n\n**Fix:**\n```bash\nsudo apt install ffmpegthumbnailer\n```\nThen clear the thumbnail cache:\n```bash\nrm -rf ~/.cache/thumbnails/*\n```\nRestart Nautilus (`nautilus -q`)."
+    },
+    "technical_tags": ["thumbnails", "nautilus", "ffmpeg", "ux"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_030",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Spotify",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Spotify"
+    },
+    "interaction": {
+      "user_query": "The ads on Spotify are annoying. Is there a way to block them on the desktop app?",
+      "ai_response": "You can use `spotx-bash` to patch the client, though this violates TOS.\n\n**Informational:**\nThe tool modifies the Spotify client files to hide ad banners.\nCommand often used:\n```bash\nbash <(curl -sSL [https://raw.githubusercontent.com/SpotX-CLI/SpotX-Linux/main/install.sh](https://raw.githubusercontent.com/SpotX-CLI/SpotX-Linux/main/install.sh))\n```\nUse at your own risk."
+    },
+    "technical_tags": ["spotify", "adblock", "patch", "scripting"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_031",
+    "bucket": "Entertainment & Media",
+    "sub_category": "OBS Studio",
+    "complexity": "Intermediate",
+    "user_persona": "Streamer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "OBS Flatpak"
+    },
+    "interaction": {
+      "user_query": "I can't access my plugins folder for OBS installed via Flatpak.",
+      "ai_response": "Flatpak data is stored in a different location.\n\n**Location:**\nPut your plugins in:\n`~/.var/app/com.obsproject.Studio/config/obs-studio/plugins`\n\nIf the folder doesn't exist, create it."
+    },
+    "technical_tags": ["obs", "flatpak", "plugins", "file-structure"],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "ENT_MEDIA_032",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Audio",
+    "complexity": "Intermediate",
+    "user_persona": "Musician",
+    "system_context": {
+      "distro": "Ubuntu Studio",
+      "app_version": "Jack Audio"
+    },
+    "interaction": {
+      "user_query": "How do I bridge PulseAudio applications to JACK so I can hear YouTube while using Ardour?",
+      "ai_response": "Install the sink bridge.\n\n**Fix:**\n```bash\nsudo apt install pulseaudio-module-jack\n```\nThen in QjackCtl settings, ensure the \"Execute script after startup\" is set to:\n`pactl load-module module-jack-sink channels=2`"
+    },
+    "technical_tags": ["jack", "pulseaudio", "bridge", "audio-routing"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_033",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Fonts",
+    "complexity": "Beginner",
+    "user_persona": "Designer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Inkscape"
+    },
+    "interaction": {
+      "user_query": "I installed a font for Inkscape but it doesn't show up.",
+      "ai_response": "Did you refresh the font cache?\n\n**Fix:**\nIf you dropped the `.ttf` file in `~/.local/share/fonts`, run:\n```bash\nfc-cache -f -v\n```\nThen restart Inkscape."
+    },
+    "technical_tags": ["fonts", "inkscape", "cache", "typography"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "ENT_MEDIA_034",
+    "bucket": "Entertainment & Media",
+    "sub_category": "VLC",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "VLC"
+    },
+    "interaction": {
+      "user_query": "VLC looks huge and ugly. It's not respecting my dark theme.",
+      "ai_response": "VLC uses Qt, while Mint uses GTK. You need to align the styling.\n\n**Fix:**\n1. Install a Qt styling tool:\n```bash\nsudo apt install qt5-style-plugins qt5ct\n```\n2. Add `export QT_QPA_PLATFORMTHEME=qt5ct` to your `~/.profile`.\n3. Logout/Login, open `qt5ct` and select a GTK2 theme."
+    },
+    "technical_tags": ["vlc", "theming", "qt", "gtk"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_035",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Steam",
+    "complexity": "Beginner",
+    "user_persona": "Gamer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Steam"
+    },
+    "interaction": {
+      "user_query": "Steam download speeds are super slow compared to Windows.",
+      "ai_response": "This is often a DNS or caching issue. Disabling IPv6 sometimes helps on Linux.\n\n**Try:**\n1. Steam Settings > Downloads > Clear Download Cache.\n2. Or, disable HTTP2 in Steam (create `~/.steam/steam.cfg`):\n```\n@nClientDownloadEnableHTTP2PlatformLinux 0\n```"
+    },
+    "technical_tags": ["steam", "networking", "slow-download", "ipv6"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_036",
+    "bucket": "Entertainment & Media",
+    "sub_category": "DaVinci Resolve",
+    "complexity": "Advanced",
+    "user_persona": "Editor",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Resolve 19"
+    },
+    "interaction": {
+      "user_query": "DaVinci Resolve Free version won't import my MP4 files from my Sony camera.",
+      "ai_response": "The Free version of Resolve on Linux does not support AAC audio or H.264/H.265 video. This is a licensing limitation.\n\n**Workaround:**\nConvert your clips to DNxHR or ProRes using ffmpeg before importing:\n```bash\nffmpeg -i input.mp4 -c:v dnxhd -profile:v dnxhr_hq -pix_fmt yuv422p -c:a pcm_s16le output.mov\n```"
+    },
+    "technical_tags": ["davinci-resolve", "codecs", "transcoding", "ffmpeg"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_037",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Spotify",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Spotify AUR"
+    },
+    "interaction": {
+      "user_query": "Spotify fonts look terrible and jagged.",
+      "ai_response": "Spotify might be missing font dependencies or using a bad fallback.\n\n**Fix:**\nInstall standard font packages:\n```bash\nsudo pacman -S ttf-liberation not-fonts-emoji\n```\nThen create a font config file `~/.config/spotify/Users/[user]/prefs` (if it allows) or just ensure your system font rendering (freetype) is configured correctly in `/etc/profile.d/freetype2.sh`."
+    },
+    "technical_tags": ["spotify", "fonts", "typography", "ui"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_038",
+    "bucket": "Entertainment & Media",
+    "sub_category": "E-books",
+    "complexity": "Beginner",
+    "user_persona": "Reader",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Calibre"
+    },
+    "interaction": {
+      "user_query": "Calibre doesn't detect my Kindle when I plug it in.",
+      "ai_response": "Try running Calibre as root once to see if it's permission related, but don't keep doing that.\n\n**Fix:**\nUsually, the Kindle is mounted by the OS. Unmount it in your file manager (do not eject), then open Calibre. If Calibre still fails, check the debug log in Preferences > Miscellaneous > Debug device detection."
+    },
+    "technical_tags": ["calibre", "kindle", "usb", "mounting"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "ENT_MEDIA_039",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Music Player",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Rhythmbox"
+    },
+    "interaction": {
+      "user_query": "Rhythmbox doesn't show album art.",
+      "ai_response": "Rhythmbox relies on plugins or embedded tags.\n\n**Fix:**\n1. Go to Tools > Plugins.\n2. Enable **Cover art search**.\n3. If your files have embedded art, ensure you have the necessary codecs installed (`gstreamer1-plugins-ugly`)."
+    },
+    "technical_tags": ["rhythmbox", "album-art", "metadata", "plugins"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_040",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Screen Recording",
+    "complexity": "Intermediate",
+    "user_persona": "Content Creator",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Kazam"
+    },
+    "interaction": {
+      "user_query": "Kazam works but the recorded video is stuck at a low framerate.",
+      "ai_response": "Kazam is quite old and lacks options. Increasing framerate requires editing settings.\n\n**Fix:**\nFile > Preferences > General. Set 'Framerate' to 60 (default is often 15). \n\n*Recommendation:* Switch to **OBS Studio** or **SimpleScreenRecorder** for better performance."
+    },
+    "technical_tags": ["kazam", "framerate", "screen-recording", "legacy"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_041",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Audio",
+    "complexity": "Advanced",
+    "user_persona": "Audiophile",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "PipeWire"
+    },
+    "interaction": {
+      "user_query": "I want to apply a system-wide Equalizer to boost bass.",
+      "ai_response": "Use EasyEffects (formerly PulseEffects).\n\n**Setup:**\n1. Install:\n```bash\nsudo pacman -S easyeffects lsp-plugins\n```\n2. Open EasyEffects.\n3. Add the 'Equalizer' plugin to the output pipeline.\n4. Check 'Start Service at Login' in preferences."
+    },
+    "technical_tags": ["easyeffects", "equalizer", "pipewire", "bass-boost"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_042",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Video Playback",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Celluloid"
+    },
+    "interaction": {
+      "user_query": "Subtitles are too small in Celluloid player.",
+      "ai_response": "Celluloid uses MPV config.\n\n**Fix:**\nEdit `~/.config/mpv/mpv.conf`:\n```\nsub-font-size=48\n```\nOr in Celluloid Preferences > Config File, add `sub-scale=1.5`."
+    },
+    "technical_tags": ["celluloid", "subtitles", "accessibility", "config"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_043",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Metadata",
+    "complexity": "Beginner",
+    "user_persona": "Collector",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "MusicBrainz Picard"
+    },
+    "interaction": {
+      "user_query": "Picard won't save tags to my FLAC files. Says 'Permission Denied'.",
+      "ai_response": "Check ownership of your music folder.\n\n**Fix:**\n```bash\nsudo chown -R $USER:$USER ~/Music\nchmod -R 755 ~/Music\n```\nThen retry saving in Picard."
+    },
+    "technical_tags": ["picard", "tagging", "permissions", "flac"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "ENT_MEDIA_044",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Streaming",
+    "complexity": "Intermediate",
+    "user_persona": "Cord Cutter",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "IPTVnator"
+    },
+    "interaction": {
+      "user_query": "IPTVnator works but buffering is terrible on high bitrate channels.",
+      "ai_response": "This is likely the player buffer size.\n\n**Fix:**\nIn IPTVnator settings, if available, increase buffer. Alternatively, use MPV as the external player. Create a script `play-stream.sh`:\n```bash\nmpv --cache=yes --demuxer-max-bytes=100M \"$1\"\n```"
+    },
+    "technical_tags": ["iptv", "buffering", "mpv", "streaming"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_045",
+    "bucket": "Entertainment & Media",
+    "sub_category": "DLNA",
+    "complexity": "Intermediate",
+    "user_persona": "Home Labber",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "MiniDLNA"
+    },
+    "interaction": {
+      "user_query": "My TV sees the MiniDLNA server but the folders are empty.",
+      "ai_response": "You need to force a database rebuild if you added files recently.\n\n**Fix:**\n```bash\nsudo systemctl stop minidlna\nsudo minidlnad -R\nsudo systemctl start minidlna\n```\nAlso check `inotify` settings if auto-update fails: `fs.inotify.max_user_watches` in sysctl."
+    },
+    "technical_tags": ["minidlna", "dlna", "database-refresh", "networking"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_046",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Gaming",
+    "complexity": "Advanced",
+    "user_persona": "Gamer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Lutris"
+    },
+    "interaction": {
+      "user_query": "League of Legends won't start after the latest Vanguard update.",
+      "ai_response": "Vanguard is a kernel-level anti-cheat that does not work on Linux. \n\n**Status:**\nAs of recent updates, LoL is unplayable on Linux/Wine due to Vanguard requirements. You must dual-boot Windows to play."
+    },
+    "technical_tags": [
+      "league-of-legends",
+      "vanguard",
+      "anti-cheat",
+      "compatibility"
+    ],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_047",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Radio",
+    "complexity": "Beginner",
+    "user_persona": "Listener",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Shortwave"
+    },
+    "interaction": {
+      "user_query": "Shortwave radio app crashes on startup.",
+      "ai_response": "Shortwave is a GTK4 app and might have issues with older Mint drivers.\n\n**Try:**\nRun from terminal to see error: `flatpak run de.haeckerfelix.Shortwave`.\nIf it's OpenGL related, force software rendering:\n```bash\nLIBGL_ALWAYS_SOFTWARE=1 flatpak run de.haeckerfelix.Shortwave\n```"
+    },
+    "technical_tags": ["shortwave", "gtk4", "crash", "software-rendering"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_048",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Podcasts",
+    "complexity": "Beginner",
+    "user_persona": "Listener",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "gPodder"
+    },
+    "interaction": {
+      "user_query": "gPodder fails to download episodes to my SD card.",
+      "ai_response": "Snap/Flatpak gPodder might not have permission to access removable media.\n\n**Fix:**\n```bash\nsudo snap connect gpodder:removable-media\n```\nOr check the download path in Preferences."
+    },
+    "technical_tags": ["gpodder", "podcasts", "permissions", "removable-media"],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "ENT_MEDIA_049",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Video Editing",
+    "complexity": "Intermediate",
+    "user_persona": "Editor",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Blender"
+    },
+    "interaction": {
+      "user_query": "Using Blender as a video editor, playback is choppy.",
+      "ai_response": "Blender's VSE (Video Sequence Editor) requires cache adjustment.\n\n**Fix:**\n1. Go to **Edit > Preferences > System**.\n2. Under **Memory & Limits**, increase **Sequencer Cache Limit** (e.g., to 4096MB).\n3. Use 'Proxies' for high-res footage."
+    },
+    "technical_tags": ["blender", "vse", "cache", "performance"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_050",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Discord",
+    "complexity": "Intermediate",
+    "user_persona": "Gamer",
+    "system_context": {
+      "distro": "Pop!_OS",
+      "app_version": "Discord"
+    },
+    "interaction": {
+      "user_query": "Discord screen share has no audio.",
+      "ai_response": "Discord on Linux generally doesn't support audio capture in screen share out of the box.\n\n**Fix:**\nUse a modified client like **Vencord** or **Vesktop** which patches this functionality, or use a virtual audio cable setup via PulseAudio."
+    },
+    "technical_tags": ["discord", "screen-share", "audio", "compatibility"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_051",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Emulation",
+    "complexity": "Intermediate",
+    "user_persona": "Retro Gamer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "RetroArch"
+    },
+    "interaction": {
+      "user_query": "RetroArch doesn't save my game progress when I quit.",
+      "ai_response": "You might be exiting incorrectly or have permission issues.\n\n**Fix:**\n1. Ensure you quit via the Menu (File > Quit) not `Kill`.\n2. Check `savefile_directory` in `~/.config/retroarch/retroarch.cfg`.\n3. Ensure permissions: `chown -R $USER ~/.config/retroarch`."
+    },
+    "technical_tags": ["retroarch", "saves", "emulation", "config"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "ENT_MEDIA_052",
+    "bucket": "Entertainment & Media",
+    "sub_category": "DVD Authoring",
+    "complexity": "Advanced",
+    "user_persona": "Archivist",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "DeVeDe"
+    },
+    "interaction": {
+      "user_query": "DeVeDe fails to create ISO, says 'mkisofs not found'.",
+      "ai_response": "`mkisofs` is deprecated in Debian, replaced by `genisoimage`.\n\n**Fix:**\nInstall the compatibility package:\n```bash\nsudo apt install genisoimage\n```\nIf DeVeDe still complains, create a symlink:\n```bash\nsudo ln -s /usr/bin/genisoimage /usr/bin/mkisofs\n```"
+    },
+    "technical_tags": ["devede", "dvd", "iso", "symlink"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_053",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Image Viewing",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Eye of GNOME"
+    },
+    "interaction": {
+      "user_query": "I can't open HEIC photos from my iPhone.",
+      "ai_response": "You need the HEIF library support.\n\n**Fix:**\n```bash\nsudo apt install heif-gdk-pixbuf\n```\nRestart the image viewer. You may also need `libheif1`."
+    },
+    "technical_tags": ["heic", "iphone", "codecs", "image-viewer"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_054",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Audio Books",
+    "complexity": "Intermediate",
+    "user_persona": "Listener",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Cozy"
+    },
+    "interaction": {
+      "user_query": "Cozy audio book player keeps scanning my library on every startup, which takes forever.",
+      "ai_response": "This is a known behavior if the database is corrupt or path changes.\n\n**Fix:**\nTry resetting the database:\n```bash\nrm ~/.local/share/com.github.geigi.cozy/cozy.db\n```\nThen add your library path again."
+    },
+    "technical_tags": ["cozy", "audiobooks", "database", "performance"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_055",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Steam",
+    "complexity": "Intermediate",
+    "user_persona": "Gamer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Steam"
+    },
+    "interaction": {
+      "user_query": "Steam Overlay isn't working in games.",
+      "ai_response": "The overlay requires the 32-bit libraries.\n\n**Fix:**\nEnable multilib repository in `/etc/pacman.conf`, then:\n```bash\nsudo pacman -S lib32-libx11 lib32-glibc\n```\nAlso ensure Overlay is enabled in Steam Settings > In-Game."
+    },
+    "technical_tags": ["steam", "overlay", "multilib", "32-bit"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_056",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Casting",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "GNOME"
+    },
+    "interaction": {
+      "user_query": "How do I cast my entire desktop to my Chromecast?",
+      "ai_response": "Chrome/Chromium has this built-in.\n\n**Steps:**\n1. Open Chrome.\n2. Click the three dots menu > **Save and Share** > **Cast**.\n3. Click **Sources** dropdown > **Cast screen**.\n4. Select your Chromecast."
+    },
+    "technical_tags": ["chromecast", "casting", "chrome", "screen-mirroring"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "ENT_MEDIA_057",
+    "bucket": "Entertainment & Media",
+    "sub_category": "YouTube",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Mint 21",
+      "app_version": "yt-dlp"
+    },
+    "interaction": {
+      "user_query": "yt-dlp is downloading videos very slowly.",
+      "ai_response": "YouTube throttles non-browser traffic. `yt-dlp` updates frequently to bypass this.\n\n**Fix:**\nUpdate `yt-dlp`:\n```bash\nsudo yt-dlp -U\n```\n(Or `pip install -U yt-dlp` if installed via pip). Using the repo version (`apt install yt-dlp`) is often outdated."
+    },
+    "technical_tags": ["yt-dlp", "youtube", "throttling", "updates"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_058",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Soundcloud",
+    "complexity": "Beginner",
+    "user_persona": "Listener",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Aulon"
+    },
+    "interaction": {
+      "user_query": "Aulon (SoundCloud client) won't log in.",
+      "ai_response": "Third-party clients often break when SoundCloud changes their API.\n\n**Workaround:**\nUse the web wrapper or PWA. In Chrome/Edge: Go to soundcloud.com > Menu > Install SoundCloud."
+    },
+    "technical_tags": ["soundcloud", "api", "client", "pwa"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_059",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Subtitles",
+    "complexity": "Beginner",
+    "user_persona": "Viewer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "VLC"
+    },
+    "interaction": {
+      "user_query": "VLC subtitles appear as squares/boxes.",
+      "ai_response": "This is a font encoding issue.\n\n**Fix:**\n1. Tools > Preferences > Subtitles / OSD.\n2. Change **Default encoding** to your region (e.g., `Universal (UTF-8)` or `Windows-1252`).\n3. Ensure the font set (e.g., Arial or Liberation Sans) supports the characters."
+    },
+    "technical_tags": ["subtitles", "encoding", "fonts", "vlc"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_060",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Metadata",
+    "complexity": "Intermediate",
+    "user_persona": "Collector",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "ExifTool"
+    },
+    "interaction": {
+      "user_query": "How do I remove all metadata from a photo before uploading it?",
+      "ai_response": "Use `exiftool`.\n\n**Command:**\n```bash\nexiftool -all= image.jpg\n```\nThis strips GPS, camera model, etc. The original is saved as `image.jpg_original`."
+    },
+    "technical_tags": ["exiftool", "privacy", "metadata", "cli"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "ENT_MEDIA_061",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Webcam",
+    "complexity": "Intermediate",
+    "user_persona": "Streamer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Cheese"
+    },
+    "interaction": {
+      "user_query": "Cheese says 'No device found' but `lsusb` shows my webcam.",
+      "ai_response": "Your user might not have permission to access video devices.\n\n**Fix:**\nAdd user to video group:\n```bash\nsudo usermod -aG video $USER\n```\nLog out and log back in."
+    },
+    "technical_tags": ["webcam", "permissions", "video-group", "cheese"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "ENT_MEDIA_062",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Screensaver",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "XScreenSaver"
+    },
+    "interaction": {
+      "user_query": "The screensaver interrupts me while watching movies in Firefox.",
+      "ai_response": "Firefox should inhibit the screensaver, but sometimes fails.\n\n**Fix:**\nOpen **Presentation Mode** or run:\n```bash\nxset s off -dpms\n```\nto disable it temporarily. Alternatively, use the `Caffeine` applet in Mint tray to prevent sleep."
+    },
+    "technical_tags": ["screensaver", "inhibit", "caffeine", "xset"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_063",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Midi",
+    "complexity": "Advanced",
+    "user_persona": "Musician",
+    "system_context": {
+      "distro": "Ubuntu Studio",
+      "app_version": "Qsynth"
+    },
+    "interaction": {
+      "user_query": "My MIDI keyboard is detected but makes no sound.",
+      "ai_response": "MIDI is just data; you need a synthesizer.\n\n**Fix:**\n1. Open Qsynth.\n2. Click **Setup** > **Soundfonts** > Open.\n3. Load a SoundFont (`.sf2`), usually found in `/usr/share/sounds/sf2/`.\n4. Connect MIDI keyboard to Qsynth/Fluidsynth in JACK/ALSA patchbay."
+    },
+    "technical_tags": ["midi", "soundfonts", "qsynth", "audio"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_064",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Video Conversion",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "FFmpeg"
+    },
+    "interaction": {
+      "user_query": "I need to extract the audio from a video file as MP3.",
+      "ai_response": "Simple `ffmpeg` command.\n\n**Command:**\n```bash\nffmpeg -i input.mp4 -vn -c:a libmp3lame -q:a 2 output.mp3\n```\n`-vn` disables video, `-q:a 2` sets high quality VBR."
+    },
+    "technical_tags": ["ffmpeg", "audio-extraction", "mp3", "cli"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "ENT_MEDIA_065",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Streaming",
+    "complexity": "Intermediate",
+    "user_persona": "Streamer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "OBS"
+    },
+    "interaction": {
+      "user_query": "My stream looks pixelated during fast motion.",
+      "ai_response": "Your bitrate is likely too low for the resolution/framerate.\n\n**Recommendation:**\nFor 1080p60 on Twitch:\n- Set Bitrate to **6000 Kbps** (maximum allowed usually).\n- Set Keyframe Interval to **2**.\n- Use **Hardware Encoding (NVENC/AMF)** if available."
+    },
+    "technical_tags": ["obs", "bitrate", "streaming-quality", "pixelation"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_066",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Blu-ray",
+    "complexity": "Advanced",
+    "user_persona": "Cinephile",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "MakeMKV"
+    },
+    "interaction": {
+      "user_query": "How do I install MakeMKV on Debian? It's not in apt.",
+      "ai_response": "You must compile it or use the flatpak.\n\n**Compile:**\n1. Install build tools: `sudo apt install build-essential pkg-config libc6-dev libssl-dev`.\n2. Download `makemkv-bin` and `makemkv-oss` tarballs from their forum.\n3. Run `make` and `sudo make install` in both extracted folders."
+    },
+    "technical_tags": ["makemkv", "blu-ray", "compilation", "ripping"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_067",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Spotify",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Spotify"
+    },
+    "interaction": {
+      "user_query": "Spotify keeps pausing when I get a notification.",
+      "ai_response": "This is 'corking' behavior in PulseAudio.\n\n**Fix:**\nOpen `/etc/pulse/default.pa`.\nFind `load-module module-role-cork`.\nComment it out by adding `#` at the start: `# load-module module-role-cork`.\nRestart PulseAudio: `pulseaudio -k`."
+    },
+    "technical_tags": ["spotify", "pulseaudio", "corking", "interruptions"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_068",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Gaming",
+    "complexity": "Intermediate",
+    "user_persona": "Gamer",
+    "system_context": {
+      "distro": "Pop!_OS",
+      "app_version": "MangoHud"
+    },
+    "interaction": {
+      "user_query": "How do I show FPS and CPU usage in games?",
+      "ai_response": "Use MangoHud.\n\n**Usage:**\n1. Install: `sudo apt install mangohud`\n2. In Steam launch options: `mangohud %command%`\n3. Press **Right Shift + F12** to toggle visibility."
+    },
+    "technical_tags": ["mangohud", "fps-counter", "monitoring", "gaming"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "ENT_MEDIA_069",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Video Editing",
+    "complexity": "Intermediate",
+    "user_persona": "Editor",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Shotcut"
+    },
+    "interaction": {
+      "user_query": "Shotcut has no audio on timeline playback.",
+      "ai_response": "Check your audio output device in Shotcut.\n\n**Fix:**\nSettings > Audio Channels. Also check your system mixer (PulseAudio/PipeWire) to ensure Shotcut isn't muted or routed to a dead sink."
+    },
+    "technical_tags": ["shotcut", "audio-issues", "troubleshooting", "editing"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_070",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Hardware",
+    "complexity": "Advanced",
+    "user_persona": "Audiophile",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "ALSA"
+    },
+    "interaction": {
+      "user_query": "My USB DAC supports 192kHz but Linux only plays 48kHz.",
+      "ai_response": "PulseAudio defaults to 44.1/48kHz.\n\n**Fix:**\nEdit `/etc/pulse/daemon.conf`:\n```\ndefault-sample-rate = 192000\nalternate-sample-rate = 48000\nresample-method = soxr-vhq\n```\nRestart PulseAudio."
+    },
+    "technical_tags": ["dac", "hires-audio", "pulseaudio", "sample-rate"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_071",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Tidal",
+    "complexity": "Beginner",
+    "user_persona": "Audiophile",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Tidal-hifi"
+    },
+    "interaction": {
+      "user_query": "Is there a Tidal app for Linux?",
+      "ai_response": "There is no official app, but `tidal-hifi` is a popular community Electron wrapper.\n\n**Install:**\n```bash\nsudo flatpak install flathub com.mastermindzh.tidal-hifi\n```"
+    },
+    "technical_tags": ["tidal", "wrapper", "electron", "audiophile"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_072",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Fonts",
+    "complexity": "Beginner",
+    "user_persona": "Designer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Font Manager"
+    },
+    "interaction": {
+      "user_query": "How do I easily manage and install many fonts?",
+      "ai_response": "Use Font Manager.\n\n**Install:**\n```bash\nsudo apt install font-manager\n```\nIt allows you to enable/disable fonts without deleting them and preview typefaces easily."
+    },
+    "technical_tags": ["font-manager", "typography", "ux", "tools"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "ENT_MEDIA_073",
+    "bucket": "Entertainment & Media",
+    "sub_category": "BitTorrent",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Transmission"
+    },
+    "interaction": {
+      "user_query": "Transmission says 'Port Closed'. Downloads are slow.",
+      "ai_response": "You need to forward the port in your router.\n\n**Fix:**\n1. Check the port number in Transmission Preferences > Network.\n2. Log into your router and forward that TCP/UDP port to your PC's IP.\n3. Also enable UPnP in Transmission if your router supports it."
+    },
+    "technical_tags": [
+      "transmission",
+      "port-forwarding",
+      "bittorrent",
+      "networking"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_074",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Lyrics",
+    "complexity": "Intermediate",
+    "user_persona": "Listener",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Lollypop"
+    },
+    "interaction": {
+      "user_query": "Lollypop music player isn't fetching lyrics.",
+      "ai_response": "Lollypop relies on Genius/Wikia APIs which might be rate-limited or broken.\n\n**Workaround:**\nGo to Preferences > Web and ensure 'Lyrics' is enabled. If it fails, install `glyr` backend if available, or manually paste lyrics via Edit Track Information."
+    },
+    "technical_tags": ["lollypop", "lyrics", "metadata", "api"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_075",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Streaming",
+    "complexity": "Beginner",
+    "user_persona": "Viewer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Amazon Prime Video says 'Browser not supported' or asks for Silverlight.",
+      "ai_response": "This is a User Agent issue. Amazon thinks Linux Firefox is old.\n\n**Fix:**\nUsually, just enabling DRM is enough. If not, use a User-Agent Switcher extension to spoof Windows 10/Chrome."
+    },
+    "technical_tags": ["prime-video", "user-agent", "drm", "firefox"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_076",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Mixer",
+    "complexity": "Intermediate",
+    "user_persona": "Streamer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "PulseAudio"
+    },
+    "interaction": {
+      "user_query": "I want to route my Spotify audio to Discord but not my game audio.",
+      "ai_response": "You need a virtual cable setup.\n\n**Fix:**\nCreate a null sink:\n```bash\npactl load-module module-null-sink sink_name=VirtualCable\n```\nOpen `pavucontrol`, set Spotify output to 'VirtualCable'. Set Discord Input to 'Monitor of VirtualCable'."
+    },
+    "technical_tags": ["virtual-cable", "routing", "pulseaudio", "discord"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_077",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Controllers",
+    "complexity": "Beginner",
+    "user_persona": "Gamer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "XboxDrv"
+    },
+    "interaction": {
+      "user_query": "My Xbox 360 controller keeps blinking and won't connect.",
+      "ai_response": "Use the kernel driver `xpad` instead of userspace `xboxdrv`.\n\n**Fix:**\n```bash\nsudo apt install xserver-xorg-input-joystick\n```\nUsually `xpad` is loaded by default. Try a different USB port or replace batteries."
+    },
+    "technical_tags": ["xbox-controller", "drivers", "xpad", "hardware"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_078",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Subtitles",
+    "complexity": "Intermediate",
+    "user_persona": "Viewer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "VLC"
+    },
+    "interaction": {
+      "user_query": "Subtitles are out of sync with the audio.",
+      "ai_response": "Use keyboard shortcuts to sync them on the fly.\n\n**Keys:**\n- `G` decreases subtitle delay (-50ms)\n- `H` increases subtitle delay (+50ms)"
+    },
+    "technical_tags": ["vlc", "sync", "subtitles", "shortcuts"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "ENT_MEDIA_079",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Screenshots",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Flameshot"
+    },
+    "interaction": {
+      "user_query": "Flameshot doesn't launch when I press PrintScreen.",
+      "ai_response": "You must unbind the default GNOME screenshot tool and bind Flameshot.\n\n**Fix:**\nSettings > Keyboard > View and Customize Shortcuts > Custom Shortcuts.\nAdd: Name: Flameshot, Command: `flameshot gui`, Key: PrintScreen."
+    },
+    "technical_tags": ["flameshot", "shortcuts", "gnome", "screenshots"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_080",
+    "bucket": "Entertainment & Media",
+    "sub_category": "GIFs",
+    "complexity": "Beginner",
+    "user_persona": "Content Creator",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Peek"
+    },
+    "interaction": {
+      "user_query": "Peek records a black rectangle on Wayland.",
+      "ai_response": "Peek only supports X11 properly. On Wayland GNOME, use the built-in screen recorder or Kooha.\n\n**Alternative:**\nInstall Kooha:\n```bash\nflatpak install flathub io.github.seadve.Kooha\n```"
+    },
+    "technical_tags": ["peek", "wayland", "gif-recording", "kooha"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_081",
+    "bucket": "Entertainment & Media",
+    "sub_category": "VR",
+    "complexity": "Advanced",
+    "user_persona": "Gamer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "SteamVR"
+    },
+    "interaction": {
+      "user_query": "SteamVR fails to initialize (Error 307).",
+      "ai_response": "This is often due to missing cap_sys_nice capabilities on the executable.\n\n**Fix:**\n```bash\nsudo setcap CAP_SYS_NICE=eip ~/.steam/steam/steamapps/common/SteamVR/bin/linux64/vrcompositor-launcher\n```"
+    },
+    "technical_tags": ["steamvr", "vr", "permissions", "capabilities"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_082",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Metadata",
+    "complexity": "Intermediate",
+    "user_persona": "Collector",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "MKVToolNix"
+    },
+    "interaction": {
+      "user_query": "How do I remove a foreign audio track from an MKV file without re-encoding?",
+      "ai_response": "Use MKVToolNix GUI.\n\n**Steps:**\n1. Open file in MKVToolNix.\n2. Under **Tracks, chapters and tags**, uncheck the audio track you don't want.\n3. Click **Start multiplexing**. It copies streams without quality loss."
+    },
+    "technical_tags": ["mkvtoolnix", "remuxing", "mkv", "editing"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "ENT_MEDIA_083",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Audio",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "PulseAudio"
+    },
+    "interaction": {
+      "user_query": "Audio crackles when my CPU load is high.",
+      "ai_response": "PulseAudio buffer might be too small.\n\n**Fix:**\nEdit `/etc/pulse/daemon.conf`:\n```\ndefault-fragments = 2\ndefault-fragment-size-msec = 250\n```\nRestart with `pulseaudio -k`."
+    },
+    "technical_tags": ["pulseaudio", "crackling", "latency", "buffer"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_084",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Radio",
+    "complexity": "Intermediate",
+    "user_persona": "Listener",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "SDR++"
+    },
+    "interaction": {
+      "user_query": "SDR++ cannot open my RTL-SDR dongle.",
+      "ai_response": "The default kernel driver grabs the device.\n\n**Fix:**\nBlacklist the kernel driver:\n```bash\necho \"blacklist dvb_usb_rtl28xxu\" | sudo tee /etc/modprobe.d/blacklist-rtl.conf\n```\nReboot."
+    },
+    "technical_tags": ["sdr", "rtl-sdr", "kernel-modules", "radio"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_085",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Video Wallpapers",
+    "complexity": "Intermediate",
+    "user_persona": "Modder",
+    "system_context": {
+      "distro": "KDE Neon",
+      "app_version": "Plasma"
+    },
+    "interaction": {
+      "user_query": "How do I set a video as my wallpaper in KDE?",
+      "ai_response": "You need a plugin.\n\n**Steps:**\n1. Right-click Desktop > Configure Desktop.\n2. Click **Get New Plugins**.\n3. Search for **Smart Video Wallpaper** or **Video Wallpaper**.\n4. Install, then select it in the Wallpaper Type dropdown."
+    },
+    "technical_tags": ["kde", "wallpaper", "customization", "plugins"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "ENT_MEDIA_086",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Gaming",
+    "complexity": "Intermediate",
+    "user_persona": "Gamer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Heroic Launcher"
+    },
+    "interaction": {
+      "user_query": "Epic Games Store games won't launch in Heroic.",
+      "ai_response": "Check which Wine version is selected.\n\n**Fix:**\nIn Heroic Game Settings, change the **Wine Version** to 'Proton - GE' (if installed) or download the latest 'Wine-GE-Proton' via the Wine Manager in Heroic's sidebar."
+    },
+    "technical_tags": ["heroic", "epic-games", "wine", "proton"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_087",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Wallpapers",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Variety"
+    },
+    "interaction": {
+      "user_query": "Variety wallpaper changer stops working after a while.",
+      "ai_response": "Variety might have crashed or been killed by OOM.\n\n**Fix:**\nCheck logs in `~/.config/variety/variety.log`. Try disabling 'Clipboards monitoring' in Variety preferences as it causes stability issues on some systems."
+    },
+    "technical_tags": ["variety", "wallpaper", "crash", "debugging"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "ENT_MEDIA_088",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Music Production",
+    "complexity": "Advanced",
+    "user_persona": "Musician",
+    "system_context": {
+      "distro": "Ubuntu Studio",
+      "app_version": "Ardour"
+    },
+    "interaction": {
+      "user_query": "Ardour cannot find my VST plugins.",
+      "ai_response": "You need to set the `VST_PATH` environment variable or configure it in Ardour.\n\n**Fix:**\nEdit > Preferences > Plugins > VST. Add paths like `/usr/lib/vst`, `/usr/local/lib/vst`, and `~/.vst`."
+    },
+    "technical_tags": ["ardour", "vst", "plugins", "daw"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_089",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Browser",
+    "complexity": "Intermediate",
+    "user_persona": "Viewer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Twitch keeps buffering but my internet is fast.",
+      "ai_response": "It could be DNS over HTTPS or HTTP/3 issues.\n\n**Fix:**\nIn `about:config`, try setting `network.http.http3.enable` to `false`. Sometimes ISP peering with Twitch is bad; trying a VPN often confirms this."
+    },
+    "technical_tags": ["firefox", "twitch", "buffering", "networking"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_090",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Hardware",
+    "complexity": "Intermediate",
+    "user_persona": "Gamer",
+    "system_context": {
+      "distro": "Pop!_OS",
+      "app_version": "OpenRGB"
+    },
+    "interaction": {
+      "user_query": "OpenRGB requires root access to control my motherboard LEDs.",
+      "ai_response": "You need to install the udev rules to allow user access.\n\n**Fix:**\n1. Download the udev rules from OpenRGB repo.\n2. Place in `/etc/udev/rules.d/60-openrgb.rules`.\n3. Reload: `sudo udevadm control --reload-rules && sudo udevadm trigger`."
+    },
+    "technical_tags": ["openrgb", "rgb", "udev", "permissions"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_091",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Video Editing",
+    "complexity": "Intermediate",
+    "user_persona": "Editor",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Olive"
+    },
+    "interaction": {
+      "user_query": "Olive video editor 0.1 is too buggy. How do I get 0.2?",
+      "ai_response": "Olive 0.2 is a rewrite and in alpha/nightly. Use Flatpak or AppImage.\n\n**Install:**\n```bash\nflatpak install flathub org.olivevideoeditor.Olive\n```"
+    },
+    "technical_tags": ["olive", "video-editing", "beta", "flatpak"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_092",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Audio",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "PulseAudio"
+    },
+    "interaction": {
+      "user_query": "My microphone is mono but records only to the left channel.",
+      "ai_response": "You can remap the source to be mono.\n\n**Fix:**\nIn `pavucontrol`, unlock the channels (lock icon) and balance them, or use a remapping module:\n```bash\npactl load-module module-remap-source master=source_name master_channel_map=front-left channel_map=mono\n```"
+    },
+    "technical_tags": ["microphone", "mono", "pulseaudio", "channels"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_093",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Remote Control",
+    "complexity": "Intermediate",
+    "user_persona": "Home Labber",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "KDE Connect"
+    },
+    "interaction": {
+      "user_query": "KDE Connect can't find my phone on the same Wi-Fi.",
+      "ai_response": "Firewall is usually the culprit.\n\n**Fix:**\nAllow the port range 1714-1764 (TCP & UDP).\n```bash\nsudo ufw allow 1714:1764/udp\nsudo ufw allow 1714:1764/tcp\n```"
+    },
+    "technical_tags": ["kde-connect", "firewall", "ufw", "networking"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_094",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Gaming",
+    "complexity": "Beginner",
+    "user_persona": "Gamer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Minecraft"
+    },
+    "interaction": {
+      "user_query": "Minecraft Java Edition crashes with Exit Code 1.",
+      "ai_response": "This is a generic Java error. Often due to Java version mismatch.\n\n**Fix:**\nEnsure you are using the Java runtime bundled with the launcher. In Launcher > Installations > Edit > More Options, ensure 'Java Executable' is empty or pointing to the correct java binary (Java 17 for 1.18+)."
+    },
+    "technical_tags": ["minecraft", "java", "crash", "version-mismatch"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_095",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Local Media",
+    "complexity": "Intermediate",
+    "user_persona": "Collector",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Kodi"
+    },
+    "interaction": {
+      "user_query": "Kodi interface is extremely laggy on my 4K TV.",
+      "ai_response": "You might be running the interface at 4K 60Hz which can tax low-end GPUs.\n\n**Fix:**\nSettings > System > Display > Resolution. Set GUI resolution to 1080p (1920x1080). Video playback will still switch to 4K automatically."
+    },
+    "technical_tags": ["kodi", "performance", "resolution", "gui"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_096",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Drawing",
+    "complexity": "Beginner",
+    "user_persona": "Artist",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Krita"
+    },
+    "interaction": {
+      "user_query": "Krita pressure sensitivity isn't working on my Wacom tablet.",
+      "ai_response": "Krita might be using the wrong input API.\n\n**Fix:**\nSettings > Configure Krita > Tablet Settings. Toggle between WinTab (rare on Linux) and **Windows 8+ Pointer Input** (Qt defaults) or ensure `xf86-input-wacom` is installed."
+    },
+    "technical_tags": ["krita", "wacom", "pressure-sensitivity", "tablet"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_097",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Image Editing",
+    "complexity": "Intermediate",
+    "user_persona": "Designer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "GIMP"
+    },
+    "interaction": {
+      "user_query": "GIMP looks tiny on my HiDPI screen.",
+      "ai_response": "GIMP 2.10 has weak HiDPI support.\n\n**Fix:**\nEdit > Preferences > Interface > Icon Theme > Select 'Symbolic-High-Contrast'.\nThen Interface > Display > Icon Size > Custom > Large/Huge."
+    },
+    "technical_tags": ["gimp", "hidpi", "scaling", "ui"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_098",
+    "bucket": "Entertainment & Media",
+    "sub_category": "ISO Playback",
+    "complexity": "Intermediate",
+    "user_persona": "Collector",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Kodi"
+    },
+    "interaction": {
+      "user_query": "Kodi won't play Blu-ray ISOs with menus.",
+      "ai_response": "You need Java installed for BD-J menus.\n\n**Fix:**\n1. Install JRE: `sudo pacman -S jre-openjdk`.\n2. In Kodi: Settings > Player > Discs > Blu-ray playback mode > **Show Blu-ray menu**."
+    },
+    "technical_tags": ["kodi", "blu-ray", "menus", "java"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_099",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Media Server",
+    "complexity": "Advanced",
+    "user_persona": "Home Labber",
+    "system_context": {
+      "distro": "Ubuntu Server 24.04",
+      "app_version": "Radarr"
+    },
+    "interaction": {
+      "user_query": "Radarr cannot import downloaded files. Says 'Access to path denied'.",
+      "ai_response": "The user running Radarr (e.g., `radarr`) and the user running your downloader (e.g., `qbittorrent`) are different.\n\n**Fix:**\nUse a shared group (e.g., `media`) and set `umask 002`. Ensure both users are in the `media` group and permissions on the download folder are 775."
+    },
+    "technical_tags": ["radarr", "permissions", "automation", "groups"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_100",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Spotify",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Spotify"
+    },
+    "interaction": {
+      "user_query": "Does Spotify support high quality streaming on Linux?",
+      "ai_response": "Yes, if you have Premium.\n\n**Fix:**\nSettings > Audio Quality > Streaming quality. Set to 'Very High' (320kbit/s)."
+    },
+    "technical_tags": ["spotify", "audio-quality", "bitrate", "settings"],
+    "friction_type": "user_error"
+  }
+]

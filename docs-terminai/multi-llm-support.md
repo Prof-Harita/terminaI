@@ -2,7 +2,7 @@
 
 > **Status**: Implemented  
 > **Version**: 0.21.0  
-> **Last Updated**: December 2024
+> **Last Updated**: 2025-12-26
 
 ## Overview
 
@@ -15,7 +15,7 @@ future providers like Anthropic.
 ```mermaid
 flowchart TB
     subgraph CLI["CLI Layer"]
-        Settings["settings.toml<br/>llm.provider config"]
+        Settings["settings.json<br/>llm.provider config"]
         Config["Config.getProviderConfig()"]
         UI["UI Components<br/>(ModelDialog, AboutBox)"]
     end
@@ -50,22 +50,25 @@ flowchart TB
 
 ## Provider Configuration
 
-### Settings Schema (`settings.toml`)
+### Settings Schema (`settings.json`)
 
-```toml
-[llm]
-provider = "gemini"  # or "openai_compatible" or "anthropic"
-
-[llm.openaiCompatible]
-baseUrl = "https://api.openai.com/v1"
-model = "gpt-4o"
-
-[llm.openaiCompatible.auth]
-type = "bearer"  # or "api-key" or "none"
-envVarName = "OPENAI_API_KEY"
-
-[llm.openaiCompatible.headers]
-X-Custom-Header = "value"
+```json
+{
+  "llm": {
+    "provider": "gemini",
+    "openaiCompatible": {
+      "baseUrl": "https://api.openai.com/v1",
+      "model": "gpt-4o",
+      "auth": {
+        "type": "bearer",
+        "envVarName": "OPENAI_API_KEY"
+      },
+      "headers": {
+        "X-Custom-Header": "value"
+      }
+    }
+  }
+}
 ```
 
 ### Provider Types (`providerTypes.ts`)
@@ -234,11 +237,14 @@ sequenceDiagram
 
 ## Environment Variables
 
-| Variable                   | Purpose                                     |
-| -------------------------- | ------------------------------------------- |
-| `TERMINAI_GEMINI_BASE_URL` | Override Gemini API base URL (validated)    |
-| `OPENAI_API_KEY`           | Default key for OpenAI-compatible providers |
-| `GEMINI_API_KEY`           | Gemini API key                              |
+| Variable            | Purpose                                     |
+| ------------------- | ------------------------------------------- |
+| `TERMINAI_BASE_URL` | Override Gemini API base URL (validated)    |
+| `OPENAI_API_KEY`    | Default key for OpenAI-compatible providers |
+| `TERMINAI_API_KEY`  | Gemini API key                              |
+
+Legacy compatibility: Gemini-prefixed environment variables (including
+`TERMINAI_GEMINI_BASE_URL`) are aliased to Terminai-prefixed equivalents.
 
 ## Testing Strategy
 
@@ -251,7 +257,7 @@ sequenceDiagram
 
 ### Key Test Cases
 
-1. **OAuth Regression**: `LOGIN_WITH_GOOGLE` ignores `TERMINAI_GEMINI_BASE_URL`
+1. **OAuth Base URL**: `LOGIN_WITH_GOOGLE` ignores `TERMINAI_BASE_URL`
 2. **Schema Conversion**: Gemini `Type` → JSON Schema lowercase
 3. **Streaming Edge Cases**: Malformed chunks, abort signal, finish-only
 4. **Capability Gating**: Provider determines UI features

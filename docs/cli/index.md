@@ -39,7 +39,7 @@ overview of Gemini CLI, see the [main documentation page](../index.md).
 - **[Context files (terminaI.md)](./terminaI-md.md):** Provide persistent,
   hierarchical context to the model.
 - **[System prompt override](./system-prompt.md):** Replace the built‑in system
-  instructions using `GEMINI_SYSTEM_MD`.
+  instructions using `TERMINAI_SYSTEM_MD`.
 
 ## Non-interactive mode
 

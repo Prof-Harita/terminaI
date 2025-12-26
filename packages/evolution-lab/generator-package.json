@@ -1,0 +1,13 @@
+{
+  "name": "@terminai/evolution-lab-generator",
+  "version": "1.0.0",
+  "description": "Generate 10,000 synthetic Linux user questions for Evolution Lab testing",
+  "type": "module",
+  "scripts": {
+    "generate": "node src/generate-questions.js",
+    "generate:sample": "node src/generate-questions.js --sample"
+  },
+  "keywords": ["terminai", "testing", "synthetic-data", "linux"],
+  "author": "TerminaI",
+  "license": "Apache-2.0"
+}

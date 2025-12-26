@@ -201,7 +201,7 @@ Goal: remove Google/Gemini identity from runtime behavior and on-disk artifacts.
 Target files (minimum viable set) • Root + package identity: • /package.json •
 /packages/core/package.json • /packages/cli/package.json •
 /packages/a2a-server/package.json • Storage and naming constants: •
-/packages/core/src/utils/paths.ts (currently GEMINI_DIR = '.gemini') •
+/packages/core/src/utils/paths.ts (currently TERMINAI_DIR = '.gemini') •
 /packages/core/src/core/contentGenerator.ts (currently userAgent =
 GeminiCLI/...) • /packages/core/src/services/chatRecordingService.ts (references
 ~/.gemini/...) • /packages/core/src/tools/memoryTool.ts (GEMINI.md defaults) •
@@ -223,7 +223,7 @@ not rename runtime classes. • Only update: • user-visible strings/banners, �
 user agent string, • storage path constants, • and legacy fallback reads.
 
 Scrubbing list • Filenames: GEMINI.md, .geminiignore, gemini\* file names. •
-Strings: GeminiCLI, gemini-cli, GEMINI_DIR, gemini. • URLs:
+Strings: GeminiCLI, gemini-cli, TERMINAI_DIR, gemini. • URLs:
 https://github.com/google-gemini/gemini-cli references in CLI validation output.
 
 Verification • npm run test -w packages/core • npm run test -w packages/cli •
@@ -577,7 +577,7 @@ subsystem.
 
 - Strings: `@google/gemini-cli`, `Gemini CLI`, `gemini` (command),
   `google-gemini/gemini-cli` (repo URL).
-- Env vars to introduce: `TERMINAI_*` equivalents; keep `GEMINI_*` as fallback
+- Env vars to introduce: `TERMINAI_*` equivalents; keep `TERMINAI_*` as fallback
   only where required for backward compatibility.
 
 **Verification**
@@ -601,7 +601,7 @@ artifacts.
   - `/packages/cli/package.json`
   - `/packages/a2a-server/package.json`
 - Storage and naming constants:
-  - `/packages/core/src/utils/paths.ts` (currently `GEMINI_DIR = '.gemini'`)
+  - `/packages/core/src/utils/paths.ts` (currently `TERMINAI_DIR = '.gemini'`)
   - `/packages/core/src/core/contentGenerator.ts` (currently
     `userAgent = GeminiCLI/...`)
   - `/packages/core/src/services/chatRecordingService.ts` (references
@@ -624,7 +624,7 @@ artifacts.
 **Scrubbing list**
 
 - Filenames: `GEMINI.md`, `.geminiignore`, `gemini*` file names.
-- Strings: `GeminiCLI`, `gemini-cli`, `GEMINI_DIR`, `gemini`.
+- Strings: `GeminiCLI`, `gemini-cli`, `TERMINAI_DIR`, `gemini`.
 - URLs: `https://github.com/google-gemini/gemini-cli` references in CLI
   validation output.
 

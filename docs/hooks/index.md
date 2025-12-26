@@ -56,7 +56,7 @@ scripts:
 ```json
 {
   "type": "command",
-  "command": "$GEMINI_PROJECT_DIR/.gemini/hooks/my-hook.sh",
+  "command": "$TERMINAI_PROJECT_DIR/.gemini/hooks/my-hook.sh",
   "timeout": 30000
 }
 ```
@@ -475,9 +475,9 @@ configuration.
 
 Hooks have access to:
 
-- `GEMINI_PROJECT_DIR`: Project root directory
-- `GEMINI_SESSION_ID`: Current session ID
-- `GEMINI_API_KEY`: Gemini API key (if configured)
+- `TERMINAI_PROJECT_DIR`: Project root directory
+- `TERMINAI_SESSION_ID`: Current session ID
+- `TERMINAI_API_KEY`: Gemini API key (if configured)
 - All other environment variables from the parent process
 
 ## Managing hooks

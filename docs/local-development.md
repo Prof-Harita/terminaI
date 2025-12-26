@@ -12,7 +12,7 @@ scheduler, tool calls, etc.
 Dev traces are verbose and are specifically meant for understanding agent
 behaviour and debugging issues. They are disabled by default.
 
-To enable dev traces, set the `GEMINI_DEV_TRACING=true` environment variable
+To enable dev traces, set the `TERMINAI_DEV_TRACING=true` environment variable
 when running Gemini CLI.
 
 ### Viewing dev traces
@@ -40,10 +40,10 @@ Genkit provides a web-based UI for viewing traces and other telemetry data.
 2.  **Run Gemini CLI with dev tracing:**
 
     In a separate terminal, run your Gemini CLI command with the
-    `GEMINI_DEV_TRACING` environment variable:
+    `TERMINAI_DEV_TRACING` environment variable:
 
     ```bash
-    GEMINI_DEV_TRACING=true gemini
+    TERMINAI_DEV_TRACING=true gemini
     ```
 
 3.  **View the traces:**
@@ -70,10 +70,10 @@ You can view dev traces in the Jaeger UI. To get started, follow these steps:
 2.  **Run Gemini CLI with dev tracing:**
 
     In a separate terminal, run your Gemini CLI command with the
-    `GEMINI_DEV_TRACING` environment variable:
+    `TERMINAI_DEV_TRACING` environment variable:
 
     ```bash
-    GEMINI_DEV_TRACING=true gemini
+    TERMINAI_DEV_TRACING=true gemini
     ```
 
 3.  **View the traces:**

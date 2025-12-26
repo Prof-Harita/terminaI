@@ -34,7 +34,7 @@
 **Verdict: Low Risk (1/5 Hell Scale) — IF implemented correctly.**
 
 - **Why it's Safe**: We will use a **"Bypass Architecture"**.
-  - **Default State**: If `GEMINI_BASE_URL` is not set, the code executes
+  - **Default State**: If `TERMINAI_BASE_URL` is not set, the code executes
     _exactly_ as it does today. Zero logical changes to the happy path.
   - **Override State**: Only when the user _explicitly_ sets the env var do we
     inject the interceptor.
@@ -78,14 +78,14 @@ graph TD
   - It should rewrite the URL `host` and `protocol` to the target.
 - [ ] **Inject at Startup**: Modify `packages/cli/src/bin/gemini.js` (or entry
       point).
-  - Read `process.env.GEMINI_BASE_URL`.
+  - Read `process.env.TERMINAI_BASE_URL`.
   - If present, call `installFetchInterceptor(url)`.
 
 ### Phase 2: The "Universal Key" (1 Hour)
 
 - [ ] **Bypass Auth Check**: Modify
       `packages/core/src/core/contentGenerator.ts`.
-  - In `createContentGeneratorConfig`, if `GEMINI_API_KEY` is present, stop
+  - In `createContentGeneratorConfig`, if `TERMINAI_API_KEY` is present, stop
     checking for `GOOGLE_CLOUD_PROJECT`.
   - Force `authType = AuthType.USE_GEMINI`.
 

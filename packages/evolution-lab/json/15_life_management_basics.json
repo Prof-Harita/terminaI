@@ -1,0 +1,873 @@
+[
+  {
+    "id": "LIFE_MGT_001",
+    "bucket": "Life Management",
+    "sub_category": "Calendar Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "GNOME Calendar 45"
+    },
+    "interaction": {
+      "user_query": "I connected my Google Account in Settings and my main calendar shows up, but my wife's shared calendar that I can see on my phone is missing.",
+      "ai_response": "GNOME Calendar defaults to syncing only your primary calendar. To add shared calendars:\n\n1. Open **Evolution** (the backend for GNOME Calendar):\n```bash\nevolution\n```\n2. Go to **Edit → Preferences → Calendar and Tasks**\n3. Expand your Google account\n4. Check the boxes for the shared calendars you want to sync\n5. Close Evolution and reopen GNOME Calendar\n\nThe shared calendars should now appear."
+    },
+    "technical_tags": ["calendar-sync", "gnome-online-accounts", "evolution"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_002",
+    "bucket": "Life Management",
+    "sub_category": "Financial Tools",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "GnuCash 4.13"
+    },
+    "interaction": {
+      "user_query": "I just installed GnuCash but I have no idea how to start. Is there a wizard to set up my accounts for a normal household?",
+      "ai_response": "Yes, GnuCash has a hierarchy wizard.\n\n1. Go to **File → New File**.\n2. Select **New File Hierarchy**.\n3. Choose **Common Accounts** (this includes Checking, Savings, Credit Card, and common Expenses like Groceries and Utilities).\n4. Click **Apply**.\n\nThis will create a standard tree of accounts suitable for personal finance."
+    },
+    "technical_tags": ["gnucash", "setup", "accounting"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_003",
+    "bucket": "Life Management",
+    "sub_category": "Weather Apps",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "GNOME Weather"
+    },
+    "interaction": {
+      "user_query": "The weather app keeps showing me the weather for New York, but I live in Chicago. How do I change the default location?",
+      "ai_response": "1. Open **GNOME Weather**.\n2. Click the **Search** button (magnifying glass) in the top left.\n3. Type 'Chicago' and select it from the list.\n4. Once the Chicago view is loaded, it should stay as your default. \n\nIf it reverts, ensure Location Services are enabled in **Settings → Privacy → Location**."
+    },
+    "technical_tags": ["gnome-weather", "location-services", "geoclue"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_004",
+    "bucket": "Life Management",
+    "sub_category": "Task Management",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Endeavour"
+    },
+    "interaction": {
+      "user_query": "I'm using Endeavour (GNOME To Do) but it's not syncing with my Google Tasks. I have my account set up in Online Accounts.",
+      "ai_response": "Google changed the Tasks API recently, breaking older versions of GNOME To Do. \n\n1. Ensure `gnome-online-accounts` is fully authenticated.\n2. Try installing the Flatpak version for a newer release:\n```bash\nflatpak install flathub org.gnome.Todo\n```\n3. Open the Flatpak version. If sync still fails, you may need to re-authenticate your Google account in Settings to grant the 'Tasks' permission specifically."
+    },
+    "technical_tags": ["gnome-todo", "google-tasks", "api-change"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_005",
+    "bucket": "Life Management",
+    "sub_category": "Cloud Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Manjaro",
+      "app_version": "Nextcloud Desktop 3.11"
+    },
+    "interaction": {
+      "user_query": "I installed Nextcloud but there is no icon in my system tray, so I can't tell if it's working or pause it.",
+      "ai_response": "On some desktop environments (like GNOME 40+), tray icons are hidden by default or require a specific library.\n\n1. Install `libappindicator-gtk3`:\n```bash\nsudo pacman -S libappindicator-gtk3\n```\n2. If using GNOME, install the **AppIndicator and KStatusNotifierItem Support** extension via Extension Manager.\n3. Restart Nextcloud:\n```bash\nkillall nextcloud && nextcloud &\n```"
+    },
+    "technical_tags": ["nextcloud", "system-tray", "gnome-extensions"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_006",
+    "bucket": "Life Management",
+    "sub_category": "Financial Tools",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "HomeBank 5.6"
+    },
+    "interaction": {
+      "user_query": "I tried to import my bank statement (CSV) into HomeBank, but the dates are all wrong. It's reading 01/02 as February 1st instead of January 2nd.",
+      "ai_response": "This is a date format mismatch.\n\n1. When the Import wizard opens, look for the **Date format** dropdown.\n2. Change it from `D-M-Y` to `M-D-Y` (or vice versa, depending on your CSV).\n3. You can also define a custom preset for your specific bank in the import settings so you don't have to change this every time."
+    },
+    "technical_tags": ["homebank", "csv-import", "date-formatting"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_007",
+    "bucket": "Life Management",
+    "sub_category": "Password Managers",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "KeePassXC 2.7"
+    },
+    "interaction": {
+      "user_query": "I want to switch from LastPass to KeePassXC. How do I get my passwords into the Linux app?",
+      "ai_response": "1. Export your vault from LastPass as a CSV file.\n2. Open KeePassXC.\n3. Select **Database → Import → CSV File**.\n4. Choose your exported file. \n5. Map the CSV columns (Title, Username, Password, URL) to the KeePassXC fields in the import wizard.\n6. Save your new `.kdbx` database file."
+    },
+    "technical_tags": ["keepassxc", "migration", "csv-import"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_008",
+    "bucket": "Life Management",
+    "sub_category": "Note Taking",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Joplin 2.14"
+    },
+    "interaction": {
+      "user_query": "I set up Joplin to sync with Dropbox, but it keeps saying 'fail to write to target'.",
+      "ai_response": "This usually happens if the Joplin Flatpak doesn't have permission to access the file system outside its sandbox, or the path is wrong.\n\n1. If syncing to a local folder (managed by Dropbox client), use **Flatseal** to grant Joplin access to your `~/Dropbox` folder.\n2. Alternatively, switch the Sync Target in Joplin settings to **Dropbox** (Web API) instead of 'File System', and authenticate directly with the browser."
+    },
+    "technical_tags": ["joplin", "dropbox", "flatpak-permissions"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_009",
+    "bucket": "Life Management",
+    "sub_category": "Calendar Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "My Google Calendar in Thunderbird is read-only. I can't add events.",
+      "ai_response": "You likely added the calendar using the public ICS link rather than the CalDAV protocol.\n\n1. Remove the read-only calendar.\n2. Install the **\"Provider for Google Calendar\"** add-on in Thunderbird.\n3. Go to **File → New → Calendar**.\n4. Select **On the Network** → **Google Calendar**.\n5. Log in with your Google credentials.\n\nThis will provide full read/write access."
+    },
+    "technical_tags": ["thunderbird", "google-calendar", "caldav"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_010",
+    "bucket": "Life Management",
+    "sub_category": "Weather Apps",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Cinnamon Weather Applet"
+    },
+    "interaction": {
+      "user_query": "The weather applet in my panel just says 'Data not available'.",
+      "ai_response": "The default provider often requires an API key or has changed endpoints.\n\n1. Right-click the applet and select **Configure**.\n2. Change the Data Service from 'OpenWeatherMap' to 'MET.no' (which requires no key) or get a free API key from OpenWeatherMap and paste it into the **API Key** field.\n3. Click **Apply**."
+    },
+    "technical_tags": ["cinnamon", "weather-applet", "api-key"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_011",
+    "bucket": "Life Management",
+    "sub_category": "Financial Tools",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "GnuCash 4.8"
+    },
+    "interaction": {
+      "user_query": "I want to enable online banking features in GnuCash for my Chase account. How do I set up AqBanking?",
+      "ai_response": "Chase uses the OFX Direct Connect protocol, but many banks are phasing this out in favor of aggregator APIs. If Direct Connect is supported:\n\n1. Go to **Tools → Online Banking Setup**.\n2. Launch the **AqBanking Wizard**.\n3. Create a User with your Chase credentials.\n4. Select the OFX server (search online for 'Chase OFX server URL').\n5. **Note:** You likely need to log into the Chase website first and 'Enable Third-Party Access' or generate an App Password, otherwise the connection will be rejected."
+    },
+    "technical_tags": ["gnucash", "aqbanking", "ofx"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_012",
+    "bucket": "Life Management",
+    "sub_category": "Cloud Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Insync 3"
+    },
+    "interaction": {
+      "user_query": "I'm using Insync for Google Drive. It keeps re-downloading files I already have on my disk.",
+      "ai_response": "This happens if you moved the folder or the file matching database was corrupted.\n\n1. Pause syncing.\n2. Ensure the 'Base Folder' in Insync settings points exactly to where your files are.\n3. Use the **'Match with existing'** feature when adding the account, rather than letting it download to a new folder.\n4. If the database is corrupt, remove the account and re-add it, selecting the existing folder location carefully."
+    },
+    "technical_tags": ["insync", "google-drive", "file-matching"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_013",
+    "bucket": "Life Management",
+    "sub_category": "Task Management",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Planner"
+    },
+    "interaction": {
+      "user_query": "I can't find the 'Planner' app in the Ubuntu Software center.",
+      "ai_response": "Planner is primarily distributed via Flatpak.\n\n1. Open the terminal.\n2. Install Flatpak if needed: `sudo apt install flatpak`\n3. Add Flathub: `flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo`\n4. Install Planner:\n```bash\nflatpak install flathub com.github.alainm23.planner\n```"
+    },
+    "technical_tags": ["planner", "flatpak", "installation"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_014",
+    "bucket": "Life Management",
+    "sub_category": "Calendar Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Evolution"
+    },
+    "interaction": {
+      "user_query": "Evolution asks for my Google password constantly, even though I entered it.",
+      "ai_response": "This is usually an OAuth2 token expiration issue or Keyring unlock issue.\n\n1. Go to **Edit → Preferences → Accounts**.\n2. Remove the Google account and re-add it.\n3. When prompted, ensure you select **OAuth2** as the authentication method, not 'Password'.\n4. A browser window will open; log in and grant Evolution access.\n5. Ensure `gnome-keyring` is installed and unlocked so the token can be saved."
+    },
+    "technical_tags": ["evolution", "oauth2", "google-account"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_015",
+    "bucket": "Life Management",
+    "sub_category": "Note Taking",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Standard Notes"
+    },
+    "interaction": {
+      "user_query": "I forgot my Standard Notes passcode. How do I reset it?",
+      "ai_response": "Standard Notes is end-to-end encrypted. **There is no way to reset the password** if you lost it, as the server does not know it.\n\n1. If you are logged in on another device, back up your notes immediately via **Account → Data Backup**.\n2. If you are not logged in anywhere, the data is permanently inaccessible. You will need to create a new account."
+    },
+    "technical_tags": ["standard-notes", "encryption", "password-recovery"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_016",
+    "bucket": "Life Management",
+    "sub_category": "Financial Tools",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "KMyMoney 5.1"
+    },
+    "interaction": {
+      "user_query": "KMyMoney crashes every time I try to update stock prices.",
+      "ai_response": "This is often due to a broken Perl script or missing dependency for `Finance::Quote`.\n\n1. Update your system: `sudo pacman -Syu`\n2. Reinstall the quote module:\n```bash\nsudo gpan Finance::Quote\n```\n3. In KMyMoney, go to **Settings → Configure KMyMoney → Online Quotes** and change the source from Yahoo (often broken) to **AlphaVantage** (requires a free API key) or another working provider."
+    },
+    "technical_tags": ["kmymoney", "stock-quotes", "finance-quote"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_017",
+    "bucket": "Life Management",
+    "sub_category": "Cloud Sync",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 20.04",
+      "app_version": "Rclone"
+    },
+    "interaction": {
+      "user_query": "I want to mount my OneDrive as a local drive so I can access files without downloading them all. How do I do that?",
+      "ai_response": "You can use `rclone` with the mount command.\n\n1. Configure rclone: `rclone config` (follow prompts for OneDrive).\n2. Create a mount point: `mkdir ~/OneDrive`\n3. Mount it:\n```bash\nrclone mount remote_name: ~/OneDrive --vfs-cache-mode writes &\n```\n4. The `--vfs-cache-mode writes` flag is crucial for allowing file edits."
+    },
+    "technical_tags": ["rclone", "onedrive", "mount"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_018",
+    "bucket": "Life Management",
+    "sub_category": "Weather Apps",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "GNOME Shell"
+    },
+    "interaction": {
+      "user_query": "The date and time menu used to show the weather, but now it's gone.",
+      "ai_response": "The weather integration requires the **GNOME Weather** app to be installed and initialized.\n\n1. Install it:\n```bash\nsudo apt install gnome-weather\n```\n2. Open the Weather app at least once and set a location.\n3. The weather should now appear in the notification/calendar dropdown."
+    },
+    "technical_tags": ["gnome-shell", "weather-integration", "installation"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_019",
+    "bucket": "Life Management",
+    "sub_category": "Financial Tools",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Skrooge"
+    },
+    "interaction": {
+      "user_query": "I can't read the text in Skrooge, it's ignoring my system dark mode and looks weird.",
+      "ai_response": "Skrooge is a KDE (Qt) app. If you are running it on GNOME (Fedora Workstation), it might not inherit themes correctly.\n\n1. Install `qt5ct` and `qt5-style-plugins`.\n2. Set the environment variable `QT_QPA_PLATFORMTHEME=qt5ct` in `/etc/environment`.\n3. Reboot and open **Qt5 Settings** to select a theme that matches your system."
+    },
+    "technical_tags": ["skrooge", "theming", "qt-vs-gtk"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_020",
+    "bucket": "Life Management",
+    "sub_category": "Calendar Sync",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Morgen"
+    },
+    "interaction": {
+      "user_query": "Morgen (AppImage) won't launch. It just does nothing when I double click it.",
+      "ai_response": "AppImages require the FUSE library, which isn't always installed by default on newer Ubuntus.\n\n1. Install libfuse2:\n```bash\nsudo apt install libfuse2\n```\n2. Ensure the AppImage is executable:\n```bash\nchmod +x Morgen-x.x.x.AppImage\n```\n3. Try running it again."
+    },
+    "technical_tags": ["morgen", "appimage", "libfuse2"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_021",
+    "bucket": "Life Management",
+    "sub_category": "Calendar Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Khal"
+    },
+    "interaction": {
+      "user_query": "I want a calendar in my terminal. I installed Khal but it says 'No configuration file found'.",
+      "ai_response": "Khal does not create a config by default. You need to configure it to point to your vdirsyncer storage.\n\n1. Run the interactive wizard:\n```bash\nkhal configure\n```\n2. Point it to your local calendar files (usually `~/.local/share/calendars/...` synced via vdirsyncer).\n3. Set your date/time format preferences."
+    },
+    "technical_tags": ["khal", "cli", "configuration"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_022",
+    "bucket": "Life Management",
+    "sub_category": "Cloud Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Dropbox"
+    },
+    "interaction": {
+      "user_query": "Dropbox uses too much CPU on startup.",
+      "ai_response": "This is often caused by the file monitoring limit.\n\n1. Increase the `max_user_watches`:\n```bash\necho fs.inotify.max_user_watches=100000 | sudo tee -a /etc/sysctl.conf; sudo sysctl -p\n```\n2. If it persists, check if you have a massive number of files. Dropbox performs poorly on Linux with >300k files. Consider using Selective Sync to reduce the local file count."
+    },
+    "technical_tags": ["dropbox", "inotify", "performance"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_023",
+    "bucket": "Life Management",
+    "sub_category": "Financial Tools",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "GnuCash"
+    },
+    "interaction": {
+      "user_query": "How do I back up my GnuCash data? I don't see a 'Backup' button.",
+      "ai_response": "GnuCash saves your data as a single file (usually `.gnucash`).\n\n1. Look at the title bar to see where your file is saved (e.g., `/home/user/Documents/MyFinances.gnucash`).\n2. Copy that file (and any `.log` files with the same name if you want transaction history) to your external drive or cloud folder.\n3. There is no internal 'backup' button; you manage the file directly."
+    },
+    "technical_tags": ["gnucash", "backup", "file-management"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_024",
+    "bucket": "Life Management",
+    "sub_category": "Note Taking",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Obsidian"
+    },
+    "interaction": {
+      "user_query": "I installed Obsidian from the repo but I can't find where to turn on 'Sync'.",
+      "ai_response": "Obsidian Sync is a paid addon. \n\n1. Go to **Settings → Core Plugins** to enable 'Sync' if you bought it.\n2. If you want free sync, use a third-party tool (like Syncthing, Dropbox, or Nextcloud) to sync your **Vault folder** between devices. Obsidian just reads local files, so any file sync tool works."
+    },
+    "technical_tags": ["obsidian", "sync", "file-management"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_025",
+    "bucket": "Life Management",
+    "sub_category": "Task Management",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Todoist CLI"
+    },
+    "interaction": {
+      "user_query": "I installed the unofficial Todoist CLI but I get 'command not found' when I type `todoist`.",
+      "ai_response": "The installation location might not be in your `$PATH`.\n\n1. If you installed via Go or Pip, check `~/.local/bin` or `~/go/bin`.\n2. Add the path to your `.bashrc`:\n```bash\nexport PATH=$PATH:~/.local/bin\n```\n3. Source the file: `source ~/.bashrc`."
+    },
+    "technical_tags": ["todoist-cli", "path-variable", "bash"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_026",
+    "bucket": "Life Management",
+    "sub_category": "Weather Apps",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Curl"
+    },
+    "interaction": {
+      "user_query": "I saw a screenshot of weather in the terminal. How do I get that?",
+      "ai_response": "That is likely `wttr.in`. You don't need to install an app, just use `curl`.\n\nRun this command:\n```bash\ncurl wttr.in\n```\nFor a specific city:\n```bash\ncurl wttr.in/Paris\n```"
+    },
+    "technical_tags": ["cli", "weather", "wttr.in"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_027",
+    "bucket": "Life Management",
+    "sub_category": "Calendar Sync",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Vdirsyncer"
+    },
+    "interaction": {
+      "user_query": "Vdirsyncer fails with 'Google 403 Forbidden' during discovery.",
+      "ai_response": "Google requires OAuth2 for contacts/calendar access now; basic auth won't work.\n\n1. You must set up a Google Cloud Project to get a Client ID and Secret.\n2. Update your `~/.vdirsyncer/config` to use `auth = google_oauth2`.\n3. Run `vdirsyncer discover` again, which will provide a URL to authenticate in your browser."
+    },
+    "technical_tags": ["vdirsyncer", "google-api", "oauth2"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_028",
+    "bucket": "Life Management",
+    "sub_category": "Financial Tools",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "GnuCash"
+    },
+    "interaction": {
+      "user_query": "I made a mistake in a transaction from three months ago. GnuCash won't let me edit it; it says it's reconciled.",
+      "ai_response": "Reconciled transactions (marked 'y') are locked to prevent accidental changes to balanced books.\n\n1. Find the transaction.\n2. Click the 'y' in the 'R' (Reconciled) column.\n3. It will cycle to 'n' (Not reconciled) or 'c' (Cleared).\n4. You can now edit the amount. **Warning:** This will unbalance your previous reconciliation."
+    },
+    "technical_tags": ["gnucash", "reconciliation", "editing-locked-data"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_029",
+    "bucket": "Life Management",
+    "sub_category": "Cloud Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Nextcloud Desktop"
+    },
+    "interaction": {
+      "user_query": "Nextcloud keeps creating 'Conflict' files whenever I edit a document on my laptop and phone.",
+      "ai_response": "This happens if the file is modified on both sides before a sync completes.\n\n1. Ensure the Nextcloud client is running and fully green (synced) on your laptop *before* you put it to sleep.\n2. If editing frequently on multiple devices, consider using the web interface or an online office suite (Nextcloud Office) to avoid file locking issues."
+    },
+    "technical_tags": ["nextcloud", "sync-conflict", "workflow"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_030",
+    "bucket": "Life Management",
+    "sub_category": "Task Management",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Getting Things GNOME"
+    },
+    "interaction": {
+      "user_query": "I can't sync Getting Things GNOME (GTG) with anything. Is it local only?",
+      "ai_response": "GTG is primarily local, but it has plugins.\n\n1. Open **App Menu → Plugins**.\n2. Look for 'Todotxt' or other sync plugins.\n3. However, GTG does not natively sync with Google Tasks or Microsoft To Do. For that, you might prefer **Endeavour** or **Planner**."
+    },
+    "technical_tags": ["getting-things-gnome", "sync-limitations", "plugins"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_101",
+    "bucket": "Life Management",
+    "sub_category": "Calendar Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "GNOME Online Accounts"
+    },
+    "interaction": {
+      "user_query": "I keep getting a 'Credentials have expired' notification for Google every single day. I re-login and it happens again tomorrow.",
+      "ai_response": "This is a known bug with GNOME Online Accounts and certain keyring setups.\n\n1. Open **Passwords and Keys** (Seahorse).\n2. Ensure the 'Login' keyring is unlocked automatically on login (it should use your login password).\n3. If you use auto-login for your desktop, the keyring isn't unlocked. You must manually unlock it or turn off auto-login."
+    },
+    "technical_tags": [
+      "gnome-online-accounts",
+      "keyring",
+      "authentication-loop"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_102",
+    "bucket": "Life Management",
+    "sub_category": "Financial Tools",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "GnuCash"
+    },
+    "interaction": {
+      "user_query": "GnuCash refuses to open my file! It says 'File is locked by user X' but I am user X!",
+      "ai_response": "GnuCash creates a `.LNK` file to prevent concurrent access. If GnuCash crashed previously, this file remains.\n\n1. Close GnuCash.\n2. Go to the folder containing your `.gnucash` file.\n3. Delete the file ending in `.gnucash.LNK`.\n4. Open GnuCash again."
+    },
+    "technical_tags": ["gnucash", "file-lock", "crash-recovery"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_103",
+    "bucket": "Life Management",
+    "sub_category": "Cloud Sync",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Nextcloud Client"
+    },
+    "interaction": {
+      "user_query": "Nextcloud is eating 100% of my CPU and not syncing anything.",
+      "ai_response": "This is often caused by a large number of small files or a corrupt local database.\n\n1. Stop the client.\n2. Delete the temporary database `.sync_*.db` inside the Nextcloud folder (backup first).\n3. Or, add an ignore rule for `node_modules` or `.git` folders if you are syncing code, as these contain thousands of tiny files that choke the sync engine."
+    },
+    "technical_tags": ["nextcloud", "performance", "cpu-usage"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_104",
+    "bucket": "Life Management",
+    "sub_category": "Weather Apps",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "GNOME Weather"
+    },
+    "interaction": {
+      "user_query": "GNOME Weather says 'Location services disabled' even though I turned the toggle ON in Settings.",
+      "ai_response": "The GeoClue service might be masked or failing.\n\n1. Check status:\n```bash\nsystemctl status geoclue\n```\n2. If masked, unmask it: `sudo systemctl unmask geoclue`\n3. Restart it: `sudo systemctl restart geoclue`\n4. Ensure the privacy switch is actually on: `gsettings get org.gnome.system.location enabled` should return `true`."
+    },
+    "technical_tags": ["gnome-weather", "geoclue", "systemd"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_105",
+    "bucket": "Life Management",
+    "sub_category": "Password Managers",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Bitwarden AppImage"
+    },
+    "interaction": {
+      "user_query": "Bitwarden doesn't start with the system. I added it to Startup Applications but it doesn't open minimized.",
+      "ai_response": "AppImages don't register themselves automatically.\n\n1. In **Startup Applications**, make sure the command points to the full path of the AppImage.\n2. Add the flag `-minimized` or `--tray` (depends on version, try both).\n3. Example command: `/home/user/Apps/Bitwarden.AppImage -minimized`"
+    },
+    "technical_tags": ["bitwarden", "startup-applications", "appimage"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_106",
+    "bucket": "Life Management",
+    "sub_category": "Note Taking",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Joplin"
+    },
+    "interaction": {
+      "user_query": "Joplin's layout is broken, the icons are huge and text is tiny. I have a 4K screen.",
+      "ai_response": "This is a scaling issue with the Electron framework.\n\n1. Launch Joplin with a scaling flag:\n```bash\njoplin-desktop --force-device-scale-factor=2\n```\n2. If that works, edit your `.desktop` file to include this flag permanently in the `Exec=` line."
+    },
+    "technical_tags": ["joplin", "hidpi", "scaling"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_107",
+    "bucket": "Life Management",
+    "sub_category": "Financial Tools",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "HomeBank"
+    },
+    "interaction": {
+      "user_query": "HomeBank keeps warning me about 'Unknown transaction' when I import my OFX file.",
+      "ai_response": "HomeBank tries to match payees to your existing list. If it's a new payee, it warns you.\n\n1. During import, click the **Manage** button on the transaction list.\n2. Assign a Category to the new Payees.\n3. Create an **Assignment Rule** (Settings → Assignments) to automatically map text like 'UBER EATS' to the 'Dining Out' category for future imports."
+    },
+    "technical_tags": ["homebank", "ofx-import", "automation"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_201",
+    "bucket": "Life Management",
+    "sub_category": "Calendar Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Thunderbird"
+    },
+    "interaction": {
+      "user_query": "How do I add a holiday calendar to Thunderbird?",
+      "ai_response": "1. Go to the **Calendar** tab.\n2. Right-click in the calendar list on the left → **New Calendar**.\n3. Select **On the Network**.\n4. Choose **Holiday Calendar**.\n5. Select your country/region from the list provided.\n6. Click **Subscribe**."
+    },
+    "technical_tags": ["thunderbird", "calendar", "holidays"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_202",
+    "bucket": "Life Management",
+    "sub_category": "Note Taking",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Logseq"
+    },
+    "interaction": {
+      "user_query": "How can I sync my Logseq graph between my Linux laptop and Android phone for free?",
+      "ai_response": "You can use **Syncthing**.\n\n1. Install Syncthing on Fedora (`sudo dnf install syncthing`) and the Syncthing app on Android.\n2. On Fedora, create a folder `~/Documents/Logseq`.\n3. Add this folder to Syncthing.\n4. Share it with your Android device ID.\n5. On Android, point Logseq to open the synced folder.\n\nChanges will replicate instantly when both devices are online."
+    },
+    "technical_tags": ["logseq", "syncthing", "sync"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_203",
+    "bucket": "Life Management",
+    "sub_category": "Financial Tools",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "GnuCash"
+    },
+    "interaction": {
+      "user_query": "I want to use a MariaDB SQL database for GnuCash instead of XML so multiple people can view it.",
+      "ai_response": "1. Install the driver: `sudo apt install libdbd-mysql`.\n2. Create a database in MariaDB: `CREATE DATABASE gnucash;`\n3. In GnuCash, do **File → Save As**.\n4. Change **Data Format** to **MySQL**.\n5. Enter host (`localhost`), database (`gnucash`), username, and password.\n\n**Note:** Concurrent *editing* is still not fully supported/safe in GnuCash; this is mostly for reporting."
+    },
+    "technical_tags": ["gnucash", "sql", "mariadb"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_301",
+    "bucket": "Life Management",
+    "sub_category": "Financial Tools",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "General"
+    },
+    "interaction": {
+      "user_query": "I find GnuCash way too complicated. Is there something simpler just to track expenses?",
+      "ai_response": "**HomeBank** is the best recommendation for simple expense tracking.\n\n* **Pros:** Simpler interface, easy charting, duplicate detection, lighter weight.\n* **Cons:** No double-entry accounting (which you might not need), fewer business features.\n\nInstall it via: `sudo apt install homebank`"
+    },
+    "technical_tags": ["homebank", "recommendation", "comparison"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_302",
+    "bucket": "Life Management",
+    "sub_category": "Calendar Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "General"
+    },
+    "interaction": {
+      "user_query": "Should I use Thunderbird or Evolution for managing Exchange calendars?",
+      "ai_response": "**Evolution** typically handles Exchange (EWS) better natively via the `evolution-ews` package. It integrates tightly with the GNOME desktop calendar too.\n\nThunderbird requires paid add-ons (like Owl) or complex gateways (DavMail) for full Exchange support. If you want a setup that 'just works' with corporate Exchange on Linux, Evolution is the stronger choice."
+    },
+    "technical_tags": ["thunderbird", "evolution", "exchange-ews"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_401",
+    "bucket": "Life Management",
+    "sub_category": "Cloud Sync",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Rclone"
+    },
+    "interaction": {
+      "user_query": "I want to automatically backup my Documents to Google Drive every night at 3 AM.",
+      "ai_response": "1. Configure `rclone` for Google Drive.\n2. Create a script `backup.sh`:\n```bash\n#!/bin/bash\nrclone sync ~/Documents gdrive:Backups/Documents\n```\n3. Make it executable: `chmod +x backup.sh`.\n4. Edit crontab: `crontab -e`\n5. Add the line:\n`0 3 * * * /path/to/backup.sh`"
+    },
+    "technical_tags": ["rclone", "cron", "automation"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_402",
+    "bucket": "Life Management",
+    "sub_category": "Task Management",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Taskwarrior"
+    },
+    "interaction": {
+      "user_query": "I use Taskwarrior. How do I make a report that only shows tasks due today or overdue?",
+      "ai_response": "You can define a custom report in your `.taskrc` or just use a filter.\n\nCommand:\n```bash\ntask due:today or due:overdue list\n```\n\nTo save it as a custom command alias 'urgent':\n```bash\ntask config alias.urgent 'due:today or due:overdue list'\n```\nNow just type `task urgent`."
+    },
+    "technical_tags": ["taskwarrior", "cli", "automation"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_403",
+    "bucket": "Life Management",
+    "sub_category": "Financial Tools",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "GnuCash"
+    },
+    "interaction": {
+      "user_query": "I have a Python script to scrape my bank. How can I inject that data directly into GnuCash?",
+      "ai_response": "Directly modifying the GnuCash XML/SQL is dangerous. The best way is to have your Python script output a **QIF** or **OFX** file, or use the **PieCash** Python library (if using the SQL backend).\n\nExample with PieCash (read/write GnuCash SQL files):\n```python\nfrom piecash import open_book\nwith open_book(\"mybooks.gnucash\", readonly=False) as book:\n    # code to add transaction\n```"
+    },
+    "technical_tags": ["gnucash", "python", "automation"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_404",
+    "bucket": "Life Management",
+    "sub_category": "Calendar Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Khal"
+    },
+    "interaction": {
+      "user_query": "I want to see my agenda when I open a terminal.",
+      "ai_response": "Add `khal list` to your shell configuration.\n\n1. Open `~/.bashrc` (or `~/.zshrc`).\n2. Add the line:\n```bash\nkhal list now 7days\n```\n3. This will print your agenda for the next week every time you open a new terminal window."
+    },
+    "technical_tags": ["khal", "bashrc", "automation"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_405",
+    "bucket": "Life Management",
+    "sub_category": "Password Managers",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "KeePassXC"
+    },
+    "interaction": {
+      "user_query": "I want to use my YubiKey to unlock my KeePassXC database.",
+      "ai_response": "1. Insert YubiKey.\n2. In KeePassXC, go to **Database → Database Security**.\n3. Click **Add Challenge-Response**.\n4. Select your YubiKey from the dropdown and click **Refresh**.\n5. Save the database. \n\nNow you will need both your password AND the YubiKey inserted to open the file."
+    },
+    "technical_tags": ["keepassxc", "yubikey", "security"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_406",
+    "bucket": "Life Management",
+    "sub_category": "Cloud Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Syncthing"
+    },
+    "interaction": {
+      "user_query": "How do I make Syncthing start automatically in the background for my user?",
+      "ai_response": "Syncthing ships with a systemd user service.\n\n1. Enable it:\n```bash\nsystemctl --user enable --now syncthing\n```\n2. This starts it for your user session. You can access the GUI at `127.0.0.1:8384`."
+    },
+    "technical_tags": ["syncthing", "systemd", "automation"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_407",
+    "bucket": "Life Management",
+    "sub_category": "Weather Apps",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Conky"
+    },
+    "interaction": {
+      "user_query": "I want a weather widget on my desktop wallpaper. I heard Conky can do it?",
+      "ai_response": "Yes. You need a Conky theme that supports weather (often using `jq` to parse JSON from a weather API).\n\n1. Install Conky: `sudo apt install conky-all jq`.\n2. Download a theme (e.g., 'Harmattan').\n3. Edit the theme's config file to insert your API key (usually OpenWeatherMap) and City ID.\n4. Add `conky` to your Startup Applications."
+    },
+    "technical_tags": ["conky", "customization", "weather"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_408",
+    "bucket": "Life Management",
+    "sub_category": "Note Taking",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Obsidian"
+    },
+    "interaction": {
+      "user_query": "I want to automatically git commit and push my Obsidian vault every time I close the app.",
+      "ai_response": "You can use the 'Obsidian Git' plugin, or a wrapper script.\n\nWrapper script approach:\n```bash\n#!/bin/bash\n/usr/bin/obsidian\ncd ~/Documents/Vault\ngit add .\ngit commit -m \"Backup $(date)\"\ngit push\n```\nModify your desktop shortcut to run this script instead of the raw obsidian command."
+    },
+    "technical_tags": ["obsidian", "git", "automation"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_409",
+    "bucket": "Life Management",
+    "sub_category": "Task Management",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Taskwarrior"
+    },
+    "interaction": {
+      "user_query": "Can I sync Taskwarrior to my phone?",
+      "ai_response": "Yes, but you need a Taskserver (taskd).\n\n1. Easier route: Use a hosted service like **FreeCinc**.\n2. Configure your local client with the certificates FreeCinc provides.\n3. On Android, use **Taskwarrior for Android** (or Foreground) and import the same certificates.\n4. Run `task sync` on your PC to push changes."
+    },
+    "technical_tags": ["taskwarrior", "sync", "mobile"],
+    "friction_type": "config_issue"
+  }
+]

@@ -1,0 +1,944 @@
+[
+  {
+    "id": "COMM_EMAIL_001",
+    "bucket": "Communication & Email",
+    "sub_category": "Thunderbird",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Thunderbird 115.5",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "Thunderbird won't connect to my Gmail. It keeps saying 'Authentication Failed' but my password is definitely correct! I changed it yesterday and it works in Chrome.",
+      "ai_response": "Gmail deprecated basic password authentication for third-party apps. You need to use OAuth2:\n\n1. Open Thunderbird.\n2. Go to **Account Settings** → **Server Settings**.\n3. Change **Authentication Method** from 'Normal Password' to 'OAuth2'.\n4. Do the same for the **Outgoing Server (SMTP)** at the bottom of the left pane.\n5. Restart Thunderbird; a Google login window will appear to authorize the connection."
+    },
+    "technical_tags": [
+      "oauth2",
+      "gmail",
+      "authentication",
+      "thunderbird",
+      "imap"
+    ],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_002",
+    "bucket": "Communication & Email",
+    "sub_category": "Video Conferencing",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Zoom 5.17",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "When I try to share my screen in Zoom on Fedora, the other person just sees a black screen. I can see their video fine.",
+      "ai_response": "This is a common issue with Zoom on Wayland (the default in Fedora). \n\n**Fix:**\n1. Edit the Zoom config file: `nano ~/.config/zoomus.conf`\n2. Look for the line `enableWaylandShare=false` and change it to `true` (or add it if missing).\n3. If that fails, force Zoom to use X11: Log out, click the gear icon on the login screen, and select **GNOME on Xorg** before logging back in."
+    },
+    "technical_tags": [
+      "zoom",
+      "wayland",
+      "screen_sharing",
+      "black_screen",
+      "fedora"
+    ],
+    "friction_type": "wayland_conflict"
+  },
+  {
+    "id": "COMM_EMAIL_003",
+    "bucket": "Communication & Email",
+    "sub_category": "Teams",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Microsoft Teams (PWA)",
+      "display_server": "X11"
+    },
+    "interaction": {
+      "user_query": "I can't find the Microsoft Teams app in the Software Manager anymore. Did they delete it? I need it for work.",
+      "ai_response": "Yes, Microsoft retired the native Linux desktop client for Teams. You now have two options:\n\n1. **Use the PWA (Progressive Web App):** Open Teams in Chrome/Edge, click the three dots in the top right → **Apps** → **Install Microsoft Teams**.\n2. **Use an unofficial wrapper:** Install `teams-for-linux` via Flatpak:\n   ```bash\n   flatpak install flathub com.github.IsmaelMartinez.teams_for_linux\n   ```"
+    },
+    "technical_tags": ["teams", "pwa", "installation", "microsoft", "flatpak"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_004",
+    "bucket": "Communication & Email",
+    "sub_category": "Thunderbird",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Thunderbird 102",
+      "display_server": "X11"
+    },
+    "interaction": {
+      "user_query": "My Outlook email stopped working in Thunderbird. It asks for a password over and over again.",
+      "ai_response": "Microsoft recently disabled 'Basic Authentication' for Outlook/Hotmail accounts. \n\n**To fix this:**\n1. Remove your Outlook account from Thunderbird (back up emails first if they aren't on the server).\n2. Add the account again.\n3. **Crucial:** When Thunderbird automatically detects settings, ensure **Authentication** is set to **OAuth2** (not 'Normal Password').\n4. A Microsoft login window will appear. Sign in to authorize."
+    },
+    "technical_tags": [
+      "outlook",
+      "oauth2",
+      "thunderbird",
+      "password_loop",
+      "microsoft_365"
+    ],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_005",
+    "bucket": "Communication & Email",
+    "sub_category": "Discord",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Discord 0.0.44",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "Discord audio is super crackly and robot-like on Arch. I'm using PipeWire.",
+      "ai_response": "This is often a sample rate mismatch in PipeWire. \n\n**Try this:**\n1. Open `~/.config/pipewire/pipewire.conf` (copy from `/usr/share/pipewire/` if it doesn't exist).\n2. Find `default.clock.allowed-rates` and set it to `[ 44100 48000 ]`.\n3. Restart PipeWire:\n   ```bash\n   systemctl --user restart pipewire pipewire-pulse\n   ```\n4. Also, check inside Discord: **User Settings** → **Voice & Video** → Disable **'Hardware Acceleration'** if issues persist."
+    },
+    "technical_tags": [
+      "discord",
+      "pipewire",
+      "audio_issues",
+      "crackling",
+      "arch"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_006",
+    "bucket": "Communication & Email",
+    "sub_category": "Webcam",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Firefox ESR",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "Google Meet says 'Camera not found' in Firefox, but it works fine in the 'Cheese' camera app.",
+      "ai_response": "Firefox might be missing permission to access the webcam device or is restricted by Flatpak permissions (if installed via Flatpak).\n\n1. **Check Permissions:** Go to Debian Settings → **Privacy** → **Camera** and ensure it's enabled.\n2. **Flatpak Fix (if applicable):** Run `flatpak install flathub com.github.tchx84.Flatseal`, open Flatseal, select Firefox, and enable **Device** access.\n3. **Firefox internal:** Type `about:permissions` in the address bar and check Google Meet permissions."
+    },
+    "technical_tags": [
+      "webcam",
+      "firefox",
+      "google_meet",
+      "permissions",
+      "debian"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_007",
+    "bucket": "Communication & Email",
+    "sub_category": "Thunderbird",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Thunderbird 115",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "I'm trying to set up Proton Mail with Thunderbird but it won't connect. I have a paid Proton account.",
+      "ai_response": "Proton Mail requires the **Proton Mail Bridge** application because it uses encryption that standard IMAP clients like Thunderbird can't handle natively.\n\n1. Install Proton Mail Bridge: `sudo apt install protonmail-bridge` (or download the `.deb` from their site).\n2. Open the Bridge app and log in.\n3. In Bridge, click **Mailbox details** to see your local IMAP/SMTP ports and password.\n4. In Thunderbird, use `127.0.0.1` as the server address and the specific ports provided by the Bridge, not `mail.proton.me`."
+    },
+    "technical_tags": [
+      "proton_mail",
+      "bridge",
+      "encryption",
+      "thunderbird",
+      "imap_bridge"
+    ],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_008",
+    "bucket": "Communication & Email",
+    "sub_category": "Slack",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Slack 4.36",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "Slack screen sharing is missing the option to share specific windows, I can only share the whole screen.",
+      "ai_response": "This is a limitation of the underlying Electron app running on Wayland without full PipeWire support enabled.\n\n**Workaround:**\nLaunch Slack with the following flags to force it to use Ozone (Wayland support):\n```bash\nslack --enable-features=UseOzonePlatform --ozone-platform=wayland\n```\nIf that crashes, use the Web version in Chrome/Edge, which handles individual window sharing via PipeWire correctly."
+    },
+    "technical_tags": [
+      "slack",
+      "wayland",
+      "electron",
+      "screen_sharing",
+      "cli_flags"
+    ],
+    "friction_type": "wayland_conflict"
+  },
+  {
+    "id": "COMM_EMAIL_009",
+    "bucket": "Communication & Email",
+    "sub_category": "Evolution",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Evolution 3.44",
+      "display_server": "X11"
+    },
+    "interaction": {
+      "user_query": "I want to use Evolution instead of Thunderbird for my Exchange work email, but I can't find the Exchange option in the wizard.",
+      "ai_response": "You need to install the Exchange Web Services (EWS) plugin for Evolution.\n\nRun this command:\n```bash\nsudo apt update\nsudo apt install evolution-ews\n```\nRestart Evolution. When you add a new account, select **Exchange Web Services** as the server type. You'll likely need your O365 URL (usually found via Auto-discovery)."
+    },
+    "technical_tags": ["evolution", "exchange", "ews", "apt", "work_email"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_010",
+    "bucket": "Communication & Email",
+    "sub_category": "Thunderbird",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Thunderbird 115",
+      "display_server": "X11"
+    },
+    "interaction": {
+      "user_query": "Thunderbird updated and now the layout is completely different. The 'Folder Pane' is gone! How do I get it back?",
+      "ai_response": "The 'Supernova' update (v115) changed the UI significantly.\n\n1. Press `Alt` on your keyboard to reveal the top menu bar temporarily.\n2. Go to **View** → **Layout** → **Folder Pane** and ensure it is checked.\n3. If you want the classic 'Toolbar' back, right-click the empty space near the top tabs and check **Menu Bar**."
+    },
+    "technical_tags": [
+      "thunderbird",
+      "ui_customization",
+      "supernova",
+      "folder_pane",
+      "layout"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_011",
+    "bucket": "Communication & Email",
+    "sub_category": "General",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "N/A",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "How do I turn off email notifications? They keep popping up over my movies.",
+      "ai_response": "You can disable notifications globally or per app.\n\n**Global (Do Not Disturb):**\nClick the date/time in the top bar to open the notification center, then toggle the **Do Not Disturb** switch.\n\n**Per App (Permanent):**\nGo to **Settings** → **Notifications**. Find Thunderbird (or your email client) in the list and toggle the switch to **Off**."
+    },
+    "technical_tags": [
+      "notifications",
+      "dnd",
+      "gnome",
+      "ubuntu",
+      "distractions"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_012",
+    "bucket": "Communication & Email",
+    "sub_category": "Thunderbird",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Thunderbird 115",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "My GPG keys aren't showing up in Thunderbird to encrypt emails. I have them in GnuPG.",
+      "ai_response": "Thunderbird 78+ uses its own internal OpenPGP keystore by default, ignoring the system GnuPG keyring.\n\n**Fix:**\n1. Open **Account Settings** → **End-to-End Encryption**.\n2. Click **Add Key...**.\n3. Select **Import an existing OpenPGP Key**.\n4. You must export your keys from GnuPG first (`gpg --export-secret-keys > mykeys.asc`) and then select that file here. Thunderbird does not sync live with `gpg-agent` anymore without external add-ons."
+    },
+    "technical_tags": ["gpg", "encryption", "pgp", "security", "thunderbird"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_013",
+    "bucket": "Communication & Email",
+    "sub_category": "Zoom",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Zoom 5.16",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "Zoom keeps crashing whenever I try to join a meeting. It worked fine last week.",
+      "ai_response": "This often happens if the cached configuration gets corrupted or conflicts with a graphics driver update.\n\n**Troubleshooting steps:**\n1. Close Zoom completely.\n2. Open a terminal and run: `rm -rf ~/.zoom` (This deletes temp files, you will need to log in again).\n3. If using the Snap version (`snap list | grep zoom`), try removing it and installing the `.deb` from the Zoom website instead, as Snaps can have permission conflicts."
+    },
+    "technical_tags": ["zoom", "crash", "troubleshooting", "snap", "cache"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_014",
+    "bucket": "Communication & Email",
+    "sub_category": "Thunderbird",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Thunderbird 115",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "I accidentally deleted a folder in Thunderbird. Is there a trash bin for folders?",
+      "ai_response": "If the folder was on an IMAP server (like Gmail), it might be gone forever, but check the **Trash** or **Bin** folder in your account tree first.\n\n**Recovery Attempt:**\n1. Right-click your account name → **Subscribe**.\n2. See if the folder is just unchecked/hidden.\n3. If actually deleted: Log into your email provider's website (e.g., Gmail.com) and check the Trash there. Thunderbird synchronizes deletions immediately."
+    },
+    "technical_tags": [
+      "data_recovery",
+      "imap",
+      "folder_deletion",
+      "thunderbird",
+      "subscribe"
+    ],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_015",
+    "bucket": "Communication & Email",
+    "sub_category": "Skype",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Skype 8.109",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "Skype microphone volume is way too low. People can barely hear me.",
+      "ai_response": "Skype often adjusts microphone levels automatically and aggressively.\n\n**Fix:**\n1. Open Skype **Settings** → **Audio & Video**.\n2. Toggle **OFF** 'Automatically adjust microphone settings'.\n3. Drag the slider to about 80-90%.\n4. If still quiet, open system settings (`Settings` → `Sound`) and ensure the Input Volume is high there too. Over-amplification (above 100%) can cause distortion."
+    },
+    "technical_tags": [
+      "skype",
+      "audio",
+      "microphone",
+      "volume",
+      "troubleshooting"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_101",
+    "bucket": "Communication & Email",
+    "sub_category": "Zoom",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Zoom 5.17",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "Why is Linux support for Zoom so bad? I can't share audio when I share my screen!",
+      "ai_response": "Sharing system audio during screen share is a known limitation of the Zoom Linux client, largely due to how Linux handles audio routing (PulseAudio/PipeWire) differently than Windows.\n\n**Workaround:**\n1. When clicking **Share Screen**, look for the **Share Sound** checkbox at the bottom (it is often missing on Linux depending on the version).\n2. If missing, you must select **'Optimize for video clip'** which sometimes forces the audio bridge.\n3. Ideally, use the **Zoom PWA (Web App)** in Chrome, which leverages the browser's better media handling capabilities."
+    },
+    "technical_tags": [
+      "zoom",
+      "audio_share",
+      "screen_sharing",
+      "limitations",
+      "debian"
+    ],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_102",
+    "bucket": "Communication & Email",
+    "sub_category": "Thunderbird",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Thunderbird 115",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "Thunderbird keeps downloading thousands of old emails and filling up my hard drive! Stop it!",
+      "ai_response": "Thunderbird defaults to keeping a local copy of all messages.\n\n**To save space:**\n1. Go to **Account Settings** → **Synchronization & Storage**.\n2. Uncheck **'Keep messages in all folders for this account on this computer'** OR check **'Synchronize the most recent'** and set it to 30 days.\n3. Click **Compact Folders** in the File menu to physically free up the disk space after deleting/changing these settings."
+    },
+    "technical_tags": [
+      "disk_space",
+      "synchronization",
+      "imap",
+      "thunderbird",
+      "storage"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_103",
+    "bucket": "Communication & Email",
+    "sub_category": "Teams",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Chrome 120",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "I'm using Teams in Chrome because there's no app, but I don't get notifications when the browser is closed. This made me miss a meeting!",
+      "ai_response": "Browser notifications generally require the browser to be running (even in the background).\n\n**Solution:**\n1. In Chrome, go to **Settings** → **System**.\n2. Enable **'Continue running background apps when Google Chrome is closed'**.\n3. Ensure Teams allows notifications: Click the lock icon in the URL bar → **Permissions** → **Notifications** → **Allow**.\n4. **Better option:** Install the PWA (Install Teams) which runs in its own window and behaves more like a standalone app."
+    },
+    "technical_tags": [
+      "notifications",
+      "chrome",
+      "teams",
+      "pwa",
+      "background_process"
+    ],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_104",
+    "bucket": "Communication & Email",
+    "sub_category": "Thunderbird",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Thunderbird 115",
+      "display_server": "X11"
+    },
+    "interaction": {
+      "user_query": "I can't send emails! Receiving works fine, but sending gives an SMTP timeout error.",
+      "ai_response": "This is usually a port or SSL issue with your outgoing server.\n\n**Check these settings:**\n1. Go to **Account Settings** → **Outgoing Server (SMTP)** (bottom left).\n2. Select your server and click **Edit**.\n3. **Port:** Should usually be `587` (STARTTLS) or `465` (SSL/TLS). Port `25` is often blocked by ISPs.\n4. **Authentication:** Ensure it matches your incoming settings (usually 'Normal Password' or 'OAuth2' for Gmail/Outlook)."
+    },
+    "technical_tags": [
+      "smtp",
+      "sending_error",
+      "timeout",
+      "port_587",
+      "thunderbird"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_105",
+    "bucket": "Communication & Email",
+    "sub_category": "Discord",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Discord (Canary)",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "Discord keeps updating and refusing to open until I install the update, but the repo hasn't updated yet! I'm locked out.",
+      "ai_response": "This is a classic Discord on Linux annoyance. \n\n**Quick Fix:**\n1. Open `~/.config/discord/settings.json`.\n2. Add or modify this line: `\"SKIP_HOST_UPDATE\": true`.\n3. Save and restart Discord.\n\nThis bypasses the version check, allowing you to use the app until the Arch repositories (or AUR) catch up with the official update."
+    },
+    "technical_tags": [
+      "discord",
+      "update_loop",
+      "json_config",
+      "arch",
+      "workaround"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_106",
+    "bucket": "Communication & Email",
+    "sub_category": "Signal",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Signal Desktop",
+      "display_server": "X11"
+    },
+    "interaction": {
+      "user_query": "Signal Desktop is showing 'Disconnected' constantly even though my internet is fine.",
+      "ai_response": "Signal Desktop relies heavily on a stable connection to your phone (sometimes) or just the server.\n\n**Try this:**\n1. **Restart the app:** File → Exit, then open it again.\n2. **Check Date/Time:** If your system clock is even slightly off, SSL handshakes fail. Run `timedatectl` to ensure time is synced.\n3. **Re-link:** If it persists, go to File → Preferences → **Clear Data** (warning: deletes message history on PC) and re-link with your phone."
+    },
+    "technical_tags": [
+      "signal",
+      "connectivity",
+      "ssl",
+      "time_sync",
+      "troubleshooting"
+    ],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_107",
+    "bucket": "Communication & Email",
+    "sub_category": "Thunderbird",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Thunderbird Snap",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "I can't open attachments! It says '/tmp/... permission denied' whenever I try to open a PDF.",
+      "ai_response": "You are likely using the **Snap** version of Thunderbird, which is sandboxed and cannot write to the system `/tmp` directory normally used by PDF viewers.\n\n**Fix:**\n1. Save the attachment to your **Downloads** folder first, then open it.\n2. **Permanent Fix:** Connect the removable-media plug (sometimes helps) or switch to the APT version (requires removing snap and using a PPA like `ppa:mozillateam/ppa`) to avoid strict sandboxing issues."
+    },
+    "technical_tags": [
+      "snap",
+      "sandbox",
+      "permissions",
+      "attachments",
+      "thunderbird"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_201",
+    "bucket": "Communication & Email",
+    "sub_category": "Thunderbird",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Thunderbird 115",
+      "display_server": "X11"
+    },
+    "interaction": {
+      "user_query": "How do I create an email signature with my company logo in Thunderbird?",
+      "ai_response": "1. Go to **Account Settings** and select your email account.\n2. Scroll to the **Signature Text** box.\n3. Check **'Use HTML'**.\n4. You can type text directly, but for an image: \n   - It's best to host the image online (imgur or company server) and use `<img src=\"URL\">`.\n   - If you paste a local image, it attaches to every email, increasing size.\n5. Draft your signature in the 'Write' window first (where you have formatting tools), then copy the HTML code (Insert → HTML) into the settings box."
+    },
+    "technical_tags": ["signature", "html", "branding", "thunderbird", "guide"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_202",
+    "bucket": "Communication & Email",
+    "sub_category": "Gmail",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Online Accounts",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "How do I sync my Google Calendar with the Ubuntu calendar app without installing anything extra?",
+      "ai_response": "Ubuntu has built-in integration for this.\n\n1. Open **Settings** → **Online Accounts**.\n2. Select **Google**.\n3. Sign in and grant permissions.\n4. Ensure the **Calendar** toggle is ON.\n5. Open the GNOME Calendar app (or click the date in the top bar); your Google events will sync automatically after a few moments."
+    },
+    "technical_tags": [
+      "google_calendar",
+      "gnome",
+      "online_accounts",
+      "sync",
+      "ubuntu"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_203",
+    "bucket": "Communication & Email",
+    "sub_category": "Zoom",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Zoom Flatpak",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "How do I use a virtual background in Zoom on Linux? The option is greyed out.",
+      "ai_response": "Zoom for Linux has strict CPU requirements for virtual backgrounds without a green screen.\n\n1. **Check Requirements:** You need a fairly modern processor (i7 or high-end i5).\n2. **Green Screen:** If your CPU isn't supported, check **'I have a green screen'** in Settings → Backgrounds. You actually need a solid color behind you for this to work.\n3. **Config Hack:** You can try editing `~/.config/zoomus.conf` and adding `enableVirtualBkg=true`, but performance may be poor if your hardware isn't up to spec."
+    },
+    "technical_tags": [
+      "virtual_background",
+      "zoom",
+      "hardware_requirements",
+      "config_edit",
+      "fedora"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_204",
+    "bucket": "Communication & Email",
+    "sub_category": "Thunderbird",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Thunderbird 102",
+      "display_server": "X11"
+    },
+    "interaction": {
+      "user_query": "I want to backup all my Thunderbird emails and settings to a USB drive. Which file do I copy?",
+      "ai_response": "You need to copy your **Profile** folder.\n\n1. Close Thunderbird.\n2. Open your File Manager and press `Ctrl+H` to show hidden files.\n3. Navigate to `.thunderbird` (usually in your Home folder).\n4. You will see a folder with a random name like `abc1234.default-release`.\n5. Copy the **entire** `.thunderbird` folder to your USB drive. To restore, just paste it back into the Home folder on the new computer."
+    },
+    "technical_tags": [
+      "backup",
+      "migration",
+      "profile",
+      "thunderbird",
+      "hidden_files"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_205",
+    "bucket": "Communication & Email",
+    "sub_category": "Jitsi",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Firefox",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "How do I host a video call without making my friends install anything? Skype is too annoying.",
+      "ai_response": "Jitsi Meet is perfect for this.\n\n1. Open Firefox (or Chrome).\n2. Go to `meet.jit.si`.\n3. Type a unique name for your meeting (e.g., 'FridayGameNightDebian').\n4. Click **Start Meeting**.\n5. Copy the URL from the address bar and send it to your friends. They just click the link to join—no account or install required."
+    },
+    "technical_tags": [
+      "jitsi",
+      "browser_based",
+      "video_call",
+      "no_install",
+      "foss"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_301",
+    "bucket": "Communication & Email",
+    "sub_category": "Comparison",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "N/A",
+      "display_server": "X11"
+    },
+    "interaction": {
+      "user_query": "Is Thunderbird better than Evolution? I just want something simple that looks like Outlook.",
+      "ai_response": "If you want something that **looks** like Outlook, **Evolution** is actually closer in design (integrated mail, calendar, contacts, tasks view). \n\n- **Evolution:** Best for GNOME users and Microsoft Exchange/Office 365 environments.\n- **Thunderbird:** More customizable, better extensions, works the same on all OSs, but can feel a bit cluttered.\n\nSince you are on Mint, Thunderbird is the default and receives updates faster, but Evolution is a solid choice for an Outlook-style workflow."
+    },
+    "technical_tags": [
+      "comparison",
+      "thunderbird",
+      "evolution",
+      "outlook_alternative",
+      "recommendation"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_302",
+    "bucket": "Communication & Email",
+    "sub_category": "Comparison",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Zoom vs Teams",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "Which video app works best on Wayland? Zoom or Teams?",
+      "ai_response": "Currently, **Teams (via PWA/Chrome)** is more stable on Wayland than the Zoom desktop client.\n\n- **Teams PWA:** Uses Chrome's WebRTC engine, which handles PipeWire screen sharing perfectly out of the box.\n- **Zoom App:** Often requires config tweaks to enable Wayland screen sharing and lacks system audio sharing on Linux.\n\nWinner for stability: **Teams PWA**."
+    },
+    "technical_tags": ["comparison", "wayland", "zoom", "teams", "stability"],
+    "friction_type": "wayland_conflict"
+  },
+  {
+    "id": "COMM_EMAIL_303",
+    "bucket": "Communication & Email",
+    "sub_category": "Comparison",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Geary",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "I tried Geary and it's too simple. I tried Thunderbird and it's too complex. Is there a middle ground?",
+      "ai_response": "You might like **Mailspring**.\n\n- It has a modern, clean UI (nicer than Thunderbird).\n- It supports tracking (read receipts) and unified inboxes.\n- **Note:** It requires a 'Mailspring ID' even for the free version, which some privacy-focused users dislike. \n\nAlternatively, try **KMail** if you don't mind pulling in KDE dependencies, but Mailspring is likely the 'middle ground' aesthetic you want."
+    },
+    "technical_tags": [
+      "mailspring",
+      "geary",
+      "thunderbird",
+      "recommendation",
+      "ui_design"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_304",
+    "bucket": "Communication & Email",
+    "sub_category": "Comparison",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Mutt vs Alpine",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "I want to try a terminal email client. Should I use Mutt or Alpine?",
+      "ai_response": "- **Alpine:** Much easier for beginners. It has a menu-driven interface, so you don't need to memorize commands immediately. It feels like a text-based GUI.\n- **Mutt (or Neomutt):** Extremely powerful, highly configurable, 'Vim-like' navigation. Steeper learning curve but faster once mastered.\n\nRecommendation: Start with **Alpine** to get comfortable, then move to **Neomutt** if you want to script/automate your workflow."
+    },
+    "technical_tags": ["mutt", "alpine", "cli", "terminal", "comparison"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_401",
+    "bucket": "Communication & Email",
+    "sub_category": "Thunderbird",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Thunderbird 115",
+      "display_server": "X11"
+    },
+    "interaction": {
+      "user_query": "How can I make Thunderbird sort emails from my boss into a specific folder automatically?",
+      "ai_response": "You need a **Message Filter**:\n\n1. Go to **Tools** → **Message Filters**.\n2. Click **New**.\n3. Name it (e.g., \"Boss\").\n4. Under 'Match all of the following', set: **From** | **contains** | `boss@company.com`.\n5. Under 'Perform these actions', set: **Move Message to** | [Choose Folder].\n6. Click **OK**. You can also click **Run Now** to sort existing emails."
+    },
+    "technical_tags": [
+      "filters",
+      "automation",
+      "organization",
+      "thunderbird",
+      "productivity"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_402",
+    "bucket": "Communication & Email",
+    "sub_category": "Startup",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Discord",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "How do I make Discord start minimized to the tray when I turn on my computer?",
+      "ai_response": "1. **In Discord:** Go to User Settings → **Windows Settings**. Enable **Open Discord** and **Start Minimized**.\n2. **In GNOME (Debian Default):** You might need an extension like 'AppIndicator and KStatusNotifierItem Support' for the tray icon to actually appear.\n3. If it still pops up: Open **Tweaks** → **Startup Applications**, ensure Discord is listed."
+    },
+    "technical_tags": [
+      "discord",
+      "startup",
+      "system_tray",
+      "gnome_extension",
+      "automation"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_403",
+    "bucket": "Communication & Email",
+    "sub_category": "Thunderbird",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Thunderbird 115",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "I want to tag emails with 'ToDo' using just a keyboard shortcut.",
+      "ai_response": "Thunderbird has built-in tag shortcuts:\n\n1. By default, pressing `1` on your keyboard toggles the 'Important' (Red) tag.\n2. `2` toggles 'Work', `3` 'Personal', etc.\n3. Go to **Settings** → **General** → **Tags** to rename Tag 1 to 'ToDo' and change its color.\n4. Now, just select an email and press `1`."
+    },
+    "technical_tags": [
+      "shortcuts",
+      "tags",
+      "productivity",
+      "thunderbird",
+      "keyboard"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_404",
+    "bucket": "Communication & Email",
+    "sub_category": "Slack",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Slack",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "I want to silence Slack notifications automatically after 6 PM. Is there a schedule setting?",
+      "ai_response": "Yes, Slack has a built-in schedule:\n\n1. Click your profile picture in the top right.\n2. Hover over **Pause notifications**.\n3. Click **Set a notification schedule**.\n4. Choose 'Weekdays' and set the time to 'Every day' from **6:00 PM** to **9:00 AM**.\n\nThis is server-side, so it works on your Linux desktop and your phone simultaneously."
+    },
+    "technical_tags": [
+      "slack",
+      "dnd",
+      "schedule",
+      "automation",
+      "work_life_balance"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_405",
+    "bucket": "Communication & Email",
+    "sub_category": "Thunderbird",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Thunderbird 115",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "I have 5 different email accounts. It's annoying to check 5 different Inboxes. Can I merge them?",
+      "ai_response": "Yes, use the **Unified Folders** view.\n\n1. Go to **View** → **Folders**.\n2. Select **Unified**.\n3. Now you will see a top-level 'Inbox' that contains mail from all accounts.\n4. You can expand it to see individual accounts if needed, but clicking the top 'Inbox' shows everything mixed together by date."
+    },
+    "technical_tags": [
+      "unified_inbox",
+      "view_settings",
+      "thunderbird",
+      "efficiency",
+      "organization"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_406",
+    "bucket": "Communication & Email",
+    "sub_category": "Browser",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox",
+      "display_server": "X11"
+    },
+    "interaction": {
+      "user_query": "How do I make a shortcut on my desktop that opens Gmail directly in its own window?",
+      "ai_response": "Since you are on Ubuntu (GNOME), drag-and-drop support is limited, but here is the clean way:\n\n1. **Use Chrome/Chromium:** Open Gmail → Three dots menu → **More Tools** → **Create Shortcut** → Check **'Open as window'**.\n2. **Firefox:** It doesn't support 'SSB' (Site Specific Browser) natively anymore. You would need to launch it via command line: `firefox --new-window https://mail.google.com`, or install a web-app manager like **WebApp Manager** (from Mint repo) or **Tangram**."
+    },
+    "technical_tags": [
+      "web_apps",
+      "shortcuts",
+      "gmail",
+      "desktop",
+      "productivity"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_407",
+    "bucket": "Communication & Email",
+    "sub_category": "Zoom",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Zoom",
+      "display_server": "X11"
+    },
+    "interaction": {
+      "user_query": "Is there a global hotkey to mute my microphone in Zoom so I don't have to find the window?",
+      "ai_response": "Yes, Zoom has global shortcuts.\n\n1. Open Zoom **Settings** → **Keyboard Shortcuts**.\n2. Find **Mute/Unmute My Audio**.\n3. Check **Enable Global Shortcut**.\n4. The default is usually `Alt+A`. Now you can press `Alt+A` even if you are typing in another app/window."
+    },
+    "technical_tags": [
+      "shortcuts",
+      "mute",
+      "zoom",
+      "global_hotkey",
+      "accessibility"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_408",
+    "bucket": "Communication & Email",
+    "sub_category": "Thunderbird",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Thunderbird 115",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "How do I auto-archive emails older than 90 days?",
+      "ai_response": "Thunderbird's archiving is manual by default (pressing `A`), but you can auto-delete or move old mail via **Retention Policies**.\n\n1. Right-click a folder → **Properties** → **Retention Policy**.\n2. Uncheck 'Use my account settings'.\n3. Select **Delete messages more than 90 days old** (Be careful! This deletes them).\n\n*True Archiving:* For moving to an Archive folder automatically, you actually need a Filter (Age in Days > 90 -> Move to Archive) and run it manually or periodically."
+    },
+    "technical_tags": [
+      "archiving",
+      "retention_policy",
+      "cleanup",
+      "thunderbird",
+      "automation"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_409",
+    "bucket": "Communication & Email",
+    "sub_category": "Thunderbird",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Thunderbird 115",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "I want to delay sending emails by 60 seconds in case I made a mistake.",
+      "ai_response": "Thunderbird has a 'Send Later' feature but it queues them in the Outbox until you click send. For a true 'Undo Send' timer like Gmail:\n\n1. There is no native 'Undo Send' timer in Thunderbird yet.\n2. **Workaround:** Install the **'Send Later'** add-on (if compatible with your version).\n3. Or, simply use `File` → `Send Later` (`Ctrl+Shift+Enter`) which puts it in the Outbox. You can then review the Outbox before manually choosing `File` → `Send Unsent Messages`."
+    },
+    "technical_tags": [
+      "send_later",
+      "undo_send",
+      "thunderbird",
+      "plugins",
+      "safety"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_410",
+    "bucket": "Communication & Email",
+    "sub_category": "Telegram",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Telegram Desktop",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "Telegram saves every image I view to my download folder. How do I stop it?",
+      "ai_response": "1. Open Telegram Settings.\n2. Go to **Advanced**.\n3. Under **Automatic Media Download**, click on **'In private chats'**, **'In groups'**, etc.\n4. Turn off **'Save to Gallery'** or **'Download'**.\n5. Also check **Data and Storage** settings to limit the disk cache size."
+    },
+    "technical_tags": [
+      "telegram",
+      "storage",
+      "media_download",
+      "privacy",
+      "configuration"
+    ],
+    "friction_type": "config_issue"
+  }
+]

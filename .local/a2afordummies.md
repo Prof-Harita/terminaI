@@ -139,9 +139,9 @@ It used a simple bearer token model:
 
 - Client sends `Authorization: Bearer <token>`
 - Token is verified either via:
-  - an environment variable (`GEMINI_WEB_REMOTE_TOKEN`), or
+  - an environment variable (`TERMINAI_WEB_REMOTE_TOKEN`), or
   - a local file (`web-remote-auth.json`) stored under `~/.gemini/` (via
-    `GEMINI_DIR`)
+    `TERMINAI_DIR`)
 
 This is straightforward, but it’s not “pairing-friendly” (it’s basically: “know
 the secret, or you’re out”).
@@ -170,9 +170,9 @@ Gemini core in places (example):
 
 Example (current state):
 
-- `packages/a2a-server/src/http/auth.ts` looks for `GEMINI_WEB_REMOTE_TOKEN`
+- `packages/a2a-server/src/http/auth.ts` looks for `TERMINAI_WEB_REMOTE_TOKEN`
 - `packages/a2a-server/src/persistence/remoteAuthStore.ts` stores auth under
-  `GEMINI_DIR` (i.e., `~/.gemini/...`)
+  `TERMINAI_DIR` (i.e., `~/.gemini/...`)
 
 So: **we’ve rebranded the package/binary**, but **the auth + storage naming is
 still Gemini-flavored** (this is part of the broader rebrand/migration work).
