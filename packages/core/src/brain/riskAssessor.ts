@@ -10,7 +10,13 @@
  * This avoids importing GenerativeModel which doesn't exist in @google/genai v1.30+.
  */
 export interface GenerativeModelAdapter {
-  generateContent: (prompt: string) => Promise<{
+  generateContent: (
+    prompt: string,
+    options?: {
+      abortSignal?: AbortSignal;
+      tier?: 'flash' | 'pro';
+    },
+  ) => Promise<{
     response: { text: () => string };
   }>;
 }

@@ -43,6 +43,30 @@ vi.mock('../agents/codebase-investigator.js', () => ({
 vi.mock('../utils/gitUtils', () => ({
   isGitRepository: vi.fn(),
 }));
+vi.mock('../brain/systemSpec.js', () => ({
+  loadSystemSpec: vi.fn().mockReturnValue({
+    os: { name: 'Linux', version: '1.0', arch: 'x64' },
+    shell: { type: 'bash', version: '5.0' },
+    runtimes: {},
+    binaries: {},
+    packageManagers: [],
+    sudoAvailable: false,
+    network: { hasInternet: true },
+    timestamp: 0,
+  }),
+  scanSystemSync: vi.fn().mockReturnValue({
+    os: { name: 'Linux', version: '1.0', arch: 'x64' },
+    shell: { type: 'bash', version: '5.0' },
+    runtimes: {},
+    binaries: {},
+    packageManagers: [],
+    sudoAvailable: false,
+    network: { hasInternet: true },
+    timestamp: 0,
+  }),
+  saveSystemSpec: vi.fn(),
+  isSpecStale: vi.fn().mockReturnValue(false),
+}));
 vi.mock('node:fs');
 vi.mock('../config/models.js', async (importOriginal) => {
   const actual = await importOriginal();
@@ -54,7 +78,7 @@ vi.mock('../config/models.js', async (importOriginal) => {
 describe('Core System Prompt (prompts.ts)', () => {
   let mockConfig: Config;
   beforeEach(() => {
-    vi.resetAllMocks();
+    vi.clearAllMocks();
     vi.stubEnv('GEMINI_SYSTEM_MD', undefined);
     vi.stubEnv('GEMINI_WRITE_SYSTEM_MD', undefined);
     mockConfig = {

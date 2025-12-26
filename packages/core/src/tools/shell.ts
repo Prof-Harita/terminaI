@@ -501,8 +501,21 @@ export class ShellToolInvocation extends BaseToolInvocation<
                   shouldUpdate = true;
                 }
                 break;
+              case 'interactive:password':
+                // Password prompt detected - show indicator but don't blocking-prompt here.
+                // The underlying pty will handle the actual input if pipe/pty is setup correctly,
+                // or the user will see they need to provide input.
+                cumulativeOutput = `[Password prompt detected: ${event.prompt}]`;
+                shouldUpdate = true;
+                break;
+              case 'interactive:fullscreen':
+                // TUI/fullscreen mode change - no action needed for output display update
+                break;
               default: {
-                throw new Error('An unhandled ShellOutputEvent was found.');
+                const _exhaustiveCheck: never = event;
+                throw new Error(
+                  `An unhandled ShellOutputEvent was found: ${(_exhaustiveCheck as ShellOutputEvent).type}`,
+                );
               }
             }
 
