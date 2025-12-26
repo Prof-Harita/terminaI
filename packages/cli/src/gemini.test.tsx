@@ -219,6 +219,9 @@ describe('gemini.tsx main function', () => {
     [];
 
   beforeEach(() => {
+    // Prevent actual child process spawning which hangs in CI
+    process.env['GEMINI_CLI_NO_RELAUNCH'] = 'true';
+
     // Store and clear sandbox-related env variables to ensure a consistent test environment
     originalEnvGeminiSandbox = process.env['GEMINI_SANDBOX'];
     originalEnvSandbox = process.env['SANDBOX'];
