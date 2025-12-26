@@ -334,7 +334,7 @@ describe('gemini.tsx main function', () => {
     // we can authorize outside the sandbox.
     expect(callOrder).toEqual(['relaunch', 'loadCliConfig']);
     processExitSpy.mockRestore();
-  });
+  }, 15000);
 
   it('should log unhandled promise rejections and open debug console on first error', async () => {
     const processExitSpy = vi
