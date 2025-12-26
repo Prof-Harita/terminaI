@@ -144,3 +144,86 @@ export function getHistoricalContext(command: string): HistoricalContext {
     reasoning,
   };
 }
+
+/**
+ * Outcome of a cognitive architecture approach attempt.
+ */
+export interface ApproachOutcome {
+  timestamp: string;
+  task: string;
+  approachUsed: string;
+  frameworkId: string;
+  outcome: 'success' | 'failure';
+  durationMs?: number;
+}
+
+/**
+ * Logs an approach outcome for learning.
+ */
+export function logApproachOutcome(outcome: ApproachOutcome): void {
+  const historyFile = getHistoryFilePath().replace(
+    'history.jsonl',
+    'approaches.jsonl',
+  );
+  const dir = path.dirname(historyFile);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  fs.appendFileSync(historyFile, `${JSON.stringify(outcome)}\n`);
+}
+
+/**
+ * Gets historical context for a specific approach on similar tasks.
+ */
+export function getApproachContext(
+  task: string,
+  approach: string,
+): {
+  successRate: number;
+  sampleSize: number;
+  confidenceBoost: number;
+} {
+  const historyFile = getHistoryFilePath().replace(
+    'history.jsonl',
+    'approaches.jsonl',
+  );
+  if (!fs.existsSync(historyFile)) {
+    return { successRate: 0.5, sampleSize: 0, confidenceBoost: 0 };
+  }
+
+  try {
+    const lines = fs
+      .readFileSync(historyFile, 'utf-8')
+      .split('\n')
+      .filter(Boolean);
+    const outcomes: ApproachOutcome[] = lines.map((l) => JSON.parse(l));
+
+    // Find similar tasks (simple keyword matching)
+    const taskKeywords = task.toLowerCase().split(' ').slice(0, 3);
+    const similar = outcomes.filter((o) => {
+      const outcomeKeywords = o.task.toLowerCase().split(' ').slice(0, 3);
+      return (
+        taskKeywords.some((kw) => outcomeKeywords.includes(kw)) &&
+        o.approachUsed.toLowerCase() === approach.toLowerCase()
+      );
+    });
+
+    if (similar.length === 0) {
+      return { successRate: 0.5, sampleSize: 0, confidenceBoost: 0 };
+    }
+
+    const successes = similar.filter((o) => o.outcome === 'success').length;
+    const successRate = successes / similar.length;
+
+    // Boost confidence if approach has good track record
+    let confidenceBoost = 0;
+    if (similar.length >= 3) {
+      if (successRate > 0.8) confidenceBoost = 15;
+      else if (successRate < 0.3) confidenceBoost = -20;
+    }
+
+    return { successRate, sampleSize: similar.length, confidenceBoost };
+  } catch {
+    return { successRate: 0.5, sampleSize: 0, confidenceBoost: 0 };
+  }
+}

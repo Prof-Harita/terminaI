@@ -989,7 +989,10 @@ export class CoreToolScheduler {
 
   async handleConfirmationResponse(
     callId: string,
-    originalOnConfirm: (outcome: ToolConfirmationOutcome) => Promise<void>,
+    originalOnConfirm: (
+      outcome: ToolConfirmationOutcome,
+      payload?: ToolConfirmationPayload,
+    ) => Promise<void>,
     outcome: ToolConfirmationOutcome,
     signal: AbortSignal,
     payload?: ToolConfirmationPayload,
@@ -999,7 +1002,25 @@ export class CoreToolScheduler {
     );
 
     if (toolCall && toolCall.status === 'awaiting_approval') {
-      await originalOnConfirm(outcome);
+      try {
+        await originalOnConfirm(outcome, payload);
+      } catch (error) {
+        // Handle errors from onConfirm (e.g., PIN validation failures)
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        this.setStatusInternal(
+          callId,
+          'error',
+          signal,
+          createErrorResponse(
+            toolCall.request,
+            error instanceof Error ? error : new Error(errorMessage),
+            ToolErrorType.UNHANDLED_EXCEPTION,
+          ),
+        );
+        await this.checkAndNotifyCompletion(signal);
+        return;
+      }
     }
 
     this.setToolCallOutcome(callId, outcome);

@@ -14,6 +14,10 @@ import {
   StartSessionEvent,
   logCliConfiguration,
   startupProfiler,
+  loadSystemSpec,
+  scanSystemSync,
+  saveSystemSpec,
+  isSpecStale,
 } from '@terminai/core';
 import { type LoadedSettings } from '../config/settings.js';
 import { performInitialAuth } from './auth.js';
@@ -58,6 +62,15 @@ export async function initializeApp(
     await ideClient.connect();
     logIdeConnection(config, new IdeConnectionEvent(IdeConnectionType.START));
   }
+
+  // Task 2.2: Hook System Spec into Session Init
+  const specHandle = startupProfiler.start('system-spec');
+  let spec = loadSystemSpec();
+  if (!spec || isSpecStale(spec)) {
+    spec = scanSystemSync();
+    saveSystemSpec(spec);
+  }
+  specHandle?.end();
 
   return {
     authError,

@@ -22,6 +22,13 @@ import { GEMINI_DIR } from '../utils/paths.js';
 import { debugLogger } from '../utils/debugLogger.js';
 import { WriteTodosTool } from '../tools/write-todos.js';
 import { resolveModel, isPreviewModel } from '../config/models.js';
+import {
+  loadSystemSpec,
+  scanSystemSync,
+  saveSystemSpec,
+  isSpecStale,
+} from '../brain/systemSpec.js';
+import { formatSystemSpecForPrompt } from '../brain/systemSpecPrompt.js';
 
 export function resolvePathFromEnv(envVar?: string): {
   isSwitch: boolean;
@@ -131,6 +138,14 @@ export function getCoreSystemPrompt(
 
   const interactiveMode = config.isInteractiveShellEnabled();
 
+  // Load or scan system spec
+  let systemSpec = loadSystemSpec();
+  if (!systemSpec || isSpecStale(systemSpec)) {
+    systemSpec = scanSystemSync();
+    saveSystemSpec(systemSpec);
+  }
+  const systemSpecStr = formatSystemSpecForPrompt(systemSpec);
+
   let basePrompt: string;
   if (systemMdEnabled) {
     basePrompt = fs.readFileSync(systemMdPath, 'utf8');
@@ -177,6 +192,8 @@ When requested to perform any terminal task, follow this sequence:
 - **Web Access:** Use web tools for real-time information (weather, news, docs) when relevant.
 - **Not Just Coding:** You are a general terminal agent (operations, automation, research, scripting), not limited to software engineering tasks.
 - **Proactiveness:** Fulfill the user's request thoroughly. When adding features or fixing bugs, this includes adding tests to ensure quality. Consider all created files, especially tests, to be permanent artifacts unless the user says otherwise.
+
+${systemSpecStr}
 - ${interactiveMode ? `**Confirm Ambiguity/Expansion:** Do not take significant actions beyond the clear scope of the request without confirming with the user. If asked *how* to do something, explain first, don't just do it.` : `**Handle Ambiguity/Expansion:** Do not take significant actions beyond the clear scope of the request.`}
 - **Explaining Changes:** After completing a code modification or file operation *do not* provide summaries unless asked.
 - **Do Not revert changes:** Do not revert changes to the codebase unless asked to do so by the user. Only revert changes made by you if they have resulted in an error or if the user has explicitly asked you to revert the changes.${mandatesVariant}${

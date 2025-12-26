@@ -5,16 +5,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {
-  Config,
-  ToolCallRequestInfo,
-  ResumedSessionData,
-  CompletedToolCall,
-  UserFeedbackPayload,
-} from '@terminai/core';
-import { isSlashCommand } from './ui/utils/commandUtils.js';
-import type { LoadedSettings } from './config/settings.js';
 import {
+  type Config,
+  type ToolCallRequestInfo,
+  type ResumedSessionData,
+  type CompletedToolCall,
+  type UserFeedbackPayload,
   executeToolCall,
   GeminiEventType,
   FatalInputError,
@@ -29,7 +25,11 @@ import {
   CoreEvent,
   createWorkingStdio,
   recordToolCallInteractions,
+  ThinkingOrchestrator,
+  BrainModelAdapter,
 } from '@terminai/core';
+import { isSlashCommand } from './ui/utils/commandUtils.js';
+import type { LoadedSettings } from './config/settings.js';
 
 import type { Content, Part } from '@google/genai';
 import readline from 'node:readline';
@@ -249,6 +249,45 @@ export async function runNonInteractive({
           );
         }
         query = processedQuery as Part[];
+      }
+
+      // Task 2.1: Hook Framework Selector / Thinking Orchestrator
+      const orchestrator = new ThinkingOrchestrator(
+        config,
+        new BrainModelAdapter(geminiClient, config),
+      );
+      const brainResult = await orchestrator.executeTask(
+        input,
+        abortController.signal,
+      );
+
+      if (brainResult.suggestedAction !== 'fallback_to_direct') {
+        if (!streamFormatter && config.getDebugMode()) {
+          textOutput.write('\n[Cognitive Architecture Active]\n');
+          textOutput.write(`Framework: ${brainResult.frameworkId}\n`);
+          textOutput.write(`Strategy: ${brainResult.reasoning}\n\n`);
+        }
+
+        if (brainResult.suggestedAction === 'done') {
+          if (!streamFormatter) {
+            textOutput.write(`Result: ${brainResult.explanation}\n`);
+          }
+          return;
+        }
+
+        if (brainResult.suggestedAction === 'inject_prompt') {
+          // Inject the strategy into the chat to guide the main model
+          query = [
+            ...query,
+            {
+              text: `[Cognitive Strategy] Based on analysis, we will use this approach: ${brainResult.approach}. Reasoning: ${brainResult.reasoning}. Please proceed with this plan.`,
+            },
+          ];
+        }
+
+        // If action is 'execute_tool' and it's sequential,
+        // we might want to override the first tool call, but for now
+        // 'inject_prompt' is the safest way to guide Gemini.
       }
 
       // Emit user message event for streaming JSON

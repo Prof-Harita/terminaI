@@ -70,6 +70,14 @@ vi.mock('@terminai/core', async (importOriginal) => {
       stdout: process.stdout,
       stderr: process.stderr,
     })),
+    ThinkingOrchestrator: class {
+      executeTask = vi.fn().mockResolvedValue({
+        suggestedAction: 'fallback_to_direct',
+        frameworkId: 'FW_DIRECT',
+        reasoning: 'Direct execution',
+        explanation: 'Direct execution',
+      });
+    },
   };
 });
 
@@ -94,6 +102,7 @@ describe('runNonInteractive', () => {
   let processStderrSpy: MockInstance;
   let mockGeminiClient: {
     sendMessageStream: Mock;
+    generateContent: Mock;
     resumeChat: Mock;
     getChatRecordingService: Mock;
   };
@@ -126,6 +135,7 @@ describe('runNonInteractive', () => {
     });
 
     consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'log').mockImplementation(() => {});
     processStdoutSpy = vi
       .spyOn(process.stdout, 'write')
       .mockImplementation(() => true);
@@ -144,6 +154,11 @@ describe('runNonInteractive', () => {
 
     mockGeminiClient = {
       sendMessageStream: vi.fn(),
+      generateContent: vi.fn().mockResolvedValue({
+        response: {
+          candidates: [{ content: { parts: [{ text: 'mock response' }] } }],
+        },
+      }),
       resumeChat: vi.fn().mockResolvedValue(undefined),
       getChatRecordingService: vi.fn(() => ({
         initialize: vi.fn(),
@@ -170,6 +185,7 @@ describe('runNonInteractive', () => {
       getOutputFormat: vi.fn().mockReturnValue('text'),
       getModel: vi.fn().mockReturnValue('test-model'),
       getFolderTrust: vi.fn().mockReturnValue(false),
+      getPreviewFeatures: vi.fn().mockReturnValue(false),
       isTrustedFolder: vi.fn().mockReturnValue(false),
     } as unknown as Config;
 
