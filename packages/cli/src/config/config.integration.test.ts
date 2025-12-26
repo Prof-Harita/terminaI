@@ -55,6 +55,20 @@ vi.mock('@terminai/core', async () => {
   };
 });
 
+// Mock command modules to avoid loading Ink/Yoga (WASM) during config tests
+const mockCommand = {
+  command: 'mock',
+  describe: 'mock command',
+  handler: () => {},
+};
+
+vi.mock('../commands/mcp.js', () => ({ mcpCommand: mockCommand }));
+vi.mock('../commands/extensions.js', () => ({
+  extensionsCommand: mockCommand,
+}));
+vi.mock('../commands/hooks.js', () => ({ hooksCommand: mockCommand }));
+vi.mock('../commands/voice.js', () => ({ voiceCommand: mockCommand }));
+
 describe('Configuration Integration Tests', () => {
   let tempDir: string;
 
