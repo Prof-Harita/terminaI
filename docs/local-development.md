@@ -103,7 +103,7 @@ await runInDevTraceSpan({ name: 'my-custom-span' }, async ({ metadata }) => {
   // operation as well as other attributes.
   metadata.input = { key: 'value' };
   // Set custom attributes.
-  metadata.attributes['gen_ai.request.model'] = 'gemini-4.0-mega';
+  metadata.attributes['gen_ai.request.model'] = 'gemini-2.5-flash-mega';
 
   // Your code to be traced goes here
   try {
