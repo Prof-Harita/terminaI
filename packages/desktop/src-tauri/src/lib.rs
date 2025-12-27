@@ -82,6 +82,29 @@ fn stop_pty_session(state: State<AppState>, session_id: String) -> Result<(), St
     Ok(())
 }
 
+#[tauri::command]
+fn kill_pty_session(state: State<AppState>, session_id: String) -> Result<(), String> {
+    let mut guard = state.pty_sessions.lock().unwrap();
+    if let Some(session) = guard.remove(&session_id) {
+        session.kill_now();
+    }
+    Ok(())
+}
+
+#[tauri::command]
+fn resize_pty_session(
+    state: State<AppState>,
+    session_id: String,
+    rows: u16,
+    cols: u16,
+) -> Result<(), String> {
+    let guard = state.pty_sessions.lock().unwrap();
+    guard
+        .get(&session_id)
+        .ok_or("Session not found")?
+        .resize(rows, cols)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -98,6 +121,8 @@ pub fn run() {
             start_pty_session,
             send_terminal_input,
             stop_pty_session,
+            kill_pty_session,
+            resize_pty_session,
             voice::stt_transcribe,
             voice::tts_synthesize,
             // oauth::start_oauth
