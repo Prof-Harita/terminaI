@@ -125,6 +125,14 @@ export const VisualDOMSnapshotSchema = z.object({
       encoding: z.enum(['png', 'jpeg']),
     })
     .optional(),
+  limits: z
+    .object({
+      maxDepth: z.number().int().optional(),
+      maxNodes: z.number().int().optional(),
+      nodeCount: z.number().int().optional(),
+      truncated: z.boolean().optional(),
+    })
+    .optional(),
   driver: DriverDescriptorSchema,
 });
 
@@ -135,7 +143,8 @@ export const UiSnapshotSchema = z.object({
   includeTree: z.boolean().optional().default(true),
   includeScreenshot: z.boolean().optional().default(false),
   includeTextIndex: z.boolean().optional().default(false),
-  maxDepth: z.number().int().min(1).optional(),
+  maxDepth: z.number().int().min(1).optional().default(10),
+  maxNodes: z.number().int().min(1).optional().default(100),
 });
 
 export const UiQuerySchema = z.object({

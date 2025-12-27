@@ -94,6 +94,11 @@ import type { ModelConfigServiceConfig } from '../services/modelConfigService.js
 import { ModelConfigService } from '../services/modelConfigService.js';
 import { DEFAULT_MODEL_CONFIGS } from './defaultModelConfigs.js';
 import { ContextManager } from '../services/contextManager.js';
+import {
+  configureGuiAutomation,
+  getGuiAutomationConfig,
+  type GuiAutomationConfig,
+} from '../gui/config.js';
 
 // Re-export OAuth config type
 export type { MCPOAuthConfig, AnyToolInvocation };
@@ -409,6 +414,7 @@ export interface ConfigParameters {
   webRemoteStatus?: WebRemoteStatus | null;
   audit?: AuditSettings;
   recipes?: RecipesSettings;
+  guiAutomation?: Partial<GuiAutomationConfig>;
 }
 
 export interface AuditSettings {
@@ -553,6 +559,7 @@ export class Config {
   private readonly experimentalJitContext: boolean;
   private readonly auditSettings: AuditSettings;
   private readonly recipeSettings: RecipesSettings;
+  private readonly guiAutomationSettings: GuiAutomationConfig;
   private readonly auditLedger: AuditLedger;
   private contextManager?: ContextManager;
   private terminalBackground: string | undefined = undefined;
@@ -730,8 +737,13 @@ export class Config {
       params.brain?.authority ?? DEFAULT_BRAIN_AUTHORITY,
       policyBrainAuthority,
     );
+    configureGuiAutomation(params.guiAutomation);
+    this.guiAutomationSettings = getGuiAutomationConfig();
     this.auditSettings = {
-      redactUiTypedText: params.audit?.redactUiTypedText ?? true,
+      redactUiTypedText:
+        params.audit?.redactUiTypedText ??
+        this.guiAutomationSettings.redactTypedTextByDefault ??
+        true,
       retentionDays: params.audit?.retentionDays ?? 30,
       exportFormat: params.audit?.exportFormat ?? 'jsonl',
       exportRedaction: params.audit?.exportRedaction ?? 'enterprise',
@@ -1334,6 +1346,10 @@ export class Config {
 
   getRecipeSettings(): RecipesSettings {
     return this.recipeSettings;
+  }
+
+  getGuiAutomationSettings(): GuiAutomationConfig {
+    return this.guiAutomationSettings;
   }
 
   setApprovalMode(mode: ApprovalMode): void {

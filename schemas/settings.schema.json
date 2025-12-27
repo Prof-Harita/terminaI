@@ -1453,6 +1453,61 @@
               "markdownDescription": "Enable desktop GUI automation tools (ui.click, ui.type, etc.). Requires AT-SPI on Linux.\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `false`",
               "default": false,
               "type": "boolean"
+            },
+            "minReviewLevel": {
+              "title": "Minimum Review Level",
+              "description": "Default minimum review level for GUI automation tools.",
+              "markdownDescription": "Default minimum review level for GUI automation tools.\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `B`",
+              "default": "B",
+              "type": "string",
+              "enum": ["A", "B", "C"]
+            },
+            "clickMinReviewLevel": {
+              "title": "Click Minimum Review Level",
+              "description": "Minimum review level enforced for ui.click.",
+              "markdownDescription": "Minimum review level enforced for ui.click.\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `B`",
+              "default": "B",
+              "type": "string",
+              "enum": ["A", "B", "C"]
+            },
+            "typeMinReviewLevel": {
+              "title": "Type Minimum Review Level",
+              "description": "Minimum review level enforced for ui.type.",
+              "markdownDescription": "Minimum review level enforced for ui.type.\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `B`",
+              "default": "B",
+              "type": "string",
+              "enum": ["A", "B", "C"]
+            },
+            "redactTypedTextByDefault": {
+              "title": "Redact Typed Text by Default",
+              "description": "Redact ui.type text in audit logs by default.",
+              "markdownDescription": "Redact ui.type text in audit logs by default.\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `true`",
+              "default": true,
+              "type": "boolean"
+            },
+            "snapshotMaxDepth": {
+              "title": "Snapshot Max Depth",
+              "description": "Maximum depth for captured UI trees.",
+              "markdownDescription": "Maximum depth for captured UI trees.\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `10`",
+              "default": 10,
+              "type": "number",
+              "minimum": 1
+            },
+            "snapshotMaxNodes": {
+              "title": "Snapshot Max Nodes",
+              "description": "Maximum number of nodes included in UI snapshots.",
+              "markdownDescription": "Maximum number of nodes included in UI snapshots.\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `100`",
+              "default": 100,
+              "type": "number",
+              "minimum": 1
+            },
+            "maxActionsPerMinute": {
+              "title": "Max Actions Per Minute",
+              "description": "Rate limit for GUI automation actions per minute.",
+              "markdownDescription": "Rate limit for GUI automation actions per minute.\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `60`",
+              "default": 60,
+              "type": "number",
+              "minimum": 1
             }
           },
           "additionalProperties": false

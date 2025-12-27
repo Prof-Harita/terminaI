@@ -916,6 +916,28 @@ export async function loadCliConfig(
       timeoutSeconds: settings.tools?.repl?.timeoutSeconds,
       dockerImage: replDockerImage,
     },
+    guiAutomation: {
+      minReviewLevel: settings.tools?.guiAutomation?.minReviewLevel as
+        | 'A'
+        | 'B'
+        | 'C'
+        | undefined,
+      clickMinReviewLevel: settings.tools?.guiAutomation?.clickMinReviewLevel as
+        | 'A'
+        | 'B'
+        | 'C'
+        | undefined,
+      typeMinReviewLevel: settings.tools?.guiAutomation?.typeMinReviewLevel as
+        | 'A'
+        | 'B'
+        | 'C'
+        | undefined,
+      redactTypedTextByDefault:
+        settings.tools?.guiAutomation?.redactTypedTextByDefault,
+      snapshotMaxDepth: settings.tools?.guiAutomation?.snapshotMaxDepth,
+      snapshotMaxNodes: settings.tools?.guiAutomation?.snapshotMaxNodes,
+      maxActionsPerMinute: settings.tools?.guiAutomation?.maxActionsPerMinute,
+    },
     eventEmitter: appEvents,
     useSmartEdit: argv.useSmartEdit ?? settings.useSmartEdit,
     useWriteTodos: argv.useWriteTodos ?? settings.useWriteTodos,

@@ -65,6 +65,8 @@ describe('DAP Schemas', () => {
       if (parsed.success) {
         expect(parsed.data.includeTree).toBe(true);
         expect(parsed.data.includeScreenshot).toBe(false);
+        expect(parsed.data.maxDepth).toBe(10);
+        expect(parsed.data.maxNodes).toBe(100);
       }
     });
   });
