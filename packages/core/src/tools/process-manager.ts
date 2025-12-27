@@ -706,7 +706,7 @@ class ProcessManagerToolInvocation extends BaseToolInvocation<
   ): Promise<ToolCallConfirmationDetails | false> {
     const actionProfile = buildToolActionProfile({
       toolName: PROCESS_MANAGER_TOOL_NAME,
-      args: this.params as Record<string, unknown>,
+      args: this.params as unknown as Record<string, unknown>,
       config: this.config,
       provenance: this.getProvenance(),
     });

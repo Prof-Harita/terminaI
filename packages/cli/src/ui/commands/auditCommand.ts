@@ -81,7 +81,7 @@ export const auditCommand: SlashCommand = {
         const result = await ledger.verifyHashChain();
         context.ui.addItem(
           {
-            type: result.ok ? MessageType.SUCCESS : MessageType.ERROR,
+            type: result.ok ? MessageType.INFO : MessageType.ERROR,
             text: result.ok
               ? 'Audit hash chain verified (OK).'
               : `Audit verification failed: ${result.error ?? 'unknown error'}`,

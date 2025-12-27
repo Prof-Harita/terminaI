@@ -36,6 +36,7 @@ import { getCitations } from '../utils/generateContentResponseUtilities.js';
 import type { Provenance } from '../safety/approval-ladder/types.js';
 import { isFunctionResponse } from '../utils/messageInspectors.js';
 import { WEB_FETCH_TOOL_NAME } from '../tools/tool-names.js';
+import type { AuditReviewLevel } from '../audit/schema.js';
 
 // Define a structure for tools passed to the server
 export interface ServerTool {
@@ -115,6 +116,12 @@ export interface ToolCallRequestInfo {
   checkpoint?: string;
   traceId?: string;
   provenance?: Provenance[];
+  requestedReviewLevel?: AuditReviewLevel;
+  recipe?: {
+    id: string;
+    version?: string;
+    stepId?: string;
+  };
 }
 
 export interface ToolCallResponseInfo {

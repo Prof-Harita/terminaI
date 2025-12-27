@@ -27,6 +27,7 @@ import {
   SHELL_TOOL_NAMES,
   SHELL_TOOL_NAME,
   REPL_TOOL_NAME,
+  type ReplSandboxTier,
   resolveTelemetrySettings,
   FatalConfigError,
   getPty,
@@ -858,6 +859,13 @@ export async function loadCliConfig(
         | 'debug'
         | undefined,
     },
+    recipes: {
+      paths: settings.recipes?.paths,
+      communityPaths: settings.recipes?.communityPaths,
+      allowCommunity: settings.recipes?.allowCommunity,
+      confirmCommunityOnFirstLoad: settings.recipes?.confirmCommunityOnFirstLoad,
+      trustedCommunityRecipes: settings.recipes?.trustedCommunityRecipes,
+    },
     showMemoryUsage: settings.ui?.showMemoryUsage || false,
     accessibility: {
       ...settings.ui?.accessibility,
@@ -903,7 +911,8 @@ export async function loadCliConfig(
     truncateToolOutputLines: settings.tools?.truncateToolOutputLines,
     enableToolOutputTruncation: settings.tools?.enableToolOutputTruncation,
     repl: {
-      sandboxTier: settings.tools?.repl?.sandboxTier,
+      sandboxTier: settings.tools?.repl
+        ?.sandboxTier as ReplSandboxTier | undefined,
       timeoutSeconds: settings.tools?.repl?.timeoutSeconds,
       dockerImage: replDockerImage,
     },

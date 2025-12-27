@@ -20,6 +20,8 @@ export * from './policy/config.js';
 export * from './confirmation-bus/types.js';
 export * from './confirmation-bus/message-bus.js';
 export * from './audit/index.js';
+export * from './recipes/index.js';
+export * from './safety/approval-ladder/types.js';
 
 // Export Commands logic
 export * from './commands/extensions.js';

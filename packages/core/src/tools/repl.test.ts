@@ -140,7 +140,7 @@ describe('ReplTool', () => {
       expect(sessionName).toBe('my-session');
       expect(sessionLanguage).toBe('python');
       expect(cwd).toContain(expectedPrefix);
-      expect(env?.HOME).toBe(cwd);
+      expect(env?.['HOME']).toBe(cwd);
       expect(cleanupPaths).toEqual([cwd]);
     });
 

@@ -64,10 +64,11 @@ export class FileAuditLedger implements AuditLedger {
 
   async append(event: AuditEvent): Promise<void> {
     await this.ensureInitialized();
+    const redacted = redactEvent(event, this.redactionOptions);
     const finalized: AuditEvent = {
+      ...redacted,
       version: 1,
       timestamp: new Date().toISOString(),
-      ...redactEvent(event, this.redactionOptions),
     };
     const { hash, prevHash } = computeHash(finalized, this.lastHash);
     const toWrite: AuditEvent = { ...finalized, hash, prevHash };

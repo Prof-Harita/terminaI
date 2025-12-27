@@ -67,6 +67,7 @@ import {
   getVersion,
   ApprovalMode,
   DesktopAutomationService,
+  type Provenance,
 } from '@terminai/core';
 import {
   initializeApp,
@@ -588,7 +589,7 @@ export async function main() {
             });
           }),
       );
-      const sessionProvenance = new Set([
+      const sessionProvenance = new Set<Provenance>([
         ...config.getSessionProvenance(),
         'web_remote_user',
       ]);

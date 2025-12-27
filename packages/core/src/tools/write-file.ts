@@ -197,7 +197,7 @@ class WriteFileToolInvocation extends BaseToolInvocation<
 
     const actionProfile = buildToolActionProfile({
       toolName: WRITE_FILE_TOOL_NAME,
-      args: this.params as Record<string, unknown>,
+      args: this.params as unknown as Record<string, unknown>,
       config: this.config,
       provenance: this.getProvenance(),
     });

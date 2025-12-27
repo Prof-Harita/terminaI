@@ -56,6 +56,11 @@ export interface AuditToolContext {
   callId: string;
   toolName: string;
   toolKind?: string;
+  recipe?: {
+    id: string;
+    version?: string;
+    stepId?: string;
+  };
   args?: Record<string, unknown>;
   result?: {
     success: boolean;

@@ -57,6 +57,7 @@ import type {
   AuditEvent,
   AuditEventType,
   AuditReviewLevel,
+  AuditToolContext,
 } from '../audit/schema.js';
 
 export type ValidatingToolCall = {
@@ -157,6 +158,10 @@ export type AllToolCallsCompleteHandler = (
 ) => Promise<void>;
 
 export type ToolCallsUpdateHandler = (toolCalls: ToolCall[]) => void;
+
+type AuditEventExtras = Omit<Partial<AuditEvent>, 'tool'> & {
+  tool?: Partial<AuditToolContext>;
+};
 
 /**
  * Formats tool output for a Gemini FunctionResponse.
@@ -438,9 +443,9 @@ export class CoreToolScheduler {
   private buildAuditEvent(
     toolCall: ToolCall,
     eventType: AuditEventType,
-    extra?: Partial<AuditEvent>,
+    extra?: AuditEventExtras,
   ): AuditEvent {
-    const invocation = toolCall.invocation;
+    const invocation = 'invocation' in toolCall ? toolCall.invocation : undefined;
     const provenance =
       invocation && typeof invocation.getProvenance === 'function'
         ? invocation.getProvenance()
@@ -452,6 +457,19 @@ export class CoreToolScheduler {
         ? toolCall.confirmationDetails.reviewLevel
         : undefined);
 
+    const extraTool = extra?.tool;
+    const { tool: _ignoredTool, ...restExtra } = extra ?? {};
+    const extrasWithoutTool: Omit<AuditEventExtras, 'tool'> =
+      restExtra as Omit<AuditEventExtras, 'tool'>;
+    const toolContext: AuditToolContext = {
+      callId: toolCall.request.callId,
+      toolName: toolCall.request.name,
+      toolKind: extraTool?.toolKind ?? toolCall.tool?.kind,
+      recipe: extraTool?.recipe ?? toolCall.request.recipe,
+      args: extraTool?.args ?? toolCall.request.args,
+      result: extraTool?.result,
+    };
+
     return {
       version: 1,
       eventType,
@@ -459,21 +477,15 @@ export class CoreToolScheduler {
       sessionId: this.config.getSessionId(),
       provenance: normalizedProv,
       reviewLevel: reviewLevel as AuditReviewLevel | undefined,
-      tool: {
-        callId: toolCall.request.callId,
-        toolName: toolCall.request.name,
-        toolKind: toolCall.tool.kind,
-        args: toolCall.request.args,
-        result: extra?.tool?.result,
-      },
-      ...extra,
+      tool: toolContext,
+      ...extrasWithoutTool,
     };
   }
 
   private async recordAuditEvent(
     toolCall: ToolCall | undefined,
     eventType: AuditEventType,
-    extra?: Partial<AuditEvent>,
+    extra?: AuditEventExtras,
   ): Promise<void> {
     if (!toolCall) return;
     const ledger = this.config.getAuditLedger?.();
@@ -760,6 +772,43 @@ export class CoreToolScheduler {
     }
   }
 
+  private reviewLevelRank(level?: AuditReviewLevel): number {
+    if (level === 'C') return 2;
+    if (level === 'B') return 1;
+    return 0;
+  }
+
+  private applyRequestedReviewFloor(
+    details: ToolCallConfirmationDetails | false,
+    requestedLevel?: AuditReviewLevel,
+  ): ToolCallConfirmationDetails | false {
+    if (!requestedLevel || requestedLevel === 'A') {
+      return details;
+    }
+
+    if (!details) {
+      return {
+        type: 'info',
+        title: 'Recipe step approval required',
+        prompt: `This recipe step requires at least Level ${requestedLevel} approval.`,
+        reviewLevel: requestedLevel,
+        requiresPin: requestedLevel === 'C',
+        onConfirm: async () => {},
+      };
+    }
+
+    const requestedRank = this.reviewLevelRank(requestedLevel);
+    const existingRank = this.reviewLevelRank(details.reviewLevel);
+    const nextLevel =
+      requestedRank > existingRank ? requestedLevel : details.reviewLevel;
+
+    return {
+      ...details,
+      reviewLevel: nextLevel,
+      requiresPin: details.requiresPin || requestedLevel === 'C',
+    };
+  }
+
   /**
    * Generates a suggestion string for a tool name that was not found in the registry.
    * It finds the closest matches based on Levenshtein distance.
@@ -985,8 +1034,10 @@ export class CoreToolScheduler {
           return;
         }
 
-        const confirmationDetails =
-          await invocation.shouldConfirmExecute(signal);
+        const confirmationDetails = this.applyRequestedReviewFloor(
+          await invocation.shouldConfirmExecute(signal),
+          toolCall.request.requestedReviewLevel,
+        );
 
         if (!confirmationDetails) {
           this.setToolCallOutcome(

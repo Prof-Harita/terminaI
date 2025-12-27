@@ -34,6 +34,7 @@ import { privacyCommand } from '../ui/commands/privacyCommand.js';
 import { policiesCommand } from '../ui/commands/policiesCommand.js';
 import { profileCommand } from '../ui/commands/profileCommand.js';
 import { auditCommand } from '../ui/commands/auditCommand.js';
+import { recipesCommand } from '../ui/commands/recipesCommand.js';
 import { quitCommand } from '../ui/commands/quitCommand.js';
 import { restoreCommand } from '../ui/commands/restoreCommand.js';
 import { resumeCommand } from '../ui/commands/resumeCommand.js';
@@ -91,6 +92,7 @@ export class BuiltinCommandLoader implements ICommandLoader {
         : []),
       ...(isDevelopment ? [profileCommand] : []),
       auditCommand,
+      recipesCommand(),
       quitCommand,
       restoreCommand(this.config),
       resumeCommand,

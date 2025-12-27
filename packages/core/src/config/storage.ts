@@ -63,6 +63,10 @@ export class Storage {
     return path.join(Storage.getGlobalGeminiDir(), 'agents');
   }
 
+  static getCommunityRecipesTrustStorePath(): string {
+    return path.join(Storage.getGlobalGeminiDir(), 'recipes', 'community-trust.json');
+  }
+
   static getSystemSettingsPath(): string {
     if (process.env['GEMINI_CLI_SYSTEM_SETTINGS_PATH']) {
       return process.env['GEMINI_CLI_SYSTEM_SETTINGS_PATH'];
@@ -138,6 +142,14 @@ export class Storage {
 
   getProjectAgentsDir(): string {
     return path.join(this.getGeminiDir(), 'agents');
+  }
+
+  getCommunityRecipesTrustStorePath(): string {
+    return Storage.getCommunityRecipesTrustStorePath();
+  }
+
+  getProjectRecipesDir(): string {
+    return path.join(this.getGeminiDir(), 'recipes');
   }
 
   getProjectTempCheckpointsDir(): string {

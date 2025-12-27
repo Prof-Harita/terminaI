@@ -661,7 +661,7 @@ class EditToolInvocation
 
     const actionProfile = buildToolActionProfile({
       toolName: EDIT_TOOL_NAME,
-      args: this.params as Record<string, unknown>,
+      args: this.params as unknown as Record<string, unknown>,
       config: this.config,
       provenance: this.getProvenance(),
     });

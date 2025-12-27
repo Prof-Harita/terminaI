@@ -669,6 +669,54 @@
       },
       "additionalProperties": false
     },
+    "recipes": {
+      "title": "Recipes",
+      "description": "Governed recipes configuration. Built-ins are always enabled; community recipes require confirmation.",
+      "markdownDescription": "Governed recipes configuration. Built-ins are always enabled; community recipes require confirmation.\n\n- Category: `Automation`\n- Requires restart: `yes`\n- Default: `{}`",
+      "default": {},
+      "type": "object",
+      "properties": {
+        "paths": {
+          "title": "Recipe directories",
+          "description": "Additional directories to load user-authored recipes from.",
+          "markdownDescription": "Additional directories to load user-authored recipes from.\n\n- Category: `Automation`\n- Requires restart: `yes`\n- Default: `[]`",
+          "default": [],
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "communityPaths": {
+          "title": "Community recipe directories",
+          "description": "Directories containing community recipes. These require confirmation before first use.",
+          "markdownDescription": "Directories containing community recipes. These require confirmation before first use.\n\n- Category: `Automation`\n- Requires restart: `yes`\n- Default: `[]`",
+          "default": [],
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "allowCommunity": {
+          "title": "Allow community recipes",
+          "description": "Enable loading community recipes. Community recipes still require first-load confirmation.",
+          "markdownDescription": "Enable loading community recipes. Community recipes still require first-load confirmation.\n\n- Category: `Automation`\n- Requires restart: `yes`\n- Default: `false`",
+          "default": false,
+          "type": "boolean"
+        },
+        "confirmCommunityOnFirstLoad": {
+          "title": "Confirm community recipes on first load",
+          "description": "When enabled, the CLI will ask for confirmation the first time a community recipe is encountered.",
+          "markdownDescription": "When enabled, the CLI will ask for confirmation the first time a community recipe is encountered.\n\n- Category: `Automation`\n- Requires restart: `yes`\n- Default: `true`",
+          "default": true,
+          "type": "boolean"
+        },
+        "trustedCommunityRecipes": {
+          "title": "Trusted community recipes",
+          "description": "Recipe IDs that have already been confirmed. These will not prompt again.",
+          "markdownDescription": "Recipe IDs that have already been confirmed. These will not prompt again.\n\n- Category: `Automation`\n- Requires restart: `yes`\n- Default: `[]`",
+          "default": [],
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
     "modelConfigs": {
       "title": "Model Configs",
       "description": "Model configurations.",

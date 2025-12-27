@@ -115,7 +115,7 @@ class FileOpsToolInvocation extends BaseToolInvocation<
     const { operation } = this.params;
     const actionProfile = buildToolActionProfile({
       toolName: FILE_OPS_TOOL_NAME,
-      args: this.params as Record<string, unknown>,
+      args: this.params as unknown as Record<string, unknown>,
       config: this.config,
       provenance: this.getProvenance(),
     });

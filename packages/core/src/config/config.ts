@@ -408,6 +408,7 @@ export interface ConfigParameters {
   sessionProvenance?: Provenance[];
   webRemoteStatus?: WebRemoteStatus | null;
   audit?: AuditSettings;
+  recipes?: RecipesSettings;
 }
 
 export interface AuditSettings {
@@ -415,6 +416,14 @@ export interface AuditSettings {
   retentionDays?: number;
   exportFormat?: AuditExportOptions['format'];
   exportRedaction?: AuditExportRedaction;
+}
+
+export interface RecipesSettings {
+  paths?: string[];
+  communityPaths?: string[];
+  allowCommunity?: boolean;
+  confirmCommunityOnFirstLoad?: boolean;
+  trustedCommunityRecipes?: string[];
 }
 
 export class Config {
@@ -543,6 +552,7 @@ export class Config {
 
   private readonly experimentalJitContext: boolean;
   private readonly auditSettings: AuditSettings;
+  private readonly recipeSettings: RecipesSettings;
   private readonly auditLedger: AuditLedger;
   private contextManager?: ContextManager;
   private terminalBackground: string | undefined = undefined;
@@ -692,6 +702,14 @@ export class Config {
     this.extensionManagement = params.extensionManagement ?? true;
     this.enableExtensionReloading = params.enableExtensionReloading ?? false;
     this.storage = new Storage(this.targetDir);
+    this.recipeSettings = {
+      paths: params.recipes?.paths ?? [this.storage.getProjectRecipesDir()],
+      communityPaths: params.recipes?.communityPaths ?? [],
+      allowCommunity: params.recipes?.allowCommunity ?? false,
+      confirmCommunityOnFirstLoad:
+        params.recipes?.confirmCommunityOnFirstLoad ?? true,
+      trustedCommunityRecipes: params.recipes?.trustedCommunityRecipes ?? [],
+    };
     this.fakeResponses = params.fakeResponses;
     this.recordResponses = params.recordResponses;
     this.enablePromptCompletion = params.enablePromptCompletion ?? false;
@@ -1312,6 +1330,10 @@ export class Config {
 
   getAuditSettings(): AuditSettings {
     return this.auditSettings;
+  }
+
+  getRecipeSettings(): RecipesSettings {
+    return this.recipeSettings;
   }
 
   setApprovalMode(mode: ApprovalMode): void {

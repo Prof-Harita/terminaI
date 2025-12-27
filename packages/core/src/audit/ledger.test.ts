@@ -25,16 +25,18 @@ describe('FileAuditLedger', () => {
     await fs.rm(tempDir, { recursive: true, force: true });
   });
 
+  const baseTool = {
+    callId: 'call-1',
+    toolName: 'demo',
+  };
+
   const baseEvent: AuditEvent = {
     version: 1,
     eventType: 'tool.requested',
     timestamp: new Date().toISOString(),
     sessionId: 'session-1',
     provenance: ['local_user'],
-    tool: {
-      callId: 'call-1',
-      toolName: 'demo',
-    },
+    tool: baseTool,
   };
 
   it('writes events with hash chain and verifies', async () => {
@@ -46,7 +48,7 @@ describe('FileAuditLedger', () => {
     await ledger.append({
       ...baseEvent,
       eventType: 'tool.execution_finished',
-      tool: { ...baseEvent.tool, result: { success: true } },
+      tool: { ...baseTool, result: { success: true } },
     });
 
     const events = await ledger.query({ limit: 10 });

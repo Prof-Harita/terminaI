@@ -43,6 +43,7 @@ import {
   MockTool,
   MOCK_TOOL_SHOULD_CONFIRM_EXECUTE,
 } from '../test-utils/mock-tool.js';
+import type { Provenance } from '../safety/approval-ladder/types.js';
 import * as modifiableToolModule from '../tools/modifiable-tool.js';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
@@ -525,7 +526,7 @@ describe('CoreToolScheduler', () => {
       args: { command: 'echo test' },
       isClientInitiated: false,
       prompt_id: 'prompt-id-1',
-      provenance: ['local_user', 'web_remote_user'],
+      provenance: ['local_user', 'web_remote_user'] as Provenance[],
     };
 
     void scheduler.schedule([request], abortController.signal);
@@ -535,10 +536,9 @@ describe('CoreToolScheduler', () => {
       'awaiting_approval',
     )) as WaitingToolCall;
 
-    expect(awaitingCall.confirmationDetails?.provenance).toEqual([
-      'local_user',
-      'web_remote_user',
-    ]);
+    expect((awaitingCall.confirmationDetails as any)?.provenance).toEqual(
+      ['local_user', 'web_remote_user'],
+    );
   });
 
   it('should cancel all tools in a batch when one is cancelled via confirmation', async () => {

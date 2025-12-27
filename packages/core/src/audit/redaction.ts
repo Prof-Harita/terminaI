@@ -5,7 +5,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { AuditEvent, AuditRedactionHint } from './schema.js';
+import type {
+  AuditEvent,
+  AuditRedactionHint,
+  AuditToolContext,
+} from './schema.js';
 
 const SECRET_PATTERNS = [
   /token/i,
@@ -85,20 +89,31 @@ export function redactEvent(
   options: RedactionOptions,
 ): AuditEvent {
   const hints: AuditRedactionHint[] = [];
+  const tool = event.tool;
+  let redactedTool: AuditEvent['tool'] = undefined;
+  if (tool) {
+    const assuredTool: AuditToolContext = tool;
+    const redactedArgs = redactValue(
+      assuredTool.args,
+      'tool.args',
+      options,
+      hints,
+    ) as Record<string, unknown> | undefined;
+    const redactedResult = redactValue(
+      assuredTool.result,
+      'tool.result',
+      options,
+      hints,
+    ) as AuditToolContext['result'];
+    redactedTool = {
+      ...assuredTool,
+      args: redactedArgs,
+      result: redactedResult,
+    };
+  }
   const redacted = {
     ...event,
-    tool: event.tool
-      ? ({
-          ...event.tool,
-          args: redactValue(event.tool.args, 'tool.args', options, hints),
-          result: redactValue(
-            event.tool.result,
-            'tool.result',
-            options,
-            hints,
-          ),
-        } satisfies AuditEvent['tool'])
-      : undefined,
+    tool: redactedTool,
   };
 
   if (hints.length > 0) {

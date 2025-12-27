@@ -77,7 +77,7 @@ describe('auditCommand', () => {
     await verifyCmd.action(ctx, '');
     expect(ctx.ui.addItem).toHaveBeenCalledWith(
       {
-        type: MessageType.SUCCESS,
+        type: MessageType.INFO,
         text: 'Audit hash chain verified (OK).',
       },
       expect.any(Number),

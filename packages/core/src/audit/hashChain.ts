@@ -15,7 +15,7 @@ export interface HashResult {
 }
 
 function normalizeEventForHash(event: AuditEvent): Record<string, unknown> {
-  const { hash: _hash, prevHash: _prevHash, ...rest } = event as Record<
+  const { hash: _hash, prevHash: _prevHash, ...rest } = event as unknown as Record<
     string,
     unknown
   >;

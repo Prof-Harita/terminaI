@@ -1617,6 +1617,75 @@ const SETTINGS_SCHEMA = {
     },
   },
 
+  recipes: {
+    type: 'object',
+    label: 'Recipes',
+    category: 'Automation',
+    requiresRestart: true,
+    default: {},
+    description:
+      'Governed recipes configuration. Built-ins are always enabled; community recipes require confirmation.',
+    showInDialog: false,
+    properties: {
+      paths: {
+        type: 'array',
+        label: 'Recipe directories',
+        category: 'Automation',
+        requiresRestart: true,
+        default: [] as string[],
+        description:
+          'Additional directories to load user-authored recipes from.',
+        showInDialog: false,
+        items: { type: 'string' },
+        mergeStrategy: MergeStrategy.UNION,
+      },
+      communityPaths: {
+        type: 'array',
+        label: 'Community recipe directories',
+        category: 'Automation',
+        requiresRestart: true,
+        default: [] as string[],
+        description:
+          'Directories containing community recipes. These require confirmation before first use.',
+        showInDialog: false,
+        items: { type: 'string' },
+        mergeStrategy: MergeStrategy.UNION,
+      },
+      allowCommunity: {
+        type: 'boolean',
+        label: 'Allow community recipes',
+        category: 'Automation',
+        requiresRestart: true,
+        default: false,
+        description:
+          'Enable loading community recipes. Community recipes still require first-load confirmation.',
+        showInDialog: true,
+      },
+      confirmCommunityOnFirstLoad: {
+        type: 'boolean',
+        label: 'Confirm community recipes on first load',
+        category: 'Automation',
+        requiresRestart: true,
+        default: true,
+        description:
+          'When enabled, the CLI will ask for confirmation the first time a community recipe is encountered.',
+        showInDialog: true,
+      },
+      trustedCommunityRecipes: {
+        type: 'array',
+        label: 'Trusted community recipes',
+        category: 'Automation',
+        requiresRestart: true,
+        default: [] as string[],
+        description:
+          'Recipe IDs that have already been confirmed. These will not prompt again.',
+        showInDialog: false,
+        items: { type: 'string' },
+        mergeStrategy: MergeStrategy.UNION,
+      },
+    },
+  },
+
   advanced: {
     type: 'object',
     label: 'Advanced',
