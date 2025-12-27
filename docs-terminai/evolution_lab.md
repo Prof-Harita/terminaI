@@ -93,10 +93,12 @@ Manages ephemeral execution environments.
 
 | Type       | Use Case             | Implementation                       |
 | ---------- | -------------------- | ------------------------------------ |
-| `headless` | CLI-only tasks       | Docker + Node.js (default)           |
+| `docker`   | CLI-only tasks       | Docker + Node.js (default)           |
 | `desktop`  | GUI automation       | Docker image (Xvfb/desktop planned)  |
 | `full-vm`  | Network/Server tasks | Docker image today; KVM/QEMU planned |
 | `host`     | Unsafe local runs    | Runs directly on host (opt-in only)  |
+
+Host execution requires `--allow-unsafe-host`.
 
 **Lifecycle**:
 
@@ -104,10 +106,10 @@ Manages ephemeral execution environments.
 create() → prepare() → run() → extractLogs() → destroy()
 ```
 
-**Default behavior**: `headless` uses Docker with
+**Default behavior**: `docker` uses Docker with
 `terminai/evolution-sandbox:latest`. If Docker is unavailable, runs will fail
 fast. Use `host` only when you explicitly want to run tasks on the local
-machine.
+machine. The `headless` sandbox type is a deprecated alias for `docker`.
 
 ---
 
@@ -180,7 +182,7 @@ Session Logs → Score Each → Cluster by Error Type → Diagnose Clusters → 
 
 ## Sandbox Strategy
 
-### Phase 1: Docker (Headless, Default)
+### Phase 1: Docker (Default)
 
 ```yaml
 # evolution-lab/Dockerfile
@@ -216,7 +218,7 @@ For scenarios requiring:
     "tasksPerRun": 100,
     "taskTimeout": 300,
     "sandbox": {
-      "type": "headless",
+      "type": "docker",
       "image": "terminai/evolution-sandbox:latest"
     },
     "quotaLimit": {
@@ -248,7 +250,7 @@ npm run evolution
 evolution-lab adversary --count 100 --output tasks.json
 
 # Run tasks in sandbox
-evolution-lab run --tasks tasks.json --sandbox headless
+evolution-lab run --tasks tasks.json --sandbox-type docker
 
 # Aggregate results
 evolution-lab aggregate --logs ~/.terminai/logs --output report.md

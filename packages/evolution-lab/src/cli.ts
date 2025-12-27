@@ -10,7 +10,7 @@ import { hideBin } from 'yargs/helpers';
 import { Adversary } from './adversary.js';
 import { Runner } from './runner.js';
 import { Aggregator } from './aggregator.js';
-import { DEFAULT_CONFIG } from './types.js';
+import { DEFAULT_CONFIG, type SandboxType } from './types.js';
 
 void yargs(hideBin(process.argv))
   .scriptName('evolution-lab')
@@ -62,13 +62,36 @@ void yargs(hideBin(process.argv))
           type: 'string',
           default: 'results.json',
           describe: 'Output file for results',
+        })
+        .option('sandbox-type', {
+          type: 'string',
+          choices: ['docker', 'desktop', 'full-vm', 'host', 'headless'],
+          default: DEFAULT_CONFIG.sandbox.type,
+          describe:
+            'Sandbox type (headless is a deprecated alias for docker)',
+        })
+        .option('allow-unsafe-host', {
+          type: 'boolean',
+          default: false,
+          describe: 'Required when using --sandbox-type host',
         }),
     async (argv) => {
       const adversary = new Adversary();
       const tasks = await adversary.loadTasks(argv.tasks);
       console.log(`Loaded ${tasks.length} tasks`);
 
-      const config = { ...DEFAULT_CONFIG, parallelism: argv.parallelism };
+      const sandboxType = normalizeSandboxType(
+        String(argv.sandboxType ?? DEFAULT_CONFIG.sandbox.type),
+      );
+      const config = {
+        ...DEFAULT_CONFIG,
+        parallelism: argv.parallelism,
+        sandbox: {
+          ...DEFAULT_CONFIG.sandbox,
+          type: sandboxType,
+          allowUnsafeHost: argv.allowUnsafeHost,
+        },
+      };
       const runner = new Runner(config);
 
       console.log(`Running with parallelism=${config.parallelism}...`);
@@ -130,6 +153,18 @@ void yargs(hideBin(process.argv))
           type: 'number',
           default: 2,
           describe: 'Parallelism',
+        })
+        .option('sandbox-type', {
+          type: 'string',
+          choices: ['docker', 'desktop', 'full-vm', 'host', 'headless'],
+          default: DEFAULT_CONFIG.sandbox.type,
+          describe:
+            'Sandbox type (headless is a deprecated alias for docker)',
+        })
+        .option('allow-unsafe-host', {
+          type: 'boolean',
+          default: false,
+          describe: 'Required when using --sandbox-type host',
         }),
     async (argv) => {
       console.log('=== Evolution Lab Full Cycle ===');
@@ -142,7 +177,18 @@ void yargs(hideBin(process.argv))
 
       // Run
       console.log(`\n[2/3] Running tasks (parallelism=${argv.parallelism})...`);
-      const config = { ...DEFAULT_CONFIG, parallelism: argv.parallelism };
+      const sandboxType = normalizeSandboxType(
+        String(argv.sandboxType ?? DEFAULT_CONFIG.sandbox.type),
+      );
+      const config = {
+        ...DEFAULT_CONFIG,
+        parallelism: argv.parallelism,
+        sandbox: {
+          ...DEFAULT_CONFIG.sandbox,
+          type: sandboxType,
+          allowUnsafeHost: argv.allowUnsafeHost,
+        },
+      };
       const runner = new Runner(config);
       const results = await runner.runBatch(tasks, (completed, total) => {
         process.stdout.write(`\rProgress: ${completed}/${total}`);
@@ -176,3 +222,16 @@ void yargs(hideBin(process.argv))
   .demandCommand(1, 'You must specify a command')
   .help()
   .parse();
+
+function normalizeSandboxType(type: string): SandboxType {
+  if (type === 'headless') {
+    return 'docker';
+  }
+  if (type === 'docker' || type === 'desktop' || type === 'full-vm') {
+    return type;
+  }
+  if (type === 'host') {
+    return 'host';
+  }
+  return 'docker';
+}

@@ -51,7 +51,7 @@ export interface TaskResult {
 /**
  * Sandbox types.
  */
-export type SandboxType = 'headless' | 'desktop' | 'full-vm' | 'host';
+export type SandboxType = 'docker' | 'desktop' | 'full-vm' | 'host';
 
 /**
  * Sandbox configuration.
@@ -62,6 +62,7 @@ export interface SandboxConfig {
   timeout: number; // seconds
   diskQuota?: number; // MB
   memoryLimit?: number; // MB
+  allowUnsafeHost?: boolean;
 }
 
 /**
@@ -100,7 +101,7 @@ export const DEFAULT_CONFIG: EvolutionLabConfig = {
   tasksPerRun: 100,
   taskTimeout: 300,
   sandbox: {
-    type: 'headless',
+    type: 'docker',
     image: 'terminai/evolution-sandbox:latest',
     timeout: 600,
   },

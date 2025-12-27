@@ -31,11 +31,17 @@ export class SandboxController {
   private activeSandboxes: Map<string, SandboxInstance> = new Map();
 
   constructor(config?: Partial<SandboxConfig>) {
-    this.config = {
-      type: 'headless',
+    const normalizedType = normalizeSandboxType(
+      (config?.type ?? 'docker') as string,
+    );
+    const baseConfig = {
       image: 'terminai/evolution-sandbox:latest',
       timeout: 600,
       ...config,
+    };
+    this.config = {
+      ...baseConfig,
+      type: normalizedType,
     };
   }
 
@@ -44,6 +50,11 @@ export class SandboxController {
    */
   async create(): Promise<SandboxInstance> {
     const id = randomUUID();
+    if (this.config.type === 'host' && !this.config.allowUnsafeHost) {
+      throw new Error(
+        'Host sandbox is unsafe and requires --allow-unsafe-host.',
+      );
+    }
     const workDir = path.join('/tmp', 'evolution-lab', id);
     const logsDir = path.join(workDir, 'logs');
 
@@ -62,7 +73,7 @@ export class SandboxController {
       // Host mode runs directly on the machine (unsafe by default).
       instance.ready = true;
     } else {
-      // Docker-based sandbox (headless/desktop/full-vm defaults).
+      // Docker-based sandbox (docker/desktop/full-vm defaults).
       const containerId = await this.startDockerContainer(id, workDir);
       instance.containerId = containerId;
       instance.ready = true;
@@ -218,4 +229,17 @@ export class SandboxController {
   getActiveCount(): number {
     return this.activeSandboxes.size;
   }
+}
+
+function normalizeSandboxType(type: string): SandboxType {
+  if (type === 'headless') {
+    return 'docker';
+  }
+  if (type === 'docker' || type === 'desktop' || type === 'full-vm') {
+    return type;
+  }
+  if (type === 'host') {
+    return 'host';
+  }
+  return 'docker';
 }

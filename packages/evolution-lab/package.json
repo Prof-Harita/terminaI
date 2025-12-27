@@ -14,7 +14,9 @@
     "lab": "node dist/cli.js full",
     "adversary": "node dist/cli.js adversary",
     "run-tasks": "node dist/cli.js run",
-    "aggregate": "node dist/cli.js aggregate"
+    "aggregate": "node dist/cli.js aggregate",
+    "test": "vitest run --passWithNoTests",
+    "test:ci": "vitest run --passWithNoTests"
   },
   "dependencies": {
     "@terminai/core": "file:../core",
@@ -24,6 +26,7 @@
   "devDependencies": {
     "@types/node": "^20.11.24",
     "@types/yargs": "^17.0.32",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^3.1.1"
   }
 }
