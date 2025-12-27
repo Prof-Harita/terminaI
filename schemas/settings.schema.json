@@ -466,6 +466,34 @@
               "default": "auto",
               "type": "string",
               "enum": ["auto", "whispercpp", "none"]
+            },
+            "whispercpp": {
+              "title": "whisper.cpp",
+              "description": "whisper.cpp configuration overrides.",
+              "markdownDescription": "whisper.cpp configuration overrides.\n\n- Category: `Voice`\n- Requires restart: `no`\n- Default: `{}`",
+              "default": {},
+              "type": "object",
+              "properties": {
+                "binaryPath": {
+                  "title": "Binary Path",
+                  "description": "Override path to the whisper.cpp binary.",
+                  "markdownDescription": "Override path to the whisper.cpp binary.\n\n- Category: `Voice`\n- Requires restart: `no`",
+                  "type": "string"
+                },
+                "modelPath": {
+                  "title": "Model Path",
+                  "description": "Override path to the whisper.cpp model file.",
+                  "markdownDescription": "Override path to the whisper.cpp model file.\n\n- Category: `Voice`\n- Requires restart: `no`",
+                  "type": "string"
+                },
+                "device": {
+                  "title": "Input Device",
+                  "description": "Optional microphone device name to pass to the recorder.",
+                  "markdownDescription": "Optional microphone device name to pass to the recorder.\n\n- Category: `Voice`\n- Requires restart: `no`",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
             }
           },
           "additionalProperties": false

@@ -67,4 +67,19 @@ describe('StreamingWhisper', () => {
     expect(stdin.write).toHaveBeenCalled();
     expect(stdin.end).toHaveBeenCalled();
   });
+
+  it('warns on double start and exposes running state', async () => {
+    const { StreamingWhisper: WhisperImpl } = await import(
+      './StreamingWhisper.js'
+    );
+    const whisper = new WhisperImpl({ modelPath: 'models/ggml-base.bin' });
+    const errorHandler = vi.fn();
+    whisper.on('error', errorHandler);
+    whisper.startStreaming();
+    whisper.startStreaming();
+    expect(errorHandler).toHaveBeenCalled();
+    expect(whisper.isRunning()).toBe(true);
+    whisper.stopStreaming();
+    expect(whisper.isRunning()).toBe(false);
+  });
 });

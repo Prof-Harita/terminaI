@@ -28,6 +28,10 @@ export class StreamingWhisper extends EventEmitter {
 
   startStreaming(): void {
     if (this.whisperProcess) {
+      this.emit(
+        'error',
+        new Error('StreamingWhisper already running; stop before restarting.'),
+      );
       return;
     }
     const binary = this.options.binary ?? 'whisper-cpp';
@@ -75,7 +79,9 @@ export class StreamingWhisper extends EventEmitter {
     });
 
     this.whisperProcess.on('close', () => {
+      stdoutBuffer = '';
       this.whisperProcess = null;
+      this.emit('close');
     });
   }
 
@@ -90,8 +96,16 @@ export class StreamingWhisper extends EventEmitter {
     if (!this.whisperProcess) {
       return;
     }
-    this.whisperProcess.stdin.end();
+    try {
+      this.whisperProcess.stdin.end();
+    } catch {
+      // noop: stdin might already be closed.
+    }
     this.whisperProcess.kill('SIGTERM');
     this.whisperProcess = null;
+  }
+
+  isRunning(): boolean {
+    return this.whisperProcess !== null;
   }
 }

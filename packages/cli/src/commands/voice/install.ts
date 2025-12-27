@@ -167,6 +167,7 @@ export const installCommand: CommandModule = {
       console.log('✓ Created voice cache directory');
 
       const platform = process.platform as keyof typeof WHISPER_BINARIES;
+      let whisperBinaryPath: string | null = null;
 
       // Download whisper model
       const whisperModelPath = join(VOICE_CACHE_DIR, 'ggml-base.en.bin');
@@ -192,6 +193,7 @@ export const installCommand: CommandModule = {
           platform === 'win32' ? 'whisper.exe' : 'whisper',
         );
         const whisperExtract = join(VOICE_CACHE_DIR, '.extract-whisper');
+        whisperBinaryPath = whisperOut;
         await installExecutable({
           archivePath: whisperBinPath,
           extractDir: whisperExtract,
@@ -207,6 +209,7 @@ export const installCommand: CommandModule = {
         console.warn('  You will need to build whisper.cpp manually');
       }
 
+      let piperBinaryPath: string | null = null;
       // Download piper binary (platform-specific)
       if (PIPER_BINARIES[platform]) {
         const piperBinExt = platform === 'win32' ? '.zip' : '.tar.gz';
@@ -224,6 +227,7 @@ export const installCommand: CommandModule = {
           platform === 'win32' ? 'piper.exe' : 'piper',
         );
         const piperExtract = join(VOICE_CACHE_DIR, '.extract-piper');
+        piperBinaryPath = piperOut;
         await installExecutable({
           archivePath: piperBinPath,
           extractDir: piperExtract,
@@ -257,6 +261,12 @@ export const installCommand: CommandModule = {
       const metadata = {
         installedAt: new Date().toISOString(),
         platform,
+        paths: {
+          whisperBinary: whisperBinaryPath,
+          whisperModel: whisperModelPath,
+          piperBinary: piperBinaryPath,
+          piperModel: piperVoicePath,
+        },
         components: {
           whisper: {
             model: 'ggml-base.en.bin',
