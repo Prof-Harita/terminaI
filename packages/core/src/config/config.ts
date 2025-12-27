@@ -122,6 +122,11 @@ import { startupProfiler } from '../telemetry/startupProfiler.js';
 
 import { ApprovalMode } from '../policy/types.js';
 import type { Provenance } from '../safety/approval-ladder/types.js';
+import {
+  DEFAULT_BRAIN_AUTHORITY,
+  type BrainAuthority,
+  resolveEffectiveBrainAuthority,
+} from './brainAuthority.js';
 
 export interface AccessibilitySettings {
   disableLoadingPhrases?: boolean;
@@ -379,6 +384,10 @@ export interface ConfigParameters {
   security?: {
     approvalPin?: string;
   };
+  brain?: {
+    authority?: BrainAuthority;
+    policyAuthority?: BrainAuthority;
+  };
   providerConfig?: ProviderConfig;
   logs?: {
     retention?: {
@@ -505,6 +514,7 @@ export class Config {
   readonly fakeResponses?: string;
   readonly recordResponses?: string;
   private readonly disableYoloMode: boolean;
+  private readonly brainAuthority: BrainAuthority;
   private pendingIncludeDirectories: string[];
   private readonly enableHooks: boolean;
   private readonly hooks:
@@ -681,6 +691,11 @@ export class Config {
     this.hooks = params.hooks;
     this.experiments = params.experiments;
     this.approvalPin = params.security?.approvalPin ?? '000000';
+    const policyBrainAuthority = params.brain?.policyAuthority;
+    this.brainAuthority = resolveEffectiveBrainAuthority(
+      params.brain?.authority ?? DEFAULT_BRAIN_AUTHORITY,
+      policyBrainAuthority,
+    );
     this.providerConfig = params.providerConfig ?? {
       provider: LlmProviderId.GEMINI,
     };
@@ -1257,6 +1272,10 @@ export class Config {
    */
   getApprovalPin(): string {
     return this.approvalPin;
+  }
+
+  getBrainAuthority(): BrainAuthority {
+    return this.brainAuthority;
   }
 
   setApprovalMode(mode: ApprovalMode): void {

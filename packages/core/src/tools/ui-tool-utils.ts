@@ -7,7 +7,70 @@
 
 import { createHash } from 'node:crypto';
 import type { UiActionResult } from '../gui/protocol/types.js';
-import type { ToolResult } from './tools.js';
+import type { ToolExecuteConfirmationDetails, ToolResult } from './tools.js';
+import type { ActionProfile, Provenance } from '../safety/approval-ladder/types.js';
+import { computeMinimumReviewLevel } from '../safety/approval-ladder/computeMinimumReviewLevel.js';
+
+type UiConfirmationArgs = {
+  toolName: string;
+  description: string;
+  provenance?: Provenance[];
+  title?: string;
+  onConfirm: ToolExecuteConfirmationDetails['onConfirm'];
+};
+
+function normalizeProvenance(provenance?: Provenance[]): Provenance[] {
+  if (!provenance || provenance.length === 0) {
+    return ['unknown'];
+  }
+  const unique = new Set<Provenance>();
+  const merged: Provenance[] = [];
+  for (const entry of provenance) {
+    if (!unique.has(entry)) {
+      unique.add(entry);
+      merged.push(entry);
+    }
+  }
+  return merged;
+}
+
+export function buildUiConfirmationDetails({
+  toolName,
+  description,
+  provenance,
+  title,
+  onConfirm,
+}: UiConfirmationArgs): ToolExecuteConfirmationDetails | false {
+  const normalizedProvenance = normalizeProvenance(provenance);
+  const actionProfile: ActionProfile = {
+    toolName,
+    operations: ['ui'],
+    roots: [toolName],
+    touchedPaths: [],
+    outsideWorkspace: false,
+    usesPrivilege: false,
+    hasUnboundedScopeSignals: false,
+    parseConfidence: 'high',
+    provenance: normalizedProvenance,
+    rawSummary: description,
+  };
+  const reviewResult = computeMinimumReviewLevel(actionProfile);
+  if (reviewResult.level === 'A') {
+    return false;
+  }
+  return {
+    type: 'exec',
+    title: title ?? 'Confirm UI Action',
+    command: description,
+    rootCommand: toolName,
+    provenance: normalizedProvenance.length > 0 ? normalizedProvenance : undefined,
+    reviewLevel: reviewResult.level,
+    requiresPin: reviewResult.requiresPin,
+    pinLength: reviewResult.requiresPin ? 6 : undefined,
+    explanation: reviewResult.reasons.join('; '),
+    onConfirm,
+  };
+}
 
 export function formatUiResult(
   result: UiActionResult,

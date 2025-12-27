@@ -8,11 +8,18 @@
 import { UiToolBase } from './ui-tool-base.js';
 import { UiTypeSchema } from '../gui/protocol/schemas.js';
 import type { UiTypeArgs } from '../gui/protocol/schemas.js';
-import type { ToolResult, ToolInvocation } from './tools.js';
+import type {
+  ToolCallConfirmationDetails,
+  ToolInvocation,
+  ToolResult,
+} from './tools.js';
 import { BaseToolInvocation, Kind } from './tools.js';
 import type { MessageBus } from '../confirmation-bus/message-bus.js';
 import { UI_TYPE_TOOL_NAME } from './tool-names.js';
-import { formatUiResult } from './ui-tool-utils.js';
+import {
+  buildUiConfirmationDetails,
+  formatUiResult,
+} from './ui-tool-utils.js';
 import { DesktopAutomationService } from '../gui/service/DesktopAutomationService.js';
 
 class UiTypeToolInvocation extends BaseToolInvocation<UiTypeArgs, ToolResult> {
@@ -29,6 +36,20 @@ class UiTypeToolInvocation extends BaseToolInvocation<UiTypeArgs, ToolResult> {
     return `Type text "${
       this.params.redactInLogs ? '***' : this.params.text
     }" into target: ${this.params.target || 'focused element'}`;
+  }
+
+  protected override async getConfirmationDetails(
+    _abortSignal: AbortSignal,
+  ): Promise<ToolCallConfirmationDetails | false> {
+    return buildUiConfirmationDetails({
+      toolName: this._toolName ?? UI_TYPE_TOOL_NAME,
+      description: this.getDescription(),
+      provenance: this.getProvenance(),
+      title: 'Confirm UI Type',
+      onConfirm: async (outcome) => {
+        await this.publishPolicyUpdate(outcome);
+      },
+    });
   }
 
   async execute(_signal: AbortSignal): Promise<ToolResult> {

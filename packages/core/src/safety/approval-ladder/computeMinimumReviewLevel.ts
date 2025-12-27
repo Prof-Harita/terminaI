@@ -30,9 +30,10 @@ import type {
  *    - Else → at least level B
  * 6. If operations include 'write' → at least level B
  * 7. If operations include 'process' → at least level B
- * 8. If operations include 'network' → at least level B (and add extra caution for untrusted provenance)
- * 9. If outsideWorkspace → bump one level (A→B, B→C)
- * 10. If provenance includes 'web_remote_user' and not pure read → bump one level
+ * 8. If operations include 'ui' → at least level B
+ * 9. If operations include 'network' → at least level B (and add extra caution for untrusted provenance)
+ * 10. If outsideWorkspace → bump one level (A→B, B→C)
+ * 11. If provenance includes 'web_remote_user' and not pure read → bump one level
  *
  * @param profile The action profile to evaluate
  * @returns Deterministic review result with level and requirements
@@ -148,7 +149,12 @@ export function computeMinimumReviewLevel(
     setMinLevel('B', 'Process operation detected');
   }
 
-  // Rule 8: Network operations
+  // Rule 8: UI operations
+  if (profile.operations.includes('ui')) {
+    setMinLevel('B', 'UI automation requires user review');
+  }
+
+  // Rule 9: Network operations
   if (profile.operations.includes('network')) {
     setMinLevel('B', 'Network operation detected');
     const untrustedSources = ['web_content', 'workspace_file', 'tool_output'];
@@ -157,12 +163,12 @@ export function computeMinimumReviewLevel(
     }
   }
 
-  // Rule 9: Outside workspace → bump level
+  // Rule 10: Outside workspace → bump level
   if (profile.outsideWorkspace) {
     level = bumpLevel(level, 'Action touches paths outside workspace');
   }
 
-  // Rule 10: Web remote user provenance for non-read operations
+  // Rule 11: Web remote user provenance for non-read operations
   if (profile.provenance.includes('web_remote_user')) {
     const isPureRead =
       profile.operations.length === 1 && profile.operations[0] === 'read';

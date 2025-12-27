@@ -31,6 +31,8 @@ import {
 import { WEB_FETCH_TOOL_NAME } from './tool-names.js';
 import { debugLogger } from '../utils/debugLogger.js';
 import { retryWithBackoff } from '../utils/retry.js';
+import { buildToolActionProfile } from '../safety/approval-ladder/buildToolActionProfile.js';
+import { computeMinimumReviewLevel } from '../safety/approval-ladder/computeMinimumReviewLevel.js';
 
 const URL_FETCH_TIMEOUT_MS = 10000;
 const MAX_CONTENT_LENGTH = 100000;
@@ -224,6 +226,17 @@ ${textContent}
       return false;
     }
 
+    const actionProfile = buildToolActionProfile({
+      toolName: WEB_FETCH_TOOL_NAME,
+      args: this.params as Record<string, unknown>,
+      config: this.config,
+      provenance: this.getProvenance(),
+    });
+    const reviewResult = computeMinimumReviewLevel(actionProfile);
+    if (reviewResult.level === 'A') {
+      return false;
+    }
+
     // Perform GitHub URL conversion here to differentiate between user-provided
     // URL and the actual URL to be fetched.
     const { validUrls } = parsePrompt(this.params.prompt);
@@ -241,6 +254,10 @@ ${textContent}
       title: `Confirm Web Fetch`,
       prompt: this.params.prompt,
       urls,
+      reviewLevel: reviewResult.level,
+      requiresPin: reviewResult.requiresPin,
+      pinLength: reviewResult.requiresPin ? 6 : undefined,
+      explanation: reviewResult.reasons.join('; '),
       onConfirm: async (outcome: ToolConfirmationOutcome) => {
         if (outcome === ToolConfirmationOutcome.ProceedAlways) {
           // No need to publish a policy update as the default policy for

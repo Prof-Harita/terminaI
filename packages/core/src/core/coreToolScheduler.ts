@@ -931,7 +931,8 @@ export class CoreToolScheduler {
           );
           this.setStatusInternal(reqInfo.callId, 'scheduled', signal);
         } else {
-          if (this.isAutoApproved(toolCall)) {
+          const requiresPin = confirmationDetails.requiresPin === true;
+          if (this.isAutoApproved(toolCall) && !requiresPin) {
             this.setToolCallOutcome(
               reqInfo.callId,
               ToolConfirmationOutcome.ProceedAlways,
@@ -1045,6 +1046,23 @@ export class CoreToolScheduler {
 
     if (toolCall && toolCall.status === 'awaiting_approval') {
       try {
+        const confirmationDetails = toolCall.confirmationDetails;
+        if (
+          confirmationDetails?.requiresPin &&
+          outcome !== ToolConfirmationOutcome.Cancel
+        ) {
+          const pinLength = confirmationDetails.pinLength ?? 6;
+          const enteredPin = payload?.pin ?? '';
+          if (!/^\d+$/.test(enteredPin) || enteredPin.length !== pinLength) {
+            throw new Error(`Enter a ${pinLength}-digit PIN to proceed.`);
+          }
+          const configuredPin = this.config.getApprovalPin();
+          if (enteredPin !== configuredPin) {
+            throw new Error(
+              'Incorrect PIN. Level C action denied for security reasons.',
+            );
+          }
+        }
         await originalOnConfirm(outcome, payload);
       } catch (error) {
         // Handle errors from onConfirm (e.g., PIN validation failures)

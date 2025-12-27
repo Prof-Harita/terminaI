@@ -80,6 +80,18 @@ describe('computeMinimumReviewLevel', () => {
       expect(result.requiresPin).toBe(false);
     });
 
+    it('should return B for UI automation', () => {
+      const profile = createProfile({
+        operations: ['ui'],
+        rawSummary: 'ui.click #button',
+      });
+      const result = computeMinimumReviewLevel(profile);
+      expect(result.level).toBe('B');
+      expect(result.requiresClick).toBe(true);
+      expect(result.requiresPin).toBe(false);
+      expect(result.reasons).toContain('UI automation requires user review');
+    });
+
     it('should return B for bounded delete inside workspace', () => {
       const profile = createProfile({
         operations: ['delete'],

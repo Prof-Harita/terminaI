@@ -40,14 +40,14 @@ interface SerializableConfirmationDetails {
   originalContent?: string | null;
   newContent?: string;
   isModifying?: boolean;
-  // Exec-specific fields
-  command?: string;
-  rootCommand?: string;
   reviewLevel?: 'A' | 'B' | 'C';
   requiresPin?: boolean;
   pinLength?: number;
   explanation?: string;
   provenance?: string[];
+  // Exec-specific fields
+  command?: string;
+  rootCommand?: string;
   // MCP-specific fields
   serverName?: string;
   toolName?: string;
@@ -79,6 +79,10 @@ function toSerializableDetails(
         originalContent: details.originalContent,
         newContent: details.newContent,
         isModifying: details.isModifying,
+        reviewLevel: details.reviewLevel,
+        requiresPin: details.requiresPin,
+        pinLength: details.pinLength,
+        explanation: details.explanation,
       };
     case 'exec':
       return {
@@ -97,12 +101,20 @@ function toSerializableDetails(
         serverName: details.serverName,
         toolName: details.toolName,
         toolDisplayName: details.toolDisplayName,
+        reviewLevel: details.reviewLevel,
+        requiresPin: details.requiresPin,
+        pinLength: details.pinLength,
+        explanation: details.explanation,
       };
     case 'info':
       return {
         ...base,
         prompt: details.prompt,
         urls: details.urls,
+        reviewLevel: details.reviewLevel,
+        requiresPin: details.requiresPin,
+        pinLength: details.pinLength,
+        explanation: details.explanation,
       };
     default:
       return base;

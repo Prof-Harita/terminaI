@@ -8,11 +8,18 @@
 import { UiToolBase } from './ui-tool-base.js';
 import { UiKeySchema } from '../gui/protocol/schemas.js';
 import type { UiKeyArgs } from '../gui/protocol/schemas.js';
-import type { ToolResult, ToolInvocation } from './tools.js';
+import type {
+  ToolCallConfirmationDetails,
+  ToolInvocation,
+  ToolResult,
+} from './tools.js';
 import { BaseToolInvocation, Kind } from './tools.js';
 import type { MessageBus } from '../confirmation-bus/message-bus.js';
 import { UI_KEY_TOOL_NAME } from './tool-names.js';
-import { formatUiResult } from './ui-tool-utils.js';
+import {
+  buildUiConfirmationDetails,
+  formatUiResult,
+} from './ui-tool-utils.js';
 import { DesktopAutomationService } from '../gui/service/DesktopAutomationService.js';
 
 class UiKeyToolInvocation extends BaseToolInvocation<UiKeyArgs, ToolResult> {
@@ -27,6 +34,20 @@ class UiKeyToolInvocation extends BaseToolInvocation<UiKeyArgs, ToolResult> {
 
   getDescription(): string {
     return `Press keys: ${JSON.stringify(this.params.keys)}`;
+  }
+
+  protected override async getConfirmationDetails(
+    _abortSignal: AbortSignal,
+  ): Promise<ToolCallConfirmationDetails | false> {
+    return buildUiConfirmationDetails({
+      toolName: this._toolName ?? UI_KEY_TOOL_NAME,
+      description: this.getDescription(),
+      provenance: this.getProvenance(),
+      title: 'Confirm UI Key',
+      onConfirm: async (outcome) => {
+        await this.publishPolicyUpdate(outcome);
+      },
+    });
   }
 
   async execute(_signal: AbortSignal): Promise<ToolResult> {

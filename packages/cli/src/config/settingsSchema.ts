@@ -928,6 +928,33 @@ const SETTINGS_SCHEMA = {
     },
   },
 
+  brain: {
+    type: 'object',
+    label: 'Brain',
+    category: 'Security',
+    requiresRestart: true,
+    default: {},
+    description: 'Brain authority settings.',
+    showInDialog: false,
+    properties: {
+      authority: {
+        type: 'enum',
+        label: 'Brain Authority',
+        category: 'Security',
+        requiresRestart: true,
+        default: 'escalate-only',
+        options: [
+          { value: 'advisory', label: 'Advisory' },
+          { value: 'escalate-only', label: 'Escalate-only' },
+          { value: 'governing', label: 'Governing' },
+        ],
+        description:
+          'Controls how much the brain can raise approval review levels.',
+        showInDialog: true,
+      },
+    },
+  },
+
   modelConfigs: {
     type: 'object',
     label: 'Model Configs',

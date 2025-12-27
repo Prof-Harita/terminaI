@@ -601,6 +601,24 @@
       },
       "additionalProperties": false
     },
+    "brain": {
+      "title": "Brain",
+      "description": "Brain authority settings.",
+      "markdownDescription": "Brain authority settings.\n\n- Category: `Security`\n- Requires restart: `yes`\n- Default: `{}`",
+      "default": {},
+      "type": "object",
+      "properties": {
+        "authority": {
+          "title": "Brain Authority",
+          "description": "Controls how much the brain can raise approval review levels.",
+          "markdownDescription": "Controls how much the brain can raise approval review levels.\n\n- Category: `Security`\n- Requires restart: `yes`\n- Default: `escalate-only`",
+          "default": "escalate-only",
+          "type": "string",
+          "enum": ["advisory", "escalate-only", "governing"]
+        }
+      },
+      "additionalProperties": false
+    },
     "modelConfigs": {
       "title": "Model Configs",
       "description": "Model configurations.",

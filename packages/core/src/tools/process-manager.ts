@@ -35,6 +35,8 @@ import type {
 import { BaseDeclarativeTool, BaseToolInvocation, Kind } from './tools.js';
 import { ToolErrorType } from './tool-error.js';
 import { PROCESS_MANAGER_TOOL_NAME } from './tool-names.js';
+import { buildToolActionProfile } from '../safety/approval-ladder/buildToolActionProfile.js';
+import { computeMinimumReviewLevel } from '../safety/approval-ladder/computeMinimumReviewLevel.js';
 import {
   sessionNotifier,
   type SessionEventType,
@@ -665,6 +667,7 @@ class ProcessManagerToolInvocation extends BaseToolInvocation<
 > {
   constructor(
     private readonly processManager: ProcessManager,
+    private readonly config: Config,
     params: ProcessManagerToolParams,
     messageBus?: MessageBus,
     _toolName?: string,
@@ -701,11 +704,14 @@ class ProcessManagerToolInvocation extends BaseToolInvocation<
   protected override async getConfirmationDetails(
     _abortSignal: AbortSignal,
   ): Promise<ToolCallConfirmationDetails | false> {
-    if (
-      this.params.operation !== 'stop' &&
-      this.params.operation !== 'signal' &&
-      this.params.operation !== 'restart'
-    ) {
+    const actionProfile = buildToolActionProfile({
+      toolName: PROCESS_MANAGER_TOOL_NAME,
+      args: this.params as Record<string, unknown>,
+      config: this.config,
+      provenance: this.getProvenance(),
+    });
+    const reviewResult = computeMinimumReviewLevel(actionProfile);
+    if (reviewResult.level === 'A') {
       return false;
     }
 
@@ -714,15 +720,21 @@ class ProcessManagerToolInvocation extends BaseToolInvocation<
         ? this.params.signal
         : (this.params.signal ?? 'SIGTERM');
 
-    const command = `${this.params.operation} ${this.params.name}${
+    const command = `${this.params.operation} ${this.params.name ?? ''}${
       signal ? ` ${signal}` : ''
-    }`;
+    }`.trim();
 
     const confirmationDetails: ToolExecuteConfirmationDetails = {
       type: 'exec',
       title: 'Confirm Process Action',
       command,
       rootCommand: this.params.operation,
+      provenance:
+        this.getProvenance().length > 0 ? this.getProvenance() : undefined,
+      reviewLevel: reviewResult.level,
+      requiresPin: reviewResult.requiresPin,
+      pinLength: reviewResult.requiresPin ? 6 : undefined,
+      explanation: reviewResult.reasons.join('; '),
       onConfirm: async (outcome: ToolConfirmationOutcome) => {
         await this.publishPolicyUpdate(outcome);
       },
@@ -959,6 +971,7 @@ export class ProcessManagerTool extends BaseDeclarativeTool<
   ): ToolInvocation<ProcessManagerToolParams, ToolResult> {
     return new ProcessManagerToolInvocation(
       this.processManager,
+      this.config,
       params,
       messageBus,
       _toolName,

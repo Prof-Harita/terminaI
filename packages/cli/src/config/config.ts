@@ -49,7 +49,10 @@ import { appEvents } from '../utils/events.js';
 import { RESUME_LATEST } from '../utils/sessionUtils.js';
 
 import { isWorkspaceTrusted } from './trustedFolders.js';
-import { createPolicyEngineConfig } from './policy.js';
+import {
+  createPolicyEngineConfig,
+  resolvePolicyBrainAuthority,
+} from './policy.js';
 import { ExtensionManager } from './extension-manager.js';
 import type { ExtensionEvents } from '@terminai/core/src/utils/extensionLoader.js';
 import { requestConsentNonInteractive } from './extensions/consent.js';
@@ -675,6 +678,7 @@ export async function loadCliConfig(
     settings,
     approvalMode,
   );
+  const policyBrainAuthority = await resolvePolicyBrainAuthority();
 
   const enableMessageBusIntegration =
     settings.tools?.enableMessageBusIntegration ?? true;
@@ -838,6 +842,10 @@ export async function loadCliConfig(
     geminiMdFilePaths: filePaths,
     approvalMode,
     disableYoloMode: settings.security?.disableYoloMode,
+    brain: {
+      authority: settings.brain?.authority,
+      policyAuthority: policyBrainAuthority,
+    },
     showMemoryUsage: settings.ui?.showMemoryUsage || false,
     accessibility: {
       ...settings.ui?.accessibility,

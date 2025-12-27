@@ -11,8 +11,10 @@ import {
   type PolicyEngine,
   type MessageBus,
   type PolicySettings,
+  type BrainAuthority,
   createPolicyEngineConfig as createCorePolicyEngineConfig,
   createPolicyUpdater as createCorePolicyUpdater,
+  resolvePolicyBrainAuthority as resolveCorePolicyBrainAuthority,
 } from '@terminai/core';
 import { type Settings } from './settings.js';
 
@@ -36,4 +38,10 @@ export function createPolicyUpdater(
   messageBus: MessageBus,
 ) {
   return createCorePolicyUpdater(policyEngine, messageBus);
+}
+
+export async function resolvePolicyBrainAuthority(): Promise<
+  BrainAuthority | undefined
+> {
+  return resolveCorePolicyBrainAuthority();
 }

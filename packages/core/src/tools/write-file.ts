@@ -45,6 +45,8 @@ import { FileOperation } from '../telemetry/metrics.js';
 import { getSpecificMimeType } from '../utils/fileUtils.js';
 import { getLanguageFromFilePath } from '../utils/language-detection.js';
 import type { MessageBus } from '../confirmation-bus/message-bus.js';
+import { buildToolActionProfile } from '../safety/approval-ladder/buildToolActionProfile.js';
+import { computeMinimumReviewLevel } from '../safety/approval-ladder/computeMinimumReviewLevel.js';
 
 /**
  * Parameters for the WriteFile tool
@@ -192,6 +194,18 @@ class WriteFileToolInvocation extends BaseToolInvocation<
     }
 
     const { originalContent, correctedContent } = correctedContentResult;
+
+    const actionProfile = buildToolActionProfile({
+      toolName: WRITE_FILE_TOOL_NAME,
+      args: this.params as Record<string, unknown>,
+      config: this.config,
+      provenance: this.getProvenance(),
+    });
+    const reviewResult = computeMinimumReviewLevel(actionProfile);
+    if (reviewResult.level === 'A') {
+      return false;
+    }
+
     const relativePath = makeRelative(
       this.resolvedPath,
       this.config.getTargetDir(),
@@ -221,6 +235,10 @@ class WriteFileToolInvocation extends BaseToolInvocation<
       fileDiff,
       originalContent,
       newContent: correctedContent,
+      reviewLevel: reviewResult.level,
+      requiresPin: reviewResult.requiresPin,
+      pinLength: reviewResult.requiresPin ? 6 : undefined,
+      explanation: reviewResult.reasons.join('; '),
       onConfirm: async (outcome: ToolConfirmationOutcome) => {
         if (outcome === ToolConfirmationOutcome.ProceedAlways) {
           // No need to publish a policy update as the default policy for

@@ -692,7 +692,20 @@ export interface DiffStat {
   user_removed_chars: number;
 }
 
-export interface ToolEditConfirmationDetails {
+export interface ToolConfirmationReviewMetadata {
+  /** Approval level required (A=no approval, B=click, C=click+PIN) */
+  reviewLevel?: 'A' | 'B' | 'C';
+  /** Whether this action requires PIN verification */
+  requiresPin?: boolean;
+  /** Length of PIN required (typically 6) */
+  pinLength?: number;
+  /** Plain-English explanation of ramifications */
+  explanation?: string;
+}
+
+export interface ToolEditConfirmationDetails
+  extends ToolConfirmationReviewMetadata
+{
   type: 'edit';
   title: string;
   onConfirm: (
@@ -716,7 +729,9 @@ export interface ToolConfirmationPayload {
   pin?: string;
 }
 
-export interface ToolExecuteConfirmationDetails {
+export interface ToolExecuteConfirmationDetails
+  extends ToolConfirmationReviewMetadata
+{
   type: 'exec';
   title: string;
   onConfirm: (
@@ -727,29 +742,31 @@ export interface ToolExecuteConfirmationDetails {
   rootCommand: string;
   risk?: RiskLevel;
   provenance?: Provenance[];
-  /** Approval level required (A=no approval, B=click, C=click+PIN) */
-  reviewLevel?: 'A' | 'B' | 'C';
-  /** Whether this action requires PIN verification */
-  requiresPin?: boolean;
-  /** Length of PIN required (typically 6) */
-  pinLength?: number;
-  /** Plain-English explanation of ramifications */
-  explanation?: string;
 }
 
-export interface ToolMcpConfirmationDetails {
+export interface ToolMcpConfirmationDetails
+  extends ToolConfirmationReviewMetadata
+{
   type: 'mcp';
   title: string;
   serverName: string;
   toolName: string;
   toolDisplayName: string;
-  onConfirm: (outcome: ToolConfirmationOutcome) => Promise<void>;
+  onConfirm: (
+    outcome: ToolConfirmationOutcome,
+    payload?: ToolConfirmationPayload,
+  ) => Promise<void>;
 }
 
-export interface ToolInfoConfirmationDetails {
+export interface ToolInfoConfirmationDetails
+  extends ToolConfirmationReviewMetadata
+{
   type: 'info';
   title: string;
-  onConfirm: (outcome: ToolConfirmationOutcome) => Promise<void>;
+  onConfirm: (
+    outcome: ToolConfirmationOutcome,
+    payload?: ToolConfirmationPayload,
+  ) => Promise<void>;
   prompt: string;
   urls?: string[];
 }

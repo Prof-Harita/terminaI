@@ -338,11 +338,14 @@ describe('WebFetchTool', () => {
         new AbortController().signal,
       );
 
-      expect(confirmationDetails).toEqual({
+      expect(confirmationDetails).toMatchObject({
         type: 'info',
         title: 'Confirm Web Fetch',
         prompt: 'fetch https://example.com',
         urls: ['https://example.com/'],
+        reviewLevel: 'B',
+        requiresPin: false,
+        explanation: expect.any(String),
         onConfirm: expect.any(Function),
       });
     });
@@ -358,7 +361,7 @@ describe('WebFetchTool', () => {
         new AbortController().signal,
       );
 
-      expect(confirmationDetails).toEqual({
+      expect(confirmationDetails).toMatchObject({
         type: 'info',
         title: 'Confirm Web Fetch',
         prompt:
@@ -366,6 +369,9 @@ describe('WebFetchTool', () => {
         urls: [
           'https://raw.githubusercontent.com/google/gemini-react/main/README.md',
         ],
+        reviewLevel: 'B',
+        requiresPin: false,
+        explanation: expect.any(String),
         onConfirm: expect.any(Function),
       });
     });
@@ -380,11 +386,14 @@ describe('WebFetchTool', () => {
         new AbortController().signal,
       );
 
-      expect(confirmationDetails).toEqual({
+      expect(confirmationDetails).toMatchObject({
         type: 'info',
         title: 'Confirm Web Fetch',
         prompt: 'fetch https://example.com https://example.org/docs',
         urls: ['https://example.com/', 'https://example.org/docs'],
+        reviewLevel: 'B',
+        requiresPin: false,
+        explanation: expect.any(String),
         onConfirm: expect.any(Function),
       });
     });

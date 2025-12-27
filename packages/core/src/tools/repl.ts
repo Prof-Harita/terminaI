@@ -26,6 +26,8 @@ import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
+import { buildToolActionProfile } from '../safety/approval-ladder/buildToolActionProfile.js';
+import { computeMinimumReviewLevel } from '../safety/approval-ladder/computeMinimumReviewLevel.js';
 
 export interface ReplToolParams {
   language: 'python' | 'shell' | 'node';
@@ -59,12 +61,29 @@ class ReplToolInvocation extends BaseToolInvocation<
     const code = this.params.code;
     const risk = classifyRisk(code); // Basic heuristic
 
+    const actionProfile = buildToolActionProfile({
+      toolName: REPL_TOOL_NAME,
+      args: this.params as Record<string, unknown>,
+      config: this.config,
+      provenance: this.getProvenance(),
+    });
+    const reviewResult = computeMinimumReviewLevel(actionProfile);
+    if (reviewResult.level === 'A') {
+      return false;
+    }
+
     const confirmationDetails: ToolExecuteConfirmationDetails = {
       type: 'exec',
       title: 'Confirm REPL Execution',
       command: `[${this.params.language}] ${code}`,
       rootCommand: 'repl',
       risk,
+      provenance:
+        this.getProvenance().length > 0 ? this.getProvenance() : undefined,
+      reviewLevel: reviewResult.level,
+      requiresPin: reviewResult.requiresPin,
+      pinLength: reviewResult.requiresPin ? 6 : undefined,
+      explanation: reviewResult.reasons.join('; '),
       onConfirm: async (outcome) => {
         await this.publishPolicyUpdate(outcome);
       },

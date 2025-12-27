@@ -38,12 +38,8 @@ export const ToolConfirmationMessage: React.FC<
   terminalWidth,
 }) => {
   const { onConfirm } = confirmationDetails;
-  const requiresPin =
-    confirmationDetails.type === 'exec' && confirmationDetails.requiresPin;
-  const pinLength =
-    confirmationDetails.type === 'exec'
-      ? (confirmationDetails.pinLength ?? 6)
-      : 6;
+  const requiresPin = confirmationDetails.requiresPin === true;
+  const pinLength = confirmationDetails.pinLength ?? 6;
   const [pin, setPin] = useState('');
   const [pinError, setPinError] = useState<string | null>(null);
 
@@ -88,12 +84,7 @@ export const ToolConfirmationMessage: React.FC<
       }
 
       setPinError(null);
-
-      if (confirmationDetails.type === 'exec' && requiresPin) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        onConfirm(outcome, { pin });
-        return;
-      }
+      const payload = requiresPin ? { pin } : undefined;
 
       if (confirmationDetails.type === 'edit') {
         if (config.getIdeMode() && isDiffingEnabled) {
@@ -109,7 +100,7 @@ export const ToolConfirmationMessage: React.FC<
       }
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      onConfirm(outcome);
+      onConfirm(outcome, payload);
     },
     [
       config,
@@ -429,12 +420,15 @@ export const ToolConfirmationMessage: React.FC<
         <Text color={theme.text.primary}>{question}</Text>
       </Box>
 
-      {confirmationDetails.type === 'exec' && (
+      {(confirmationDetails.reviewLevel ||
+        confirmationDetails.explanation ||
+        requiresPin ||
+        pinError) && (
         <Box flexDirection="column" marginBottom={1} flexShrink={0}>
           {confirmationDetails.reviewLevel && (
             <Text color={theme.text.secondary}>
               Review level: {confirmationDetails.reviewLevel}
-              {confirmationDetails.requiresPin ? ' (PIN required)' : ''}
+              {requiresPin ? ' (PIN required)' : ''}
             </Text>
           )}
           {confirmationDetails.explanation && (
