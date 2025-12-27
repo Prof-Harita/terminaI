@@ -21,3 +21,4 @@ Thumbs.db
 .pytest_cache
 opencode/
 open-interpreter/
+packages/desktop/src-tauri/target/

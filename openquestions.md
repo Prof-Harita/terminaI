@@ -1,6 +1,7 @@
 ## Finalized Architectural Decisions (Maintainers)
 
-These decisions supersede any previously open items and are treated as binding constraints for the professionalization plan.
+These decisions supersede any previously open items and are treated as binding
+constraints for the professionalization plan.
 
 1. **Audit**
    - Ship structured audit log (Level B) first.
@@ -11,20 +12,23 @@ These decisions supersede any previously open items and are treated as binding c
 
 2. **Brain Authority**
    - Default: advisory + escalation-only (can raise review level, never lower).
-   - Configurable via `brain.authority: 'advisory' | 'escalate-only' | 'governing'`.
+   - Configurable via
+     `brain.authority: 'advisory' | 'escalate-only' | 'governing'`.
    - Enterprise admins can lock via policy-as-code.
 
 3. **Operator-Grade PTY**
    - Windows + Linux parity target (macOS is bonus).
    - Expect Windows to take ~2x the effort.
    - Phase 1: minimum viable (resize + kill).
-   - Phase 2: operator-grade (password prompts, background tracking, output bounds).
+   - Phase 2: operator-grade (password prompts, background tracking, output
+     bounds).
 
 4. **Remote Features Default**
    - Enabled, but requires strong first-run consent.
    - Visible indicator when remote is active (cannot be hidden).
    - Remote sources trigger provenance escalation (higher review levels).
-   - Loopback binds work by default; non-loopback binds require explicit `--remote-bind`.
+   - Loopback binds work by default; non-loopback binds require explicit
+     `--remote-bind`.
 
 5. **Upstream Relationship**
    - Pull upstream when they ship something valuable.
@@ -52,15 +56,18 @@ These decisions supersede any previously open items and are treated as binding c
    - Audit records recipe ID + version for every step.
 
 9. **Brain Local Code Execution**
-   - Route `FW_SCRIPT` through existing REPL tool (governed by `CoreToolScheduler`).
+   - Route `FW_SCRIPT` through existing REPL tool (governed by
+     `CoreToolScheduler`).
    - Tiered sandboxing:
-     - Tier 1 (default): ephemeral venv/nvm in temp dir, no network, 30-second timeout.
+     - Tier 1 (default): ephemeral venv/nvm in temp dir, no network, 30-second
+       timeout.
      - Tier 2 (opt-in): Docker with pre-cached base image.
    - Simple tasks → Tier 1; complex/system deps → Tier 2.
 
 10. **GUI Automation Safety Contract**
-   - Default: `ui.click` / `ui.type` require Level B (click-to-approve).
-   - Typed text is redacted in audit by default.
-   - Snapshots are depth-limited (100 nodes default).
-   - All configurable via `tools.guiAutomation.*`.
-   - Onboarding journey makes this transparent.
+
+- Default: `ui.click` / `ui.type` require Level B (click-to-approve).
+- Typed text is redacted in audit by default.
+- Snapshots are depth-limited (100 nodes default).
+- All configurable via `tools.guiAutomation.*`.
+- Onboarding journey makes this transparent.

@@ -45,7 +45,8 @@ describe('auditCommand', () => {
       services: {
         config: {
           getAuditLedger: () => ledger,
-        } as unknown as any,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any,
       },
     });
 
@@ -71,7 +72,8 @@ describe('auditCommand', () => {
     if (!verifyCmd || !verifyCmd.action) throw new Error('verify missing');
 
     const ctx = createMockCommandContext({
-      services: { config: { getAuditLedger: () => ledger } as unknown as any },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      services: { config: { getAuditLedger: () => ledger } as any },
     });
 
     await verifyCmd.action(ctx, '');
@@ -104,7 +106,8 @@ describe('auditCommand', () => {
             exportFormat: 'jsonl',
             exportRedaction: 'enterprise',
           }),
-        } as unknown as any,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any,
       },
     });
 

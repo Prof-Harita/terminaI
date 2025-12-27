@@ -127,9 +127,7 @@ function isUnboundedDeletePath(
   if (normalized === os.homedir()) {
     return true;
   }
-  return workspaceRoots.some(
-    (root) => path.resolve(root) === normalized,
-  );
+  return workspaceRoots.some((root) => path.resolve(root) === normalized);
 }
 
 export function buildToolActionProfile({
@@ -167,9 +165,8 @@ export function buildToolActionProfile({
       break;
     }
     case FILE_OPS_TOOL_NAME: {
-      const operation = typeof args['operation'] === 'string'
-        ? args['operation']
-        : 'unknown';
+      const operation =
+        typeof args['operation'] === 'string' ? args['operation'] : 'unknown';
       rawSummary = `${toolName}:${operation}`;
       switch (operation) {
         case 'delete': {
@@ -232,9 +229,8 @@ export function buildToolActionProfile({
       break;
     }
     case PROCESS_MANAGER_TOOL_NAME: {
-      const operation = typeof args['operation'] === 'string'
-        ? args['operation']
-        : 'unknown';
+      const operation =
+        typeof args['operation'] === 'string' ? args['operation'] : 'unknown';
       const readOperations = new Set(['list', 'status', 'read', 'summarize']);
       if (readOperations.has(operation)) {
         operations.add('read');
@@ -254,9 +250,8 @@ export function buildToolActionProfile({
     }
     case REPL_TOOL_NAME: {
       operations.add('process');
-      const language = typeof args['language'] === 'string'
-        ? args['language']
-        : 'unknown';
+      const language =
+        typeof args['language'] === 'string' ? args['language'] : 'unknown';
       if (language === 'shell') {
         operations.add('unknown');
       }

@@ -11,8 +11,10 @@ import type {
   RecipeExecutor,
   RecipeLoader,
 } from '@terminai/core';
-import { RecipeExecutor as DefaultRecipeExecutor } from '@terminai/core';
-import { RecipeLoader as DefaultRecipeLoader } from '@terminai/core';
+import {
+  RecipeExecutor as DefaultRecipeExecutor,
+  RecipeLoader as DefaultRecipeLoader,
+} from '@terminai/core';
 import { CommandKind, type SlashCommand } from './types.js';
 import { MessageType } from '../types.js';
 
@@ -79,9 +81,7 @@ function parseArgs(args: string): { subcommand: string; rest: string[] } {
   return { subcommand, rest };
 }
 
-export function recipesCommand(
-  deps?: RecipesCommandDeps,
-): SlashCommand {
+export function recipesCommand(deps?: RecipesCommandDeps): SlashCommand {
   const createLoader = (config: Config) =>
     deps?.loaderFactory?.(config) ?? new DefaultRecipeLoader(config);
   const createExecutor = (config: Config) =>
@@ -173,8 +173,7 @@ export function recipesCommand(
         context.ui.addItem(
           {
             type: MessageType.ERROR,
-            text:
-              'Community recipe requires confirmation. Re-run with --confirm to proceed.',
+            text: 'Community recipe requires confirmation. Re-run with --confirm to proceed.',
           },
           Date.now(),
         );
@@ -192,10 +191,7 @@ export function recipesCommand(
         failed.length === 0
           ? `Recipe "${recipe.recipe.id}" completed.`
           : `Recipe "${recipe.recipe.id}" completed with ${failed.length} failure(s).`;
-      context.ui.addItem(
-        { type: MessageType.INFO, text: summary },
-        Date.now(),
-      );
+      context.ui.addItem({ type: MessageType.INFO, text: summary }, Date.now());
     } catch (error) {
       context.ui.addItem(
         {
@@ -256,7 +252,10 @@ export function recipesCommand(
         kind: CommandKind.BUILT_IN,
         autoExecute: true,
         action: (context, args) => {
-          const id = args.split(' ').map((p) => p.trim()).filter(Boolean)[0];
+          const id = args
+            .split(' ')
+            .map((p) => p.trim())
+            .filter(Boolean)[0];
           return handleShow(context, id);
         },
       },

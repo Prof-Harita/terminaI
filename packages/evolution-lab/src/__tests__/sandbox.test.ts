@@ -21,7 +21,10 @@ describe('SandboxController', () => {
     const startSpy = vi
       .spyOn(
         controller as unknown as {
-          startDockerContainer: (id: string, workDir: string) => Promise<string>;
+          startDockerContainer: (
+            id: string,
+            workDir: string,
+          ) => Promise<string>;
         },
         'startDockerContainer',
       )
@@ -58,16 +61,17 @@ describe('SandboxController', () => {
     (fakeProc as unknown as { stdin: null }).stdin = null;
 
     const calls: Array<{ cmd: string; args: string[] }> = [];
-    const spawnFn = ((cmd: string, args?: ReadonlyArray<string>) => {
+    const spawnFn = ((cmd: string, args?: readonly string[]) => {
       calls.push({ cmd, args: (args as string[]) ?? [] });
       return fakeProc;
     }) as unknown as typeof spawn;
     const controller = new SandboxController({ spawnFn });
 
-    const promise = (controller as unknown as { startDockerContainer: (id: string, workDir: string) => Promise<string> }).startDockerContainer(
-      'abc123',
-      '/tmp/work',
-    );
+    const promise = (
+      controller as unknown as {
+        startDockerContainer: (id: string, workDir: string) => Promise<string>;
+      }
+    ).startDockerContainer('abc123', '/tmp/work');
     stdout.emit('data', 'container-id');
     fakeProc.emit('close', 0);
     const containerId = await promise;

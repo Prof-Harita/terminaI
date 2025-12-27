@@ -15,10 +15,11 @@ export interface HashResult {
 }
 
 function normalizeEventForHash(event: AuditEvent): Record<string, unknown> {
-  const { hash: _hash, prevHash: _prevHash, ...rest } = event as unknown as Record<
-    string,
-    unknown
-  >;
+  const {
+    hash: _hash,
+    prevHash: _prevHash,
+    ...rest
+  } = event as unknown as Record<string, unknown>;
   return rest;
 }
 
@@ -35,9 +36,10 @@ export function computeHash(
   return { hash, prevHash: previousHash };
 }
 
-export function verifyHashChain(
-  events: AuditEvent[],
-): { ok: boolean; error?: string } {
+export function verifyHashChain(events: AuditEvent[]): {
+  ok: boolean;
+  error?: string;
+} {
   let prevHash = '';
   for (const [index, event] of events.entries()) {
     const { hash, prevHash: expectedPrevHash } = event;

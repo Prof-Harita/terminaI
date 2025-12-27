@@ -16,10 +16,7 @@ import type {
 import { BaseToolInvocation, Kind } from './tools.js';
 import type { MessageBus } from '../confirmation-bus/message-bus.js';
 import { UI_CLICK_XY_TOOL_NAME } from './tool-names.js';
-import {
-  buildUiConfirmationDetails,
-  formatUiResult,
-} from './ui-tool-utils.js';
+import { buildUiConfirmationDetails, formatUiResult } from './ui-tool-utils.js';
 import { DesktopAutomationService } from '../gui/service/DesktopAutomationService.js';
 
 class UiClickXyToolInvocation extends BaseToolInvocation<

@@ -286,8 +286,8 @@ using `"cwd": "${extensionPath}${/}run.ts"`.
 
 **Supported variables:**
 
-| variable                   | description                                                                                                                                                     |
-| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| variable                   | description                                                                                                                                                       |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `${extensionPath}`         | The fully-qualified path of the extension in the user's filesystem e.g., '/Users/username/.terminai/extensions/example-extension'. This will not unwrap symlinks. |
-| `${workspacePath}`         | The fully-qualified path of the current workspace.                                                                                                              |
-| `${/} or ${pathSeparator}` | The path separator (differs per OS).                                                                                                                            |
+| `${workspacePath}`         | The fully-qualified path of the current workspace.                                                                                                                |
+| `${/} or ${pathSeparator}` | The path separator (differs per OS).                                                                                                                              |

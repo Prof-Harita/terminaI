@@ -437,7 +437,9 @@ export class Turn {
     return provenance;
   }
 
-  private mergeProvenance(...sets: Array<Provenance[] | undefined>): Provenance[] {
+  private mergeProvenance(
+    ...sets: Array<Provenance[] | undefined>
+  ): Provenance[] {
     const merged: Provenance[] = [];
     const seen = new Set<Provenance>();
     for (const set of sets) {

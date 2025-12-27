@@ -536,9 +536,9 @@ describe('CoreToolScheduler', () => {
       'awaiting_approval',
     )) as WaitingToolCall;
 
-    expect((awaitingCall.confirmationDetails as any)?.provenance).toEqual(
-      ['local_user', 'web_remote_user'],
-    );
+    expect(
+      (awaitingCall.confirmationDetails as { provenance: string[] }).provenance,
+    ).toEqual(['local_user', 'web_remote_user']);
   });
 
   it('should cancel all tools in a batch when one is cancelled via confirmation', async () => {

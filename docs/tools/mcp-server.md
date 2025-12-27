@@ -922,7 +922,8 @@ directly edit JSON files.
 
 The `add` command configures a new MCP server in your `settings.json`. Based on
 the scope (`-s, --scope`), it will be added to either the user config
-`~/.terminai/settings.json` or the project config `.terminai/settings.json` file.
+`~/.terminai/settings.json` or the project config `.terminai/settings.json`
+file.
 
 **Command:**
 

@@ -58,8 +58,8 @@ topics on:
   - **Solution:** Either stop the other process that is using the port or
     configure the MCP server to use a different port.
 
-- **Error: Command not found (when attempting to run Gemini CLI with
-  `terminai` or `gemini`).**
+- **Error: Command not found (when attempting to run Gemini CLI with `terminai`
+  or `gemini`).**
   - **Cause:** Gemini CLI is not correctly installed or it is not in your
     system's `PATH`.
   - **Solution:** The update depends on how you installed Gemini CLI:
@@ -67,9 +67,10 @@ topics on:
       that your `npm` global binary directory is in your `PATH`. You can update
       Gemini CLI using the command `npm install -g @google/gemini-cli@latest`.
     - If you are running `terminai` from source, ensure you are using the
-      correct command to invoke it (e.g., `node packages/cli/dist/index.js ...`).
-      To update Gemini CLI, pull the latest changes from the repository, and
-      then rebuild using the command `npm run build`.
+      correct command to invoke it (e.g.,
+      `node packages/cli/dist/index.js ...`). To update Gemini CLI, pull the
+      latest changes from the repository, and then rebuild using the command
+      `npm run build`.
 
 - **Error: `MODULE_NOT_FOUND` or import errors.**
   - **Cause:** Dependencies are not installed correctly, or the project hasn't

@@ -498,8 +498,7 @@ export async function main() {
       }
     }
 
-    const webRemoteHost =
-      argv.remoteBind ?? argv.webRemoteHost ?? '127.0.0.1';
+    const webRemoteHost = argv.remoteBind ?? argv.webRemoteHost ?? '127.0.0.1';
     const webRemotePort = argv.webRemotePort ?? 41242;
     const webRemoteAllowedOrigins = argv.webRemoteAllowedOrigins ?? [];
     const additionalStartupWarnings: string[] = [];

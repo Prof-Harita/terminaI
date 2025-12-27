@@ -27,8 +27,7 @@ export function compareBrainAuthority(
   right: BrainAuthority,
 ): number {
   return (
-    BRAIN_AUTHORITY_ORDER.indexOf(left) -
-    BRAIN_AUTHORITY_ORDER.indexOf(right)
+    BRAIN_AUTHORITY_ORDER.indexOf(left) - BRAIN_AUTHORITY_ORDER.indexOf(right)
   );
 }
 

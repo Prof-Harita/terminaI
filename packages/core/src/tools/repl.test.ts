@@ -106,11 +106,7 @@ describe('ReplTool', () => {
       expect(result.error).toBeUndefined();
       expect(
         sessionManagerModule.computerSessionManager.executeCode,
-      ).toHaveBeenCalledWith(
-        'default_python',
-        'print("Hello, World!")',
-        30000,
-      );
+      ).toHaveBeenCalledWith('default_python', 'print("Hello, World!")', 30000);
     });
 
     it('should create session if not exists', async () => {

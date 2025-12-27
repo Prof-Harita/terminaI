@@ -71,8 +71,8 @@ observability framework — Gemini CLI's observability system provides:
 
 ## Configuration
 
-All telemetry behavior is controlled through your `.terminai/settings.json` file.
-Environment variables can be used to override the settings in the file.
+All telemetry behavior is controlled through your `.terminai/settings.json`
+file. Environment variables can be used to override the settings in the file.
 
 | Setting        | Environment Variable               | Description                                         | Values            | Default                 |
 | -------------- | ---------------------------------- | --------------------------------------------------- | ----------------- | ----------------------- |
@@ -202,7 +202,8 @@ forward data to Google Cloud.
    - Start a local OTEL collector that forwards to Google Cloud
    - Configure your workspace
    - Provide links to view traces, metrics, and logs in Google Cloud Console
-   - Save collector logs to `~/.terminai/tmp/<projectHash>/otel/collector-gcp.log`
+   - Save collector logs to
+     `~/.terminai/tmp/<projectHash>/otel/collector-gcp.log`
    - Stop collector on exit (e.g. `Ctrl+C`)
 3. Run Gemini CLI and send prompts.
 4. View logs and metrics:
@@ -231,7 +232,8 @@ For local development and debugging, you can capture telemetry data locally:
    }
    ```
 2. Run Gemini CLI and send prompts.
-3. View logs and metrics in the specified file (e.g., `.terminai/telemetry.log`).
+3. View logs and metrics in the specified file (e.g.,
+   `.terminai/telemetry.log`).
 
 ### Collector-based export (advanced)
 

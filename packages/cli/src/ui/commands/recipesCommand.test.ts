@@ -46,6 +46,7 @@ describe('recipesCommand', () => {
       executorFactory: vi.fn(),
     });
     const ctx = createMockCommandContext({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       services: { config: {} as any },
     });
     if (!cmd.action) throw new Error('missing action');
@@ -70,6 +71,7 @@ describe('recipesCommand', () => {
       executorFactory: vi.fn(),
     });
     const ctx = createMockCommandContext({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       services: { config: {} as any },
     });
     const run = cmd.subCommands?.find((c) => c.name === 'run');
@@ -95,9 +97,11 @@ describe('recipesCommand', () => {
       markCommunityRecipeTrusted: vi.fn(),
     } as unknown as RecipeLoader;
     const executor: RecipeExecutor = {
-      run: vi.fn().mockResolvedValue([
-        { stepId: 'step-1', success: true, toolCallId: 'id-1' },
-      ]),
+      run: vi
+        .fn()
+        .mockResolvedValue([
+          { stepId: 'step-1', success: true, toolCallId: 'id-1' },
+        ]),
     } as unknown as RecipeExecutor;
 
     const cmd = recipesCommand({
@@ -105,6 +109,7 @@ describe('recipesCommand', () => {
       executorFactory: () => executor,
     });
     const ctx = createMockCommandContext({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       services: { config: {} as any },
     });
     const run = cmd.subCommands?.find((c) => c.name === 'run');

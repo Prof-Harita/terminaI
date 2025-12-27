@@ -298,7 +298,9 @@ export async function resolvePolicyBrainAuthority(
             continue;
           }
 
-          const authority = (brainConfig as Record<string, unknown>)['authority'];
+          const authority = (brainConfig as Record<string, unknown>)[
+            'authority'
+          ];
           if (authority === undefined) {
             continue;
           }

@@ -9,12 +9,12 @@ all your projects, streamlining your workflow and ensuring consistency.
 
 Gemini CLI discovers commands from two locations, loaded in a specific order:
 
-1.  **User commands (global):** Located in `~/.terminai/commands/`. These commands
-    are available in any project you are working on.
+1.  **User commands (global):** Located in `~/.terminai/commands/`. These
+    commands are available in any project you are working on.
 2.  **Project commands (local):** Located in
-    `<your-project-root>/.terminai/commands/`. These commands are specific to the
-    current project and can be checked into version control to be shared with
-    your team.
+    `<your-project-root>/.terminai/commands/`. These commands are specific to
+    the current project and can be checked into version control to be shared
+    with your team.
 
 If a command in the project directory has the same name as a command in the user
 directory, the **project command will always be used.** This allows projects to
@@ -27,8 +27,8 @@ directory. Subdirectories are used to create namespaced commands, with the path
 separator (`/` or `\`) being converted to a colon (`:`).
 
 - A file at `~/.terminai/commands/test.toml` becomes the command `/test`.
-- A file at `<project>/.terminai/commands/git/commit.toml` becomes the namespaced
-  command `/git:commit`.
+- A file at `<project>/.terminai/commands/git/commit.toml` becomes the
+  namespaced command `/git:commit`.
 
 ## TOML file format (v1)
 

@@ -51,11 +51,13 @@ locations for these files:
     settings have the lowest precedence and are intended to be overridden by
     user, project, or system override settings.
 - **User settings file:**
-  - **Location:** `~/.terminai/settings.json` (where `~` is your home directory).
+  - **Location:** `~/.terminai/settings.json` (where `~` is your home
+    directory).
   - **Scope:** Applies to all Gemini CLI sessions for the current user. User
     settings override system defaults.
 - **Project settings file:**
-  - **Location:** `.terminai/settings.json` within your project's root directory.
+  - **Location:** `.terminai/settings.json` within your project's root
+    directory.
   - **Scope:** Applies only when running Gemini CLI from that specific project.
     Project settings override user settings and system defaults.
 - **System settings file:**
@@ -317,6 +319,18 @@ their corresponding top-level category object in your `settings.json` file.
   - **Default:** `"auto"`
   - **Values:** `"auto"`, `"whispercpp"`, `"none"`
 
+- **`voice.stt.whispercpp.binaryPath`** (string):
+  - **Description:** Override path to the whisper.cpp binary.
+  - **Default:** `undefined`
+
+- **`voice.stt.whispercpp.modelPath`** (string):
+  - **Description:** Override path to the whisper.cpp model file.
+  - **Default:** `undefined`
+
+- **`voice.stt.whispercpp.device`** (string):
+  - **Description:** Optional microphone device name to pass to the recorder.
+  - **Default:** `undefined`
+
 - **`voice.tts.provider`** (enum):
   - **Description:** Text-to-speech provider.
   - **Default:** `"auto"`
@@ -370,6 +384,15 @@ their corresponding top-level category object in your `settings.json` file.
 - **`model.skipNextSpeakerCheck`** (boolean):
   - **Description:** Skip the next speaker check.
   - **Default:** `true`
+
+#### `brain`
+
+- **`brain.authority`** (enum):
+  - **Description:** Controls how much the brain can raise approval review
+    levels.
+  - **Default:** `"escalate-only"`
+  - **Values:** `"advisory"`, `"escalate-only"`, `"governing"`
+  - **Requires restart:** Yes
 
 #### `modelConfigs`
 
@@ -681,6 +704,19 @@ their corresponding top-level category object in your `settings.json` file.
     shell command. Defaults to 5 minutes.
   - **Default:** `300`
 
+- **`tools.repl.sandboxTier`** (string):
+  - **Description:** Select the REPL sandbox tier (tier1 local temp sandbox,
+    tier2 Docker).
+  - **Default:** `"tier1"`
+
+- **`tools.repl.timeoutSeconds`** (number):
+  - **Description:** Maximum execution time for REPL runs in seconds.
+  - **Default:** `30`
+
+- **`tools.repl.dockerImage`** (string):
+  - **Description:** Docker image to use for tier2 REPL execution.
+  - **Default:** `undefined`
+
 - **`tools.autoAccept`** (boolean):
   - **Description:** Automatically accept and execute tool calls that are
     considered safe (e.g., read-only operations).
@@ -751,6 +787,45 @@ their corresponding top-level category object in your `settings.json` file.
   - **Description:** Enable desktop GUI automation tools (ui.click, ui.type,
     etc.). Requires AT-SPI on Linux.
   - **Default:** `false`
+  - **Requires restart:** Yes
+
+- **`tools.guiAutomation.minReviewLevel`** (enum):
+  - **Description:** Default minimum review level for GUI automation tools.
+  - **Default:** `"B"`
+  - **Values:** `"A"`, `"B"`, `"C"`
+  - **Requires restart:** Yes
+
+- **`tools.guiAutomation.clickMinReviewLevel`** (enum):
+  - **Description:** Minimum review level enforced for ui.click.
+  - **Default:** `"B"`
+  - **Values:** `"A"`, `"B"`, `"C"`
+  - **Requires restart:** Yes
+
+- **`tools.guiAutomation.typeMinReviewLevel`** (enum):
+  - **Description:** Minimum review level enforced for ui.type.
+  - **Default:** `"B"`
+  - **Values:** `"A"`, `"B"`, `"C"`
+  - **Requires restart:** Yes
+
+- **`tools.guiAutomation.redactTypedTextByDefault`** (boolean):
+  - **Description:** Redact ui.type text in audit logs by default.
+  - **Default:** `true`
+  - **Requires restart:** Yes
+
+- **`tools.guiAutomation.snapshotMaxDepth`** (number):
+  - **Description:** Maximum depth for captured UI trees.
+  - **Default:** `10`
+  - **Requires restart:** Yes
+
+- **`tools.guiAutomation.snapshotMaxNodes`** (number):
+  - **Description:** Maximum number of nodes included in UI snapshots. Applies
+    both in the driver and as a core backstop.
+  - **Default:** `100`
+  - **Requires restart:** Yes
+
+- **`tools.guiAutomation.maxActionsPerMinute`** (number):
+  - **Description:** Rate limit for GUI automation actions per minute.
+  - **Default:** `60`
   - **Requires restart:** Yes
 
 - **`tools.enableHooks`** (boolean):
@@ -826,6 +901,61 @@ their corresponding top-level category object in your `settings.json` file.
 - **`security.auth.useExternal`** (boolean):
   - **Description:** Whether to use an external authentication flow.
   - **Default:** `undefined`
+  - **Requires restart:** Yes
+
+#### `audit`
+
+- **`audit.redactUiTypedText`** (boolean):
+  - **Description:** Redact UI typed text in audit logs. Audit logging cannot be
+    disabled.
+  - **Default:** `true`
+  - **Requires restart:** Yes
+
+- **`audit.retentionDays`** (number):
+  - **Description:** Retention window for audit logs (metadata only).
+  - **Default:** `30`
+  - **Requires restart:** Yes
+
+- **`audit.export.format`** (enum):
+  - **Description:** Format to use when exporting audit logs.
+  - **Default:** `"jsonl"`
+  - **Values:** `"jsonl"`, `"json"`
+
+- **`audit.export.redaction`** (enum):
+  - **Description:** Export redaction. Enterprise removes payloads; debug keeps
+    more detail.
+  - **Default:** `"enterprise"`
+  - **Values:** `"enterprise"`, `"debug"`
+
+#### `recipes`
+
+- **`recipes.paths`** (array):
+  - **Description:** Additional directories to load user-authored recipes from.
+  - **Default:** `[]`
+  - **Requires restart:** Yes
+
+- **`recipes.communityPaths`** (array):
+  - **Description:** Directories containing community recipes. These require
+    confirmation before first use.
+  - **Default:** `[]`
+  - **Requires restart:** Yes
+
+- **`recipes.allowCommunity`** (boolean):
+  - **Description:** Enable loading community recipes. Community recipes still
+    require first-load confirmation.
+  - **Default:** `false`
+  - **Requires restart:** Yes
+
+- **`recipes.confirmCommunityOnFirstLoad`** (boolean):
+  - **Description:** When enabled, the CLI will ask for confirmation the first
+    time a community recipe is encountered.
+  - **Default:** `true`
+  - **Requires restart:** Yes
+
+- **`recipes.trustedCommunityRecipes`** (array):
+  - **Description:** Recipe IDs that have already been confirmed. These will not
+    prompt again.
+  - **Default:** `[]`
   - **Requires restart:** Yes
 
 #### `advanced`
@@ -1226,8 +1356,9 @@ the `advanced.excludedEnvVars` setting in your `settings.json` file.
     operations.
   - `strict`: Uses a strict profile that declines operations by default.
   - `<profile_name>`: Uses a custom profile. To define a custom profile, create
-    a file named `sandbox-macos-<profile_name>.sb` in your project's `.terminai/`
-    directory (e.g., `my-project/.terminai/sandbox-macos-custom.sb`).
+    a file named `sandbox-macos-<profile_name>.sb` in your project's
+    `.terminai/` directory (e.g.,
+    `my-project/.terminai/sandbox-macos-custom.sb`).
 - **`DEBUG` or `DEBUG_MODE`** (often used by underlying libraries or the CLI
   itself):
   - Set to `true` or `1` to enable verbose debug logging, which can be helpful

@@ -299,8 +299,8 @@ terminai -p "List programming languages" | grep -i "python"
 
 Key command-line options for headless usage:
 
-| Option                  | Description                        | Example                                            |
-| ----------------------- | ---------------------------------- | -------------------------------------------------- |
+| Option                  | Description                        | Example                                              |
+| ----------------------- | ---------------------------------- | ---------------------------------------------------- |
 | `--prompt`, `-p`        | Run in headless mode               | `terminai -p "query"`                                |
 | `--output-format`       | Specify output format (text, json) | `terminai -p "query" --output-format json`           |
 | `--model`, `-m`         | Specify the Gemini model           | `terminai -p "query" -m gemini-2.5-flash`            |

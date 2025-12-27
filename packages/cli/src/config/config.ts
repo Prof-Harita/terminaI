@@ -398,8 +398,8 @@ export async function parseArguments(settings: Settings): Promise<CliArgs> {
         return 'Cannot use both --web-remote-token and --web-remote-rotate-token together.';
       }
       const remoteBind = argv['remoteBind'] as string | undefined;
-      const webRemoteHost = (remoteBind ??
-        (argv['webRemoteHost'] as string | undefined)) as string | undefined;
+      const webRemoteHost =
+        remoteBind ?? (argv['webRemoteHost'] as string | undefined);
       if (
         remoteBind &&
         argv['webRemoteHost'] &&
@@ -407,11 +407,7 @@ export async function parseArguments(settings: Settings): Promise<CliArgs> {
       ) {
         return 'Cannot use both --remote-bind and --web-remote-host with different values.';
       }
-      if (
-        webRemoteHost &&
-        !isLoopbackHost(webRemoteHost) &&
-        !remoteBind
-      ) {
+      if (webRemoteHost && !isLoopbackHost(webRemoteHost) && !remoteBind) {
         return 'Binding web-remote to a non-loopback host requires --remote-bind';
       }
       return true;
@@ -850,20 +846,15 @@ export async function loadCliConfig(
     audit: {
       redactUiTypedText: settings.audit?.redactUiTypedText,
       retentionDays: settings.audit?.retentionDays,
-      exportFormat: settings.audit?.export?.format as
-        | 'jsonl'
-        | 'json'
-        | undefined,
-      exportRedaction: settings.audit?.export?.redaction as
-        | 'enterprise'
-        | 'debug'
-        | undefined,
+      exportFormat: settings.audit?.export?.format,
+      exportRedaction: settings.audit?.export?.redaction,
     },
     recipes: {
       paths: settings.recipes?.paths,
       communityPaths: settings.recipes?.communityPaths,
       allowCommunity: settings.recipes?.allowCommunity,
-      confirmCommunityOnFirstLoad: settings.recipes?.confirmCommunityOnFirstLoad,
+      confirmCommunityOnFirstLoad:
+        settings.recipes?.confirmCommunityOnFirstLoad,
       trustedCommunityRecipes: settings.recipes?.trustedCommunityRecipes,
     },
     showMemoryUsage: settings.ui?.showMemoryUsage || false,
@@ -911,27 +902,16 @@ export async function loadCliConfig(
     truncateToolOutputLines: settings.tools?.truncateToolOutputLines,
     enableToolOutputTruncation: settings.tools?.enableToolOutputTruncation,
     repl: {
-      sandboxTier: settings.tools?.repl
-        ?.sandboxTier as ReplSandboxTier | undefined,
+      sandboxTier: settings.tools?.repl?.sandboxTier as
+        | ReplSandboxTier
+        | undefined,
       timeoutSeconds: settings.tools?.repl?.timeoutSeconds,
       dockerImage: replDockerImage,
     },
     guiAutomation: {
-      minReviewLevel: settings.tools?.guiAutomation?.minReviewLevel as
-        | 'A'
-        | 'B'
-        | 'C'
-        | undefined,
-      clickMinReviewLevel: settings.tools?.guiAutomation?.clickMinReviewLevel as
-        | 'A'
-        | 'B'
-        | 'C'
-        | undefined,
-      typeMinReviewLevel: settings.tools?.guiAutomation?.typeMinReviewLevel as
-        | 'A'
-        | 'B'
-        | 'C'
-        | undefined,
+      minReviewLevel: settings.tools?.guiAutomation?.minReviewLevel,
+      clickMinReviewLevel: settings.tools?.guiAutomation?.clickMinReviewLevel,
+      typeMinReviewLevel: settings.tools?.guiAutomation?.typeMinReviewLevel,
       redactTypedTextByDefault:
         settings.tools?.guiAutomation?.redactTypedTextByDefault,
       snapshotMaxDepth: settings.tools?.guiAutomation?.snapshotMaxDepth,

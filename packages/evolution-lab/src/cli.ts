@@ -68,8 +68,7 @@ void yargs(hideBin(process.argv))
           type: 'string',
           choices: ['docker', 'desktop', 'full-vm', 'host', 'headless'],
           default: DEFAULT_CONFIG.sandbox.type,
-          describe:
-            'Sandbox type (headless is a deprecated alias for docker)',
+          describe: 'Sandbox type (headless is a deprecated alias for docker)',
         })
         .option('allow-unsafe-host', {
           type: 'boolean',
@@ -130,8 +129,7 @@ void yargs(hideBin(process.argv))
           type: 'string',
           choices: ['docker', 'desktop', 'full-vm', 'host', 'headless'],
           default: DEFAULT_CONFIG.sandbox.type,
-          describe:
-            'Sandbox type (headless is a deprecated alias for docker)',
+          describe: 'Sandbox type (headless is a deprecated alias for docker)',
         })
         .option('allow-unsafe-host', {
           type: 'boolean',
@@ -229,8 +227,7 @@ void yargs(hideBin(process.argv))
           type: 'string',
           choices: ['docker', 'desktop', 'full-vm', 'host', 'headless'],
           default: DEFAULT_CONFIG.sandbox.type,
-          describe:
-            'Sandbox type (headless is a deprecated alias for docker)',
+          describe: 'Sandbox type (headless is a deprecated alias for docker)',
         })
         .option('allow-unsafe-host', {
           type: 'boolean',

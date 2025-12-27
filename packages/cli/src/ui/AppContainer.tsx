@@ -233,17 +233,15 @@ function normalizeTtsProvider(
   return value === 'none' ? 'none' : 'auto';
 }
 
-function readVoiceMetadata():
-  | {
-      paths?: {
-        whisperBinary?: string;
-        whisperModel?: string;
-      };
-      components?: {
-        whisper?: { binaryPath?: string | null; model?: string | null };
-      };
-    }
-  | null {
+function readVoiceMetadata(): {
+  paths?: {
+    whisperBinary?: string;
+    whisperModel?: string;
+  };
+  components?: {
+    whisper?: { binaryPath?: string | null; model?: string | null };
+  };
+} | null {
   try {
     const raw = fs.readFileSync(join(VOICE_CACHE_DIR, 'metadata.json'), 'utf8');
     return JSON.parse(raw);
@@ -1354,10 +1352,7 @@ Logging in with Google... Restarting terminaI to continue.
     whisperRef.current = whisper;
     transcriptRef.current = { partial: '', final: '' };
 
-    const handleTranscription = (chunk: {
-      text: string;
-      isFinal: boolean;
-    }) => {
+    const handleTranscription = (chunk: { text: string; isFinal: boolean }) => {
       if (!chunk.text) {
         return;
       }
@@ -1389,8 +1384,9 @@ Logging in with Google... Restarting terminaI to continue.
       if (whisper.isRunning()) {
         whisper.stopStreaming();
       }
-      const text =
-        (transcriptRef.current.final || transcriptRef.current.partial).trim();
+      const text = (
+        transcriptRef.current.final || transcriptRef.current.partial
+      ).trim();
       if (!text) {
         debugLogger.warn('Voice STT produced no transcript.');
         return;

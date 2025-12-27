@@ -67,10 +67,9 @@ function redactValue(
 
   if (typeof value === 'object') {
     const redacted: Record<string, unknown> = {};
-    for (const [key, nested] of Object.entries(value as Record<
-      string,
-      unknown
-    >)) {
+    for (const [key, nested] of Object.entries(
+      value as Record<string, unknown>,
+    )) {
       redacted[key] = redactValue(
         nested,
         path ? `${path}.${key}` : key,

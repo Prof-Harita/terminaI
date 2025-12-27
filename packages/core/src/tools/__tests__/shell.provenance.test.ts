@@ -27,6 +27,7 @@ describe('ShellToolInvocation provenance', () => {
       new Set<string>(),
     );
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.spyOn(invocation as any, 'evaluateBrain').mockResolvedValue(null);
     invocation.setProvenance(['web_remote_user']);
 

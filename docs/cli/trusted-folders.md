@@ -35,8 +35,8 @@ folder, a dialog will automatically appear, prompting you to make a choice:
 - **Don't trust**: Marks the folder as untrusted. The CLI will operate in a
   restricted "safe mode."
 
-Your choice is saved in a central file (`~/.terminai/trustedFolders.json`), so you
-will only be asked once per folder.
+Your choice is saved in a central file (`~/.terminai/trustedFolders.json`), so
+you will only be asked once per folder.
 
 ## Why trust matters: The impact of an untrusted workspace
 
@@ -44,8 +44,8 @@ When a folder is **untrusted**, the Gemini CLI runs in a restricted "safe mode"
 to protect you. In this mode, the following features are disabled:
 
 1.  **Workspace settings are ignored**: The CLI will **not** load the
-    `.terminai/settings.json` file from the project. This prevents the loading of
-    custom tools and other potentially dangerous configurations.
+    `.terminai/settings.json` file from the project. This prevents the loading
+    of custom tools and other potentially dangerous configurations.
 
 2.  **Environment variables are ignored**: The CLI will **not** load any `.env`
     files from the project.

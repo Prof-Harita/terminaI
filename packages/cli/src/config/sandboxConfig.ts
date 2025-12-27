@@ -43,12 +43,13 @@ function getSandboxCommand(
   }
 
   // note environment variable takes precedence over argument (from command line or settings)
-  const environmentConfiguredSandbox =
-    (process.env['TERMINAI_SANDBOX'] ??
-      process.env['GEMINI_SANDBOX'] ??
-      '')
-      .toLowerCase()
-      .trim();
+  const environmentConfiguredSandbox = (
+    process.env['TERMINAI_SANDBOX'] ??
+    process.env['GEMINI_SANDBOX'] ??
+    ''
+  )
+    .toLowerCase()
+    .trim();
   sandbox =
     environmentConfiguredSandbox?.length > 0
       ? environmentConfiguredSandbox

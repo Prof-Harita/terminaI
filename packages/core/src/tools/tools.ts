@@ -704,8 +704,7 @@ export interface ToolConfirmationReviewMetadata {
 }
 
 export interface ToolEditConfirmationDetails
-  extends ToolConfirmationReviewMetadata
-{
+  extends ToolConfirmationReviewMetadata {
   type: 'edit';
   title: string;
   onConfirm: (
@@ -730,8 +729,7 @@ export interface ToolConfirmationPayload {
 }
 
 export interface ToolExecuteConfirmationDetails
-  extends ToolConfirmationReviewMetadata
-{
+  extends ToolConfirmationReviewMetadata {
   type: 'exec';
   title: string;
   onConfirm: (
@@ -745,8 +743,7 @@ export interface ToolExecuteConfirmationDetails
 }
 
 export interface ToolMcpConfirmationDetails
-  extends ToolConfirmationReviewMetadata
-{
+  extends ToolConfirmationReviewMetadata {
   type: 'mcp';
   title: string;
   serverName: string;
@@ -759,8 +756,7 @@ export interface ToolMcpConfirmationDetails
 }
 
 export interface ToolInfoConfirmationDetails
-  extends ToolConfirmationReviewMetadata
-{
+  extends ToolConfirmationReviewMetadata {
   type: 'info';
   title: string;
   onConfirm: (

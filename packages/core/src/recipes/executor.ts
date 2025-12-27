@@ -130,7 +130,7 @@ export class RecipeExecutor {
       success: call.status === 'success',
       error:
         call.status === 'error'
-          ? call.response.error?.message ?? 'Unknown error'
+          ? (call.response.error?.message ?? 'Unknown error')
           : undefined,
       toolCallId: call.request.callId,
     }));

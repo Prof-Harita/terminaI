@@ -326,9 +326,7 @@ function createTier1Sandbox(language: ReplToolParams['language']): {
   env: Record<string, string>;
   cleanupPaths: string[];
 } {
-  const sandboxRoot = fs.mkdtempSync(
-    path.join(os.tmpdir(), 'terminai-repl-'),
-  );
+  const sandboxRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'terminai-repl-'));
   const env: Record<string, string> = {
     HOME: sandboxRoot,
     TMPDIR: sandboxRoot,

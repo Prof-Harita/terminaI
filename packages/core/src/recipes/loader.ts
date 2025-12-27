@@ -8,11 +8,7 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { builtinRecipes } from './builtins/index.js';
-import {
-  type LoadedRecipe,
-  type Recipe,
-  type RecipeOrigin,
-} from './schema.js';
+import { type LoadedRecipe, type Recipe, type RecipeOrigin } from './schema.js';
 import type { Config } from '../config/config.js';
 import { Storage } from '../config/storage.js';
 import { debugLogger } from '../utils/debugLogger.js';
@@ -51,7 +47,9 @@ function validateRecipe(candidate: unknown, source?: string): Recipe {
     !recipe.goal ||
     !Array.isArray(recipe.steps)
   ) {
-    throw new Error(`Recipe missing required fields${source ? `: ${source}` : ''}`);
+    throw new Error(
+      `Recipe missing required fields${source ? `: ${source}` : ''}`,
+    );
   }
   for (const step of recipe.steps) {
     if (!step.id || !step.title) {
@@ -70,7 +68,10 @@ export interface RecipeLoaderOptions {
   confirmCommunityOnFirstLoad: boolean;
   trustedCommunityRecipeIds: string[];
   trustStorePath: string;
-  confirmCommunityRecipe?: (recipe: Recipe, filePath: string) => Promise<boolean>;
+  confirmCommunityRecipe?: (
+    recipe: Recipe,
+    filePath: string,
+  ) => Promise<boolean>;
 }
 
 async function readTrustStore(trustStorePath: string): Promise<Set<string>> {
@@ -110,15 +111,13 @@ export class RecipeLoader {
 
   constructor(config: Config, overrides?: Partial<RecipeLoaderOptions>) {
     const recipeSettings = config.getRecipeSettings?.() ?? {};
-    const storage = config.storage ?? new Storage(config.getTargetDir?.() ?? '.');
+    const storage =
+      config.storage ?? new Storage(config.getTargetDir?.() ?? '.');
     const trustStorePath =
-      overrides?.trustStorePath ??
-      storage.getCommunityRecipesTrustStorePath();
+      overrides?.trustStorePath ?? storage.getCommunityRecipesTrustStorePath();
     this.options = {
-      userPaths:
-        overrides?.userPaths ??
-        recipeSettings.paths ??
-        [storage.getProjectRecipesDir()],
+      userPaths: overrides?.userPaths ??
+        recipeSettings.paths ?? [storage.getProjectRecipesDir()],
       communityPaths:
         overrides?.communityPaths ?? recipeSettings.communityPaths ?? [],
       allowCommunity:

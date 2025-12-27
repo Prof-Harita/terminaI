@@ -9,9 +9,9 @@ import type { AuditEvent, AuditLedger } from '@terminai/core';
 import { CommandKind, type SlashCommand } from './types.js';
 import { MessageType } from '../types.js';
 
-function getLedger(context: Parameters<NonNullable<SlashCommand['action']>>[0]):
-  | AuditLedger
-  | null {
+function getLedger(
+  context: Parameters<NonNullable<SlashCommand['action']>>[0],
+): AuditLedger | null {
   const config = context.services.config;
   if (!config || typeof config.getAuditLedger !== 'function') {
     return null;

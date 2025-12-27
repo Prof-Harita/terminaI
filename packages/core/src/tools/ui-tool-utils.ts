@@ -96,7 +96,7 @@ export function buildUiConfirmationDetails({
     reasons,
   );
   const requiresPin =
-    enforcedLevel === 'C' ? true : reviewResult.requiresPin ?? false;
+    enforcedLevel === 'C' ? true : (reviewResult.requiresPin ?? false);
   if (enforcedLevel === 'A') {
     return false;
   }
@@ -105,7 +105,8 @@ export function buildUiConfirmationDetails({
     title: title ?? 'Confirm UI Action',
     command: description,
     rootCommand: toolName,
-    provenance: normalizedProvenance.length > 0 ? normalizedProvenance : undefined,
+    provenance:
+      normalizedProvenance.length > 0 ? normalizedProvenance : undefined,
     reviewLevel: enforcedLevel,
     requiresPin,
     pinLength: requiresPin ? 6 : undefined,

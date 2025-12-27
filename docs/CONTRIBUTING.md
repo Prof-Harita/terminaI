@@ -215,9 +215,8 @@ additional mounts, ports, or environment variables by setting
 `SANDBOX_{MOUNTS,PORTS,ENV}` as needed. You can also fully customize the sandbox
 for your projects by creating the files `.terminai/sandbox.Dockerfile` and/or
 `.terminai/sandbox.bashrc` under your project settings directory (`.terminai`;
-legacy `.gemini` is still read) and running `terminai` with `BUILD_SANDBOX=1`
-to trigger building of your custom sandbox (the `gemini` alias is still
-supported).
+legacy `.gemini` is still read) and running `terminai` with `BUILD_SANDBOX=1` to
+trigger building of your custom sandbox (the `gemini` alias is still supported).
 
 #### Proxied networking
 

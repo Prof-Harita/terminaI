@@ -445,7 +445,8 @@ export class CoreToolScheduler {
     eventType: AuditEventType,
     extra?: AuditEventExtras,
   ): AuditEvent {
-    const invocation = 'invocation' in toolCall ? toolCall.invocation : undefined;
+    const invocation =
+      'invocation' in toolCall ? toolCall.invocation : undefined;
     const provenance =
       invocation && typeof invocation.getProvenance === 'function'
         ? invocation.getProvenance()
@@ -459,8 +460,10 @@ export class CoreToolScheduler {
 
     const extraTool = extra?.tool;
     const { tool: _ignoredTool, ...restExtra } = extra ?? {};
-    const extrasWithoutTool: Omit<AuditEventExtras, 'tool'> =
-      restExtra as Omit<AuditEventExtras, 'tool'>;
+    const extrasWithoutTool: Omit<AuditEventExtras, 'tool'> = restExtra as Omit<
+      AuditEventExtras,
+      'tool'
+    >;
     const toolContext: AuditToolContext = {
       callId: toolCall.request.callId,
       toolName: toolCall.request.name,
@@ -476,7 +479,7 @@ export class CoreToolScheduler {
       timestamp: new Date().toISOString(),
       sessionId: this.config.getSessionId(),
       provenance: normalizedProv,
-      reviewLevel: reviewLevel as AuditReviewLevel | undefined,
+      reviewLevel,
       tool: toolContext,
       ...extrasWithoutTool,
     };
@@ -764,9 +767,11 @@ export class CoreToolScheduler {
     invocation: AnyToolInvocation,
     request: ToolCallRequestInfo,
   ): void {
-    const setter = (invocation as {
-      setProvenance?: (provenance: Provenance[]) => void;
-    }).setProvenance;
+    const setter = (
+      invocation as {
+        setProvenance?: (provenance: Provenance[]) => void;
+      }
+    ).setProvenance;
     if (setter) {
       setter.call(invocation, this.normalizeProvenance(request.provenance));
     }
@@ -1503,14 +1508,18 @@ export class CoreToolScheduler {
                   signal,
                   successResponse,
                 );
-                void this.recordAuditEvent(this.findToolCall(callId), 'tool.execution_finished', {
-                  tool: {
-                    result: {
-                      success: true,
-                      outputBytes: contentLength,
+                void this.recordAuditEvent(
+                  this.findToolCall(callId),
+                  'tool.execution_finished',
+                  {
+                    tool: {
+                      result: {
+                        success: true,
+                        outputBytes: contentLength,
+                      },
                     },
                   },
-                });
+                );
               } else {
                 // It is a failure
                 const error = new Error(toolResult.error.message);

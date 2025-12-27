@@ -64,13 +64,15 @@ export class ComputerSessionManager implements ComputerSessionManagerInterface {
     }
 
     const outputBuffer: string[] = [];
-    let session: ReplSession | undefined;
+    const sessionRef: { current: ReplSession | undefined } = {
+      current: undefined,
+    };
     const shell = new PersistentShell({
       language,
       cwd,
       env,
       onOutput: (data) => {
-        const activeSession = session ?? this.sessions.get(name);
+        const activeSession = sessionRef.current ?? this.sessions.get(name);
         if (activeSession) {
           activeSession.lastActivityAt = Date.now();
 
@@ -100,7 +102,7 @@ export class ComputerSessionManager implements ComputerSessionManagerInterface {
           'session',
           `Session "${name}" exited with code ${code}, signal ${signal}`,
         );
-        const activeSession = session ?? this.sessions.get(name);
+        const activeSession = sessionRef.current ?? this.sessions.get(name);
         if (activeSession) {
           this.cleanupSessionResources(activeSession);
         }
@@ -108,7 +110,7 @@ export class ComputerSessionManager implements ComputerSessionManagerInterface {
       },
     });
 
-    session = {
+    const session: ReplSession = {
       name,
       language,
       shell,
@@ -117,6 +119,7 @@ export class ComputerSessionManager implements ComputerSessionManagerInterface {
       lastActivityAt: Date.now(),
       cleanupPaths,
     };
+    sessionRef.current = session;
 
     this.sessions.set(name, session);
     return session;

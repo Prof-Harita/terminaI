@@ -23,10 +23,12 @@ Gemini CLI uses `settings.json` files for persistent configuration. There are
 three locations for these files:
 
 - **User settings file:**
-  - **Location:** `~/.terminai/settings.json` (where `~` is your home directory).
+  - **Location:** `~/.terminai/settings.json` (where `~` is your home
+    directory).
   - **Scope:** Applies to all Gemini CLI sessions for the current user.
 - **Project settings file:**
-  - **Location:** `.terminai/settings.json` within your project's root directory.
+  - **Location:** `.terminai/settings.json` within your project's root
+    directory.
   - **Scope:** Applies only when running Gemini CLI from that specific project.
     Project settings override user settings.
 - **System settings file:**
@@ -518,8 +520,9 @@ the `excludedProjectEnvVars` setting in your `settings.json` file.
     operations.
   - `strict`: Uses a strict profile that declines operations by default.
   - `<profile_name>`: Uses a custom profile. To define a custom profile, create
-    a file named `sandbox-macos-<profile_name>.sb` in your project's `.terminai/`
-    directory (e.g., `my-project/.terminai/sandbox-macos-custom.sb`).
+    a file named `sandbox-macos-<profile_name>.sb` in your project's
+    `.terminai/` directory (e.g.,
+    `my-project/.terminai/sandbox-macos-custom.sb`).
 - **`DEBUG` or `DEBUG_MODE`** (often used by underlying libraries or the CLI
   itself):
   - Set to `true` or `1` to enable verbose debug logging, which can be helpful

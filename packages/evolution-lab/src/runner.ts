@@ -147,9 +147,7 @@ export class Runner {
   /**
    * Returns a timeout rejection.
    */
-  private timeout(
-    ms: number,
-  ): Promise<SandboxExecResult> {
+  private timeout(ms: number): Promise<SandboxExecResult> {
     return new Promise((_, reject) =>
       setTimeout(() => reject(new Error('Task timeout exceeded')), ms),
     );

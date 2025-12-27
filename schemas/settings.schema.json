@@ -647,104 +647,6 @@
       },
       "additionalProperties": false
     },
-    "audit": {
-      "title": "Audit",
-      "description": "Audit logging configuration (cannot be disabled).",
-      "markdownDescription": "Audit logging configuration (cannot be disabled).\n\n- Category: `Security`\n- Requires restart: `yes`\n- Default: `{}`",
-      "default": {},
-      "type": "object",
-      "properties": {
-        "redactUiTypedText": {
-          "title": "Redact UI typed text",
-          "description": "Redact UI typed text in audit logs. Audit logging cannot be disabled.",
-          "markdownDescription": "Redact UI typed text in audit logs. Audit logging cannot be disabled.\n\n- Category: `Security`\n- Requires restart: `yes`\n- Default: `true`",
-          "default": true,
-          "type": "boolean"
-        },
-        "retentionDays": {
-          "title": "Audit retention (days)",
-          "description": "Retention window for audit logs (metadata only).",
-          "markdownDescription": "Retention window for audit logs (metadata only).\n\n- Category: `Security`\n- Requires restart: `yes`\n- Default: `30`",
-          "default": 30,
-          "type": "number"
-        },
-        "export": {
-          "title": "Audit export",
-          "description": "Export options for audit logs.",
-          "markdownDescription": "Export options for audit logs.\n\n- Category: `Security`\n- Requires restart: `no`\n- Default: `{}`",
-          "default": {},
-          "type": "object",
-          "properties": {
-            "format": {
-              "title": "Export format",
-              "description": "Format to use when exporting audit logs.",
-              "markdownDescription": "Format to use when exporting audit logs.\n\n- Category: `Security`\n- Requires restart: `no`\n- Default: `jsonl`",
-              "default": "jsonl",
-              "type": "string",
-              "enum": ["jsonl", "json"]
-            },
-            "redaction": {
-              "title": "Export redaction level",
-              "description": "Export redaction. Enterprise removes payloads; debug keeps more detail.",
-              "markdownDescription": "Export redaction. Enterprise removes payloads; debug keeps more detail.\n\n- Category: `Security`\n- Requires restart: `no`\n- Default: `enterprise`",
-              "default": "enterprise",
-              "type": "string",
-              "enum": ["enterprise", "debug"]
-            }
-          },
-          "additionalProperties": false
-        }
-      },
-      "additionalProperties": false
-    },
-    "recipes": {
-      "title": "Recipes",
-      "description": "Governed recipes configuration. Built-ins are always enabled; community recipes require confirmation.",
-      "markdownDescription": "Governed recipes configuration. Built-ins are always enabled; community recipes require confirmation.\n\n- Category: `Automation`\n- Requires restart: `yes`\n- Default: `{}`",
-      "default": {},
-      "type": "object",
-      "properties": {
-        "paths": {
-          "title": "Recipe directories",
-          "description": "Additional directories to load user-authored recipes from.",
-          "markdownDescription": "Additional directories to load user-authored recipes from.\n\n- Category: `Automation`\n- Requires restart: `yes`\n- Default: `[]`",
-          "default": [],
-          "type": "array",
-          "items": { "type": "string" }
-        },
-        "communityPaths": {
-          "title": "Community recipe directories",
-          "description": "Directories containing community recipes. These require confirmation before first use.",
-          "markdownDescription": "Directories containing community recipes. These require confirmation before first use.\n\n- Category: `Automation`\n- Requires restart: `yes`\n- Default: `[]`",
-          "default": [],
-          "type": "array",
-          "items": { "type": "string" }
-        },
-        "allowCommunity": {
-          "title": "Allow community recipes",
-          "description": "Enable loading community recipes. Community recipes still require first-load confirmation.",
-          "markdownDescription": "Enable loading community recipes. Community recipes still require first-load confirmation.\n\n- Category: `Automation`\n- Requires restart: `yes`\n- Default: `false`",
-          "default": false,
-          "type": "boolean"
-        },
-        "confirmCommunityOnFirstLoad": {
-          "title": "Confirm community recipes on first load",
-          "description": "When enabled, the CLI will ask for confirmation the first time a community recipe is encountered.",
-          "markdownDescription": "When enabled, the CLI will ask for confirmation the first time a community recipe is encountered.\n\n- Category: `Automation`\n- Requires restart: `yes`\n- Default: `true`",
-          "default": true,
-          "type": "boolean"
-        },
-        "trustedCommunityRecipes": {
-          "title": "Trusted community recipes",
-          "description": "Recipe IDs that have already been confirmed. These will not prompt again.",
-          "markdownDescription": "Recipe IDs that have already been confirmed. These will not prompt again.\n\n- Category: `Automation`\n- Requires restart: `yes`\n- Default: `[]`",
-          "default": [],
-          "type": "array",
-          "items": { "type": "string" }
-        }
-      },
-      "additionalProperties": false
-    },
     "modelConfigs": {
       "title": "Model Configs",
       "description": "Model configurations.",
@@ -1365,11 +1267,7 @@
               "description": "Select the REPL sandbox tier (tier1 local temp sandbox, tier2 Docker).",
               "markdownDescription": "Select the REPL sandbox tier (tier1 local temp sandbox, tier2 Docker).\n\n- Category: `Tools`\n- Requires restart: `no`\n- Default: `tier1`",
               "default": "tier1",
-              "type": "string",
-              "enum": [
-                "tier1",
-                "tier2"
-              ]
+              "type": "string"
             },
             "timeoutSeconds": {
               "title": "REPL Timeout (Seconds)",
@@ -1518,24 +1416,21 @@
               "description": "Maximum depth for captured UI trees.",
               "markdownDescription": "Maximum depth for captured UI trees.\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `10`",
               "default": 10,
-              "type": "number",
-              "minimum": 1
+              "type": "number"
             },
             "snapshotMaxNodes": {
               "title": "Snapshot Max Nodes",
-              "description": "Maximum number of nodes included in UI snapshots.",
-              "markdownDescription": "Maximum number of nodes included in UI snapshots.\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `100`",
+              "description": "Maximum number of nodes included in UI snapshots. Applies both in the driver and as a core backstop.",
+              "markdownDescription": "Maximum number of nodes included in UI snapshots. Applies both in the driver and as a core backstop.\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `100`",
               "default": 100,
-              "type": "number",
-              "minimum": 1
+              "type": "number"
             },
             "maxActionsPerMinute": {
               "title": "Max Actions Per Minute",
               "description": "Rate limit for GUI automation actions per minute.",
               "markdownDescription": "Rate limit for GUI automation actions per minute.\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `60`",
               "default": 60,
-              "type": "number",
-              "minimum": 1
+              "type": "number"
             }
           },
           "additionalProperties": false
@@ -1670,6 +1565,110 @@
             }
           },
           "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "audit": {
+      "title": "Audit",
+      "description": "Audit logging configuration (cannot be disabled).",
+      "markdownDescription": "Audit logging configuration (cannot be disabled).\n\n- Category: `Security`\n- Requires restart: `yes`\n- Default: `{}`",
+      "default": {},
+      "type": "object",
+      "properties": {
+        "redactUiTypedText": {
+          "title": "Redact UI typed text",
+          "description": "Redact UI typed text in audit logs. Audit logging cannot be disabled.",
+          "markdownDescription": "Redact UI typed text in audit logs. Audit logging cannot be disabled.\n\n- Category: `Security`\n- Requires restart: `yes`\n- Default: `true`",
+          "default": true,
+          "type": "boolean"
+        },
+        "retentionDays": {
+          "title": "Audit retention (days)",
+          "description": "Retention window for audit logs (metadata only).",
+          "markdownDescription": "Retention window for audit logs (metadata only).\n\n- Category: `Security`\n- Requires restart: `yes`\n- Default: `30`",
+          "default": 30,
+          "type": "number"
+        },
+        "export": {
+          "title": "Audit export",
+          "description": "Export options for audit logs.",
+          "markdownDescription": "Export options for audit logs.\n\n- Category: `Security`\n- Requires restart: `no`\n- Default: `{}`",
+          "default": {},
+          "type": "object",
+          "properties": {
+            "format": {
+              "title": "Export format",
+              "description": "Format to use when exporting audit logs.",
+              "markdownDescription": "Format to use when exporting audit logs.\n\n- Category: `Security`\n- Requires restart: `no`\n- Default: `jsonl`",
+              "default": "jsonl",
+              "type": "string",
+              "enum": ["jsonl", "json"]
+            },
+            "redaction": {
+              "title": "Export redaction level",
+              "description": "Export redaction. Enterprise removes payloads; debug keeps more detail.",
+              "markdownDescription": "Export redaction. Enterprise removes payloads; debug keeps more detail.\n\n- Category: `Security`\n- Requires restart: `no`\n- Default: `enterprise`",
+              "default": "enterprise",
+              "type": "string",
+              "enum": ["enterprise", "debug"]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "recipes": {
+      "title": "Recipes",
+      "description": "Governed recipes configuration. Built-ins are always enabled; community recipes require confirmation.",
+      "markdownDescription": "Governed recipes configuration. Built-ins are always enabled; community recipes require confirmation.\n\n- Category: `Automation`\n- Requires restart: `yes`\n- Default: `{}`",
+      "default": {},
+      "type": "object",
+      "properties": {
+        "paths": {
+          "title": "Recipe directories",
+          "description": "Additional directories to load user-authored recipes from.",
+          "markdownDescription": "Additional directories to load user-authored recipes from.\n\n- Category: `Automation`\n- Requires restart: `yes`\n- Default: `[]`",
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "communityPaths": {
+          "title": "Community recipe directories",
+          "description": "Directories containing community recipes. These require confirmation before first use.",
+          "markdownDescription": "Directories containing community recipes. These require confirmation before first use.\n\n- Category: `Automation`\n- Requires restart: `yes`\n- Default: `[]`",
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowCommunity": {
+          "title": "Allow community recipes",
+          "description": "Enable loading community recipes. Community recipes still require first-load confirmation.",
+          "markdownDescription": "Enable loading community recipes. Community recipes still require first-load confirmation.\n\n- Category: `Automation`\n- Requires restart: `yes`\n- Default: `false`",
+          "default": false,
+          "type": "boolean"
+        },
+        "confirmCommunityOnFirstLoad": {
+          "title": "Confirm community recipes on first load",
+          "description": "When enabled, the CLI will ask for confirmation the first time a community recipe is encountered.",
+          "markdownDescription": "When enabled, the CLI will ask for confirmation the first time a community recipe is encountered.\n\n- Category: `Automation`\n- Requires restart: `yes`\n- Default: `true`",
+          "default": true,
+          "type": "boolean"
+        },
+        "trustedCommunityRecipes": {
+          "title": "Trusted community recipes",
+          "description": "Recipe IDs that have already been confirmed. These will not prompt again.",
+          "markdownDescription": "Recipe IDs that have already been confirmed. These will not prompt again.\n\n- Category: `Automation`\n- Requires restart: `yes`\n- Default: `[]`",
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "additionalProperties": false

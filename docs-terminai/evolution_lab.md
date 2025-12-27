@@ -91,12 +91,12 @@ Manages ephemeral execution environments.
 
 **Sandbox Types**:
 
-| Type       | Use Case             | Implementation                       |
-| ---------- | -------------------- | ------------------------------------ |
-| `docker`   | CLI-only tasks       | Docker + Node.js (default)           |
-| `desktop`  | GUI automation       | Docker image (Xvfb/desktop planned)  |
-| `full-vm`  | Network/Server tasks | Docker image today; KVM/QEMU planned |
-| `host`     | Unsafe local runs    | Runs directly on host (opt-in only)  |
+| Type      | Use Case             | Implementation                       |
+| --------- | -------------------- | ------------------------------------ |
+| `docker`  | CLI-only tasks       | Docker + Node.js (default)           |
+| `desktop` | GUI automation       | Docker image (Xvfb/desktop planned)  |
+| `full-vm` | Network/Server tasks | Docker image today; KVM/QEMU planned |
+| `host`    | Unsafe local runs    | Runs directly on host (opt-in only)  |
 
 Host execution requires `--allow-unsafe-host`.
 

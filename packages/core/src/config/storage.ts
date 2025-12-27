@@ -64,7 +64,11 @@ export class Storage {
   }
 
   static getCommunityRecipesTrustStorePath(): string {
-    return path.join(Storage.getGlobalGeminiDir(), 'recipes', 'community-trust.json');
+    return path.join(
+      Storage.getGlobalGeminiDir(),
+      'recipes',
+      'community-trust.json',
+    );
   }
 
   static getSystemSettingsPath(): string {

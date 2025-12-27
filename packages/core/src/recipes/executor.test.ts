@@ -66,7 +66,9 @@ describe('RecipeExecutor', () => {
             stepId: 'step-1',
           },
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         tool: {} as any,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         invocation: {} as any,
         response: {
           callId: 'demo-step-1',

@@ -29,7 +29,9 @@ const DEFAULT_GUI_AUTOMATION_CONFIG: GuiAutomationConfig = {
 
 let runtimeConfig: GuiAutomationConfig = { ...DEFAULT_GUI_AUTOMATION_CONFIG };
 
-function normalizeLevel(level: ReviewLevel | undefined): ReviewLevel | undefined {
+function normalizeLevel(
+  level: ReviewLevel | undefined,
+): ReviewLevel | undefined {
   if (!level) return undefined;
   const upper = level.toUpperCase() as ReviewLevel;
   if (upper === 'A' || upper === 'B' || upper === 'C') {

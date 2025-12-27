@@ -6,7 +6,7 @@
  */
 
 import { EventEmitter } from 'node:events';
-import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
+import { spawn, type ChildProcess } from 'node:child_process';
 import commandExists from 'command-exists';
 
 export interface AudioRecorderOptions {
@@ -20,9 +20,9 @@ export interface AudioRecorderOptions {
  * instead of throwing so the caller can surface actionable UX.
  */
 export class AudioRecorder extends EventEmitter {
-  private process: ChildProcessWithoutNullStreams | null = null;
+  private process: ChildProcess | null = null;
   private readonly chunks: Buffer[] = [];
-  private readonly options: Required<AudioRecorderOptions>;
+  private readonly options: { sampleRate: number; device?: string };
 
   constructor(opts: AudioRecorderOptions = {}) {
     super();
@@ -50,8 +50,10 @@ export class AudioRecorder extends EventEmitter {
       return;
     }
 
-    const proc = spawn(command.bin, command.args, { stdio: ['ignore', 'pipe', 'pipe'] });
-    this.process = proc;
+    const proc = spawn(command.bin, command.args, {
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    this.process = proc as ChildProcess;
 
     proc.stdout.on('data', (data: Buffer) => {
       this.chunks.push(data);
@@ -83,9 +85,7 @@ export class AudioRecorder extends EventEmitter {
     return Buffer.concat(this.chunks);
   }
 
-  private pickRecorder():
-    | { bin: string; args: string[] }
-    | null {
+  private pickRecorder(): { bin: string; args: string[] } | null {
     const { sampleRate, device } = this.options;
 
     if (commandExists.sync('sox')) {

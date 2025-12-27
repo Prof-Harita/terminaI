@@ -96,7 +96,9 @@ export interface SuiteOptions {
   sandboxConfig?: Partial<SandboxConfig>;
 }
 
-export async function runSuite(options: SuiteOptions = {}): Promise<SuiteResult[]> {
+export async function runSuite(
+  options: SuiteOptions = {},
+): Promise<SuiteResult[]> {
   const definitions =
     options.tasks?.length && options.tasks.length > 0
       ? options.tasks
