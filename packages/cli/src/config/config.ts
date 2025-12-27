@@ -26,6 +26,7 @@ import {
   WRITE_FILE_TOOL_NAME,
   SHELL_TOOL_NAMES,
   SHELL_TOOL_NAME,
+  REPL_TOOL_NAME,
   resolveTelemetrySettings,
   FatalConfigError,
   getPty,
@@ -675,8 +676,9 @@ export async function loadCliConfig(
       EDIT_TOOL_NAME,
       WRITE_FILE_TOOL_NAME,
       WEB_FETCH_TOOL_NAME,
+      REPL_TOOL_NAME,
     ];
-    const autoEditExcludes = [SHELL_TOOL_NAME];
+    const autoEditExcludes = [SHELL_TOOL_NAME, REPL_TOOL_NAME];
 
     const toolExclusionFilter = createToolExclusionFilter(
       allowedTools,
@@ -716,6 +718,11 @@ export async function loadCliConfig(
     defaultModel;
 
   const sandboxConfig = await loadSandboxConfig(settings, argv);
+  const replDockerImage =
+    settings.tools?.repl?.dockerImage ??
+    process.env['TERMINAI_REPL_DOCKER_IMAGE'] ??
+    process.env['GEMINI_REPL_DOCKER_IMAGE'] ??
+    sandboxConfig?.image;
   const screenReader =
     argv.screenReader !== undefined
       ? argv.screenReader
@@ -855,6 +862,11 @@ export async function loadCliConfig(
     truncateToolOutputThreshold: settings.tools?.truncateToolOutputThreshold,
     truncateToolOutputLines: settings.tools?.truncateToolOutputLines,
     enableToolOutputTruncation: settings.tools?.enableToolOutputTruncation,
+    repl: {
+      sandboxTier: settings.tools?.repl?.sandboxTier,
+      timeoutSeconds: settings.tools?.repl?.timeoutSeconds,
+      dockerImage: replDockerImage,
+    },
     eventEmitter: appEvents,
     useSmartEdit: argv.useSmartEdit ?? settings.useSmartEdit,
     useWriteTodos: argv.useWriteTodos ?? settings.useWriteTodos,

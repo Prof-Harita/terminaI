@@ -6,22 +6,23 @@
  */
 
 import type { GenerativeModelAdapter } from './riskAssessor.js';
-import type { REPLManager } from './replManager.js';
-
 /**
  * Implements the Code Thinker framework.
  * Framework ID: FW_SCRIPT
  */
+export interface CodeThinkerResult {
+  language: 'python' | 'node';
+  code: string;
+  explanation: string;
+}
+
 export class CodeThinker {
-  constructor(
-    private readonly model: GenerativeModelAdapter,
-    private readonly repl: REPLManager,
-  ) {}
+  constructor(private readonly model: GenerativeModelAdapter) {}
 
   /**
-   * Solves a task by generating and executing a script.
+   * Solves a task by generating a script proposal.
    */
-  async solve(task: string): Promise<string> {
+  async solve(task: string): Promise<CodeThinkerResult | null> {
     const prompt = `
 Task: "${task}"
 
@@ -30,7 +31,7 @@ The script should print the final result.
 
 Respond in JSON:
 {
-  "language": "python" | "javascript",
+  "language": "python" | "node",
   "code": "the script code",
   "explanation": "what the script does"
 }
@@ -42,13 +43,32 @@ Respond in JSON:
     try {
       const jsonMatch = text.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
-        const { language, code } = JSON.parse(jsonMatch[0]);
-        return await this.repl.execute(language, code);
+        const parsed = JSON.parse(jsonMatch[0]) as {
+          language?: string;
+          code?: string;
+          explanation?: string;
+        };
+        const rawLanguage = parsed.language?.toLowerCase();
+        const normalizedLanguage =
+          rawLanguage === 'javascript' ? 'node' : rawLanguage;
+
+        if (normalizedLanguage !== 'python' && normalizedLanguage !== 'node') {
+          return null;
+        }
+        if (!parsed.code) {
+          return null;
+        }
+
+        return {
+          language: normalizedLanguage,
+          code: parsed.code,
+          explanation: parsed.explanation ?? '',
+        };
       }
     } catch {
       // Ignore parsing failures
     }
 
-    return 'Failed to execute Code Thinker script.';
+    return null;
   }
 }

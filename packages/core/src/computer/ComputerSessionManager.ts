@@ -7,6 +7,7 @@
 
 import { PersistentShell } from './PersistentShell.js';
 import { debugLogger } from '../index.js';
+import * as fs from 'node:fs';
 
 export interface ReplSession {
   name: string;
@@ -15,6 +16,7 @@ export interface ReplSession {
   outputBuffer: string[];
   startedAt: number;
   lastActivityAt: number;
+  cleanupPaths?: string[];
 }
 
 export interface ComputerSessionManagerInterface {
@@ -25,6 +27,7 @@ export interface ComputerSessionManagerInterface {
     language: ReplSession['language'],
     cwd: string,
     env?: Record<string, string>,
+    cleanupPaths?: string[],
   ): ReplSession;
   executeCode(
     name: string,
@@ -54,40 +57,42 @@ export class ComputerSessionManager implements ComputerSessionManagerInterface {
     language: ReplSession['language'],
     cwd: string,
     env?: Record<string, string>,
+    cleanupPaths?: string[],
   ): ReplSession {
     if (this.sessions.has(name)) {
       throw new Error(`Session "${name}" already exists.`);
     }
 
     const outputBuffer: string[] = [];
+    let session: ReplSession | undefined;
     const shell = new PersistentShell({
       language,
       cwd,
       env,
       onOutput: (data) => {
-        const session = this.sessions.get(name);
-        if (session) {
-          session.lastActivityAt = Date.now();
+        const activeSession = session ?? this.sessions.get(name);
+        if (activeSession) {
+          activeSession.lastActivityAt = Date.now();
 
           // Rate Limiting / Buffer Protection (Phase 4.2)
           const MAX_BUFFER_SIZE = 100 * 1024; // 100KB limit
-          const CURRENT_SIZE = session.outputBuffer.reduce(
+          const CURRENT_SIZE = activeSession.outputBuffer.reduce(
             (acc, str) => acc + str.length,
             0,
           );
 
           if (CURRENT_SIZE > MAX_BUFFER_SIZE) {
             if (
-              session.outputBuffer.at(-1) !==
+              activeSession.outputBuffer.at(-1) !==
               '\n... [Output truncated due to excessive length] ...\n'
             ) {
-              session.outputBuffer.push(
+              activeSession.outputBuffer.push(
                 '\n... [Output truncated due to excessive length] ...\n',
               );
             }
             return;
           }
-          session.outputBuffer.push(data);
+          activeSession.outputBuffer.push(data);
         }
       },
       onExit: (code, signal) => {
@@ -95,17 +100,22 @@ export class ComputerSessionManager implements ComputerSessionManagerInterface {
           'session',
           `Session "${name}" exited with code ${code}, signal ${signal}`,
         );
+        const activeSession = session ?? this.sessions.get(name);
+        if (activeSession) {
+          this.cleanupSessionResources(activeSession);
+        }
         this.sessions.delete(name);
       },
     });
 
-    const session: ReplSession = {
+    session = {
       name,
       language,
       shell,
       outputBuffer,
       startedAt: Date.now(),
       lastActivityAt: Date.now(),
+      cleanupPaths,
     };
 
     this.sessions.set(name, session);
@@ -226,6 +236,7 @@ export class ComputerSessionManager implements ComputerSessionManagerInterface {
     const session = this.sessions.get(name);
     if (session) {
       session.shell.kill(signal);
+      this.cleanupSessionResources(session);
       this.sessions.delete(name);
     }
   }
@@ -237,8 +248,23 @@ export class ComputerSessionManager implements ComputerSessionManagerInterface {
   disposeAll(): void {
     for (const session of this.sessions.values()) {
       session.shell.dispose();
+      this.cleanupSessionResources(session);
     }
     this.sessions.clear();
+  }
+
+  private cleanupSessionResources(session: ReplSession): void {
+    if (!session.cleanupPaths?.length) {
+      return;
+    }
+
+    for (const cleanupPath of session.cleanupPaths) {
+      try {
+        fs.rmSync(cleanupPath, { recursive: true, force: true });
+      } catch (error) {
+        debugLogger.warn(`Failed to cleanup ${cleanupPath}: ${error}`);
+      }
+    }
   }
 }
 

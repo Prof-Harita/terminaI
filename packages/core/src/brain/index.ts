@@ -72,7 +72,6 @@ export { StepBackEvaluator } from './stepBackEvaluator.js';
 export { SequentialThinking } from './sequentialThinking.js';
 export { ReflectiveCritique } from './reflectiveCritique.js';
 export { CodeThinker } from './codeThinker.js';
-export { REPLManager } from './replManager.js';
 export {
   ThinkingOrchestrator,
   type BrainExecutionPlan,

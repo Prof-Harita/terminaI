@@ -1209,6 +1209,40 @@
           },
           "additionalProperties": false
         },
+        "repl": {
+          "title": "REPL",
+          "description": "Settings for REPL execution.",
+          "markdownDescription": "Settings for REPL execution.\n\n- Category: `Tools`\n- Requires restart: `no`\n- Default: `{}`",
+          "default": {},
+          "type": "object",
+          "properties": {
+            "sandboxTier": {
+              "title": "REPL Sandbox Tier",
+              "description": "Select the REPL sandbox tier (tier1 local temp sandbox, tier2 Docker).",
+              "markdownDescription": "Select the REPL sandbox tier (tier1 local temp sandbox, tier2 Docker).\n\n- Category: `Tools`\n- Requires restart: `no`\n- Default: `tier1`",
+              "default": "tier1",
+              "type": "string",
+              "enum": [
+                "tier1",
+                "tier2"
+              ]
+            },
+            "timeoutSeconds": {
+              "title": "REPL Timeout (Seconds)",
+              "description": "Maximum execution time for REPL runs in seconds.",
+              "markdownDescription": "Maximum execution time for REPL runs in seconds.\n\n- Category: `Tools`\n- Requires restart: `no`\n- Default: `30`",
+              "default": 30,
+              "type": "number"
+            },
+            "dockerImage": {
+              "title": "REPL Docker Image",
+              "description": "Docker image to use for tier2 REPL execution.",
+              "markdownDescription": "Docker image to use for tier2 REPL execution.\n\n- Category: `Tools`\n- Requires restart: `no`",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
         "autoAccept": {
           "title": "Auto Accept",
           "description": "Automatically accept and execute tool calls that are considered safe (e.g., read-only operations).",

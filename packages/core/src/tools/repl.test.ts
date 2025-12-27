@@ -11,6 +11,8 @@ import type { Config } from '../config/config.js';
 import { ToolErrorType } from './tool-error.js';
 import { REPL_TOOL_NAME } from './tool-names.js';
 import * as sessionManagerModule from '../computer/ComputerSessionManager.js';
+import * as os from 'node:os';
+import * as path from 'node:path';
 
 // Mock the ComputerSessionManager
 vi.mock('../computer/ComputerSessionManager.js', () => {
@@ -49,6 +51,10 @@ describe('ReplTool', () => {
     vi.clearAllMocks();
     mockConfig = {
       getTargetDir: vi.fn(() => '/tmp/test'),
+      getReplToolConfig: vi.fn(() => ({
+        sandboxTier: 'tier1',
+        timeoutMs: 30000,
+      })),
     } as unknown as Config;
     replTool = new ReplTool(mockConfig);
   });
@@ -103,7 +109,7 @@ describe('ReplTool', () => {
       ).toHaveBeenCalledWith(
         'default_python',
         'print("Hello, World!")',
-        undefined,
+        30000,
       );
     });
 
@@ -126,9 +132,16 @@ describe('ReplTool', () => {
       const invocation = replTool.build(params);
       await invocation.execute(mockAbortSignal);
 
-      expect(
+      const [sessionName, sessionLanguage, cwd, env, cleanupPaths] = vi.mocked(
         sessionManagerModule.computerSessionManager.createSession,
-      ).toHaveBeenCalledWith('my-session', 'python', '/tmp/test');
+      ).mock.calls[0];
+      const expectedPrefix = path.join(os.tmpdir(), 'terminai-repl-');
+
+      expect(sessionName).toBe('my-session');
+      expect(sessionLanguage).toBe('python');
+      expect(cwd).toContain(expectedPrefix);
+      expect(env?.HOME).toBe(cwd);
+      expect(cleanupPaths).toEqual([cwd]);
     });
 
     it('should use existing session if available', async () => {

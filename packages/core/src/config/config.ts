@@ -261,6 +261,14 @@ export interface SandboxConfig {
   image: string;
 }
 
+export type ReplSandboxTier = 'tier1' | 'tier2';
+
+export interface ReplToolConfig {
+  sandboxTier: ReplSandboxTier;
+  timeoutMs: number;
+  dockerImage?: string;
+}
+
 export interface ConfigParameters {
   sessionId: string;
   embeddingModel?: string;
@@ -367,6 +375,11 @@ export interface ConfigParameters {
     retention?: {
       days?: number;
     };
+  };
+  repl?: {
+    sandboxTier?: ReplSandboxTier;
+    timeoutSeconds?: number;
+    dockerImage?: string;
   };
 }
 
@@ -497,6 +510,7 @@ export class Config {
   private readonly approvalPin: string;
   private readonly providerConfig: ProviderConfig;
   private readonly logsRetentionDays: number;
+  private readonly replToolConfig: ReplToolConfig;
 
   constructor(params: ConfigParameters) {
     this.sessionId = params.sessionId;
@@ -656,6 +670,14 @@ export class Config {
       provider: LlmProviderId.GEMINI,
     };
     this.logsRetentionDays = params.logs?.retention?.days ?? 7;
+    const replTimeoutSeconds = Math.max(params.repl?.timeoutSeconds ?? 30, 1);
+    const replSandboxTier =
+      params.repl?.sandboxTier === 'tier2' ? 'tier2' : 'tier1';
+    this.replToolConfig = {
+      sandboxTier: replSandboxTier,
+      timeoutMs: replTimeoutSeconds * 1000,
+      dockerImage: params.repl?.dockerImage,
+    };
 
     if (params.contextFileName) {
       setGeminiMdFilename(params.contextFileName);
@@ -1288,6 +1310,10 @@ export class Config {
 
   getModelAvailabilityService(): ModelAvailabilityService {
     return this.modelAvailabilityService;
+  }
+
+  getReplToolConfig(): ReplToolConfig {
+    return this.replToolConfig;
   }
 
   getEnableRecursiveFileSearch(): boolean {

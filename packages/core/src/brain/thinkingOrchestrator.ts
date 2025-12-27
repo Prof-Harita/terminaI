@@ -16,10 +16,11 @@ import { ReflectiveCritique } from './reflectiveCritique.js';
 import { CodeThinker } from './codeThinker.js';
 import { PACLoop } from './pacLoop.js';
 import { StepBackEvaluator } from './stepBackEvaluator.js';
-import { REPLManager } from './replManager.js';
 import type { GenerativeModelAdapter } from './riskAssessor.js';
 import { loadSystemSpec } from './systemSpec.js';
 import type { Logger } from '../core/logger.js';
+import type { ToolCallRequestInfo } from '../core/turn.js';
+import { REPL_TOOL_NAME } from '../tools/tool-names.js';
 
 /**
  * Result of a brain execution attempt.
@@ -36,6 +37,7 @@ export interface BrainExecutionPlan {
   explanation: string;
   // Metadata for the CLI to use
   confidence: number;
+  toolCall?: Pick<ToolCallRequestInfo, 'name' | 'args'>;
 }
 
 /**
@@ -48,18 +50,16 @@ export class ThinkingOrchestrator {
   private readonly scripted: CodeThinker;
   private readonly pacLoop: PACLoop;
   private readonly stepBack: StepBackEvaluator;
-  private readonly repl: REPLManager;
 
   constructor(
     private readonly config: Config,
     private readonly model: GenerativeModelAdapter,
     private readonly logger?: Logger,
   ) {
-    this.repl = new REPLManager();
     this.consensus = new ConsensusOrchestrator(model);
     this.sequential = new SequentialThinking(model);
     this.reflective = new ReflectiveCritique(model);
-    this.scripted = new CodeThinker(model, this.repl);
+    this.scripted = new CodeThinker(model);
     this.pacLoop = new PACLoop(model);
     this.stepBack = new StepBackEvaluator();
   }
@@ -143,13 +143,30 @@ export class ThinkingOrchestrator {
 
       case 'FW_SCRIPT': {
         const result = await this.scripted.solve(task);
+        if (!result) {
+          return {
+            frameworkId,
+            approach: 'Direct',
+            reasoning: 'Code Thinker failed to produce an executable script.',
+            suggestedAction: 'fallback_to_direct',
+            explanation: 'Falling back to standard tool execution path.',
+            confidence: 50,
+          };
+        }
         return {
           frameworkId,
-          approach: 'Code execution',
+          approach: result.explanation || 'Code execution',
           reasoning: 'Task complex enough for scripted solution',
-          suggestedAction: 'done',
-          explanation: result,
+          suggestedAction: 'execute_tool',
+          explanation: result.explanation,
           confidence: 90,
+          toolCall: {
+            name: REPL_TOOL_NAME,
+            args: {
+              language: result.language,
+              code: result.code,
+            },
+          },
         };
       }
 
