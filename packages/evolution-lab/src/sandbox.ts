@@ -263,8 +263,9 @@ export class SandboxController {
   async destroy(sandbox: SandboxInstance): Promise<void> {
     if (sandbox.containerId) {
       await new Promise<void>((resolve) => {
-        const proc = spawn('docker', ['stop', sandbox.containerId!]);
+        const proc = this.spawnFn('docker', ['stop', sandbox.containerId!]);
         proc.on('close', () => resolve());
+        proc.on('error', () => resolve()); // Handle error to prevent hangs
       });
     }
 
