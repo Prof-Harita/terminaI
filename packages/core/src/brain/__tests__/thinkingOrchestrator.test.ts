@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { describe, it, expect, vi, beforeAll } from 'vitest';
+import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 import {
   ThinkingOrchestrator,
   scanSystemSync,
@@ -13,11 +13,19 @@ import {
 } from '../index.js';
 import type { GenerativeModelAdapter } from '../riskAssessor.js';
 import type { Config } from '../../config/config.js';
+import { REPLManager } from '../replManager.js';
+
+const replExecuteSpy = vi
+  .spyOn(REPLManager.prototype, 'execute')
+  .mockResolvedValue('hello');
 
 describe('ThinkingOrchestrator', () => {
   beforeAll(() => {
     const spec = scanSystemSync();
     saveSystemSpec(spec);
+  });
+  afterAll(() => {
+    replExecuteSpy.mockRestore();
   });
 
   const mockConfig = {
