@@ -323,11 +323,17 @@ jobs:
       - name: 'Build project'
         run: 'npm run build'
 
+      - name: 'Verify build outputs'
+        run: |
+          ls -l packages/core/dist/index.js
+          ls -l packages/evolution-lab/dist/cli.js
+          ls -l node_modules/@terminai/core
+
       - name: 'Build sandbox image'
         run: 'docker build -t terminai/evolution-sandbox:latest -f packages/evolution-lab/Dockerfile .'
 
       - name: 'Run deterministic suite'
-        run: 'node packages/evolution-lab/dist/cli.js suite --parallelism 1 --count 0'
+        run: 'npm run suite --workspace @terminai/evolution-lab -- --parallelism 1 --count 0'
 
   test_windows:
     name: 'Slow Test - Win'
