@@ -50,8 +50,8 @@ This documentation is organized into the following sections:
   TerminaI.
 - **[Gemini CLI quickstart](./get-started/index.md):** Let's get started with
   Gemini CLI.
-- **[Gemini 3 Pro on Gemini CLI](./get-started/gemini-3.md):** Learn how to
-  enable and use Gemini 3.
+- **[Gemini 3 Pro on Gemini CLI](./get-started/gemini-2.0-flash-exp.md):** Learn
+  how to enable and use Gemini 3.
 - **[Authentication](./get-started/authentication.md):** Authenticate to Gemini
   CLI.
 - **[Configuration](./get-started/configuration.md):** Learn how to configure

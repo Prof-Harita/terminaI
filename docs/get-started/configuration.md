@@ -444,16 +444,16 @@ their corresponding top-level category object in your `settings.json` file.
           }
         }
       },
-      "gemini-3-pro-preview": {
+      "gemini-2.0-flash-exp-pro-preview": {
         "extends": "chat-base-3",
         "modelConfig": {
-          "model": "gemini-3-pro-preview"
+          "model": "gemini-2.0-flash-exp-pro-preview"
         }
       },
-      "gemini-3-flash-preview": {
+      "gemini-2.0-flash-exp-flash-preview": {
         "extends": "chat-base-3",
         "modelConfig": {
-          "model": "gemini-3-flash-preview"
+          "model": "gemini-2.0-flash-exp-flash-preview"
         }
       },
       "gemini-2.5-pro": {
@@ -582,12 +582,12 @@ their corresponding top-level category object in your `settings.json` file.
       },
       "chat-compression-3-pro": {
         "modelConfig": {
-          "model": "gemini-3-pro-preview"
+          "model": "gemini-2.0-flash-exp-pro-preview"
         }
       },
       "chat-compression-3-flash": {
         "modelConfig": {
-          "model": "gemini-3-flash-preview"
+          "model": "gemini-2.0-flash-exp-flash-preview"
         }
       },
       "chat-compression-2.5-pro": {

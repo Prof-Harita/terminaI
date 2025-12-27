@@ -24,7 +24,7 @@ on GitHub.
   Pro - and in some scenarios better than 3 Pro! For paid tiers + free tier
   users who were on the wait list enable **Preview Features** in `/settings.`
 - For more information:
-  [Gemini 3 Flash is now available in Gemini CLI](https://developers.googleblog.com/gemini-3-flash-is-now-available-in-gemini-cli/).
+  [Gemini 3 Flash is now available in Gemini CLI](https://developers.googleblog.com/gemini-2.0-flash-exp-flash-is-now-available-in-gemini-cli/).
 - 🎉 Gemini CLI Extensions:
   - Rill: Utilize natural language to analyze Rill data, enabling the
     exploration of metrics and trends without the need for manual queries.

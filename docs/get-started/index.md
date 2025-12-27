@@ -73,4 +73,4 @@ To explore the power of Gemini CLI, see [Gemini CLI examples](./examples.md).
 
 - Find out more about [Gemini CLI's tools](../tools/index.md).
 - Review [Gemini CLI's commands](../cli/commands.md).
-- Learn how to [get started with Gemini 3](./gemini-3.md).
+- Learn how to [get started with Gemini 3](./gemini-2.0-flash-exp.md).
