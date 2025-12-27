@@ -75,27 +75,27 @@ export class ComputerSessionManager implements ComputerSessionManagerInterface {
         const activeSession = sessionRef.current ?? this.sessions.get(name);
         if (activeSession) {
           activeSession.lastActivityAt = Date.now();
-
-          // Rate Limiting / Buffer Protection (Phase 4.2)
-          const MAX_BUFFER_SIZE = 100 * 1024; // 100KB limit
-          const CURRENT_SIZE = activeSession.outputBuffer.reduce(
-            (acc, str) => acc + str.length,
-            0,
-          );
-
-          if (CURRENT_SIZE > MAX_BUFFER_SIZE) {
-            if (
-              activeSession.outputBuffer.at(-1) !==
-              '\n... [Output truncated due to excessive length] ...\n'
-            ) {
-              activeSession.outputBuffer.push(
-                '\n... [Output truncated due to excessive length] ...\n',
-              );
-            }
-            return;
-          }
-          activeSession.outputBuffer.push(data);
         }
+
+        // Rate Limiting / Buffer Protection (Phase 4.2)
+        const MAX_BUFFER_SIZE = 100 * 1024; // 100KB limit
+        const CURRENT_SIZE = outputBuffer.reduce(
+          (acc, str) => acc + str.length,
+          0,
+        );
+
+        if (CURRENT_SIZE > MAX_BUFFER_SIZE) {
+          if (
+            outputBuffer.at(-1) !==
+            '\n... [Output truncated due to excessive length] ...\n'
+          ) {
+            outputBuffer.push(
+              '\n... [Output truncated due to excessive length] ...\n',
+            );
+          }
+          return;
+        }
+        outputBuffer.push(data);
       },
       onExit: (code, signal) => {
         debugLogger.log(
