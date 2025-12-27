@@ -320,8 +320,8 @@ jobs:
       - name: 'Install dependencies'
         run: 'npm ci'
 
-      - name: 'Build Evolution Lab CLI'
-        run: 'npm run build --workspace @terminai/evolution-lab'
+      - name: 'Build dependencies'
+        run: 'npm run build --workspace @terminai/core && npm run build --workspace @terminai/evolution-lab'
 
       - name: 'Build sandbox image'
         run: 'docker build -t terminai/evolution-sandbox:latest -f packages/evolution-lab/Dockerfile .'
