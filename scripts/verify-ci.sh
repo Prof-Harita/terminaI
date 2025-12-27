@@ -15,6 +15,9 @@ echo "   This includes: ESLint, Prettier, actionlint, shellcheck, yamllint,"
 echo "   sensitive keywords, and tsconfig validation."
 node scripts/lint.js
 
+echo "🔹 4b. Verifying settings documentation is up to date..."
+npm run docs:settings -- --check
+
 echo "🔹 5. Running tests (npm run test:ci)..."
 export NO_COLOR=true
 npm run test:ci
