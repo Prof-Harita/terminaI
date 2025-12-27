@@ -99,8 +99,11 @@ export class DesktopAutomationService {
 
   async snapshot(args: UiSnapshotArgs): Promise<VisualDOMSnapshot> {
     await this.ensureConnected();
-    const { args: boundedArgs, maxDepth, maxNodes } =
-      this.buildBoundedSnapshotArgs(args);
+    const {
+      args: boundedArgs,
+      maxDepth,
+      maxNodes,
+    } = this.buildBoundedSnapshotArgs(args);
     const snap = await this.driver.snapshot(boundedArgs);
     const boundedSnapshot = this.applySnapshotBounds(snap, maxDepth, maxNodes);
     this.lastSnapshot = boundedSnapshot;
@@ -261,7 +264,12 @@ export class DesktopAutomationService {
     }
     const refinedArgs = { ...args, target: targetId ?? args.target };
     const result = await this.driver.scroll(refinedArgs);
-    return this.buildResultWithEvidence(result, snapshot, targetNode, confidence);
+    return this.buildResultWithEvidence(
+      result,
+      snapshot,
+      targetNode,
+      confidence,
+    );
   }
 
   async focus(args: UiFocusArgs): Promise<UiActionResult> {
@@ -275,7 +283,12 @@ export class DesktopAutomationService {
       await this.resolveTargetForAction(args.target);
     const refinedArgs = { ...args, target: targetId ?? args.target };
     const result = await this.driver.focus(refinedArgs);
-    return this.buildResultWithEvidence(result, snapshot, targetNode, confidence);
+    return this.buildResultWithEvidence(
+      result,
+      snapshot,
+      targetNode,
+      confidence,
+    );
   }
 
   async clickXy(args: UiClickXyArgs): Promise<UiActionResult> {
@@ -554,8 +567,10 @@ export class DesktopAutomationService {
 
     return this.snapshot({
       includeTree: true,
-      includeScreenshot: false, // Default: no screenshot for perf
+      includeScreenshot: false,
       includeTextIndex: false,
+      maxDepth: 50,
+      maxNodes: 500,
     });
   }
 

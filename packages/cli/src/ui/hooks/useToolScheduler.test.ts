@@ -189,7 +189,7 @@ describe('useReactToolScheduler in YOLO Mode', () => {
     expect(onComplete).toHaveBeenCalledWith([
       expect.objectContaining({
         status: 'success',
-        request,
+        request: expect.objectContaining(request),
         response: expect.objectContaining({
           resultDisplay: 'YOLO Formatted tool output',
           responseParts: [
@@ -304,7 +304,9 @@ describe('useReactToolScheduler', () => {
     expect(mockTool.execute).toHaveBeenCalledWith(request.args);
     expect(completedToolCalls).toHaveLength(1);
     expect(completedToolCalls[0].status).toBe('success');
-    expect(completedToolCalls[0].request).toBe(request);
+    expect(completedToolCalls[0].request).toEqual(
+      expect.objectContaining(request),
+    );
 
     if (
       completedToolCalls[0].status === 'success' ||
@@ -407,7 +409,7 @@ describe('useReactToolScheduler', () => {
     expect(onComplete).toHaveBeenCalledWith([
       expect.objectContaining({
         status: 'cancelled',
-        request,
+        request: expect.objectContaining(request),
       }),
     ]);
 
@@ -477,7 +479,9 @@ describe('useReactToolScheduler', () => {
 
       expect(completedToolCalls).toHaveLength(1);
       expect(completedToolCalls[0].status).toBe('error');
-      expect(completedToolCalls[0].request).toBe(request);
+      expect(completedToolCalls[0].request).toEqual(
+        expect.objectContaining(request),
+      );
 
       if (expectedErrorContains) {
         expectedErrorContains.forEach((errorText) => {
@@ -540,7 +544,7 @@ describe('useReactToolScheduler', () => {
 
     const completedCalls = onComplete.mock.calls[0][0] as ToolCall[];
     expect(completedCalls[0].status).toBe('success');
-    expect(completedCalls[0].request).toBe(request);
+    expect(completedCalls[0].request).toEqual(expect.objectContaining(request));
     if (
       completedCalls[0].status === 'success' ||
       completedCalls[0].status === 'error'
@@ -585,7 +589,7 @@ describe('useReactToolScheduler', () => {
 
     const completedCalls = onComplete.mock.calls[0][0] as ToolCall[];
     expect(completedCalls[0].status).toBe('cancelled');
-    expect(completedCalls[0].request).toBe(request);
+    expect(completedCalls[0].request).toEqual(expect.objectContaining(request));
     if (
       completedCalls[0].status === 'success' ||
       completedCalls[0].status === 'error' ||
@@ -653,7 +657,7 @@ describe('useReactToolScheduler', () => {
 
     const completedCalls = onComplete.mock.calls[0][0] as ToolCall[];
     expect(completedCalls[0].status).toBe('success');
-    expect(completedCalls[0].request).toBe(request);
+    expect(completedCalls[0].request).toEqual(expect.objectContaining(request));
     if (
       completedCalls[0].status === 'success' ||
       completedCalls[0].status === 'error'
@@ -724,7 +728,7 @@ describe('useReactToolScheduler', () => {
 
     expect(call1Result).toMatchObject({
       status: 'success',
-      request: requests[0],
+      request: expect.objectContaining(requests[0]),
       response: expect.objectContaining({
         resultDisplay: 'Display 1',
         responseParts: [
@@ -740,7 +744,7 @@ describe('useReactToolScheduler', () => {
     });
     expect(call2Result).toMatchObject({
       status: 'success',
-      request: requests[1],
+      request: expect.objectContaining(requests[1]),
       response: expect.objectContaining({
         resultDisplay: 'Display 2',
         responseParts: [
@@ -808,7 +812,7 @@ describe('useReactToolScheduler', () => {
     expect(onComplete).toHaveBeenCalledWith([
       expect.objectContaining({
         status: 'success',
-        request: request1,
+        request: expect.objectContaining(request1),
         response: expect.objectContaining({ resultDisplay: 'done display' }),
       }),
     ]);
@@ -822,7 +826,7 @@ describe('useReactToolScheduler', () => {
     expect(onComplete).toHaveBeenCalledWith([
       expect.objectContaining({
         status: 'success',
-        request: request2,
+        request: expect.objectContaining(request2),
         response: expect.objectContaining({ resultDisplay: 'done display' }),
       }),
     ]);

@@ -109,7 +109,8 @@ export class SandboxController {
       const cpuLimit = this.config.cpuLimit || 1;
       const pidsLimit = this.config.pidsLimit || 256;
       const tmpfsSize = 128; // MB
-      const networkMode = this.config.networkDisabled === false ? 'bridge' : 'none';
+      const networkMode =
+        this.config.networkDisabled === false ? 'bridge' : 'none';
 
       const args = [
         'run',

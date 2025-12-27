@@ -28,7 +28,7 @@ describe('UI tool utils', () => {
     });
 
     expect(details).not.toBe(false);
-    if (details && details !== false) {
+    if (details) {
       expect(details.reviewLevel).toBe('C');
       expect(details.requiresPin).toBe(true);
       expect(details.explanation).toContain('Minimum review level C');
