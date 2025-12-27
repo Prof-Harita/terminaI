@@ -33,6 +33,9 @@ import { parseThought, type ThoughtSummary } from '../utils/thoughtUtils.js';
 import { createUserContent } from '@google/genai';
 import type { ModelConfigKey } from '../services/modelConfigService.js';
 import { getCitations } from '../utils/generateContentResponseUtilities.js';
+import type { Provenance } from '../safety/approval-ladder/types.js';
+import { isFunctionResponse } from '../utils/messageInspectors.js';
+import { WEB_FETCH_TOOL_NAME } from '../tools/tool-names.js';
 
 // Define a structure for tools passed to the server
 export interface ServerTool {
@@ -111,6 +114,7 @@ export interface ToolCallRequestInfo {
   prompt_id: string;
   checkpoint?: string;
   traceId?: string;
+  provenance?: Provenance[];
 }
 
 export interface ToolCallResponseInfo {
@@ -379,6 +383,12 @@ export class Turn {
       `${fnCall.name}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
     const name = fnCall.name || 'undefined_tool_name';
     const args = fnCall.args || {};
+    const sessionProvenance = this.chat.getSessionProvenance();
+    const toolProvenance = this.buildToolProvenance();
+    const provenance = this.mergeProvenance(
+      ['model_suggestion', ...sessionProvenance],
+      toolProvenance,
+    );
 
     const toolCallRequest: ToolCallRequestInfo = {
       callId,
@@ -387,12 +397,54 @@ export class Turn {
       isClientInitiated: false,
       prompt_id: this.prompt_id,
       traceId,
+      provenance,
     };
 
     this.pendingToolCalls.push(toolCallRequest);
 
     // Yield a request for the tool call, not the pending/confirming status
     return { type: GeminiEventType.ToolCallRequest, value: toolCallRequest };
+  }
+
+  private buildToolProvenance(): Provenance[] {
+    const history = this.chat.getHistory();
+    const lastEntry = history.length > 0 ? history[history.length - 1] : null;
+    if (!lastEntry || !isFunctionResponse(lastEntry)) {
+      return [];
+    }
+
+    const toolNames =
+      lastEntry.parts
+        ?.map((part) => part.functionResponse?.name)
+        .filter((name): name is string => !!name) ?? [];
+
+    if (toolNames.length === 0) {
+      return [];
+    }
+
+    const provenance: Provenance[] = ['tool_output'];
+    if (toolNames.includes(WEB_FETCH_TOOL_NAME)) {
+      provenance.push('web_content');
+    }
+
+    return provenance;
+  }
+
+  private mergeProvenance(...sets: Array<Provenance[] | undefined>): Provenance[] {
+    const merged: Provenance[] = [];
+    const seen = new Set<Provenance>();
+    for (const set of sets) {
+      if (!set) {
+        continue;
+      }
+      for (const entry of set) {
+        if (!seen.has(entry)) {
+          seen.add(entry);
+          merged.push(entry);
+        }
+      }
+    }
+    return merged;
   }
 
   getDebugResponses(): GenerateContentResponse[] {

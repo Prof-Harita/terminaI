@@ -9,9 +9,11 @@ import { Box, Text, useIsScreenReaderEnabled } from 'ink';
 import { useEffect, useState } from 'react';
 import { useAppContext } from '../contexts/AppContext.js';
 import { useUIState } from '../contexts/UIStateContext.js';
+import { useConfig } from '../contexts/ConfigContext.js';
 import { theme } from '../semantic-colors.js';
 import { StreamingState } from '../types.js';
 import { UpdateNotification } from './UpdateNotification.js';
+import { RemoteIndicator } from './RemoteIndicator.js';
 
 import { GEMINI_DIR, Storage } from '@terminai/core';
 
@@ -29,11 +31,14 @@ const screenReaderNudgeFilePath = path.join(
 export const Notifications = () => {
   const { startupWarnings } = useAppContext();
   const { initError, streamingState, updateInfo } = useUIState();
+  const config = useConfig();
 
   const isScreenReaderEnabled = useIsScreenReaderEnabled();
   const showStartupWarnings = startupWarnings.length > 0;
   const showInitError =
     initError && streamingState !== StreamingState.Responding;
+  const webRemoteStatus = config.getWebRemoteStatus();
+  const showRemoteIndicator = webRemoteStatus?.active ?? false;
 
   const [hasSeenScreenReaderNudge, setHasSeenScreenReaderNudge] = useState<
     boolean | undefined
@@ -79,13 +84,23 @@ export const Notifications = () => {
     !showStartupWarnings &&
     !showInitError &&
     !updateInfo &&
-    !showScreenReaderNudge
+    !showScreenReaderNudge &&
+    !showRemoteIndicator
   ) {
     return null;
   }
 
   return (
     <>
+      {showRemoteIndicator && webRemoteStatus && (
+        <Box marginBottom={1}>
+          <RemoteIndicator
+            host={webRemoteStatus.host}
+            port={webRemoteStatus.port}
+            loopback={webRemoteStatus.loopback}
+          />
+        </Box>
+      )}
       {showScreenReaderNudge && (
         <Text>
           You are currently in screen reader-friendly view. To switch out, open{' '}

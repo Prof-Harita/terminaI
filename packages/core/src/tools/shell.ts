@@ -155,11 +155,13 @@ export class ShellToolInvocation extends BaseToolInvocation<
       '../safety/approval-ladder/computeMinimumReviewLevel.js'
     );
 
+    const invocationProvenance = this.getProvenance();
     const actionProfile = buildShellActionProfile({
       command: this.params.command,
       cwd: this.params.dir_path ?? process.cwd(),
       workspaces: [this.config.getWorkspaceContext().targetDir],
-      provenance: ['model_suggestion'], // TODO: Thread from tool call context
+      provenance:
+        invocationProvenance.length > 0 ? invocationProvenance : undefined,
     });
 
     const reviewResult = computeMinimumReviewLevel(actionProfile);
@@ -183,6 +185,8 @@ export class ShellToolInvocation extends BaseToolInvocation<
         ? commandsToConfirm.join(', ')
         : rootCommands.join(', '),
       risk,
+      provenance:
+        invocationProvenance.length > 0 ? invocationProvenance : undefined,
       reviewLevel: effectiveReview.level,
       requiresPin: effectiveReview.requiresPin,
       pinLength: effectiveReview.requiresPin ? 6 : undefined,

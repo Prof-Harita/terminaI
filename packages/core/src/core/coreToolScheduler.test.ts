@@ -186,6 +186,66 @@ class AbortDuringConfirmationTool extends BaseDeclarativeTool<
   }
 }
 
+class ProvenanceExecTool extends BaseDeclarativeTool<
+  { command: string },
+  ToolResult
+> {
+  static readonly Name = 'provenanceExecTool';
+
+  constructor() {
+    super(
+      ProvenanceExecTool.Name,
+      'Provenance Exec Tool',
+      'A tool that exposes provenance in confirmation details.',
+      Kind.Execute,
+      {
+        type: 'object',
+        properties: { command: { type: 'string' } },
+        required: ['command'],
+      },
+    );
+  }
+
+  protected createInvocation(params: {
+    command: string;
+  }): ToolInvocation<{ command: string }, ToolResult> {
+    return new ProvenanceExecInvocation(params);
+  }
+}
+
+class ProvenanceExecInvocation extends BaseToolInvocation<
+  { command: string },
+  ToolResult
+> {
+  constructor(params: { command: string }) {
+    super(params);
+  }
+
+  getDescription(): string {
+    return `Provenance exec: ${this.params.command}`;
+  }
+
+  override async shouldConfirmExecute(): Promise<
+    ToolCallConfirmationDetails | false
+  > {
+    return {
+      type: 'exec',
+      title: 'Confirm Provenance Tool',
+      command: this.params.command,
+      rootCommand: ProvenanceExecTool.Name,
+      provenance: this.getProvenance(),
+      onConfirm: async () => {},
+    };
+  }
+
+  async execute(): Promise<ToolResult> {
+    return {
+      llmContent: 'Provenance tool executed.',
+      returnDisplay: 'Provenance tool executed.',
+    };
+  }
+}
+
 async function waitForStatus(
   onToolCallsUpdate: Mock,
   status: 'awaiting_approval' | 'executing' | 'success' | 'error' | 'cancelled',
@@ -426,6 +486,59 @@ describe('CoreToolScheduler', () => {
     expect(completedCalls.find((c) => c.request.callId === '3')?.status).toBe(
       'cancelled',
     );
+  });
+
+  it('should thread provenance into confirmation details', async () => {
+    const provenanceTool = new ProvenanceExecTool();
+    const mockToolRegistry = {
+      getTool: () => provenanceTool,
+      getFunctionDeclarations: () => [],
+      tools: new Map(),
+      discovery: {},
+      registerTool: () => {},
+      getToolByName: () => provenanceTool,
+      getToolByDisplayName: () => provenanceTool,
+      getTools: () => [],
+      discoverTools: async () => {},
+      getAllTools: () => [],
+      getToolsByServer: () => [],
+    } as unknown as ToolRegistry;
+
+    const onToolCallsUpdate = vi.fn();
+    const onAllToolCallsComplete = vi.fn();
+
+    const mockConfig = createMockConfig({
+      getToolRegistry: () => mockToolRegistry,
+    });
+
+    const scheduler = new CoreToolScheduler({
+      config: mockConfig,
+      onAllToolCallsComplete,
+      onToolCallsUpdate,
+      getPreferredEditor: () => 'vscode',
+    });
+
+    const abortController = new AbortController();
+    const request = {
+      callId: '1',
+      name: ProvenanceExecTool.Name,
+      args: { command: 'echo test' },
+      isClientInitiated: false,
+      prompt_id: 'prompt-id-1',
+      provenance: ['local_user', 'web_remote_user'],
+    };
+
+    void scheduler.schedule([request], abortController.signal);
+
+    const awaitingCall = (await waitForStatus(
+      onToolCallsUpdate,
+      'awaiting_approval',
+    )) as WaitingToolCall;
+
+    expect(awaitingCall.confirmationDetails?.provenance).toEqual([
+      'local_user',
+      'web_remote_user',
+    ]);
   });
 
   it('should cancel all tools in a batch when one is cancelled via confirmation', async () => {

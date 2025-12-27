@@ -13,6 +13,10 @@ const STATE_FILENAME = 'state.json';
 
 interface PersistentStateData {
   defaultBannerShownCount?: Record<string, number>;
+  webRemoteConsent?: {
+    accepted: boolean;
+    timestamp: string;
+  };
   // Add other persistent state keys here as needed
 }
 

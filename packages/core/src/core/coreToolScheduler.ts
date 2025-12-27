@@ -52,6 +52,7 @@ import {
   executeToolWithHooks,
 } from './coreToolHookTriggers.js';
 import { debugLogger } from '../utils/debugLogger.js';
+import type { Provenance } from '../safety/approval-ladder/types.js';
 
 export type ValidatingToolCall = {
   status: 'validating';
@@ -625,6 +626,8 @@ export class CoreToolScheduler {
         } as ErroredToolCall;
       }
 
+      this.attachInvocationProvenance(invocationOrError, call.request);
+
       return {
         ...call,
         request: { ...call.request, args: args as Record<string, unknown> },
@@ -654,6 +657,42 @@ export class CoreToolScheduler {
         return e;
       }
       return new Error(String(e));
+    }
+  }
+
+  private normalizeProvenance(provenance?: Provenance[]): Provenance[] {
+    if (!provenance || provenance.length === 0) {
+      return ['unknown'];
+    }
+    const unique = new Set<Provenance>();
+    const merged: Provenance[] = [];
+    for (const entry of provenance) {
+      if (!unique.has(entry)) {
+        unique.add(entry);
+        merged.push(entry);
+      }
+    }
+    return merged;
+  }
+
+  private normalizeRequestProvenance(
+    request: ToolCallRequestInfo,
+  ): ToolCallRequestInfo {
+    return {
+      ...request,
+      provenance: this.normalizeProvenance(request.provenance),
+    };
+  }
+
+  private attachInvocationProvenance(
+    invocation: AnyToolInvocation,
+    request: ToolCallRequestInfo,
+  ): void {
+    const setter = (invocation as {
+      setProvenance?: (provenance: Provenance[]) => void;
+    }).setProvenance;
+    if (setter) {
+      setter.call(invocation, this.normalizeProvenance(request.provenance));
     }
   }
 
@@ -781,17 +820,18 @@ export class CoreToolScheduler {
 
       const newToolCalls: ToolCall[] = requestsToProcess.map(
         (reqInfo): ToolCall => {
+          const normalizedRequest = this.normalizeRequestProvenance(reqInfo);
           const toolInstance = this.config
             .getToolRegistry()
-            .getTool(reqInfo.name);
+            .getTool(normalizedRequest.name);
           if (!toolInstance) {
-            const suggestion = this.getToolSuggestion(reqInfo.name);
-            const errorMessage = `Tool "${reqInfo.name}" not found in registry. Tools must use the exact names that are registered.${suggestion}`;
+            const suggestion = this.getToolSuggestion(normalizedRequest.name);
+            const errorMessage = `Tool "${normalizedRequest.name}" not found in registry. Tools must use the exact names that are registered.${suggestion}`;
             return {
               status: 'error',
-              request: reqInfo,
+              request: normalizedRequest,
               response: createErrorResponse(
-                reqInfo,
+                normalizedRequest,
                 new Error(errorMessage),
                 ToolErrorType.TOOL_NOT_REGISTERED,
               ),
@@ -801,15 +841,15 @@ export class CoreToolScheduler {
 
           const invocationOrError = this.buildInvocation(
             toolInstance,
-            reqInfo.args,
+            normalizedRequest.args,
           );
           if (invocationOrError instanceof Error) {
             return {
               status: 'error',
-              request: reqInfo,
+              request: normalizedRequest,
               tool: toolInstance,
               response: createErrorResponse(
-                reqInfo,
+                normalizedRequest,
                 invocationOrError,
                 ToolErrorType.INVALID_TOOL_PARAMS,
               ),
@@ -817,9 +857,11 @@ export class CoreToolScheduler {
             };
           }
 
+          this.attachInvocationProvenance(invocationOrError, normalizedRequest);
+
           return {
             status: 'validating',
-            request: reqInfo,
+            request: normalizedRequest,
             tool: toolInstance,
             invocation: invocationOrError,
             startTime: Date.now(),

@@ -299,6 +299,7 @@ export async function runNonInteractive({
             args: brainResult.toolCall.args,
             isClientInitiated: true,
             prompt_id,
+            provenance: ['local_user', ...config.getSessionProvenance()],
           };
 
           if (streamFormatter) {

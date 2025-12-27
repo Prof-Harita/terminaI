@@ -43,6 +43,11 @@ interface SerializableConfirmationDetails {
   // Exec-specific fields
   command?: string;
   rootCommand?: string;
+  reviewLevel?: 'A' | 'B' | 'C';
+  requiresPin?: boolean;
+  pinLength?: number;
+  explanation?: string;
+  provenance?: string[];
   // MCP-specific fields
   serverName?: string;
   toolName?: string;
@@ -80,6 +85,11 @@ function toSerializableDetails(
         ...base,
         command: details.command,
         rootCommand: details.rootCommand,
+        reviewLevel: details.reviewLevel,
+        requiresPin: details.requiresPin,
+        pinLength: details.pinLength,
+        explanation: details.explanation,
+        provenance: details.provenance,
       };
     case 'mcp':
       return {

@@ -473,6 +473,7 @@ export const useGeminiStream = (
                   args: toolArgs,
                   isClientInitiated: true,
                   prompt_id,
+                  provenance: ['local_user', ...config.getSessionProvenance()],
                 };
                 scheduleToolCalls([toolCallRequest], abortSignal);
                 return { queryToSend: null, shouldProceed: false };

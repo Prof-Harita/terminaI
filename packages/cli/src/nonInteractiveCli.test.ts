@@ -184,6 +184,7 @@ describe('runNonInteractive', () => {
       getToolRegistry: vi.fn().mockReturnValue(mockToolRegistry),
       getMaxSessionTurns: vi.fn().mockReturnValue(10),
       getSessionId: vi.fn().mockReturnValue('test-session-id'),
+      getSessionProvenance: vi.fn().mockReturnValue([]),
       getProjectRoot: vi.fn().mockReturnValue('/test/project'),
       storage: {
         getProjectTempDir: vi.fn().mockReturnValue('/test/project/.gemini/tmp'),

@@ -19,6 +19,7 @@ import { InvalidStreamError, StreamEventType } from './geminiChat.js';
 const mockSendMessageStream = vi.fn();
 const mockGetHistory = vi.fn();
 const mockMaybeIncludeSchemaDepthContext = vi.fn();
+const mockGetSessionProvenance = vi.fn();
 
 vi.mock('@google/genai', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@google/genai')>();
@@ -44,6 +45,7 @@ describe('Turn', () => {
     sendMessageStream: typeof mockSendMessageStream;
     getHistory: typeof mockGetHistory;
     maybeIncludeSchemaDepthContext: typeof mockMaybeIncludeSchemaDepthContext;
+    getSessionProvenance: typeof mockGetSessionProvenance;
   };
   let mockChatInstance: MockedChatInstance;
 
@@ -53,9 +55,11 @@ describe('Turn', () => {
       sendMessageStream: mockSendMessageStream,
       getHistory: mockGetHistory,
       maybeIncludeSchemaDepthContext: mockMaybeIncludeSchemaDepthContext,
+      getSessionProvenance: mockGetSessionProvenance,
     };
     turn = new Turn(mockChatInstance as unknown as GeminiChat, 'prompt-id-1');
     mockGetHistory.mockReturnValue([]);
+    mockGetSessionProvenance.mockReturnValue([]);
     mockSendMessageStream.mockResolvedValue((async function* () {})());
   });
 
@@ -172,6 +176,42 @@ describe('Turn', () => {
       );
       expect(turn.pendingToolCalls[1]).toEqual(event2.value);
       expect(turn.getDebugResponses().length).toBe(1);
+    });
+
+    it('should attach provenance metadata to tool call requests', async () => {
+      mockGetSessionProvenance.mockReturnValue(['web_remote_user']);
+      const mockResponseStream = (async function* () {
+        yield {
+          type: StreamEventType.CHUNK,
+          value: {
+            functionCalls: [
+              {
+                id: 'fc1',
+                name: 'tool1',
+                args: { arg1: 'val1' },
+                isClientInitiated: false,
+              },
+            ],
+          } as unknown as GenerateContentResponse,
+        };
+      })();
+      mockSendMessageStream.mockResolvedValue(mockResponseStream);
+
+      const events = [];
+      const reqParts: Part[] = [{ text: 'Use tools' }];
+      for await (const event of turn.run(
+        { model: 'gemini' },
+        reqParts,
+        new AbortController().signal,
+      )) {
+        events.push(event);
+      }
+
+      const event = events[0] as ServerGeminiToolCallRequestEvent;
+      expect(event.value.provenance).toEqual([
+        'model_suggestion',
+        'web_remote_user',
+      ]);
     });
 
     it('should yield UserCancelled event if signal is aborted', async () => {

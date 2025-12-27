@@ -10,6 +10,7 @@ import { Notifications } from './Notifications.js';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useAppContext, type AppState } from '../contexts/AppContext.js';
 import { useUIState, type UIState } from '../contexts/UIStateContext.js';
+import { useConfig } from '../contexts/ConfigContext.js';
 import { useIsScreenReaderEnabled } from 'ink';
 import * as fs from 'node:fs/promises';
 import { act } from 'react';
@@ -17,6 +18,7 @@ import { act } from 'react';
 // Mock dependencies
 vi.mock('../contexts/AppContext.js');
 vi.mock('../contexts/UIStateContext.js');
+vi.mock('../contexts/ConfigContext.js');
 vi.mock('ink', async () => {
   const actual = await vi.importActual('ink');
   return {
@@ -66,6 +68,7 @@ vi.mock('../../config/settings.js', () => ({
 describe('Notifications', () => {
   const mockUseAppContext = vi.mocked(useAppContext);
   const mockUseUIState = vi.mocked(useUIState);
+  const mockUseConfig = vi.mocked(useConfig);
   const mockUseIsScreenReaderEnabled = vi.mocked(useIsScreenReaderEnabled);
   const mockFsAccess = vi.mocked(fs.access);
   const mockFsWriteFile = vi.mocked(fs.writeFile);
@@ -81,6 +84,9 @@ describe('Notifications', () => {
       streamingState: 'idle',
       updateInfo: null,
     } as unknown as UIState);
+    mockUseConfig.mockReturnValue({
+      getWebRemoteStatus: vi.fn().mockReturnValue(null),
+    } as unknown as ReturnType<typeof useConfig>);
     mockUseIsScreenReaderEnabled.mockReturnValue(false);
   });
 

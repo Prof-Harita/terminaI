@@ -121,6 +121,7 @@ import { debugLogger } from '../utils/debugLogger.js';
 import { startupProfiler } from '../telemetry/startupProfiler.js';
 
 import { ApprovalMode } from '../policy/types.js';
+import type { Provenance } from '../safety/approval-ladder/types.js';
 
 export interface AccessibilitySettings {
   disableLoadingPhrases?: boolean;
@@ -269,6 +270,14 @@ export interface ReplToolConfig {
   dockerImage?: string;
 }
 
+export interface WebRemoteStatus {
+  active: boolean;
+  host: string;
+  port: number;
+  loopback: boolean;
+  url?: string;
+}
+
 export interface ConfigParameters {
   sessionId: string;
   embeddingModel?: string;
@@ -381,6 +390,8 @@ export interface ConfigParameters {
     timeoutSeconds?: number;
     dockerImage?: string;
   };
+  sessionProvenance?: Provenance[];
+  webRemoteStatus?: WebRemoteStatus | null;
 }
 
 export class Config {
@@ -442,6 +453,8 @@ export class Config {
   private readonly noBrowser: boolean;
   private readonly folderTrust: boolean;
   private ideMode: boolean;
+  private sessionProvenance: Provenance[];
+  private webRemoteStatus: WebRemoteStatus | null;
 
   private _activeModel: string;
   private readonly maxSessionTurns: number;
@@ -526,6 +539,8 @@ export class Config {
     this.question = params.question;
     this.previewMode = params.previewMode ?? false;
     this.webRemoteRelayUrl = params.webRemoteRelayUrl;
+    this.sessionProvenance = params.sessionProvenance ?? [];
+    this.webRemoteStatus = params.webRemoteStatus ?? null;
 
     this.coreTools = params.coreTools;
     this.allowedTools = params.allowedTools;
@@ -914,6 +929,22 @@ export class Config {
 
   setSessionId(sessionId: string): void {
     this.sessionId = sessionId;
+  }
+
+  getSessionProvenance(): Provenance[] {
+    return [...this.sessionProvenance];
+  }
+
+  setSessionProvenance(provenance: Provenance[]): void {
+    this.sessionProvenance = [...provenance];
+  }
+
+  getWebRemoteStatus(): WebRemoteStatus | null {
+    return this.webRemoteStatus;
+  }
+
+  setWebRemoteStatus(status: WebRemoteStatus | null): void {
+    this.webRemoteStatus = status;
   }
 
   setTerminalBackground(terminalBackground: string | undefined): void {

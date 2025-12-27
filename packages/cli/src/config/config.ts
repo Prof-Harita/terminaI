@@ -77,6 +77,7 @@ export interface CliArgs {
   webRemoteToken: string | undefined;
   webRemoteRotateToken: boolean | undefined;
   iUnderstandWebRemoteRisk: boolean | undefined;
+  remoteBind: string | undefined;
 
   yolo: boolean | undefined;
   approvalMode: string | undefined;
@@ -299,6 +300,12 @@ export async function parseArguments(settings: Settings): Promise<CliArgs> {
           nargs: 1,
           description: 'Host to bind the web-remote server.',
         })
+        .option('remote-bind', {
+          type: 'string',
+          nargs: 1,
+          description:
+            'Explicit host binding for web-remote (required for non-loopback).',
+        })
         .option('web-remote-port', {
           type: 'number',
           nargs: 1,
@@ -386,13 +393,22 @@ export async function parseArguments(settings: Settings): Promise<CliArgs> {
       if (argv['webRemoteToken'] && argv['webRemoteRotateToken']) {
         return 'Cannot use both --web-remote-token and --web-remote-rotate-token together.';
       }
-      const webRemoteHost = argv['webRemoteHost'] as string | undefined;
+      const remoteBind = argv['remoteBind'] as string | undefined;
+      const webRemoteHost = (remoteBind ??
+        (argv['webRemoteHost'] as string | undefined)) as string | undefined;
+      if (
+        remoteBind &&
+        argv['webRemoteHost'] &&
+        remoteBind !== argv['webRemoteHost']
+      ) {
+        return 'Cannot use both --remote-bind and --web-remote-host with different values.';
+      }
       if (
         webRemoteHost &&
         !isLoopbackHost(webRemoteHost) &&
-        !argv['iUnderstandWebRemoteRisk']
+        !remoteBind
       ) {
-        return 'Binding web-remote to a non-loopback host requires --i-understand-web-remote-risk';
+        return 'Binding web-remote to a non-loopback host requires --remote-bind';
       }
       return true;
     });
@@ -425,6 +441,10 @@ export async function parseArguments(settings: Settings): Promise<CliArgs> {
     yargsInstance.showHelp();
     await runExitCleanup();
     process.exit(1);
+  }
+
+  if (result['remoteBind']) {
+    result['webRemoteHost'] = result['remoteBind'];
   }
 
   // Handle help and version flags manually since we disabled exitProcess

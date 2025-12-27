@@ -19,6 +19,7 @@ import {
   type ToolConfirmationResponse,
 } from '../confirmation-bus/types.js';
 import type { RiskLevel } from '../safety/risk-classifier.js';
+import type { Provenance } from '../safety/approval-ladder/types.js';
 
 /**
  * Represents a validated and ready-to-execute tool call.
@@ -65,6 +66,16 @@ export interface ToolInvocation<
     updateOutput?: (output: string | AnsiOutput) => void,
     shellExecutionConfig?: ShellExecutionConfig,
   ): Promise<TResult>;
+
+  /**
+   * Optionally receive provenance metadata for the tool call.
+   */
+  setProvenance?(provenance: Provenance[]): void;
+
+  /**
+   * Optionally return provenance metadata for the tool call.
+   */
+  getProvenance?(): Provenance[];
 }
 
 /**
@@ -83,6 +94,8 @@ export abstract class BaseToolInvocation<
   TResult extends ToolResult,
 > implements ToolInvocation<TParams, TResult>
 {
+  protected provenance: Provenance[] = [];
+
   constructor(
     readonly params: TParams,
     protected readonly messageBus?: MessageBus,
@@ -95,6 +108,14 @@ export abstract class BaseToolInvocation<
 
   toolLocations(): ToolLocation[] {
     return [];
+  }
+
+  setProvenance(provenance: Provenance[]): void {
+    this.provenance = [...provenance];
+  }
+
+  getProvenance(): Provenance[] {
+    return [...this.provenance];
   }
 
   async shouldConfirmExecute(
@@ -705,6 +726,7 @@ export interface ToolExecuteConfirmationDetails {
   command: string;
   rootCommand: string;
   risk?: RiskLevel;
+  provenance?: Provenance[];
   /** Approval level required (A=no approval, B=click, C=click+PIN) */
   reviewLevel?: 'A' | 'B' | 'C';
   /** Whether this action requires PIN verification */
