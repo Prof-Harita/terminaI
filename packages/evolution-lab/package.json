@@ -15,6 +15,7 @@
     "adversary": "node dist/cli.js adversary",
     "run-tasks": "node dist/cli.js run",
     "aggregate": "node dist/cli.js aggregate",
+    "suite": "node dist/cli.js suite",
     "test": "vitest run --passWithNoTests",
     "test:ci": "vitest run --passWithNoTests"
   },

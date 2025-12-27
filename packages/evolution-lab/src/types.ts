@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import type { spawn } from 'node:child_process';
+
 /**
  * Task categories for synthetic scenario generation.
  */
@@ -62,7 +64,12 @@ export interface SandboxConfig {
   timeout: number; // seconds
   diskQuota?: number; // MB
   memoryLimit?: number; // MB
+  cpuLimit?: number; // cores
+  networkDisabled?: boolean;
+  outputLimitBytes?: number;
+  pidsLimit?: number;
   allowUnsafeHost?: boolean;
+  spawnFn?: typeof spawn;
 }
 
 /**
@@ -104,6 +111,11 @@ export const DEFAULT_CONFIG: EvolutionLabConfig = {
     type: 'docker',
     image: 'terminai/evolution-sandbox:latest',
     timeout: 600,
+    memoryLimit: 512,
+    cpuLimit: 1,
+    networkDisabled: true,
+    outputLimitBytes: 512 * 1024,
+    pidsLimit: 256,
   },
   quotaLimit: {
     dailyTasks: 1000,

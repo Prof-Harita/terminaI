@@ -23,12 +23,20 @@ export interface SandboxInstance {
   ready: boolean;
 }
 
+export interface SandboxExecResult {
+  stdout: string;
+  stderr: string;
+  exitCode: number;
+  truncated?: boolean;
+}
+
 /**
  * Sandbox Controller - Manages ephemeral execution environments.
  */
 export class SandboxController {
   private config: SandboxConfig;
   private activeSandboxes: Map<string, SandboxInstance> = new Map();
+  private readonly spawnFn: typeof spawn;
 
   constructor(config?: Partial<SandboxConfig>) {
     const normalizedType = normalizeSandboxType(
@@ -37,12 +45,18 @@ export class SandboxController {
     const baseConfig = {
       image: 'terminai/evolution-sandbox:latest',
       timeout: 600,
+      memoryLimit: 512,
+      cpuLimit: 1,
+      networkDisabled: true,
+      outputLimitBytes: 512 * 1024,
+      pidsLimit: 256,
       ...config,
     };
     this.config = {
       ...baseConfig,
       type: normalizedType,
     };
+    this.spawnFn = this.config.spawnFn ?? spawn;
   }
 
   /**
@@ -91,24 +105,40 @@ export class SandboxController {
     workDir: string,
   ): Promise<string> {
     return new Promise((resolve, reject) => {
+      const memoryLimit = this.config.memoryLimit || 512;
+      const cpuLimit = this.config.cpuLimit || 1;
+      const pidsLimit = this.config.pidsLimit || 256;
+      const tmpfsSize = 128; // MB
+      const networkMode = this.config.networkDisabled === false ? 'bridge' : 'none';
+
       const args = [
         'run',
         '-d',
         '--rm',
         '--name',
         `evolution-${id.slice(0, 8)}`,
-        '-v',
-        `${workDir}:/workspace`,
-        '-w',
-        '/workspace',
+        '--network',
+        networkMode,
+        '--cpus',
+        `${cpuLimit}`,
         '--memory',
-        `${this.config.memoryLimit || 512}m`,
+        `${memoryLimit}m`,
+        '--pids-limit',
+        `${pidsLimit}`,
+        '--mount',
+        `type=bind,src=${workDir},target=/workspace,rw`,
+        '--workdir',
+        '/workspace',
+        '--tmpfs',
+        `/tmp:rw,size=${tmpfsSize}m`,
+        '--security-opt',
+        'no-new-privileges',
         this.config.image,
         'sleep',
         `${this.config.timeout}`,
       ];
 
-      const proc = spawn('docker', args);
+      const proc = this.spawnFn('docker', args);
       let stdout = '';
       let stderr = '';
 
@@ -136,16 +166,42 @@ export class SandboxController {
     sandbox: SandboxInstance,
     command: string,
     args: string[],
-  ): Promise<{ stdout: string; stderr: string; exitCode: number }> {
+  ): Promise<SandboxExecResult> {
     return new Promise((resolve) => {
       let proc: ChildProcess;
+      const outputLimit = this.config.outputLimitBytes ?? 512 * 1024;
+      let truncated = false;
+
+      const boundedAppend = (buffer: string, chunk: string): string => {
+        if (buffer.length >= outputLimit) {
+          truncated = true;
+          return buffer;
+        }
+        const available = outputLimit - buffer.length;
+        if (chunk.length > available) {
+          truncated = true;
+        }
+        return buffer + chunk.slice(0, available);
+      };
 
       if (sandbox.containerId) {
         // Docker exec
-        proc = spawn('docker', ['exec', sandbox.containerId, command, ...args]);
+        const dockerArgs = [
+          'exec',
+          '--workdir',
+          '/workspace',
+          '-e',
+          `HOME=/workspace`,
+          '-e',
+          `TERMINAI_LOGS_DIR=${sandbox.logsDir}`,
+          sandbox.containerId,
+          command,
+          ...args,
+        ];
+        proc = this.spawnFn('docker', dockerArgs);
       } else {
         // Direct execution with working directory
-        proc = spawn(command, args, {
+        proc = this.spawnFn(command, args, {
           cwd: sandbox.workDir,
           env: {
             ...process.env,
@@ -159,17 +215,21 @@ export class SandboxController {
       let stderr = '';
 
       proc.stdout?.on('data', (data) => {
-        stdout += data.toString();
+        stdout = boundedAppend(stdout, data.toString());
       });
       proc.stderr?.on('data', (data) => {
-        stderr += data.toString();
+        stderr = boundedAppend(stderr, data.toString());
       });
 
       proc.on('close', (code) => {
+        if (truncated) {
+          stdout = `${stdout}\n[output truncated]\n`;
+        }
         resolve({
           stdout,
           stderr,
           exitCode: code ?? 1,
+          truncated,
         });
       });
 
@@ -178,6 +238,7 @@ export class SandboxController {
           stdout,
           stderr: err.message,
           exitCode: 1,
+          truncated,
         });
       });
     });

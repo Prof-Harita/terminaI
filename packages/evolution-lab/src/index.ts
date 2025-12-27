@@ -17,3 +17,4 @@ export * from './adversary.js';
 export * from './sandbox.js';
 export * from './runner.js';
 export * from './aggregator.js';
+export * from './suite.js';

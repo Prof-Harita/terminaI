@@ -10,7 +10,11 @@ import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { EvolutionTask, TaskResult, EvolutionLabConfig } from './types.js';
-import { SandboxController, type SandboxInstance } from './sandbox.js';
+import {
+  SandboxController,
+  type SandboxInstance,
+  type SandboxExecResult,
+} from './sandbox.js';
 
 /**
  * Runner - Executes TerminaI tasks inside sandboxes.
@@ -116,7 +120,7 @@ export class Runner {
     sandbox: SandboxInstance,
     prompt: string,
     sessionId: string,
-  ): Promise<{ stdout: string; stderr: string; exitCode: number }> {
+  ): Promise<SandboxExecResult> {
     // Priority: ENV var > local monorepo path > npx fallback
     let terminaiPath = process.env['TERMINAI_CLI_PATH'];
 
@@ -145,7 +149,7 @@ export class Runner {
    */
   private timeout(
     ms: number,
-  ): Promise<{ stdout: string; stderr: string; exitCode: number }> {
+  ): Promise<SandboxExecResult> {
     return new Promise((_, reject) =>
       setTimeout(() => reject(new Error('Task timeout exceeded')), ms),
     );

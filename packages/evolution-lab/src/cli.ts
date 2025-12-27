@@ -11,6 +11,7 @@ import { Adversary } from './adversary.js';
 import { Runner } from './runner.js';
 import { Aggregator } from './aggregator.js';
 import { DEFAULT_CONFIG, type SandboxType } from './types.js';
+import { loadSuiteDefinitions, runSuite } from './suite.js';
 
 void yargs(hideBin(process.argv))
   .scriptName('evolution-lab')
@@ -106,6 +107,76 @@ void yargs(hideBin(process.argv))
 
       const successful = results.filter((r) => r.success).length;
       console.log(`Success rate: ${successful}/${results.length}`);
+    },
+  )
+  .command(
+    'suite',
+    'Run deterministic regression suite in Docker',
+    (yargs) =>
+      yargs
+        .option('count', {
+          alias: 'c',
+          type: 'number',
+          default: 0,
+          describe: 'Number of suite tasks to run (0 = all)',
+        })
+        .option('parallelism', {
+          alias: 'p',
+          type: 'number',
+          default: 1,
+          describe: 'Number of concurrent suite tasks',
+        })
+        .option('sandbox-type', {
+          type: 'string',
+          choices: ['docker', 'desktop', 'full-vm', 'host', 'headless'],
+          default: DEFAULT_CONFIG.sandbox.type,
+          describe:
+            'Sandbox type (headless is a deprecated alias for docker)',
+        })
+        .option('allow-unsafe-host', {
+          type: 'boolean',
+          default: false,
+          describe: 'Required when using --sandbox-type host',
+        }),
+    async (argv) => {
+      const definitions = await loadSuiteDefinitions();
+      const selectedCount =
+        argv.count && argv.count > 0 ? argv.count : definitions.length;
+      const sandboxType = normalizeSandboxType(
+        String(argv.sandboxType ?? DEFAULT_CONFIG.sandbox.type),
+      );
+
+      const sandboxConfig = {
+        ...DEFAULT_CONFIG.sandbox,
+        type: sandboxType,
+        allowUnsafeHost: argv.allowUnsafeHost,
+        networkDisabled: sandboxType === 'docker',
+        outputLimitBytes: 65536,
+      };
+
+      console.log(
+        `Running suite with ${selectedCount} task(s), parallelism=${argv.parallelism}`,
+      );
+      const results = await runSuite({
+        tasks: definitions,
+        count: selectedCount,
+        parallelism: argv.parallelism ?? 1,
+        sandboxConfig,
+      });
+
+      const failures = results.filter((r) => !r.passed);
+      for (const result of results) {
+        const status = result.passed ? 'PASS' : 'FAIL';
+        const note = result.notes.join('; ') || 'ok';
+        console.log(`[${status}] ${result.taskId}: ${note}`);
+      }
+
+      if (failures.length > 0) {
+        console.error(`Suite failed for ${failures.length} task(s).`);
+        process.exitCode = 1;
+      } else {
+        console.log('Suite completed successfully.');
+      }
     },
   )
   .command(
