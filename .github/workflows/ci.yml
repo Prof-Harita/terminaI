@@ -136,11 +136,11 @@ jobs:
           node-version: '${{ matrix.node-version }}'
           cache: 'npm'
 
-      - name: 'Build project'
-        run: 'npm run build'
-
       - name: 'Install dependencies for testing'
         run: 'npm ci'
+
+      - name: 'Build project'
+        run: 'npm run build'
 
       - name: 'Run tests and generate reports'
         env:
@@ -204,11 +204,11 @@ jobs:
           node-version: '${{ matrix.node-version }}'
           cache: 'npm'
 
-      - name: 'Build project'
-        run: 'npm run build'
-
       - name: 'Install dependencies for testing'
         run: 'npm ci'
+
+      - name: 'Build project'
+        run: 'npm run build'
 
       - name: 'Run tests and generate reports'
         env:

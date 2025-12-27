@@ -25,9 +25,28 @@ import { fileURLToPath } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 
-// npm install if node_modules was removed (e.g. via npm run clean or scripts/clean.js)
-if (!existsSync(join(root, 'node_modules'))) {
-  execSync('npm install', { stdio: 'inherit', cwd: root });
+const nodeModulesPath = join(root, 'node_modules');
+const allowInstall =
+  process.env.TERMINAI_BUILD_ALLOW_INSTALL === '1' ||
+  process.env.TERMINAI_BUILD_ALLOW_INSTALL === 'true';
+
+const failBuild = (message) => {
+  if (process.env.TERMINAI_BUILD_TEST === '1') {
+    throw new Error(message);
+  }
+  console.error(message);
+  process.exit(1);
+};
+
+// npm install only when explicitly allowed for local dev
+if (!existsSync(nodeModulesPath)) {
+  const message =
+    'Missing node_modules. Run `npm ci` first, or set TERMINAI_BUILD_ALLOW_INSTALL=1 for local dev.';
+  if (allowInstall) {
+    execSync('npm install', { stdio: 'inherit', cwd: root });
+  } else {
+    failBuild(message);
+  }
 }
 
 // build all workspaces/packages
