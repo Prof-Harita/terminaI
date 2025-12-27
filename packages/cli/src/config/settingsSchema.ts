@@ -1548,6 +1548,75 @@ const SETTINGS_SCHEMA = {
     },
   },
 
+  audit: {
+    type: 'object',
+    label: 'Audit',
+    category: 'Security',
+    requiresRestart: true,
+    default: {},
+    description: 'Audit logging configuration (cannot be disabled).',
+    showInDialog: false,
+    properties: {
+      redactUiTypedText: {
+        type: 'boolean',
+        label: 'Redact UI typed text',
+        category: 'Security',
+        requiresRestart: true,
+        default: true,
+        description:
+          'Redact UI typed text in audit logs. Audit logging cannot be disabled.',
+        showInDialog: true,
+      },
+      retentionDays: {
+        type: 'number',
+        label: 'Audit retention (days)',
+        category: 'Security',
+        requiresRestart: true,
+        default: 30,
+        description: 'Retention window for audit logs (metadata only).',
+        showInDialog: false,
+      },
+      export: {
+        type: 'object',
+        label: 'Audit export',
+        category: 'Security',
+        requiresRestart: false,
+        default: {},
+        description: 'Export options for audit logs.',
+        showInDialog: false,
+        properties: {
+          format: {
+            type: 'enum',
+            label: 'Export format',
+            category: 'Security',
+            requiresRestart: false,
+            default: 'jsonl',
+            options: [
+              { value: 'jsonl', label: 'JSONL' },
+              { value: 'json', label: 'JSON' },
+            ],
+            description: 'Format to use when exporting audit logs.',
+            showInDialog: true,
+          },
+          redaction: {
+            type: 'enum',
+            label: 'Export redaction level',
+            category: 'Security',
+            requiresRestart: false,
+            default: 'enterprise',
+            options: [
+              { value: 'enterprise', label: 'Enterprise (metadata only)' },
+              { value: 'debug', label: 'Debug' },
+            ],
+            description:
+              'Export redaction. Enterprise removes payloads; debug keeps more detail.',
+            showInDialog: true,
+          },
+        },
+      },
+    },
+  },
+
   advanced: {
     type: 'object',
     label: 'Advanced',

@@ -127,6 +127,12 @@ import {
   type BrainAuthority,
   resolveEffectiveBrainAuthority,
 } from './brainAuthority.js';
+import {
+  type AuditLedger,
+  FileAuditLedger,
+  type AuditExportOptions,
+} from '../audit/ledger.js';
+import type { AuditExportRedaction } from '../audit/export.js';
 
 export interface AccessibilitySettings {
   disableLoadingPhrases?: boolean;
@@ -401,6 +407,14 @@ export interface ConfigParameters {
   };
   sessionProvenance?: Provenance[];
   webRemoteStatus?: WebRemoteStatus | null;
+  audit?: AuditSettings;
+}
+
+export interface AuditSettings {
+  redactUiTypedText?: boolean;
+  retentionDays?: number;
+  exportFormat?: AuditExportOptions['format'];
+  exportRedaction?: AuditExportRedaction;
 }
 
 export class Config {
@@ -528,6 +542,8 @@ export class Config {
   private readonly enableAgents: boolean;
 
   private readonly experimentalJitContext: boolean;
+  private readonly auditSettings: AuditSettings;
+  private readonly auditLedger: AuditLedger;
   private contextManager?: ContextManager;
   private terminalBackground: string | undefined = undefined;
   private readonly approvalPin: string;
@@ -695,6 +711,18 @@ export class Config {
     this.brainAuthority = resolveEffectiveBrainAuthority(
       params.brain?.authority ?? DEFAULT_BRAIN_AUTHORITY,
       policyBrainAuthority,
+    );
+    this.auditSettings = {
+      redactUiTypedText: params.audit?.redactUiTypedText ?? true,
+      retentionDays: params.audit?.retentionDays ?? 30,
+      exportFormat: params.audit?.exportFormat ?? 'jsonl',
+      exportRedaction: params.audit?.exportRedaction ?? 'enterprise',
+    };
+    this.auditLedger = new FileAuditLedger(
+      new Storage(this.targetDir).getSessionAuditPath(this.sessionId),
+      {
+        redactUiTypedText: this.auditSettings.redactUiTypedText,
+      },
     );
     this.providerConfig = params.providerConfig ?? {
       provider: LlmProviderId.GEMINI,
@@ -1276,6 +1304,14 @@ export class Config {
 
   getBrainAuthority(): BrainAuthority {
     return this.brainAuthority;
+  }
+
+  getAuditLedger(): AuditLedger {
+    return this.auditLedger;
+  }
+
+  getAuditSettings(): AuditSettings {
+    return this.auditSettings;
   }
 
   setApprovalMode(mode: ApprovalMode): void {

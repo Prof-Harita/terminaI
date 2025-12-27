@@ -619,6 +619,56 @@
       },
       "additionalProperties": false
     },
+    "audit": {
+      "title": "Audit",
+      "description": "Audit logging configuration (cannot be disabled).",
+      "markdownDescription": "Audit logging configuration (cannot be disabled).\n\n- Category: `Security`\n- Requires restart: `yes`\n- Default: `{}`",
+      "default": {},
+      "type": "object",
+      "properties": {
+        "redactUiTypedText": {
+          "title": "Redact UI typed text",
+          "description": "Redact UI typed text in audit logs. Audit logging cannot be disabled.",
+          "markdownDescription": "Redact UI typed text in audit logs. Audit logging cannot be disabled.\n\n- Category: `Security`\n- Requires restart: `yes`\n- Default: `true`",
+          "default": true,
+          "type": "boolean"
+        },
+        "retentionDays": {
+          "title": "Audit retention (days)",
+          "description": "Retention window for audit logs (metadata only).",
+          "markdownDescription": "Retention window for audit logs (metadata only).\n\n- Category: `Security`\n- Requires restart: `yes`\n- Default: `30`",
+          "default": 30,
+          "type": "number"
+        },
+        "export": {
+          "title": "Audit export",
+          "description": "Export options for audit logs.",
+          "markdownDescription": "Export options for audit logs.\n\n- Category: `Security`\n- Requires restart: `no`\n- Default: `{}`",
+          "default": {},
+          "type": "object",
+          "properties": {
+            "format": {
+              "title": "Export format",
+              "description": "Format to use when exporting audit logs.",
+              "markdownDescription": "Format to use when exporting audit logs.\n\n- Category: `Security`\n- Requires restart: `no`\n- Default: `jsonl`",
+              "default": "jsonl",
+              "type": "string",
+              "enum": ["jsonl", "json"]
+            },
+            "redaction": {
+              "title": "Export redaction level",
+              "description": "Export redaction. Enterprise removes payloads; debug keeps more detail.",
+              "markdownDescription": "Export redaction. Enterprise removes payloads; debug keeps more detail.\n\n- Category: `Security`\n- Requires restart: `no`\n- Default: `enterprise`",
+              "default": "enterprise",
+              "type": "string",
+              "enum": ["enterprise", "debug"]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
     "modelConfigs": {
       "title": "Model Configs",
       "description": "Model configurations.",

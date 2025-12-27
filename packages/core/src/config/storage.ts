@@ -88,6 +88,10 @@ export class Storage {
     return path.join(Storage.getGlobalGeminiDir(), 'logs');
   }
 
+  static getGlobalAuditDir(): string {
+    return path.join(Storage.getGlobalLogsDir(), 'audit');
+  }
+
   static getGlobalBinDir(): string {
     return path.join(Storage.getGlobalTempDir(), BIN_DIR_NAME);
   }
@@ -150,5 +154,9 @@ export class Storage {
 
   getHistoryFilePath(): string {
     return path.join(this.getProjectTempDir(), 'shell_history');
+  }
+
+  getSessionAuditPath(sessionId: string): string {
+    return path.join(Storage.getGlobalAuditDir(), `${sessionId}.jsonl`);
   }
 }

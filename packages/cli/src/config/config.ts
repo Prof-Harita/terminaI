@@ -846,6 +846,18 @@ export async function loadCliConfig(
       authority: settings.brain?.authority,
       policyAuthority: policyBrainAuthority,
     },
+    audit: {
+      redactUiTypedText: settings.audit?.redactUiTypedText,
+      retentionDays: settings.audit?.retentionDays,
+      exportFormat: settings.audit?.export?.format as
+        | 'jsonl'
+        | 'json'
+        | undefined,
+      exportRedaction: settings.audit?.export?.redaction as
+        | 'enterprise'
+        | 'debug'
+        | undefined,
+    },
     showMemoryUsage: settings.ui?.showMemoryUsage || false,
     accessibility: {
       ...settings.ui?.accessibility,

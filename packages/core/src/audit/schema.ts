@@ -48,6 +48,8 @@ export interface AuditEventBase {
   reviewLevel?: AuditReviewLevel;
   actor?: AuditActor;
   redactions?: AuditRedactionHint[];
+  prevHash?: string;
+  hash?: string;
 }
 
 export interface AuditToolContext {

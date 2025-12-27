@@ -53,6 +53,11 @@ import {
 } from './coreToolHookTriggers.js';
 import { debugLogger } from '../utils/debugLogger.js';
 import type { Provenance } from '../safety/approval-ladder/types.js';
+import type {
+  AuditEvent,
+  AuditEventType,
+  AuditReviewLevel,
+} from '../audit/schema.js';
 
 export type ValidatingToolCall = {
   status: 'validating';
@@ -423,6 +428,65 @@ export class CoreToolScheduler {
         // Store the handler in the WeakMap so we don't subscribe again
         CoreToolScheduler.subscribedMessageBuses.set(messageBus, sharedHandler);
       }
+    }
+  }
+
+  private findToolCall(callId: string): ToolCall | undefined {
+    return this.toolCalls.find((call) => call.request.callId === callId);
+  }
+
+  private buildAuditEvent(
+    toolCall: ToolCall,
+    eventType: AuditEventType,
+    extra?: Partial<AuditEvent>,
+  ): AuditEvent {
+    const invocation = toolCall.invocation;
+    const provenance =
+      invocation && typeof invocation.getProvenance === 'function'
+        ? invocation.getProvenance()
+        : toolCall.request.provenance;
+    const normalizedProv = this.normalizeProvenance(provenance);
+    const reviewLevel =
+      extra?.reviewLevel ??
+      (toolCall.status === 'awaiting_approval'
+        ? toolCall.confirmationDetails.reviewLevel
+        : undefined);
+
+    return {
+      version: 1,
+      eventType,
+      timestamp: new Date().toISOString(),
+      sessionId: this.config.getSessionId(),
+      provenance: normalizedProv,
+      reviewLevel: reviewLevel as AuditReviewLevel | undefined,
+      tool: {
+        callId: toolCall.request.callId,
+        toolName: toolCall.request.name,
+        toolKind: toolCall.tool.kind,
+        args: toolCall.request.args,
+        result: extra?.tool?.result,
+      },
+      ...extra,
+    };
+  }
+
+  private async recordAuditEvent(
+    toolCall: ToolCall | undefined,
+    eventType: AuditEventType,
+    extra?: Partial<AuditEvent>,
+  ): Promise<void> {
+    if (!toolCall) return;
+    const ledger = this.config.getAuditLedger?.();
+    if (!ledger) return;
+    try {
+      const event = this.buildAuditEvent(toolCall, eventType, extra);
+      await ledger.append(event);
+    } catch (error) {
+      debugLogger.warn(
+        `Failed to record audit event ${eventType}: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
     }
   }
 
@@ -930,6 +994,10 @@ export class CoreToolScheduler {
             ToolConfirmationOutcome.ProceedAlways,
           );
           this.setStatusInternal(reqInfo.callId, 'scheduled', signal);
+          void this.recordAuditEvent(
+            this.findToolCall(reqInfo.callId),
+            'tool.requested',
+          );
         } else {
           const requiresPin = confirmationDetails.requiresPin === true;
           if (this.isAutoApproved(toolCall) && !requiresPin) {
@@ -938,6 +1006,10 @@ export class CoreToolScheduler {
               ToolConfirmationOutcome.ProceedAlways,
             );
             this.setStatusInternal(reqInfo.callId, 'scheduled', signal);
+            void this.recordAuditEvent(
+              this.findToolCall(reqInfo.callId),
+              'tool.requested',
+            );
           } else {
             if (!this.config.isInteractive()) {
               throw new Error(
@@ -1000,6 +1072,16 @@ export class CoreToolScheduler {
               'awaiting_approval',
               signal,
               wrappedConfirmationDetails,
+            );
+            void this.recordAuditEvent(
+              this.findToolCall(reqInfo.callId),
+              'tool.awaiting_approval',
+              {
+                reviewLevel:
+                  wrappedConfirmationDetails.type !== 'mcp'
+                    ? wrappedConfirmationDetails.reviewLevel
+                    : undefined,
+              },
             );
           }
         }
@@ -1081,6 +1163,16 @@ export class CoreToolScheduler {
         await this.checkAndNotifyCompletion(signal);
         return;
       }
+
+      const eventType: AuditEventType =
+        outcome === ToolConfirmationOutcome.Cancel
+          ? 'tool.denied'
+          : 'tool.approved';
+      const reviewLevel =
+        toolCall.confirmationDetails.type !== 'mcp'
+          ? toolCall.confirmationDetails.reviewLevel
+          : undefined;
+      void this.recordAuditEvent(toolCall, eventType, { reviewLevel });
     }
 
     this.setToolCallOutcome(callId, outcome);
@@ -1217,6 +1309,10 @@ export class CoreToolScheduler {
         const { callId, name: toolName } = scheduledCall.request;
         const invocation = scheduledCall.invocation;
         this.setStatusInternal(callId, 'executing', signal);
+        void this.recordAuditEvent(
+          this.findToolCall(callId),
+          'tool.execution_started',
+        );
 
         const liveOutputCallback =
           scheduledCall.tool.canUpdateOutput && this.outputUpdateHandler
@@ -1356,6 +1452,14 @@ export class CoreToolScheduler {
                   signal,
                   successResponse,
                 );
+                void this.recordAuditEvent(this.findToolCall(callId), 'tool.execution_finished', {
+                  tool: {
+                    result: {
+                      success: true,
+                      outputBytes: contentLength,
+                    },
+                  },
+                });
               } else {
                 // It is a failure
                 const error = new Error(toolResult.error.message);
@@ -1365,6 +1469,18 @@ export class CoreToolScheduler {
                   toolResult.error.type,
                 );
                 this.setStatusInternal(callId, 'error', signal, errorResponse);
+                void this.recordAuditEvent(
+                  this.findToolCall(callId),
+                  'tool.execution_failed',
+                  {
+                    tool: {
+                      result: {
+                        success: false,
+                        errorType: toolResult.error.type,
+                      },
+                    },
+                  },
+                );
               }
             } catch (executionError: unknown) {
               spanMetadata.error = executionError;
@@ -1374,6 +1490,18 @@ export class CoreToolScheduler {
                   'cancelled',
                   signal,
                   'User cancelled tool execution.',
+                );
+                void this.recordAuditEvent(
+                  this.findToolCall(callId),
+                  'tool.execution_failed',
+                  {
+                    tool: {
+                      result: {
+                        success: false,
+                        errorType: ToolErrorType.UNHANDLED_EXCEPTION,
+                      },
+                    },
+                  },
                 );
               } else {
                 this.setStatusInternal(
@@ -1387,6 +1515,18 @@ export class CoreToolScheduler {
                       : new Error(String(executionError)),
                     ToolErrorType.UNHANDLED_EXCEPTION,
                   ),
+                );
+                void this.recordAuditEvent(
+                  this.findToolCall(callId),
+                  'tool.execution_failed',
+                  {
+                    tool: {
+                      result: {
+                        success: false,
+                        errorType: ToolErrorType.UNHANDLED_EXCEPTION,
+                      },
+                    },
+                  },
                 );
               }
             }
