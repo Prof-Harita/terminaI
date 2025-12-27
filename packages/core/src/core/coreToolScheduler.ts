@@ -52,6 +52,13 @@ import {
   executeToolWithHooks,
 } from './coreToolHookTriggers.js';
 import { debugLogger } from '../utils/debugLogger.js';
+import type { Provenance } from '../safety/approval-ladder/types.js';
+import type {
+  AuditEvent,
+  AuditEventType,
+  AuditReviewLevel,
+  AuditToolContext,
+} from '../audit/schema.js';
 
 export type ValidatingToolCall = {
   status: 'validating';
@@ -151,6 +158,10 @@ export type AllToolCallsCompleteHandler = (
 ) => Promise<void>;
 
 export type ToolCallsUpdateHandler = (toolCalls: ToolCall[]) => void;
+
+type AuditEventExtras = Omit<Partial<AuditEvent>, 'tool'> & {
+  tool?: Partial<AuditToolContext>;
+};
 
 /**
  * Formats tool output for a Gemini FunctionResponse.
@@ -425,6 +436,75 @@ export class CoreToolScheduler {
     }
   }
 
+  private findToolCall(callId: string): ToolCall | undefined {
+    return this.toolCalls.find((call) => call.request.callId === callId);
+  }
+
+  private buildAuditEvent(
+    toolCall: ToolCall,
+    eventType: AuditEventType,
+    extra?: AuditEventExtras,
+  ): AuditEvent {
+    const invocation =
+      'invocation' in toolCall ? toolCall.invocation : undefined;
+    const provenance =
+      invocation && typeof invocation.getProvenance === 'function'
+        ? invocation.getProvenance()
+        : toolCall.request.provenance;
+    const normalizedProv = this.normalizeProvenance(provenance);
+    const reviewLevel =
+      extra?.reviewLevel ??
+      (toolCall.status === 'awaiting_approval'
+        ? toolCall.confirmationDetails.reviewLevel
+        : undefined);
+
+    const extraTool = extra?.tool;
+    const { tool: _ignoredTool, ...restExtra } = extra ?? {};
+    const extrasWithoutTool: Omit<AuditEventExtras, 'tool'> = restExtra as Omit<
+      AuditEventExtras,
+      'tool'
+    >;
+    const toolContext: AuditToolContext = {
+      callId: toolCall.request.callId,
+      toolName: toolCall.request.name,
+      toolKind: extraTool?.toolKind ?? toolCall.tool?.kind,
+      recipe: extraTool?.recipe ?? toolCall.request.recipe,
+      args: extraTool?.args ?? toolCall.request.args,
+      result: extraTool?.result,
+    };
+
+    return {
+      version: 1,
+      eventType,
+      timestamp: new Date().toISOString(),
+      sessionId: this.config.getSessionId(),
+      provenance: normalizedProv,
+      reviewLevel,
+      tool: toolContext,
+      ...extrasWithoutTool,
+    };
+  }
+
+  private async recordAuditEvent(
+    toolCall: ToolCall | undefined,
+    eventType: AuditEventType,
+    extra?: AuditEventExtras,
+  ): Promise<void> {
+    if (!toolCall) return;
+    const ledger = this.config.getAuditLedger?.();
+    if (!ledger) return;
+    try {
+      const event = this.buildAuditEvent(toolCall, eventType, extra);
+      await ledger.append(event);
+    } catch (error) {
+      debugLogger.warn(
+        `Failed to record audit event ${eventType}: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
+  }
+
   private setStatusInternal(
     targetCallId: string,
     status: 'success',
@@ -625,6 +705,8 @@ export class CoreToolScheduler {
         } as ErroredToolCall;
       }
 
+      this.attachInvocationProvenance(invocationOrError, call.request);
+
       return {
         ...call,
         request: { ...call.request, args: args as Record<string, unknown> },
@@ -655,6 +737,81 @@ export class CoreToolScheduler {
       }
       return new Error(String(e));
     }
+  }
+
+  private normalizeProvenance(provenance?: Provenance[]): Provenance[] {
+    if (!provenance || provenance.length === 0) {
+      return ['unknown'];
+    }
+    const unique = new Set<Provenance>();
+    const merged: Provenance[] = [];
+    for (const entry of provenance) {
+      if (!unique.has(entry)) {
+        unique.add(entry);
+        merged.push(entry);
+      }
+    }
+    return merged;
+  }
+
+  private normalizeRequestProvenance(
+    request: ToolCallRequestInfo,
+  ): ToolCallRequestInfo {
+    return {
+      ...request,
+      provenance: this.normalizeProvenance(request.provenance),
+    };
+  }
+
+  private attachInvocationProvenance(
+    invocation: AnyToolInvocation,
+    request: ToolCallRequestInfo,
+  ): void {
+    const setter = (
+      invocation as {
+        setProvenance?: (provenance: Provenance[]) => void;
+      }
+    ).setProvenance;
+    if (setter) {
+      setter.call(invocation, this.normalizeProvenance(request.provenance));
+    }
+  }
+
+  private reviewLevelRank(level?: AuditReviewLevel): number {
+    if (level === 'C') return 2;
+    if (level === 'B') return 1;
+    return 0;
+  }
+
+  private applyRequestedReviewFloor(
+    details: ToolCallConfirmationDetails | false,
+    requestedLevel?: AuditReviewLevel,
+  ): ToolCallConfirmationDetails | false {
+    if (!requestedLevel || requestedLevel === 'A') {
+      return details;
+    }
+
+    if (!details) {
+      return {
+        type: 'info',
+        title: 'Recipe step approval required',
+        prompt: `This recipe step requires at least Level ${requestedLevel} approval.`,
+        reviewLevel: requestedLevel,
+        requiresPin: requestedLevel === 'C',
+        onConfirm: async () => {},
+      };
+    }
+
+    const requestedRank = this.reviewLevelRank(requestedLevel);
+    const existingRank = this.reviewLevelRank(details.reviewLevel);
+    const nextLevel =
+      requestedRank > existingRank ? requestedLevel : details.reviewLevel;
+
+    return {
+      ...details,
+      reviewLevel: nextLevel,
+      requiresPin: details.requiresPin || requestedLevel === 'C',
+    };
   }
 
   /**
@@ -781,17 +938,18 @@ export class CoreToolScheduler {
 
       const newToolCalls: ToolCall[] = requestsToProcess.map(
         (reqInfo): ToolCall => {
+          const normalizedRequest = this.normalizeRequestProvenance(reqInfo);
           const toolInstance = this.config
             .getToolRegistry()
-            .getTool(reqInfo.name);
+            .getTool(normalizedRequest.name);
           if (!toolInstance) {
-            const suggestion = this.getToolSuggestion(reqInfo.name);
-            const errorMessage = `Tool "${reqInfo.name}" not found in registry. Tools must use the exact names that are registered.${suggestion}`;
+            const suggestion = this.getToolSuggestion(normalizedRequest.name);
+            const errorMessage = `Tool "${normalizedRequest.name}" not found in registry. Tools must use the exact names that are registered.${suggestion}`;
             return {
               status: 'error',
-              request: reqInfo,
+              request: normalizedRequest,
               response: createErrorResponse(
-                reqInfo,
+                normalizedRequest,
                 new Error(errorMessage),
                 ToolErrorType.TOOL_NOT_REGISTERED,
               ),
@@ -801,15 +959,15 @@ export class CoreToolScheduler {
 
           const invocationOrError = this.buildInvocation(
             toolInstance,
-            reqInfo.args,
+            normalizedRequest.args,
           );
           if (invocationOrError instanceof Error) {
             return {
               status: 'error',
-              request: reqInfo,
+              request: normalizedRequest,
               tool: toolInstance,
               response: createErrorResponse(
-                reqInfo,
+                normalizedRequest,
                 invocationOrError,
                 ToolErrorType.INVALID_TOOL_PARAMS,
               ),
@@ -817,9 +975,11 @@ export class CoreToolScheduler {
             };
           }
 
+          this.attachInvocationProvenance(invocationOrError, normalizedRequest);
+
           return {
             status: 'validating',
-            request: reqInfo,
+            request: normalizedRequest,
             tool: toolInstance,
             invocation: invocationOrError,
             startTime: Date.now(),
@@ -879,8 +1039,10 @@ export class CoreToolScheduler {
           return;
         }
 
-        const confirmationDetails =
-          await invocation.shouldConfirmExecute(signal);
+        const confirmationDetails = this.applyRequestedReviewFloor(
+          await invocation.shouldConfirmExecute(signal),
+          toolCall.request.requestedReviewLevel,
+        );
 
         if (!confirmationDetails) {
           this.setToolCallOutcome(
@@ -888,13 +1050,22 @@ export class CoreToolScheduler {
             ToolConfirmationOutcome.ProceedAlways,
           );
           this.setStatusInternal(reqInfo.callId, 'scheduled', signal);
+          void this.recordAuditEvent(
+            this.findToolCall(reqInfo.callId),
+            'tool.requested',
+          );
         } else {
-          if (this.isAutoApproved(toolCall)) {
+          const requiresPin = confirmationDetails.requiresPin === true;
+          if (this.isAutoApproved(toolCall) && !requiresPin) {
             this.setToolCallOutcome(
               reqInfo.callId,
               ToolConfirmationOutcome.ProceedAlways,
             );
             this.setStatusInternal(reqInfo.callId, 'scheduled', signal);
+            void this.recordAuditEvent(
+              this.findToolCall(reqInfo.callId),
+              'tool.requested',
+            );
           } else {
             if (!this.config.isInteractive()) {
               throw new Error(
@@ -958,6 +1129,16 @@ export class CoreToolScheduler {
               signal,
               wrappedConfirmationDetails,
             );
+            void this.recordAuditEvent(
+              this.findToolCall(reqInfo.callId),
+              'tool.awaiting_approval',
+              {
+                reviewLevel:
+                  wrappedConfirmationDetails.type !== 'mcp'
+                    ? wrappedConfirmationDetails.reviewLevel
+                    : undefined,
+              },
+            );
           }
         }
       } catch (error) {
@@ -1003,6 +1184,23 @@ export class CoreToolScheduler {
 
     if (toolCall && toolCall.status === 'awaiting_approval') {
       try {
+        const confirmationDetails = toolCall.confirmationDetails;
+        if (
+          confirmationDetails?.requiresPin &&
+          outcome !== ToolConfirmationOutcome.Cancel
+        ) {
+          const pinLength = confirmationDetails.pinLength ?? 6;
+          const enteredPin = payload?.pin ?? '';
+          if (!/^\d+$/.test(enteredPin) || enteredPin.length !== pinLength) {
+            throw new Error(`Enter a ${pinLength}-digit PIN to proceed.`);
+          }
+          const configuredPin = this.config.getApprovalPin();
+          if (enteredPin !== configuredPin) {
+            throw new Error(
+              'Incorrect PIN. Level C action denied for security reasons.',
+            );
+          }
+        }
         await originalOnConfirm(outcome, payload);
       } catch (error) {
         // Handle errors from onConfirm (e.g., PIN validation failures)
@@ -1021,6 +1219,16 @@ export class CoreToolScheduler {
         await this.checkAndNotifyCompletion(signal);
         return;
       }
+
+      const eventType: AuditEventType =
+        outcome === ToolConfirmationOutcome.Cancel
+          ? 'tool.denied'
+          : 'tool.approved';
+      const reviewLevel =
+        toolCall.confirmationDetails.type !== 'mcp'
+          ? toolCall.confirmationDetails.reviewLevel
+          : undefined;
+      void this.recordAuditEvent(toolCall, eventType, { reviewLevel });
     }
 
     this.setToolCallOutcome(callId, outcome);
@@ -1157,6 +1365,10 @@ export class CoreToolScheduler {
         const { callId, name: toolName } = scheduledCall.request;
         const invocation = scheduledCall.invocation;
         this.setStatusInternal(callId, 'executing', signal);
+        void this.recordAuditEvent(
+          this.findToolCall(callId),
+          'tool.execution_started',
+        );
 
         const liveOutputCallback =
           scheduledCall.tool.canUpdateOutput && this.outputUpdateHandler
@@ -1296,6 +1508,18 @@ export class CoreToolScheduler {
                   signal,
                   successResponse,
                 );
+                void this.recordAuditEvent(
+                  this.findToolCall(callId),
+                  'tool.execution_finished',
+                  {
+                    tool: {
+                      result: {
+                        success: true,
+                        outputBytes: contentLength,
+                      },
+                    },
+                  },
+                );
               } else {
                 // It is a failure
                 const error = new Error(toolResult.error.message);
@@ -1305,6 +1529,18 @@ export class CoreToolScheduler {
                   toolResult.error.type,
                 );
                 this.setStatusInternal(callId, 'error', signal, errorResponse);
+                void this.recordAuditEvent(
+                  this.findToolCall(callId),
+                  'tool.execution_failed',
+                  {
+                    tool: {
+                      result: {
+                        success: false,
+                        errorType: toolResult.error.type,
+                      },
+                    },
+                  },
+                );
               }
             } catch (executionError: unknown) {
               spanMetadata.error = executionError;
@@ -1314,6 +1550,18 @@ export class CoreToolScheduler {
                   'cancelled',
                   signal,
                   'User cancelled tool execution.',
+                );
+                void this.recordAuditEvent(
+                  this.findToolCall(callId),
+                  'tool.execution_failed',
+                  {
+                    tool: {
+                      result: {
+                        success: false,
+                        errorType: ToolErrorType.UNHANDLED_EXCEPTION,
+                      },
+                    },
+                  },
                 );
               } else {
                 this.setStatusInternal(
@@ -1327,6 +1575,18 @@ export class CoreToolScheduler {
                       : new Error(String(executionError)),
                     ToolErrorType.UNHANDLED_EXCEPTION,
                   ),
+                );
+                void this.recordAuditEvent(
+                  this.findToolCall(callId),
+                  'tool.execution_failed',
+                  {
+                    tool: {
+                      result: {
+                        success: false,
+                        errorType: ToolErrorType.UNHANDLED_EXCEPTION,
+                      },
+                    },
+                  },
                 );
               }
             }

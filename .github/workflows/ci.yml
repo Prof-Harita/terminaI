@@ -136,11 +136,11 @@ jobs:
           node-version: '${{ matrix.node-version }}'
           cache: 'npm'
 
-      - name: 'Build project'
-        run: 'npm run build'
-
       - name: 'Install dependencies for testing'
         run: 'npm ci'
+
+      - name: 'Build project'
+        run: 'npm run build'
 
       - name: 'Run tests and generate reports'
         env:
@@ -204,11 +204,11 @@ jobs:
           node-version: '${{ matrix.node-version }}'
           cache: 'npm'
 
-      - name: 'Build project'
-        run: 'npm run build'
-
       - name: 'Install dependencies for testing'
         run: 'npm ci'
+
+      - name: 'Build project'
+        run: 'npm run build'
 
       - name: 'Run tests and generate reports'
         env:
@@ -298,6 +298,44 @@ jobs:
           compression: 'none'
           clean-script: 'clean'
 
+  evolution_lab_suite:
+    name: 'Evolution Lab Suite'
+    needs:
+      - 'lint'
+      - 'merge_queue_skipper'
+    if: "${{ needs.merge_queue_skipper.outputs.skip != 'true' }}"
+    runs-on: 'ubuntu-latest'
+    continue-on-error: true # Non-blocking: Evolution Lab is a local dev tool
+    steps:
+      - name: 'Checkout'
+        uses: 'actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8' # ratchet:actions/checkout@v5
+        with:
+          ref: '${{ github.event.inputs.branch_ref || github.ref }}'
+
+      - name: 'Set up Node.js'
+        uses: 'actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020' # ratchet:actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: 'Install dependencies'
+        run: 'npm ci'
+
+      - name: 'Build project'
+        run: 'npm run build'
+
+      - name: 'Verify build outputs'
+        run: |
+          ls -l packages/core/dist/index.js
+          ls -l packages/evolution-lab/dist/cli.js
+          ls -l node_modules/@terminai/core
+
+      - name: 'Build sandbox image'
+        run: 'docker build -t terminai/evolution-sandbox:latest -f packages/evolution-lab/Dockerfile .'
+
+      - name: 'Run deterministic suite'
+        run: 'npm run suite --workspace @terminai/evolution-lab -- --parallelism 1 --count 0'
+
   test_windows:
     name: 'Slow Test - Win'
     runs-on: 'windows-latest'
@@ -375,6 +413,7 @@ jobs:
       - 'test_mac'
       - 'codeql'
       - 'bundle_size'
+      - 'evolution_lab_suite'
     runs-on: 'ubuntu-latest'
     steps:
       - name: 'Check all job results'

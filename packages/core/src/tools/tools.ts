@@ -19,6 +19,7 @@ import {
   type ToolConfirmationResponse,
 } from '../confirmation-bus/types.js';
 import type { RiskLevel } from '../safety/risk-classifier.js';
+import type { Provenance } from '../safety/approval-ladder/types.js';
 
 /**
  * Represents a validated and ready-to-execute tool call.
@@ -65,6 +66,16 @@ export interface ToolInvocation<
     updateOutput?: (output: string | AnsiOutput) => void,
     shellExecutionConfig?: ShellExecutionConfig,
   ): Promise<TResult>;
+
+  /**
+   * Optionally receive provenance metadata for the tool call.
+   */
+  setProvenance?(provenance: Provenance[]): void;
+
+  /**
+   * Optionally return provenance metadata for the tool call.
+   */
+  getProvenance?(): Provenance[];
 }
 
 /**
@@ -83,6 +94,8 @@ export abstract class BaseToolInvocation<
   TResult extends ToolResult,
 > implements ToolInvocation<TParams, TResult>
 {
+  protected provenance: Provenance[] = [];
+
   constructor(
     readonly params: TParams,
     protected readonly messageBus?: MessageBus,
@@ -95,6 +108,14 @@ export abstract class BaseToolInvocation<
 
   toolLocations(): ToolLocation[] {
     return [];
+  }
+
+  setProvenance(provenance: Provenance[]): void {
+    this.provenance = [...provenance];
+  }
+
+  getProvenance(): Provenance[] {
+    return [...this.provenance];
   }
 
   async shouldConfirmExecute(
@@ -671,7 +692,19 @@ export interface DiffStat {
   user_removed_chars: number;
 }
 
-export interface ToolEditConfirmationDetails {
+export interface ToolConfirmationReviewMetadata {
+  /** Approval level required (A=no approval, B=click, C=click+PIN) */
+  reviewLevel?: 'A' | 'B' | 'C';
+  /** Whether this action requires PIN verification */
+  requiresPin?: boolean;
+  /** Length of PIN required (typically 6) */
+  pinLength?: number;
+  /** Plain-English explanation of ramifications */
+  explanation?: string;
+}
+
+export interface ToolEditConfirmationDetails
+  extends ToolConfirmationReviewMetadata {
   type: 'edit';
   title: string;
   onConfirm: (
@@ -695,7 +728,8 @@ export interface ToolConfirmationPayload {
   pin?: string;
 }
 
-export interface ToolExecuteConfirmationDetails {
+export interface ToolExecuteConfirmationDetails
+  extends ToolConfirmationReviewMetadata {
   type: 'exec';
   title: string;
   onConfirm: (
@@ -705,29 +739,30 @@ export interface ToolExecuteConfirmationDetails {
   command: string;
   rootCommand: string;
   risk?: RiskLevel;
-  /** Approval level required (A=no approval, B=click, C=click+PIN) */
-  reviewLevel?: 'A' | 'B' | 'C';
-  /** Whether this action requires PIN verification */
-  requiresPin?: boolean;
-  /** Length of PIN required (typically 6) */
-  pinLength?: number;
-  /** Plain-English explanation of ramifications */
-  explanation?: string;
+  provenance?: Provenance[];
 }
 
-export interface ToolMcpConfirmationDetails {
+export interface ToolMcpConfirmationDetails
+  extends ToolConfirmationReviewMetadata {
   type: 'mcp';
   title: string;
   serverName: string;
   toolName: string;
   toolDisplayName: string;
-  onConfirm: (outcome: ToolConfirmationOutcome) => Promise<void>;
+  onConfirm: (
+    outcome: ToolConfirmationOutcome,
+    payload?: ToolConfirmationPayload,
+  ) => Promise<void>;
 }
 
-export interface ToolInfoConfirmationDetails {
+export interface ToolInfoConfirmationDetails
+  extends ToolConfirmationReviewMetadata {
   type: 'info';
   title: string;
-  onConfirm: (outcome: ToolConfirmationOutcome) => Promise<void>;
+  onConfirm: (
+    outcome: ToolConfirmationOutcome,
+    payload?: ToolConfirmationPayload,
+  ) => Promise<void>;
   prompt: string;
   urls?: string[];
 }

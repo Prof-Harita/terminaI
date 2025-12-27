@@ -117,7 +117,7 @@ export function buildShellActionProfile(args: {
   workspaces: string[];
   provenance?: Provenance[];
 }): ActionProfile {
-  const { command, workspaces, provenance = ['model_suggestion'] } = args;
+  const { command, workspaces, provenance = ['unknown'] } = args;
 
   // Step 1: Normalize command
   const normalized = stripShellWrapper(command);

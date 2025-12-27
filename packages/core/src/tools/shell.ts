@@ -11,6 +11,7 @@ import os, { EOL } from 'node:os';
 import crypto from 'node:crypto';
 import type { GenerativeModelAdapter } from '../brain/index.js';
 import type { Config } from '../config/config.js';
+import type { BrainAuthority } from '../config/brainAuthority.js';
 import { debugLogger, type AnyToolInvocation } from '../index.js';
 import { ToolErrorType } from './tool-error.js';
 import type {
@@ -60,6 +61,10 @@ import {
   type ExecutionDecision,
   type RiskAssessment,
 } from '../brain/index.js';
+import type {
+  DeterministicReviewResult,
+  ReviewLevel,
+} from '../safety/approval-ladder/types.js';
 
 export const OUTPUT_UPDATE_INTERVAL_MS = 1000;
 
@@ -155,22 +160,38 @@ export class ShellToolInvocation extends BaseToolInvocation<
       '../safety/approval-ladder/computeMinimumReviewLevel.js'
     );
 
+    const invocationProvenance = this.getProvenance();
     const actionProfile = buildShellActionProfile({
       command: this.params.command,
       cwd: this.params.dir_path ?? process.cwd(),
       workspaces: [this.config.getWorkspaceContext().targetDir],
-      provenance: ['model_suggestion'], // TODO: Thread from tool call context
+      provenance:
+        invocationProvenance.length > 0 ? invocationProvenance : undefined,
     });
 
     const reviewResult = computeMinimumReviewLevel(actionProfile);
-    const effectiveReview = { ...reviewResult };
+    let effectiveReview: DeterministicReviewResult = {
+      ...reviewResult,
+      reasons: [...reviewResult.reasons],
+    };
+
+    const brainAuthority = this.config.getBrainAuthority();
+    let brainContext: BrainContext | null = null;
+    if (reviewResult.level !== 'A' || brainAuthority !== 'advisory') {
+      brainContext = await this.evaluateBrain(command);
+      if (brainAuthority !== 'advisory') {
+        effectiveReview = this.applyBrainAuthority(
+          effectiveReview,
+          brainContext,
+          brainAuthority,
+        );
+      }
+    }
 
     // Skip confirmation for Level A (no approval needed).
     if (effectiveReview.level === 'A') {
       return false;
     }
-
-    const brainContext = await this.evaluateBrain(command);
 
     const confirmationDetails: ToolExecuteConfirmationDetails = {
       type: 'exec',
@@ -183,31 +204,16 @@ export class ShellToolInvocation extends BaseToolInvocation<
         ? commandsToConfirm.join(', ')
         : rootCommands.join(', '),
       risk,
+      provenance:
+        invocationProvenance.length > 0 ? invocationProvenance : undefined,
       reviewLevel: effectiveReview.level,
       requiresPin: effectiveReview.requiresPin,
       pinLength: effectiveReview.requiresPin ? 6 : undefined,
       explanation: effectiveReview.reasons.join('; '),
       onConfirm: async (
         outcome: ToolConfirmationOutcome,
-        payload?: { pin?: string },
+        _payload?: { pin?: string },
       ) => {
-        // Level C PIN verification
-        if (effectiveReview.requiresPin) {
-          const enteredPin = payload?.pin;
-          if (!enteredPin) {
-            throw new Error(
-              'PIN required for Level C action. Command execution denied.',
-            );
-          }
-
-          const configuredPin = this.config.getApprovalPin();
-          if (enteredPin !== configuredPin) {
-            throw new Error(
-              'Incorrect PIN. Level C action denied for security reasons.',
-            );
-          }
-        }
-
         // Existing allowlist logic
         if (outcome === ToolConfirmationOutcome.ProceedAlways) {
           commandsToConfirm.forEach((command) => this.allowlist.add(command));
@@ -247,6 +253,72 @@ export class ShellToolInvocation extends BaseToolInvocation<
       );
       return null;
     }
+  }
+
+  private applyBrainAuthority(
+    review: DeterministicReviewResult,
+    brainContext: BrainContext | null,
+    authority: BrainAuthority,
+  ): DeterministicReviewResult {
+    if (!brainContext) {
+      return review;
+    }
+
+    const requiredLevel = this.getBrainReviewLevel(authority, brainContext);
+    if (!requiredLevel) {
+      return review;
+    }
+
+    if (this.isReviewLevelAtLeast(review.level, requiredLevel)) {
+      return review;
+    }
+
+    const nextReasons = [
+      ...review.reasons,
+      `Brain risk assessment marked this as ${brainContext.assessment.overallRisk}; require ${requiredLevel} review.`,
+    ];
+
+    return {
+      level: requiredLevel,
+      reasons: nextReasons,
+      requiresClick: requiredLevel !== 'A',
+      requiresPin: requiredLevel === 'C',
+    };
+  }
+
+  private getBrainReviewLevel(
+    authority: BrainAuthority,
+    brainContext: BrainContext,
+  ): ReviewLevel | undefined {
+    const risk = brainContext.assessment.overallRisk;
+
+    if (authority === 'advisory') {
+      return undefined;
+    }
+
+    if (authority === 'escalate-only') {
+      if (!brainContext.decision.requiresConfirmation) {
+        return undefined;
+      }
+      return risk === 'critical' ? 'C' : 'B';
+    }
+
+    if (risk === 'critical') {
+      return 'C';
+    }
+    if (risk === 'elevated' || risk === 'normal') {
+      return 'B';
+    }
+
+    return undefined;
+  }
+
+  private isReviewLevelAtLeast(
+    current: ReviewLevel,
+    required: ReviewLevel,
+  ): boolean {
+    const rank: Record<ReviewLevel, number> = { A: 0, B: 1, C: 2 };
+    return rank[current] >= rank[required];
   }
 
   private buildGenerativeModelAdapter(): GenerativeModelAdapter | null {

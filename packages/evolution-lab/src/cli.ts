@@ -1,0 +1,305 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
+import { Adversary } from './adversary.js';
+import { Runner } from './runner.js';
+import { Aggregator } from './aggregator.js';
+import { DEFAULT_CONFIG, type SandboxType } from './types.js';
+import { loadSuiteDefinitions, runSuite } from './suite.js';
+
+void yargs(hideBin(process.argv))
+  .scriptName('evolution-lab')
+  .usage('$0 <command> [options]')
+  .command(
+    'adversary',
+    'Generate synthetic tasks',
+    (yargs) =>
+      yargs
+        .option('count', {
+          alias: 'c',
+          type: 'number',
+          default: 100,
+          describe: 'Number of tasks to generate',
+        })
+        .option('output', {
+          alias: 'o',
+          type: 'string',
+          default: 'tasks.json',
+          describe: 'Output file path',
+        }),
+    async (argv) => {
+      console.log(`Generating ${argv.count} tasks...`);
+      const adversary = new Adversary();
+      const tasks = adversary.generateBatch(argv.count);
+      await adversary.saveTasks(tasks, argv.output);
+      console.log(`Saved ${tasks.length} tasks to ${argv.output}`);
+    },
+  )
+  .command(
+    'run',
+    'Execute tasks in sandbox',
+    (yargs) =>
+      yargs
+        .option('tasks', {
+          alias: 't',
+          type: 'string',
+          required: true,
+          describe: 'Path to tasks.json file',
+        })
+        .option('parallelism', {
+          alias: 'p',
+          type: 'number',
+          default: DEFAULT_CONFIG.parallelism,
+          describe: 'Number of parallel executions',
+        })
+        .option('output', {
+          alias: 'o',
+          type: 'string',
+          default: 'results.json',
+          describe: 'Output file for results',
+        })
+        .option('sandbox-type', {
+          type: 'string',
+          choices: ['docker', 'desktop', 'full-vm', 'host', 'headless'],
+          default: DEFAULT_CONFIG.sandbox.type,
+          describe: 'Sandbox type (headless is a deprecated alias for docker)',
+        })
+        .option('allow-unsafe-host', {
+          type: 'boolean',
+          default: false,
+          describe: 'Required when using --sandbox-type host',
+        }),
+    async (argv) => {
+      const adversary = new Adversary();
+      const tasks = await adversary.loadTasks(argv.tasks);
+      console.log(`Loaded ${tasks.length} tasks`);
+
+      const sandboxType = normalizeSandboxType(
+        String(argv.sandboxType ?? DEFAULT_CONFIG.sandbox.type),
+      );
+      const config = {
+        ...DEFAULT_CONFIG,
+        parallelism: argv.parallelism,
+        sandbox: {
+          ...DEFAULT_CONFIG.sandbox,
+          type: sandboxType,
+          allowUnsafeHost: argv.allowUnsafeHost,
+        },
+      };
+      const runner = new Runner(config);
+
+      console.log(`Running with parallelism=${config.parallelism}...`);
+      const results = await runner.runBatch(tasks, (completed, total) => {
+        process.stdout.write(`\rProgress: ${completed}/${total}`);
+      });
+      console.log('');
+
+      const fs = await import('node:fs/promises');
+      await fs.writeFile(argv.output, JSON.stringify(results, null, 2));
+      console.log(`Saved results to ${argv.output}`);
+
+      const successful = results.filter((r) => r.success).length;
+      console.log(`Success rate: ${successful}/${results.length}`);
+    },
+  )
+  .command(
+    'suite',
+    'Run deterministic regression suite in Docker',
+    (yargs) =>
+      yargs
+        .option('count', {
+          alias: 'c',
+          type: 'number',
+          default: 0,
+          describe: 'Number of suite tasks to run (0 = all)',
+        })
+        .option('parallelism', {
+          alias: 'p',
+          type: 'number',
+          default: 1,
+          describe: 'Number of concurrent suite tasks',
+        })
+        .option('sandbox-type', {
+          type: 'string',
+          choices: ['docker', 'desktop', 'full-vm', 'host', 'headless'],
+          default: DEFAULT_CONFIG.sandbox.type,
+          describe: 'Sandbox type (headless is a deprecated alias for docker)',
+        })
+        .option('allow-unsafe-host', {
+          type: 'boolean',
+          default: false,
+          describe: 'Required when using --sandbox-type host',
+        }),
+    async (argv) => {
+      const definitions = await loadSuiteDefinitions();
+      const selectedCount =
+        argv.count && argv.count > 0 ? argv.count : definitions.length;
+      const sandboxType = normalizeSandboxType(
+        String(argv.sandboxType ?? DEFAULT_CONFIG.sandbox.type),
+      );
+
+      const sandboxConfig = {
+        ...DEFAULT_CONFIG.sandbox,
+        type: sandboxType,
+        allowUnsafeHost: argv.allowUnsafeHost,
+        networkDisabled: sandboxType === 'docker',
+        outputLimitBytes: 65536,
+      };
+
+      console.log(
+        `Running suite with ${selectedCount} task(s), parallelism=${argv.parallelism}`,
+      );
+      const results = await runSuite({
+        tasks: definitions,
+        count: selectedCount,
+        parallelism: argv.parallelism ?? 1,
+        sandboxConfig,
+      });
+
+      const failures = results.filter((r) => !r.passed);
+      for (const result of results) {
+        const status = result.passed ? 'PASS' : 'FAIL';
+        const note = result.notes.join('; ') || 'ok';
+        console.log(`[${status}] ${result.taskId}: ${note}`);
+      }
+
+      if (failures.length > 0) {
+        console.error(`Suite failed for ${failures.length} task(s).`);
+        process.exitCode = 1;
+      } else {
+        console.log('Suite completed successfully.');
+      }
+    },
+  )
+  .command(
+    'aggregate',
+    'Aggregate results and generate report',
+    (yargs) =>
+      yargs
+        .option('results', {
+          alias: 'r',
+          type: 'string',
+          required: true,
+          describe: 'Path to results.json file',
+        })
+        .option('output', {
+          alias: 'o',
+          type: 'string',
+          default: 'report.md',
+          describe: 'Output file for report',
+        }),
+    async (argv) => {
+      const fs = await import('node:fs/promises');
+      const resultsJson = await fs.readFile(argv.results, 'utf-8');
+      const results = JSON.parse(resultsJson);
+
+      console.log(`Aggregating ${results.length} results...`);
+      const aggregator = new Aggregator();
+      await aggregator.addResults(results);
+      await aggregator.saveReport(argv.output);
+      console.log(`Report saved to ${argv.output}`);
+    },
+  )
+  .command(
+    'full',
+    'Run full evolution cycle: generate → run → aggregate',
+    (yargs) =>
+      yargs
+        .option('count', {
+          alias: 'c',
+          type: 'number',
+          default: 10,
+          describe: 'Number of tasks',
+        })
+        .option('parallelism', {
+          alias: 'p',
+          type: 'number',
+          default: 2,
+          describe: 'Parallelism',
+        })
+        .option('sandbox-type', {
+          type: 'string',
+          choices: ['docker', 'desktop', 'full-vm', 'host', 'headless'],
+          default: DEFAULT_CONFIG.sandbox.type,
+          describe: 'Sandbox type (headless is a deprecated alias for docker)',
+        })
+        .option('allow-unsafe-host', {
+          type: 'boolean',
+          default: false,
+          describe: 'Required when using --sandbox-type host',
+        }),
+    async (argv) => {
+      console.log('=== Evolution Lab Full Cycle ===');
+
+      // Generate
+      console.log(`\n[1/3] Generating ${argv.count} tasks...`);
+      const adversary = new Adversary();
+      const tasks = adversary.generateBatch(argv.count);
+      console.log(`Generated ${tasks.length} tasks across categories`);
+
+      // Run
+      console.log(`\n[2/3] Running tasks (parallelism=${argv.parallelism})...`);
+      const sandboxType = normalizeSandboxType(
+        String(argv.sandboxType ?? DEFAULT_CONFIG.sandbox.type),
+      );
+      const config = {
+        ...DEFAULT_CONFIG,
+        parallelism: argv.parallelism,
+        sandbox: {
+          ...DEFAULT_CONFIG.sandbox,
+          type: sandboxType,
+          allowUnsafeHost: argv.allowUnsafeHost,
+        },
+      };
+      const runner = new Runner(config);
+      const results = await runner.runBatch(tasks, (completed, total) => {
+        process.stdout.write(`\rProgress: ${completed}/${total}`);
+      });
+      console.log('');
+
+      // Aggregate
+      console.log('\n[3/3] Aggregating results...');
+      const aggregator = new Aggregator();
+      await aggregator.addResults(results);
+
+      const successful = results.filter((r) => r.success).length;
+      console.log(`\n=== Results ===`);
+      console.log(`Success rate: ${successful}/${results.length}`);
+
+      const clusters = aggregator.clusterFailures();
+      if (clusters.length > 0) {
+        console.log('\nFailure clusters:');
+        for (const cluster of clusters) {
+          console.log(
+            `  - ${cluster.errorType}: ${cluster.affectedSessions} sessions`,
+          );
+        }
+      }
+
+      const reportPath = `evolution-report-${Date.now()}.md`;
+      await aggregator.saveReport(reportPath);
+      console.log(`\nReport saved to ${reportPath}`);
+    },
+  )
+  .demandCommand(1, 'You must specify a command')
+  .help()
+  .parse();
+
+function normalizeSandboxType(type: string): SandboxType {
+  if (type === 'headless') {
+    return 'docker';
+  }
+  if (type === 'docker' || type === 'desktop' || type === 'full-vm') {
+    return type;
+  }
+  if (type === 'host') {
+    return 'host';
+  }
+  return 'docker';
+}

@@ -7,6 +7,7 @@
 
 // Export config
 export * from './config/config.js';
+export * from './config/brainAuthority.js';
 export * from './config/defaultModelConfigs.js';
 export * from './config/models.js';
 export * from './output/types.js';
@@ -18,6 +19,9 @@ export * from './policy/toml-loader.js';
 export * from './policy/config.js';
 export * from './confirmation-bus/types.js';
 export * from './confirmation-bus/message-bus.js';
+export * from './audit/index.js';
+export * from './recipes/index.js';
+export * from './safety/approval-ladder/types.js';
 
 // Export Commands logic
 export * from './commands/extensions.js';
@@ -56,6 +60,7 @@ export * from './core/apiKeyCredentialStorage.js';
 
 // Export utilities
 export * from './utils/paths.js';
+export * from './utils/envAliases.js';
 export * from './utils/schemaValidator.js';
 export * from './utils/errors.js';
 export * from './utils/exitCodes.js';
@@ -172,3 +177,9 @@ export * from './hooks/types.js';
 // Export stdio utils
 export * from './utils/stdio.js';
 export * from './utils/terminal.js';
+
+// GUI Automation
+export { DesktopAutomationService } from './gui/service/DesktopAutomationService.js';
+
+// Evaluation
+export * from './evaluation/index.js';

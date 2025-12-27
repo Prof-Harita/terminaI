@@ -71,19 +71,19 @@ observability framework — Gemini CLI's observability system provides:
 
 ## Configuration
 
-All telemetry behavior is controlled through your `.gemini/settings.json` file.
-Environment variables can be used to override the settings in the file.
+All telemetry behavior is controlled through your `.terminai/settings.json`
+file. Environment variables can be used to override the settings in the file.
 
-| Setting        | Environment Variable             | Description                                         | Values            | Default                 |
-| -------------- | -------------------------------- | --------------------------------------------------- | ----------------- | ----------------------- |
-| `enabled`      | `GEMINI_TELEMETRY_ENABLED`       | Enable or disable telemetry                         | `true`/`false`    | `false`                 |
-| `target`       | `GEMINI_TELEMETRY_TARGET`        | Where to send telemetry data                        | `"gcp"`/`"local"` | `"local"`               |
-| `otlpEndpoint` | `GEMINI_TELEMETRY_OTLP_ENDPOINT` | OTLP collector endpoint                             | URL string        | `http://localhost:4317` |
-| `otlpProtocol` | `GEMINI_TELEMETRY_OTLP_PROTOCOL` | OTLP transport protocol                             | `"grpc"`/`"http"` | `"grpc"`                |
-| `outfile`      | `GEMINI_TELEMETRY_OUTFILE`       | Save telemetry to file (overrides `otlpEndpoint`)   | file path         | -                       |
-| `logPrompts`   | `GEMINI_TELEMETRY_LOG_PROMPTS`   | Include prompts in telemetry logs                   | `true`/`false`    | `true`                  |
-| `useCollector` | `GEMINI_TELEMETRY_USE_COLLECTOR` | Use external OTLP collector (advanced)              | `true`/`false`    | `false`                 |
-| `useCliAuth`   | `GEMINI_TELEMETRY_USE_CLI_AUTH`  | Use CLI credentials for telemetry (GCP target only) | `true`/`false`    | `false`                 |
+| Setting        | Environment Variable               | Description                                         | Values            | Default                 |
+| -------------- | ---------------------------------- | --------------------------------------------------- | ----------------- | ----------------------- |
+| `enabled`      | `TERMINAI_TELEMETRY_ENABLED`       | Enable or disable telemetry                         | `true`/`false`    | `false`                 |
+| `target`       | `TERMINAI_TELEMETRY_TARGET`        | Where to send telemetry data                        | `"gcp"`/`"local"` | `"local"`               |
+| `otlpEndpoint` | `TERMINAI_TELEMETRY_OTLP_ENDPOINT` | OTLP collector endpoint                             | URL string        | `http://localhost:4317` |
+| `otlpProtocol` | `TERMINAI_TELEMETRY_OTLP_PROTOCOL` | OTLP transport protocol                             | `"grpc"`/`"http"` | `"grpc"`                |
+| `outfile`      | `TERMINAI_TELEMETRY_OUTFILE`       | Save telemetry to file (overrides `otlpEndpoint`)   | file path         | -                       |
+| `logPrompts`   | `TERMINAI_TELEMETRY_LOG_PROMPTS`   | Include prompts in telemetry logs                   | `true`/`false`    | `true`                  |
+| `useCollector` | `TERMINAI_TELEMETRY_USE_COLLECTOR` | Use external OTLP collector (advanced)              | `true`/`false`    | `false`                 |
+| `useCliAuth`   | `TERMINAI_TELEMETRY_USE_CLI_AUTH`  | Use CLI credentials for telemetry (GCP target only) | `true`/`false`    | `false`                 |
 
 **Note on boolean environment variables:** For the boolean settings (`enabled`,
 `logPrompts`, `useCollector`), setting the corresponding environment variable to
@@ -163,7 +163,7 @@ To enable this, set the `useCliAuth` property in your `telemetry` settings to
 
 Sends telemetry directly to Google Cloud services. No collector needed.
 
-1. Enable telemetry in your `.gemini/settings.json`:
+1. Enable telemetry in your `.terminai/settings.json`:
    ```json
    {
      "telemetry": {
@@ -184,7 +184,7 @@ Sends telemetry directly to Google Cloud services. No collector needed.
 For custom processing, filtering, or routing, use an OpenTelemetry collector to
 forward data to Google Cloud.
 
-1. Configure your `.gemini/settings.json`:
+1. Configure your `.terminai/settings.json`:
    ```json
    {
      "telemetry": {
@@ -202,7 +202,8 @@ forward data to Google Cloud.
    - Start a local OTEL collector that forwards to Google Cloud
    - Configure your workspace
    - Provide links to view traces, metrics, and logs in Google Cloud Console
-   - Save collector logs to `~/.gemini/tmp/<projectHash>/otel/collector-gcp.log`
+   - Save collector logs to
+     `~/.terminai/tmp/<projectHash>/otel/collector-gcp.log`
    - Stop collector on exit (e.g. `Ctrl+C`)
 3. Run Gemini CLI and send prompts.
 4. View logs and metrics:
@@ -210,7 +211,7 @@ forward data to Google Cloud.
      - Logs: https://console.cloud.google.com/logs/
      - Metrics: https://console.cloud.google.com/monitoring/metrics-explorer
      - Traces: https://console.cloud.google.com/traces/list
-   - Open `~/.gemini/tmp/<projectHash>/otel/collector-gcp.log` to view local
+   - Open `~/.terminai/tmp/<projectHash>/otel/collector-gcp.log` to view local
      collector logs.
 
 ## Local telemetry
@@ -219,19 +220,20 @@ For local development and debugging, you can capture telemetry data locally:
 
 ### File-based output (recommended)
 
-1. Enable telemetry in your `.gemini/settings.json`:
+1. Enable telemetry in your `.terminai/settings.json`:
    ```json
    {
      "telemetry": {
        "enabled": true,
        "target": "local",
        "otlpEndpoint": "",
-       "outfile": ".gemini/telemetry.log"
+       "outfile": ".terminai/telemetry.log"
      }
    }
    ```
 2. Run Gemini CLI and send prompts.
-3. View logs and metrics in the specified file (e.g., `.gemini/telemetry.log`).
+3. View logs and metrics in the specified file (e.g.,
+   `.terminai/telemetry.log`).
 
 ### Collector-based export (advanced)
 
@@ -243,7 +245,7 @@ For local development and debugging, you can capture telemetry data locally:
    - Download and start Jaeger and OTEL collector
    - Configure your workspace for local telemetry
    - Provide a Jaeger UI at http://localhost:16686
-   - Save logs/metrics to `~/.gemini/tmp/<projectHash>/otel/collector.log`
+   - Save logs/metrics to `~/.terminai/tmp/<projectHash>/otel/collector.log`
    - Stop collector on exit (e.g. `Ctrl+C`)
 2. Run Gemini CLI and send prompts.
 3. View traces at http://localhost:16686 and logs/metrics in the collector log

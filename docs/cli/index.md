@@ -4,6 +4,9 @@ Within Gemini CLI, `packages/cli` is the frontend for users to send and receive
 prompts with the Gemini AI model and its associated tools. For a general
 overview of Gemini CLI, see the [main documentation page](../index.md).
 
+> Note: The preferred binary name is `terminai`; the `gemini` alias is kept for
+> compatibility.
+
 ## Basic features
 
 - **[Commands](./commands.md):** A reference for all built-in slash commands
@@ -39,7 +42,7 @@ overview of Gemini CLI, see the [main documentation page](../index.md).
 - **[Context files (terminaI.md)](./terminaI-md.md):** Provide persistent,
   hierarchical context to the model.
 - **[System prompt override](./system-prompt.md):** Replace the built‑in system
-  instructions using `GEMINI_SYSTEM_MD`.
+  instructions using `TERMINAI_SYSTEM_MD`.
 
 ## Non-interactive mode
 
@@ -50,13 +53,13 @@ command, and then it exits.
 The following example pipes a command to Gemini CLI from your terminal:
 
 ```bash
-echo "What is fine tuning?" | gemini
+echo "What is fine tuning?" | terminai
 ```
 
 You can also use the `--prompt` or `-p` flag:
 
 ```bash
-gemini -p "What is fine tuning?"
+terminai -p "What is fine tuning?"
 ```
 
 For comprehensive documentation on headless usage, scripting, automation, and

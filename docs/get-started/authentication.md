@@ -76,11 +76,11 @@ To authenticate and use Gemini CLI with a Gemini API key:
 1. Obtain your API key from
    [Google AI Studio](https://aistudio.google.com/app/apikey).
 
-2. Set the `GEMINI_API_KEY` environment variable to your key. For example:
+2. Set the `TERMINAI_API_KEY` environment variable to your key. For example:
 
    ```bash
-   # Replace YOUR_GEMINI_API_KEY with the key from AI Studio
-   export GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
+   # Replace YOUR_TERMINAI_API_KEY with the key from AI Studio
+   export TERMINAI_API_KEY="YOUR_TERMINAI_API_KEY"
    ```
 
    To make this setting persistent, see
@@ -127,11 +127,11 @@ To make any Vertex AI environment variable settings persistent, see
 
 Consider this authentication method if you have Google Cloud CLI installed.
 
-> **Note:** If you have previously set `GOOGLE_API_KEY` or `GEMINI_API_KEY`, you
-> must unset them to use ADC:
+> **Note:** If you have previously set `GOOGLE_API_KEY` or `TERMINAI_API_KEY`,
+> you must unset them to use ADC:
 >
 > ```bash
-> unset GOOGLE_API_KEY GEMINI_API_KEY
+> unset GOOGLE_API_KEY TERMINAI_API_KEY
 > ```
 
 1. Verify you have a Google Cloud project and Vertex AI API is enabled.
@@ -157,11 +157,11 @@ Consider this authentication method if you have Google Cloud CLI installed.
 Consider this method of authentication in non-interactive environments, CI/CD
 pipelines, or if your organization restricts user-based ADC or API key creation.
 
-> **Note:** If you have previously set `GOOGLE_API_KEY` or `GEMINI_API_KEY`, you
-> must unset them:
+> **Note:** If you have previously set `GOOGLE_API_KEY` or `TERMINAI_API_KEY`,
+> you must unset them:
 >
 > ```bash
-> unset GOOGLE_API_KEY GEMINI_API_KEY
+> unset GOOGLE_API_KEY TERMINAI_API_KEY
 > ```
 
 1.  [Create a service account and key](https://cloud.google.com/iam/docs/keys-create-delete)
@@ -271,18 +271,18 @@ persist them with the following methods:
     > paths in your shell configuration file, any process launched from that
     > shell can read them.
 
-2.  **Use a `.env` file:** Create a `.gemini/.env` file in your project
+2.  **Use a `.env` file:** Create a `.terminai/.env` file in your project
     directory or home directory. Gemini CLI automatically loads variables from
     the first `.env` file it finds, searching up from the current directory,
-    then in `~/.gemini/.env` or `~/.env`. `.gemini/.env` is recommended.
+    then in `~/.terminai/.env` or `~/.env`. `.terminai/.env` is recommended.
 
     Example for user-wide settings:
 
     ```bash
-    mkdir -p ~/.gemini
-    cat >> ~/.gemini/.env <<'EOF'
+    mkdir -p ~/.terminai
+    cat >> ~/.terminai/.env <<'EOF'
     GOOGLE_CLOUD_PROJECT="your-project-id"
-    # Add other variables like GEMINI_API_KEY as needed
+    # Add other variables like TERMINAI_API_KEY as needed
     EOF
     ```
 

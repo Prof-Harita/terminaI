@@ -9,6 +9,7 @@ import React from 'react';
 import { render } from 'ink';
 import { AppContainer, type VoiceOverrides } from './ui/AppContainer.js';
 import { Onboarding, type OnboardingResult } from './ui/Onboarding.js';
+import { RemoteConsent } from './ui/RemoteConsent.js';
 import { loadCliConfig, parseArguments } from './config/config.js';
 import * as cliConfig from './config/config.js';
 import { readStdin } from './utils/readStdin.js';
@@ -65,6 +66,8 @@ import {
   fireSessionEndHook,
   getVersion,
   ApprovalMode,
+  DesktopAutomationService,
+  type Provenance,
 } from '@terminai/core';
 import {
   initializeApp,
@@ -99,6 +102,7 @@ import { createPolicyUpdater } from './config/policy.js';
 import { requestConsentNonInteractive } from './config/extensions/consent.js';
 import { ScrollProvider } from './ui/contexts/ScrollProvider.js';
 import { isAlternateBufferEnabled } from './ui/hooks/useAlternateBuffer.js';
+import { cleanupOldLogs } from './utils/logCleanup.js';
 
 import { setupTerminalAndTheme } from './utils/terminalTheme.js';
 import { profiler } from './ui/components/DebugProfiler.js';
@@ -109,6 +113,10 @@ import {
   startWebRemoteServer,
 } from './utils/webRemoteServer.js';
 import { isFirstRun, markOnboardingComplete } from './utils/firstRun.js';
+import {
+  hasAcceptedWebRemoteConsent,
+  setWebRemoteConsent,
+} from './utils/webRemoteConsent.js';
 
 const SLOW_RENDER_MS = 200;
 
@@ -467,6 +475,12 @@ export async function main() {
     const config = await loadCliConfig(settings.merged, sessionId, argv);
     loadConfigHandle?.end();
 
+    // Enable GUI automation if configured
+    if (settings.merged.tools?.guiAutomation?.enabled) {
+      DesktopAutomationService.getInstance().setEnabled(true);
+      debugLogger.log('GUI Automation enabled');
+    }
+
     let onboardingVoiceOverrides: VoiceOverrides | undefined;
     if (config.isInteractive() && isFirstRun()) {
       const onboardingResult = await runOnboardingFlow();
@@ -484,7 +498,7 @@ export async function main() {
       }
     }
 
-    const webRemoteHost = argv.webRemoteHost ?? '127.0.0.1';
+    const webRemoteHost = argv.remoteBind ?? argv.webRemoteHost ?? '127.0.0.1';
     const webRemotePort = argv.webRemotePort ?? 41242;
     const webRemoteAllowedOrigins = argv.webRemoteAllowedOrigins ?? [];
     const additionalStartupWarnings: string[] = [];
@@ -512,12 +526,39 @@ export async function main() {
 
     let webRemoteServer: Server | undefined;
     if (argv.webRemote) {
-      if (!isLoopbackHost(webRemoteHost) && !argv.iUnderstandWebRemoteRisk) {
+      const loopbackHost = isLoopbackHost(webRemoteHost);
+      if (!loopbackHost && !argv.remoteBind) {
         writeToStderr(
-          'Error: binding web-remote to a non-loopback host requires --i-understand-web-remote-risk.\n',
+          'Error: binding web-remote to a non-loopback host requires --remote-bind.\n',
         );
         await runExitCleanup();
         process.exit(ExitCodes.FATAL_INPUT_ERROR);
+      }
+      if (!hasAcceptedWebRemoteConsent()) {
+        let consented = false;
+        if (config.isInteractive() && process.stdin.isTTY) {
+          consented = await requestWebRemoteConsentInteractive(
+            webRemoteHost,
+            webRemotePort,
+            loopbackHost,
+          );
+        } else if (process.stdin.isTTY) {
+          const consentText = buildWebRemoteConsentText(
+            webRemoteHost,
+            webRemotePort,
+            loopbackHost,
+          );
+          consented = await requestConsentNonInteractive(consentText);
+        }
+
+        if (!consented) {
+          writeToStderr(
+            'Remote access is disabled because consent was not provided.\n',
+          );
+          await runExitCleanup();
+          process.exit(ExitCodes.FATAL_INPUT_ERROR);
+        }
+        setWebRemoteConsent(true);
       }
       const authResult = await ensureWebRemoteAuth({
         host: webRemoteHost,
@@ -547,6 +588,18 @@ export async function main() {
             });
           }),
       );
+      const sessionProvenance = new Set<Provenance>([
+        ...config.getSessionProvenance(),
+        'web_remote_user',
+      ]);
+      config.setSessionProvenance([...sessionProvenance]);
+      config.setWebRemoteStatus({
+        active: true,
+        host: webRemoteHost,
+        port,
+        loopback: loopbackHost,
+        url,
+      });
       let tokenNotice = `Token stored at ${authResult.authPath}. Use --web-remote-rotate-token to rotate.`;
       if (authResult.tokenSource === 'env') {
         tokenNotice = 'Token loaded from GEMINI_WEB_REMOTE_TOKEN.';
@@ -586,6 +639,13 @@ export async function main() {
       await cleanupExpiredSessions(config, settings.merged);
     } catch (e) {
       debugLogger.error('Failed to cleanup expired sessions:', e);
+    }
+
+    // Cleanup old session logs
+    try {
+      await cleanupOldLogs(config);
+    } catch (e) {
+      debugLogger.error('Failed to cleanup old session logs:', e);
     }
 
     if (config.getListExtensions()) {
@@ -851,6 +911,45 @@ async function runOnboardingFlow(): Promise<OnboardingResult> {
       <Onboarding
         onComplete={(result) => {
           resolve(result);
+          unmount();
+        }}
+      />,
+    );
+  });
+}
+
+function buildWebRemoteConsentText(
+  host: string,
+  port: number,
+  loopback: boolean,
+): string {
+  const bindType = loopback ? 'loopback' : 'non-loopback';
+  return [
+    'Remote access is about to be enabled.',
+    '',
+    'ELI5: This is like handing someone your keyboard.',
+    'If they have the token, they can run commands, read files, and delete data.',
+    'Only enable this if you trust the network and the people who can access it.',
+    '',
+    `Bind: ${host}:${port} (${bindType})`,
+    '',
+    'Do you want to enable remote access?',
+  ].join('\n');
+}
+
+async function requestWebRemoteConsentInteractive(
+  host: string,
+  port: number,
+  loopback: boolean,
+): Promise<boolean> {
+  return new Promise<boolean>((resolve) => {
+    const { unmount } = render(
+      <RemoteConsent
+        host={host}
+        port={port}
+        loopback={loopback}
+        onComplete={(result) => {
+          resolve(result.accepted);
           unmount();
         }}
       />,

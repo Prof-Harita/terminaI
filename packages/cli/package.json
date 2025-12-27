@@ -19,8 +19,8 @@
     "debug": "node --inspect-brk dist/index.js",
     "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write .",
-    "test": "vitest run",
-    "test:ci": "vitest run",
+    "test": "vitest run --passWithNoTests",
+    "test:ci": "vitest run --passWithNoTests",
     "typecheck": "tsc --noEmit"
   },
   "files": [

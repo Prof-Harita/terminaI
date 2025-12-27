@@ -23,6 +23,7 @@ export type OperationClass =
   | 'privileged'
   | 'network'
   | 'process'
+  | 'ui'
   | 'device'
   | 'unknown';
 

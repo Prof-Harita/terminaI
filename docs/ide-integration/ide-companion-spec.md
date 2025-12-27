@@ -81,11 +81,11 @@ creating a "discovery file."
   unauthorized.
 - **Tie-breaking with environment variables (recommended):** For the most
   reliable experience, your plugin **SHOULD** both create the discovery file and
-  set the `GEMINI_CLI_IDE_SERVER_PORT` environment variable in the integrated
+  set the `TERMINAI_CLI_IDE_SERVER_PORT` environment variable in the integrated
   terminal. The file serves as the primary discovery mechanism, but the
   environment variable is crucial for tie-breaking. If a user has multiple IDE
   windows open for the same workspace, the CLI uses the
-  `GEMINI_CLI_IDE_SERVER_PORT` variable to identify and connect to the correct
+  `TERMINAI_CLI_IDE_SERVER_PORT` variable to identify and connect to the correct
   window's server.
 
 ## II. The context interface

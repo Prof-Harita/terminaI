@@ -195,7 +195,17 @@ export const useGeminiStream = (
     },
     config,
     getPreferredEditor,
+    logger || undefined,
   );
+
+  useEffect(() => {
+    if (logger) {
+      void logger.logEventFull('session_start', {
+        model: config.getModel(),
+        cwd: config.getProjectRoot(),
+      });
+    }
+  }, [logger, config]);
 
   const pendingToolCallGroupDisplay = useMemo(
     () =>
@@ -445,6 +455,7 @@ export const useGeminiStream = (
       if (typeof query === 'string') {
         const trimmedQuery = query.trim();
         await logger?.logMessage(MessageSenderType.USER, trimmedQuery);
+        await logger?.logEventFull('user_prompt', { prompt: trimmedQuery });
 
         if (!shellModeActive) {
           // Handle UI-only commands first
@@ -462,6 +473,7 @@ export const useGeminiStream = (
                   args: toolArgs,
                   isClientInitiated: true,
                   prompt_id,
+                  provenance: ['local_user', ...config.getSessionProvenance()],
                 };
                 scheduleToolCalls([toolCallRequest], abortSignal);
                 return { queryToSend: null, shouldProceed: false };
@@ -834,6 +846,11 @@ export const useGeminiStream = (
             break;
           case ServerGeminiEventType.ToolCallRequest:
             toolCallRequests.push(event.value);
+            await logger?.logEventFull('tool_call', {
+              callId: event.value.callId,
+              name: event.value.name,
+              args: event.value.args,
+            });
             break;
           case ServerGeminiEventType.UserCancelled:
             handleUserCancelledEvent(userMessageTimestamp);
@@ -883,8 +900,16 @@ export const useGeminiStream = (
         }
       }
       if (toolCallRequests.length > 0) {
+        setIsResponding(false);
         scheduleToolCalls(toolCallRequests, signal);
+        return StreamProcessingStatus.Completed;
       }
+
+      await logger?.logEventFull('model_response', {
+        text: geminiMessageBuffer,
+      });
+
+      setIsResponding(false);
       return StreamProcessingStatus.Completed;
     },
     [
@@ -898,6 +923,7 @@ export const useGeminiStream = (
       handleContextWindowWillOverflowEvent,
       handleCitationEvent,
       handleChatModelEvent,
+      logger,
     ],
   );
   const submitQuery = useCallback(

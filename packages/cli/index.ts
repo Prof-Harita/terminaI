@@ -7,6 +7,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import './src/utils/envAliases.js';
 import { main } from './src/gemini.js';
 import { FatalError, writeToStderr } from '@terminai/core';
 import { runExitCleanup } from './src/utils/cleanup.js';

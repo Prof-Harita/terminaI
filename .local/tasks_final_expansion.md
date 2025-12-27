@@ -46,8 +46,7 @@ OpenAI servers**.
      that are **not valid JSON Schema** (`"OBJECT"` vs `"object"`), and may
      break tool registration.
 
-2. **No regression test proving Gemini OAuth ignores
-   `TERMINAI_GEMINI_BASE_URL`**
+2. **No regression test proving Gemini OAuth ignores `TERMINAI_BASE_URL`**
    - Code is correct today (baseUrl override only in API-key/Vertex branches),
      but it’s an easy future regression.
 
@@ -86,8 +85,8 @@ OpenAI servers**.
   - Map Gemini `Type` → JSON Schema `type` (`OBJECT→object`, `STRING→string`,
     etc.), recurse through `properties/items`, and strip Gemini-only fields.
 - [x] **Add regression tests for Gemini OAuth + baseUrl override**
-  - `AuthType.LOGIN_WITH_GOOGLE` with `TERMINAI_GEMINI_BASE_URL` set should
-    _not_ pass `baseUrl` into `createCodeAssistContentGenerator`.
+  - `AuthType.LOGIN_WITH_GOOGLE` with `TERMINAI_BASE_URL` set should _not_ pass
+    `baseUrl` into `createCodeAssistContentGenerator`.
 - [x] **Add a wiring test for OpenAI model routing**
   - Verify that when `llm.provider=openai_compatible` and `--model custom-x`,
     the outbound OpenAI request body includes `model: "custom-x"`.

@@ -22,6 +22,8 @@ import type {
 import { BaseDeclarativeTool, BaseToolInvocation, Kind } from './tools.js';
 import { ToolErrorType } from './tool-error.js';
 import { FILE_OPS_TOOL_NAME } from './tool-names.js';
+import { buildToolActionProfile } from '../safety/approval-ladder/buildToolActionProfile.js';
+import { computeMinimumReviewLevel } from '../safety/approval-ladder/computeMinimumReviewLevel.js';
 
 const DEFAULT_MAX_DEPTH = 3;
 const DEFAULT_MAX_ENTRIES = 200;
@@ -110,15 +112,15 @@ class FileOpsToolInvocation extends BaseToolInvocation<
   protected override async getConfirmationDetails(
     _abortSignal: AbortSignal,
   ): Promise<ToolCallConfirmationDetails | false> {
-    const { operation, overwrite, recursive } = this.params;
-
-    const needsConfirmation =
-      operation === 'delete' ||
-      (operation === 'move' && overwrite) ||
-      (operation === 'copy' && overwrite) ||
-      Boolean(recursive);
-
-    if (!needsConfirmation) {
+    const { operation } = this.params;
+    const actionProfile = buildToolActionProfile({
+      toolName: FILE_OPS_TOOL_NAME,
+      args: this.params as unknown as Record<string, unknown>,
+      config: this.config,
+      provenance: this.getProvenance(),
+    });
+    const reviewResult = computeMinimumReviewLevel(actionProfile);
+    if (reviewResult.level === 'A') {
       return false;
     }
 
@@ -143,6 +145,12 @@ class FileOpsToolInvocation extends BaseToolInvocation<
       title: 'Confirm File Operation',
       command,
       rootCommand: operation,
+      provenance:
+        this.getProvenance().length > 0 ? this.getProvenance() : undefined,
+      reviewLevel: reviewResult.level,
+      requiresPin: reviewResult.requiresPin,
+      pinLength: reviewResult.requiresPin ? 6 : undefined,
+      explanation: reviewResult.reasons.join('; '),
       onConfirm: async (outcome: ToolConfirmationOutcome) => {
         await this.publishPolicyUpdate(outcome);
       },

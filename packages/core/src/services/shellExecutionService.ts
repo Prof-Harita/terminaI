@@ -232,9 +232,12 @@ function getSanitizedEnv(): NodeJS.ProcessEnv {
     }
   }
 
-  // Always carry over variables and secrets with GEMINI_CLI_*.
+  // Always carry over variables and secrets with GEMINI_CLI_* and TERMINAI_CLI_*.
   for (const key in process.env) {
     if (key.startsWith('GEMINI_CLI_')) {
+      env[key] = process.env[key];
+    }
+    if (key.startsWith('TERMINAI_CLI_')) {
       env[key] = process.env[key];
     }
   }
@@ -354,6 +357,7 @@ export class ShellExecutionService {
         env: {
           ...getSanitizedEnv(),
           GEMINI_CLI: '1',
+          TERMINAI_CLI: '1',
           TERM: 'xterm-256color',
           PAGER: 'cat',
           GIT_PAGER: 'cat',
@@ -568,6 +572,7 @@ export class ShellExecutionService {
         env: {
           ...getSanitizedEnv(),
           GEMINI_CLI: '1',
+          TERMINAI_CLI: '1',
           TERM: 'xterm-256color',
           PAGER: shellExecutionConfig.pager ?? 'cat',
           GIT_PAGER: shellExecutionConfig.pager ?? 'cat',

@@ -98,6 +98,8 @@ struct VisualDOMSnapshot {
     tree: Option<ElementNode>,
     #[serde(skip_serializing_if = "Option::is_none")]
     screenshot: Option<Value>, // Placeholder
+    #[serde(skip_serializing_if = "Option::is_none")]
+    limits: Option<SnapshotLimits>,
     driver: DriverDescriptor,
 }
 
@@ -123,6 +125,19 @@ struct ValueError {
     message: String,
 }
 
+#[derive(Serialize, Deserialize, Debug, Default)]
+#[serde(rename_all = "camelCase")]
+struct SnapshotLimits {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    max_depth: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    max_nodes: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    node_count: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    truncated: Option<bool>,
+}
+
 // --- Driver Logic ---
 
 struct WindowsDriver;
@@ -145,9 +160,15 @@ impl WindowsDriver {
         }
     }
 
-    fn snapshot(&self) -> VisualDOMSnapshot {
+    fn snapshot(&self, mut limits: SnapshotLimits) -> VisualDOMSnapshot {
         // TODO: Actual UIA implementation
         // For now, return a valid empty snapshot to satisfy protocol tests
+        let applied_depth = limits.max_depth.unwrap_or(10);
+        let applied_nodes = limits.max_nodes.unwrap_or(100);
+        limits.max_depth = Some(applied_depth);
+        limits.max_nodes = Some(applied_nodes);
+        limits.node_count = Some(1);
+        limits.truncated = Some(1 > applied_nodes);
         
         let caps = self.get_capabilities();
         
@@ -173,6 +194,7 @@ impl WindowsDriver {
                 children: vec![],
             }),
             screenshot: None,
+            limits: Some(limits),
             driver: DriverDescriptor {
                 name: "windows-uia".to_string(),
                 kind: "native".to_string(),
@@ -226,7 +248,8 @@ fn handle_request(driver: &WindowsDriver, req: Request) -> Response {
             Some(serde_json::to_value(caps).unwrap())
         },
         "snapshot" => {
-            let mut snap = driver.snapshot();
+            let limits = extract_limits(&req.params);
+            let mut snap = driver.snapshot(limits);
             snap.snapshot_id = generate_id();
             snap.timestamp = get_timestamp();
             Some(serde_json::to_value(snap).unwrap())
@@ -261,4 +284,21 @@ fn handle_request(driver: &WindowsDriver, req: Request) -> Response {
         error,
         id: req.id,
     }
+}
+
+fn extract_limits(params: &Option<Value>) -> SnapshotLimits {
+    let mut limits = SnapshotLimits::default();
+    if let Some(Value::Object(map)) = params {
+        if let Some(Value::Number(n)) = map.get("maxDepth") {
+            if let Some(v) = n.as_u64() {
+                limits.max_depth = Some(v as u32);
+            }
+        }
+        if let Some(Value::Number(n)) = map.get("maxNodes") {
+            if let Some(v) = n.as_u64() {
+                limits.max_nodes = Some(v as u32);
+            }
+        }
+    }
+    limits
 }

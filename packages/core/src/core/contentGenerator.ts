@@ -110,11 +110,9 @@ export async function createContentGeneratorConfig(
   return contentGeneratorConfig;
 }
 
-function validateGeminiBaseUrl(url: string): string {
+function validateProviderBaseUrl(url: string): string {
   if (!url.startsWith('http://') && !url.startsWith('https://')) {
-    throw new Error(
-      'TERMINAI_GEMINI_BASE_URL must start with http:// or https://',
-    );
+    throw new Error('TERMINAI_BASE_URL must start with http:// or https://');
   }
   // Normalize trailing slash: remove if present for consistency
   return url.replace(/\/$/, '');
@@ -193,15 +191,17 @@ export async function createContentGenerator(
           'x-gemini-api-privileged-user-id': `${installationId}`,
         };
       }
-      const geminiBaseUrl = process.env['TERMINAI_GEMINI_BASE_URL'];
+      const geminiBaseUrl =
+        process.env['TERMINAI_BASE_URL'] ||
+        process.env['TERMINAI_GEMINI_BASE_URL'];
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const httpOptions: any = { headers };
       if (geminiBaseUrl) {
-        const validatedUrl = validateGeminiBaseUrl(geminiBaseUrl);
+        const validatedUrl = validateProviderBaseUrl(geminiBaseUrl);
         httpOptions.baseUrl = validatedUrl;
         if (gcConfig.getDebugMode()) {
           console.error(
-            `[TerminaI] using custom Gemini Base URL: ${validatedUrl}`,
+            `[TerminaI] using custom API base URL: ${validatedUrl}`,
           );
         }
       }

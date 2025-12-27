@@ -9,7 +9,7 @@ import path from 'node:path';
 import { promises as fs } from 'node:fs';
 import type { Content } from '@google/genai';
 import type { AuthType } from './contentGenerator.js';
-import type { Storage } from '../config/storage.js';
+import { Storage } from '../config/storage.js';
 import { debugLogger } from '../utils/debugLogger.js';
 import { coreEvents } from '../utils/events.js';
 
@@ -25,6 +25,26 @@ export interface LogEntry {
   timestamp: string;
   type: MessageSenderType;
   message: string;
+}
+
+export type EventType =
+  | 'user_prompt'
+  | 'model_response'
+  | 'thought'
+  | 'tool_call'
+  | 'tool_result'
+  | 'approval'
+  | 'error'
+  | 'session_start'
+  | 'session_end'
+  | 'evaluation';
+
+export interface TerminaILogEvent {
+  version: '1.0';
+  sessionId: string;
+  timestamp: string;
+  eventType: EventType;
+  payload: Record<string, unknown>;
 }
 
 export interface Checkpoint {
@@ -71,6 +91,7 @@ export function decodeTagName(str: string): string {
 export class Logger {
   private geminiDir: string | undefined;
   private logFilePath: string | undefined;
+  private logFilePathFull: string | undefined;
   private sessionId: string | undefined;
   private messageId = 0; // Instance-specific counter for the next messageId
   private initialized = false;
@@ -144,6 +165,10 @@ export class Logger {
 
     this.geminiDir = this.storage.getProjectTempDir();
     this.logFilePath = path.join(this.geminiDir, LOG_FILE_NAME);
+    this.logFilePathFull = path.join(
+      Storage.getGlobalLogsDir(),
+      `${this.sessionId}.jsonl`,
+    );
 
     try {
       await fs.mkdir(this.geminiDir, { recursive: true });
@@ -157,6 +182,8 @@ export class Logger {
       if (!fileExisted && this.logs.length === 0) {
         await fs.writeFile(this.logFilePath, '[]', 'utf-8');
       }
+      const logsDirFull = path.dirname(this.logFilePathFull);
+      await fs.mkdir(logsDirFull, { recursive: true });
       const sessionLogs = this.logs.filter(
         (entry) => entry.sessionId === this.sessionId,
       );
@@ -276,6 +303,33 @@ export class Logger {
       }
     } catch (_error) {
       // Error already logged by _updateLogFile or _readLogFile
+    }
+  }
+
+  async logEventFull(
+    eventType: EventType,
+    payload: Record<string, unknown>,
+  ): Promise<void> {
+    if (!this.initialized || !this.logFilePathFull) {
+      return;
+    }
+
+    const event: TerminaILogEvent = {
+      version: '1.0',
+      sessionId: this.sessionId!,
+      timestamp: new Date().toISOString(),
+      eventType,
+      payload,
+    };
+
+    try {
+      await fs.appendFile(
+        this.logFilePathFull,
+        JSON.stringify(event) + '\n',
+        'utf-8',
+      );
+    } catch (err) {
+      debugLogger.error(`Failed to write to full log file: ${err}`);
     }
   }
 

@@ -30,9 +30,20 @@ class AtspiClient:
         # Get active window info (heuristic)
         active_app_info = self._get_active_app_info(root)
 
-        # Build tree (limit depth/nodes for perf)
-        # Updated to start strictly from valid path
-        tree = self._traverse_nodes(root, max_depth=50, max_nodes=5000, current_nodes=[0], path_str="")
+        # Apply caller-provided bounds (defaults kept conservative)
+        max_depth = 10
+        max_nodes = 100
+        try:
+            if isinstance(params, dict):
+                max_depth = max(1, int(params.get("maxDepth", max_depth)))
+                max_nodes = max(1, int(params.get("maxNodes", max_nodes)))
+        except Exception:
+            # Fall back to defaults on malformed params
+            max_depth = 10
+            max_nodes = 100
+
+        current_nodes = [0]
+        tree = self._traverse_nodes(root, max_depth=max_depth, max_nodes=max_nodes, current_nodes=current_nodes, path_str="")
 
         return {
             "snapshotId": snapshot_id,
@@ -41,6 +52,12 @@ class AtspiClient:
             "tree": tree,
             "textIndex": [], # TODO: add text index if needed
             "screenshot": None,
+            "limits": {
+                "maxDepth": max_depth,
+                "maxNodes": max_nodes,
+                "nodeCount": current_nodes[0],
+                "truncated": current_nodes[0] >= max_nodes,
+            },
             "driver": {
                 "name": "linux-atspi",
                 "kind": "native",

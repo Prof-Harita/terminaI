@@ -19,7 +19,12 @@ export interface ActionOutcome {
   errorMessage?: string;
 }
 
-function getHistoryFilePath(): string {
+function getHistoryPaths(): {
+  primaryHistory: string;
+  legacyHistory: string;
+  primaryApproaches: string;
+  legacyApproaches: string;
+} {
   const homeRaw =
     typeof (os as unknown as { homedir?: unknown }).homedir === 'function'
       ? os.homedir()
@@ -34,26 +39,67 @@ function getHistoryFilePath(): string {
 
   const root = home || tmp;
   try {
-    return path.join(root, '.termai', 'history.jsonl');
+    const primaryDir = path.join(root, '.terminai');
+    const legacyDir = path.join(root, '.termai');
+    return {
+      primaryHistory: path.join(primaryDir, 'history.jsonl'),
+      legacyHistory: path.join(legacyDir, 'history.jsonl'),
+      primaryApproaches: path.join(primaryDir, 'approaches.jsonl'),
+      legacyApproaches: path.join(legacyDir, 'approaches.jsonl'),
+    };
   } catch {
-    return '/tmp/.termai/history.jsonl';
+    return {
+      primaryHistory: '/tmp/.terminai/history.jsonl',
+      legacyHistory: '/tmp/.termai/history.jsonl',
+      primaryApproaches: '/tmp/.terminai/approaches.jsonl',
+      legacyApproaches: '/tmp/.termai/approaches.jsonl',
+    };
   }
+}
+
+function getHistoryWritePath(): string {
+  return getHistoryPaths().primaryHistory;
+}
+
+function getHistoryReadPath(): string | null {
+  const { primaryHistory, legacyHistory } = getHistoryPaths();
+  if (fs.existsSync(primaryHistory)) {
+    return primaryHistory;
+  }
+  if (fs.existsSync(legacyHistory)) {
+    return legacyHistory;
+  }
+  return null;
+}
+
+function getApproachWritePath(): string {
+  return getHistoryPaths().primaryApproaches;
+}
+
+function getApproachReadPath(): string | null {
+  const { primaryApproaches, legacyApproaches } = getHistoryPaths();
+  if (fs.existsSync(primaryApproaches)) {
+    return primaryApproaches;
+  }
+  if (fs.existsSync(legacyApproaches)) {
+    return legacyApproaches;
+  }
+  return null;
 }
 const MAX_HISTORY_BYTES = 2 * 1024 * 1024;
 
 export function logOutcome(outcome: ActionOutcome): void {
-  const historyFile = getHistoryFilePath();
+  const historyFile = getHistoryWritePath();
   const dir = path.dirname(historyFile);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
 
   fs.appendFileSync(historyFile, `${JSON.stringify(outcome)}\n`);
-  pruneHistory(1000);
+  pruneHistory(historyFile, 1000);
 }
 
-function pruneHistory(maxEntries: number): void {
-  const historyFile = getHistoryFilePath();
+function pruneHistory(historyFile: string, maxEntries: number): void {
   if (!fs.existsSync(historyFile)) {
     return;
   }
@@ -72,8 +118,8 @@ function pruneHistory(maxEntries: number): void {
 }
 
 export function getRecentOutcomes(count: number = 50): ActionOutcome[] {
-  const historyFile = getHistoryFilePath();
-  if (!fs.existsSync(historyFile)) {
+  const historyFile = getHistoryReadPath();
+  if (!historyFile) {
     return [];
   }
 
@@ -161,10 +207,7 @@ export interface ApproachOutcome {
  * Logs an approach outcome for learning.
  */
 export function logApproachOutcome(outcome: ApproachOutcome): void {
-  const historyFile = getHistoryFilePath().replace(
-    'history.jsonl',
-    'approaches.jsonl',
-  );
+  const historyFile = getApproachWritePath();
   const dir = path.dirname(historyFile);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
@@ -183,11 +226,8 @@ export function getApproachContext(
   sampleSize: number;
   confidenceBoost: number;
 } {
-  const historyFile = getHistoryFilePath().replace(
-    'history.jsonl',
-    'approaches.jsonl',
-  );
-  if (!fs.existsSync(historyFile)) {
+  const historyFile = getApproachReadPath();
+  if (!historyFile) {
     return { successRate: 0.5, sampleSize: 0, confidenceBoost: 0 };
   }
 

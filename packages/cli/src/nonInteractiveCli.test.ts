@@ -47,6 +47,15 @@ const mockCoreEvents = vi.hoisted(() => ({
   emit: vi.fn(),
 }));
 
+const mockThinkingExecuteTask = vi.hoisted(() =>
+  vi.fn().mockResolvedValue({
+    suggestedAction: 'fallback_to_direct',
+    frameworkId: 'FW_DIRECT',
+    reasoning: 'Direct execution',
+    explanation: 'Direct execution',
+  }),
+);
+
 vi.mock('@terminai/core', async (importOriginal) => {
   const original = await importOriginal<typeof import('@terminai/core')>();
 
@@ -71,12 +80,7 @@ vi.mock('@terminai/core', async (importOriginal) => {
       stderr: process.stderr,
     })),
     ThinkingOrchestrator: class {
-      executeTask = vi.fn().mockResolvedValue({
-        suggestedAction: 'fallback_to_direct',
-        frameworkId: 'FW_DIRECT',
-        reasoning: 'Direct execution',
-        explanation: 'Direct execution',
-      });
+      executeTask = mockThinkingExecuteTask;
     },
   };
 });
@@ -129,6 +133,12 @@ describe('runNonInteractive', () => {
 
   beforeEach(async () => {
     mockCoreExecuteToolCall = vi.mocked(executeToolCall);
+    mockThinkingExecuteTask.mockResolvedValue({
+      suggestedAction: 'fallback_to_direct',
+      frameworkId: 'FW_DIRECT',
+      reasoning: 'Direct execution',
+      explanation: 'Direct execution',
+    });
 
     mockCommandServiceCreate.mockResolvedValue({
       getCommands: mockGetCommands,
@@ -174,6 +184,7 @@ describe('runNonInteractive', () => {
       getToolRegistry: vi.fn().mockReturnValue(mockToolRegistry),
       getMaxSessionTurns: vi.fn().mockReturnValue(10),
       getSessionId: vi.fn().mockReturnValue('test-session-id'),
+      getSessionProvenance: vi.fn().mockReturnValue([]),
       getProjectRoot: vi.fn().mockReturnValue('/test/project'),
       storage: {
         getProjectTempDir: vi.fn().mockReturnValue('/test/project/.gemini/tmp'),
@@ -260,6 +271,50 @@ describe('runNonInteractive', () => {
     expect(getWrittenOutput()).toBe('Hello World\n');
     // Note: Telemetry shutdown is now handled in runExitCleanup() in cleanup.ts
     // so we no longer expect shutdownTelemetry to be called directly here
+  });
+
+  it('should execute brain requested tool calls', async () => {
+    mockThinkingExecuteTask.mockResolvedValueOnce({
+      suggestedAction: 'execute_tool',
+      frameworkId: 'FW_SCRIPT',
+      reasoning: 'Scripted solution',
+      approach: 'Run a script',
+      explanation: 'Generated script',
+      confidence: 90,
+      toolCall: {
+        name: 'execute_repl',
+        args: { language: 'node', code: 'console.log("hi")' },
+      },
+    });
+
+    mockCoreExecuteToolCall.mockResolvedValueOnce({
+      status: 'success',
+      request: {
+        callId: 'brain-1',
+        name: 'execute_repl',
+        args: {},
+        isClientInitiated: true,
+        prompt_id: 'prompt-id-1',
+      },
+      response: {
+        callId: 'brain-1',
+        responseParts: [],
+        resultDisplay: 'tool output',
+        error: undefined,
+        errorType: undefined,
+      },
+    });
+
+    await runNonInteractive({
+      config: mockConfig,
+      settings: mockSettings,
+      input: 'Test input',
+      prompt_id: 'prompt-id-1',
+    });
+
+    expect(mockCoreExecuteToolCall).toHaveBeenCalledTimes(1);
+    expect(mockGeminiClient.sendMessageStream).not.toHaveBeenCalled();
+    expect(getWrittenOutput()).toContain('Result: tool output');
   });
 
   it('should handle a single tool call and respond', async () => {

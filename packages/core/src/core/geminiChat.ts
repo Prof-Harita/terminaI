@@ -46,6 +46,7 @@ import { isFunctionResponse } from '../utils/messageInspectors.js';
 import { partListUnionToString } from './geminiRequest.js';
 import type { ModelConfigKey } from '../services/modelConfigService.js';
 import { estimateTokenCountSync } from '../utils/tokenCalculation.js';
+import type { Provenance } from '../safety/approval-ladder/types.js';
 import {
   applyModelSelection,
   createAvailabilityContextProvider,
@@ -579,6 +580,10 @@ export class GeminiChat {
     // Deep copy the history to avoid mutating the history outside of the
     // chat session.
     return structuredClone(history);
+  }
+
+  getSessionProvenance(): Provenance[] {
+    return this.config.getSessionProvenance();
   }
 
   /**

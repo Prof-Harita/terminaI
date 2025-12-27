@@ -56,8 +56,11 @@ export async function ensureWebRemoteAuth(
   options: WebRemoteServerOptions,
 ): Promise<WebRemoteAuthResult> {
   const authPath = getRemoteAuthPath();
-  const envToken = process.env['GEMINI_WEB_REMOTE_TOKEN'];
+  const envToken =
+    process.env['TERMINAI_WEB_REMOTE_TOKEN'] ??
+    process.env['GEMINI_WEB_REMOTE_TOKEN'];
   if (options.tokenOverride) {
+    process.env['TERMINAI_WEB_REMOTE_TOKEN'] = options.tokenOverride;
     process.env['GEMINI_WEB_REMOTE_TOKEN'] = options.tokenOverride;
     return { token: options.tokenOverride, tokenSource: 'override', authPath };
   }
@@ -86,6 +89,8 @@ export async function startWebRemoteServer(
   options: WebRemoteServerOptions,
 ): Promise<{ server: Server; port: number; url: string }> {
   if (options.allowedOrigins.length > 0) {
+    process.env['TERMINAI_WEB_REMOTE_ALLOWED_ORIGINS'] =
+      options.allowedOrigins.join(',');
     process.env['GEMINI_WEB_REMOTE_ALLOWED_ORIGINS'] =
       options.allowedOrigins.join(',');
   }

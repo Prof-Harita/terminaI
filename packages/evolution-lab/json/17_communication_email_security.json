@@ -1,0 +1,1372 @@
+[
+  {
+    "id": "COMM_EMAIL_501",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "I'm trying to send an encrypted email to my lawyer, but the 'Encrypt' button is grayed out in Thunderbird. I imported their public key already.",
+      "ai_response": "This usually happens if the recipient's key isn't trusted or verified yet. \n\n**Fix it in Key Manager:**\n1. Go to **Settings > Privacy & Security > End-to-End Encryption**.\n2. Click **OpenPGP Key Manager**.\n3. Find your lawyer's key, right-click it, and select **Edit Key Properties**.\n4. Set **Your Acceptance** to 'Yes, I've verified in person this key is correct'.\n\nOnce accepted, the Encrypt button should become active in the compose window."
+    },
+    "technical_tags": ["thunderbird", "pgp", "encryption", "openpgp"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_502",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "How do I stop email senders from knowing I opened their emails? I heard about tracking pixels.",
+      "ai_response": "You can block remote content by default in Thunderbird to stop tracking pixels.\n\n**Steps:**\n1. Go to **Settings > Privacy & Security**.\n2. Check the box **'Allow remote content in messages'** ensures it is **UNCHECKED**.\n3. (Optional) Click **Exceptions** if you want to allow images from specific trusted senders.\n\nNow, images (and trackers) won't load unless you click 'Show Remote Content' on the specific email."
+    },
+    "technical_tags": ["thunderbird", "privacy", "tracking-pixels"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_503",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "ProtonMail Bridge"
+    },
+    "interaction": {
+      "user_query": "ProtonMail Bridge won't connect after I updated Fedora. It says 'Vault is locked' or something similar in the logs.",
+      "ai_response": "This is often a keyring issue after a system update or password change. The Bridge needs access to `gnome-keyring`.\n\n**Try unlocking the keyring:**\n1. Open **'Passwords and Keys'** (Seahorse).\n2. Look for the 'Login' keyring. If it's locked (padlock icon), right-click and **Unlock**.\n\n**If that fails, reset the Bridge config:**\n```bash\nrm -rf ~/.config/protonmail/bridge\n```\n*Warning: You will need to log in to Bridge again.*"
+    },
+    "technical_tags": ["protonmail", "bridge", "gnome-keyring", "fedora"],
+    "friction_type": "auth_failure"
+  },
+  {
+    "id": "COMM_EMAIL_504",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Signal Desktop"
+    },
+    "interaction": {
+      "user_query": "Signal Desktop is asking for a passphrase every time I open it on Debian. It's annoying.",
+      "ai_response": "Signal on Linux doesn't always integrate with the system keyring automatically on non-GNOME environments or minimal installs.\n\n**To launch with the password store:**\nEnsure you have a keyring daemon running. If you are on KDE or GNOME, it should work. \n\n**Workaround flag:**\nLaunch Signal with:\n```bash\nsignal-desktop --password-store=\"gnome-libsecret\"\n```\n(Replace `gnome-libsecret` with `basic_text` if you don't care about encryption at rest, but that is insecure)."
+    },
+    "technical_tags": ["signal", "security", "keyring", "debian"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_505",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Zoom"
+    },
+    "interaction": {
+      "user_query": "Is my video call actually encrypted? I see a green shield icon but I'm on public Wi-Fi.",
+      "ai_response": "Yes, the green shield means the connection to Zoom's servers is encrypted (HTTPS/TLS). \n\n**To verify End-to-End Encryption (E2EE):**\n1. Click the **Green Shield** icon in the top left during a meeting.\n2. Look for **'Encryption: Enhanced Encryption'** or **'End-to-end encrypted'**.\n\nNote: 'Enhanced' means Zoom has the keys. 'End-to-End' means only participants have the keys (requires host to enable E2EE in web settings)."
+    },
+    "technical_tags": ["zoom", "encryption", "security", "wifi"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_506",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "I keep getting 'The certificate is not trusted because the issuer certificate is unknown' for my work email.",
+      "ai_response": "This usually means your company uses a self-signed certificate or a firewall that inspects SSL.\n\n**To fix in Thunderbird:**\n1. When the error pops up, click **'Get Certificate'**.\n2. Click **'View Certificate'** to verify it's actually your company's server.\n3. Check **'Permanently store this exception'**.\n4. Click **'Confirm Security Exception'**.\n\nIf the button is disabled, ensure you aren't using a proxy in **Settings > General > Network & Disk Space > Settings**."
+    },
+    "technical_tags": ["thunderbird", "ssl", "certificates", "security"],
+    "friction_type": "auth_failure"
+  },
+  {
+    "id": "COMM_EMAIL_507",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Discord"
+    },
+    "interaction": {
+      "user_query": "How do I turn off all data collection in Discord? I don't like them reading my messages.",
+      "ai_response": "You can minimize data collection, but Discord is not end-to-end encrypted; they can technically access messages for Trust & Safety.\n\n**Settings to change:**\n1. Go to **User Settings (Gear icon) > Privacy & Safety**.\n2. Scroll down to **'How we use your data'**.\n3. Toggle OFF **'Use data to improve Discord'**.\n4. Toggle OFF **'Use data to customize my Discord experience'**."
+    },
+    "technical_tags": ["discord", "privacy", "telemetry"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_508",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Evolution"
+    },
+    "interaction": {
+      "user_query": "I have a .p12 certificate file for signing emails. How do I import this into Evolution?",
+      "ai_response": "Evolution manages certificates through the system or its own cert manager.\n\n**Steps:**\n1. Open Evolution, go to **Edit > Preferences**.\n2. Select **Certificates > Your Certificates**.\n3. Click **Import**.\n4. Select your `.p12` file and enter the backup password.\n5. Go to your Account settings -> **Security**, and select the imported certificate for **Signing** and **Encryption**."
+    },
+    "technical_tags": ["evolution", "certificates", "smime", "p12"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_509",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "Is there a way to password protect Thunderbird so no one can read my emails if I leave my laptop open?",
+      "ai_response": "Yes, you can set a Primary Password. This encrypts your saved passwords and prevents Thunderbird from accessing mail servers until you enter it.\n\n**Enable it:**\n1. **Settings > Privacy & Security**.\n2. Check **'Use a Primary Password'**.\n3. Enter a strong password.\n\n*Note: This does not encrypt locally downloaded emails, just the ability to fetch new ones and send.*"
+    },
+    "technical_tags": ["thunderbird", "security", "master-password"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_510",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Telegram Desktop"
+    },
+    "interaction": {
+      "user_query": "I want to use Secret Chats in Telegram on my desktop, but I can't find the option.",
+      "ai_response": "Telegram Desktop (the Linux app) sadly does **not** support Secret Chats (End-to-End Encryption). This feature is currently limited to the mobile apps (Android/iOS) and the macOS native client.\n\n**Workaround:**\nYou must use your phone for Secret Chats. The desktop app only supports cloud chats."
+    },
+    "technical_tags": ["telegram", "encryption", "feature-parity"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_511",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "Thunderbird keeps asking for my GPG passphrase every time I send an email. How do I make it remember it for a while?",
+      "ai_response": "Thunderbird 115 uses its own OpenPGP library (RNP) and usually stores keys unlocked if you have a Primary Password set. If you are using external GnuPG:\n\n**Check GPG Agent:**\nEnsure `gpg-agent` is configured to cache passwords.\nEdit `~/.gnupg/gpg-agent.conf`:\n```text\ndefault-cache-ttl 34560000\nmax-cache-ttl 34560000\n```\nThen reload: `gpg-connect-agent reloadagent /bye`"
+    },
+    "technical_tags": ["thunderbird", "gpg", "passphrase", "cache"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_512",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Firefox (Webmail)"
+    },
+    "interaction": {
+      "user_query": "My bank says my connection isn't secure when I try to log into webmail. I'm using a VPN.",
+      "ai_response": "This might be because the VPN IP is flagged or the time on your computer is wrong.\n\n**Checks:**\n1. **Check System Time:** Run `timedatectl`. If it's wrong, sync it.\n2. **Disable VPN:** Temporarily turn off the VPN to see if the bank accepts your residential IP.\n3. **Clear Cache:** Press `Ctrl+Shift+Delete` in Firefox and clear **Cache** and **Cookies**."
+    },
+    "technical_tags": ["firefox", "webmail", "vpn", "ssl"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_513",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Betterbird"
+    },
+    "interaction": {
+      "user_query": "I switched to Betterbird for better privacy. How do I ensure HTML emails are sanitized?",
+      "ai_response": "Betterbird (and Thunderbird) sanitizes HTML by default, but you can force plain text for maximum safety.\n\n**View as Plain Text:**\nGo to **View > Message Body As > Plain Text**.\n\nThis strips all scripts, images, and formatting, leaving only the text. It's the safest way to read email."
+    },
+    "technical_tags": ["betterbird", "html-sanitization", "security"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_514",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "I want to route only my email traffic through Tor. Is that possible in Thunderbird?",
+      "ai_response": "Yes, Thunderbird supports SOCKS5 proxies.\n\n**Setup:**\n1. Ensure Tor is running (`sudo systemctl start tor`).\n2. In Thunderbird, go to **Settings > General > Network & Disk Space > Settings**.\n3. Select **Manual proxy configuration**.\n4. SOCKS Host: `127.0.0.1`, Port: `9050` (or `9150` if using Tor Browser bundle).\n5. Check **'Proxy DNS when using SOCKS v5'** to prevent DNS leaks."
+    },
+    "technical_tags": ["thunderbird", "tor", "proxy", "privacy"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_515",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Slack (Flatpak)"
+    },
+    "interaction": {
+      "user_query": "Can my boss see my private DMs on Slack? I'm using the app on my personal Fedora laptop.",
+      "ai_response": "Technically, yes. Workspace administrators on paid plans (especially Enterprise Grid) can export all message data, including private DMs, if they have legal/compliance reasons.\n\nUsing a personal laptop does not protect the data stored on Slack's servers. **Assume nothing on workplace Slack is truly private.**"
+    },
+    "technical_tags": ["slack", "privacy", "workplace"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_516",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Gnome Online Accounts"
+    },
+    "interaction": {
+      "user_query": "I linked my Google account in Settings, but now I'm worried. What exactly does Ubuntu access?",
+      "ai_response": "GNOME Online Accounts uses OAuth permissions. It typically accesses:\n- **Mail** (for Evolution/Geary)\n- **Calendar** (for GNOME Calendar)\n- **Contacts** (for GNOME Contacts)\n- **Files** (Mounts Google Drive in Nautilus)\n\n**To restrict this:**\nGo to **Settings > Online Accounts**, click your Google account, and toggle OFF the services (like Files or Mail) you don't want synced."
+    },
+    "technical_tags": ["gnome", "google", "oauth", "privacy"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_517",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "I got an email that says it's from 'Support' but the address looks weird. How do I see the real sender?",
+      "ai_response": "Phishing emails often spoof the display name. \n\n**To verify:**\n1. Look at the **From** field. If it says \"Support <xyz@random-domain.com>\", it's fake.\n2. Press **Ctrl+U** to view the **Message Source**. Look for the `Return-Path` header. If it doesn't match the company claiming to email you, it's spam/phishing."
+    },
+    "technical_tags": ["thunderbird", "phishing", "security", "email-headers"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_518",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Jitsi Meet (Web)"
+    },
+    "interaction": {
+      "user_query": "I'm hosting a Jitsi call. How do I make sure random people don't bomb the meeting?",
+      "ai_response": "Jitsi meetings are public by default if the URL is guessed.\n\n**Secure your meeting:**\n1. Click the **Security Options** (shield icon) in the bottom right.\n2. **Enable Lobby Mode**: You must approve anyone trying to join.\n3. **Add Password**: Set a strong password that guests must enter.\n4. **Enable End-to-End Encryption**: Also found in the overflow menu (three dots), though this disables some server-side features."
+    },
+    "technical_tags": ["jitsi", "security", "moderation"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_519",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "I generated a revocation certificate for my OpenPGP key. Where should I store it?",
+      "ai_response": "Your revocation certificate is crucial if you lose your private key or it gets compromised. \n\n**Storage advice:**\n1. **Do NOT** store it on the same computer as your key.\n2. Put it on a **read-only USB drive** or print it out (ASCII armor text) and store it in a physical safe.\n3. Do not upload it to a keyserver unless you actually intend to revoke the key immediately."
+    },
+    "technical_tags": ["pgp", "security", "revocation", "arch"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_520",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Element (Matrix)"
+    },
+    "interaction": {
+      "user_query": "I lost my Security Key for Element and now I can't read my old encrypted messages. Can I recover them?",
+      "ai_response": "If you did not set up **Secure Backup** (with a passphrase) or export your E2E room keys, those old messages are mathematically unrecoverable. Matrix encryption strictly ensures that without the keys, the data is noise.\n\n**For the future:**\nGo to **Settings > Security & Privacy > Secure Backup** and set it up immediately."
+    },
+    "technical_tags": ["element", "matrix", "encryption", "recovery"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_521",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I clear my saved passwords for Gmail in Firefox? I want to type it in every time for safety.",
+      "ai_response": "1. Click the **Menu button** (three lines) > **Passwords** (or go to `about:logins`).\n2. In the search box, type \"google\".\n3. Select the entry for your Gmail account.\n4. Click **Remove** (or the trash can icon).\n\nNow Firefox won't autofill it."
+    },
+    "technical_tags": ["firefox", "passwords", "security"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_522",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "I want to digitally sign my emails so people know it's really me, but I don't want to encrypt them. How?",
+      "ai_response": "You can sign without encrypting.\n\n**Steps:**\n1. Ensure your OpenPGP key is set up in **Account Settings > End-to-End Encryption**.\n2. Check **'Add my digital signature by default'**.\n3. Ensure **'Enable encryption for new messages'** is UNCHECKED.\n\nThis attaches a signature (`.asc` or `.sig`) that verifies you as the sender, but the email text remains readable by anyone."
+    },
+    "technical_tags": ["thunderbird", "digital-signature", "pgp"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_523",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Wire"
+    },
+    "interaction": {
+      "user_query": "Wire says 'Connection not secure' on Debian. I installed it from the repo.",
+      "ai_response": "This can happen if the time is out of sync or the certificate bundle is outdated.\n\n**Fixes:**\n1. Update CA certificates: `sudo update-ca-certificates`\n2. Check time: `timedatectl`\n3. If you are using an old version from `apt`, try the Flatpak or AppImage from the official Wire website, as the Debian stable repo version might be too old for Wire's current API."
+    },
+    "technical_tags": ["wire", "ssl", "debian", "package-management"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_524",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Thunderbird"
+    },
+    "interaction": {
+      "user_query": "I keep getting spam. Does Thunderbird have a junk filter I need to turn on?",
+      "ai_response": "Thunderbird has an adaptive Junk filter, but it needs training.\n\n**To enable and train:**\n1. **Account Settings > Junk Settings** -> Ensure **'Enable adaptive junk mail controls'** is checked.\n2. When you see spam, **do not just delete it**. Select it and click the **Junk** icon (flame/recycle symbol).\n3. Thunderbird learns from this and will start moving similar emails to the Junk folder automatically."
+    },
+    "technical_tags": ["thunderbird", "spam-filter", "junk"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_525",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Evolution"
+    },
+    "interaction": {
+      "user_query": "How do I configure Evolution to use OAuth2 for Office 365? It keeps asking for a password and failing.",
+      "ai_response": "Microsoft disabled Basic Auth (password) for Exchange Online. You must use OAuth2.\n\n**Steps:**\n1. Use `evolution-ews` package: `sudo dnf install evolution-ews`.\n2. In Account Editor, change **Server Type** to **Exchange Web Services**.\n3. **Authentication:** Select **OAuth2 (Office365)**.\n4. Enter your email and click **Fetch URL**. \n5. Copy the **Tenant ID** and **Application ID** if prompted (usually auto-filled). \n6. A browser window will open to log in to Microsoft."
+    },
+    "technical_tags": ["evolution", "office365", "oauth2", "exchange"],
+    "friction_type": "auth_failure"
+  },
+  {
+    "id": "COMM_EMAIL_601",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "I read an email on my phone, but it still shows as unread on Thunderbird on my laptop. Why doesn't it sync?",
+      "ai_response": "This sounds like you are using **POP3** instead of **IMAP**.\n\n- **POP3** downloads mail locally and doesn't sync read states back to the server.\n- **IMAP** keeps everything in sync.\n\n**Check Server Settings:**\nGo to **Account Settings > Server Settings**. If 'Server Type' says POP Mail, you cannot simply change it. You must add the account again as a **New Account**, select **IMAP** during setup, move your emails over, and then remove the POP account."
+    },
+    "technical_tags": ["thunderbird", "imap", "pop3", "sync"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_602",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "How do I sync my Google Contacts to Thunderbird? I hate having two address books.",
+      "ai_response": "Thunderbird supports CardDAV natively now.\n\n**Steps:**\n1. Go to **Address Book**.\n2. Click **New Address Book** > **Add CardDAV Address Book**.\n3. **Username:** Your Gmail address.\n4. **Location:** `https://www.googleapis.com/carddav/v1/principals/user@gmail.com/lists/default/` (or usually just typing the email is enough for Thunderbird to auto-detect Google).\n5. It will ask for OAuth2 login. Accept it."
+    },
+    "technical_tags": ["thunderbird", "carddav", "google-contacts", "sync"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_603",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Discord"
+    },
+    "interaction": {
+      "user_query": "I get notifications on my phone for Discord, but not on my PC. I want them on both.",
+      "ai_response": "Discord tries to avoid double-notifying you. If you are 'active' on desktop (mouse moving), it suppresses mobile push. If you are idle on desktop, it pushes to mobile.\n\n**To debug desktop notifications:**\n1. Check **User Settings > Notifications**.\n2. Ensure **Enable Desktop Notifications** is ON.\n3. Check Linux Mint settings: **System Settings > Notifications** and ensure Discord is allowed."
+    },
+    "technical_tags": ["discord", "notifications", "sync", "mint"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_604",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "vdirsyncer"
+    },
+    "interaction": {
+      "user_query": "I want to backup my iCloud calendar to my Linux machine using terminal. What tool should I use?",
+      "ai_response": "`vdirsyncer` is the standard tool for CLI CalDAV/CardDAV syncing.\n\n**Basic config (`~/.config/vdirsyncer/config`):**\n```ini\n[pair my_calendar]\na = \"local\"\nb = \"icloud\"\n\n[storage local]\ntype = \"filesystem\"\npath = \"~/.calendars/\"\nfileext = \".ics\"\n\n[storage icloud]\ntype = \"caldav\"\nurl = \"[https://caldav.icloud.com/](https://caldav.icloud.com/)\"\nusername = \"your_apple_id\"\npassword = \"app-specific-password\"\n```\nRun `vdirsyncer discover` then `vdirsyncer sync`."
+    },
+    "technical_tags": ["vdirsyncer", "icloud", "caldav", "cli"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_605",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Firefox Sync"
+    },
+    "interaction": {
+      "user_query": "My open tabs aren't showing up on my laptop from my phone. I'm signed into Firefox on both.",
+      "ai_response": "Sync might be delayed or disabled for tabs.\n\n**Force Sync:**\n1. On Laptop: Click the **User/Profile** icon > **Sync Now**.\n2. On Phone: Go to Menu > **Sync Now**.\n\n**Check Settings:**\nEnsure **'Open Tabs'** is checked in the Sync settings on **BOTH** devices."
+    },
+    "technical_tags": ["firefox", "sync", "tabs"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_606",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "I deleted an email on my iPhone, but it's still in Thunderbird on my PC. Why?",
+      "ai_response": "If both are using IMAP, this might be a sync delay or 'Expunge' setting.\n\n**In Thunderbird:**\n1. Right-click the folder and select **Compact**.\n2. If it disappears, check **Server Settings** > **Clean up ('Expunge') Inbox on Exit**.\n3. Also verify your iPhone isn't set to 'Archive' instead of 'Delete' in its mail settings."
+    },
+    "technical_tags": ["thunderbird", "imap", "sync", "ios"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_607",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Signal Desktop"
+    },
+    "interaction": {
+      "user_query": "Signal Desktop says 'Link device', but I already linked it before. Do I have to do it again?",
+      "ai_response": "If you reinstalled Fedora or haven't opened Signal Desktop in a long time (30+ days), it unlinks for security.\n\n**Solution:**\nYes, you must re-link. Open Signal on your phone > **Settings > Linked Devices > +** and scan the QR code on your Fedora screen. Note that chat history from while it was unlinked will NOT sync over."
+    },
+    "technical_tags": ["signal", "sync", "linking"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_608",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Evolution"
+    },
+    "interaction": {
+      "user_query": "I'm trying to sync my Nextcloud calendar with Evolution. It asks for a URL.",
+      "ai_response": "1. Log into your Nextcloud web interface.\n2. Go to **Calendar**.\n3. Click the **three dots** next to the calendar name > **Copy private link** (or 'Copy CalDAV address').\n4. In Evolution: **File > New > Calendar**.\n5. Type: **CalDAV**.\n6. URL: Paste the link from Nextcloud.\n7. User: Your Nextcloud username."
+    },
+    "technical_tags": ["evolution", "nextcloud", "caldav", "sync"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_609",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "I use a shared 'Family' calendar on Google. How do I see that specific calendar in Thunderbird?",
+      "ai_response": "When you add your Google Calendar via CalDAV (or the native provider), Thunderbird usually discovers all calendars.\n\n**If missing:**\n1. Right-click the calendar list on the left sidebar.\n2. Use **'Subscribe'** or check if it's disabled in the list.\n3. If it's still missing, you might need the specific **XML/ICAL address** from Google Calendar settings (under 'Integrate Calendar') and add it as a separate Network Calendar."
+    },
+    "technical_tags": ["thunderbird", "google-calendar", "sync"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_610",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Telegram Desktop"
+    },
+    "interaction": {
+      "user_query": "Telegram on Arch isn't showing the messages I just sent from my phone.",
+      "ai_response": "Telegram sync is cloud-based and usually instant. If it's stuck:\n\n1. Check your internet connection.\n2. **Restart the app.**\n3. If using a proxy/VPN, disable it.\n4. Sometimes the Arch package version mismatches the server API if you haven't updated in a while: `sudo pacman -Syu telegram-desktop`."
+    },
+    "technical_tags": ["telegram", "sync", "arch"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_611",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "KDE Connect"
+    },
+    "interaction": {
+      "user_query": "I want to reply to SMS from my Ubuntu desktop. I installed KDE Connect but the devices don't see each other.",
+      "ai_response": "KDE Connect requires both devices to be on the **same Wi-Fi network** and **Firewall ports open**.\n\n**Firewall Fix (UFW):**\n```bash\nsudo ufw allow 1714:1764/udp\nsudo ufw allow 1714:1764/tcp\nsudo ufw reload\n```\nAlso, ensure no VPN is active on the phone or PC, as that isolates the devices."
+    },
+    "technical_tags": ["kde-connect", "sms", "sync", "firewall"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_612",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Outlook (PWA)"
+    },
+    "interaction": {
+      "user_query": "I'm using Outlook as a web app (PWA) on Fedora. Notifications don't come through when the window is closed.",
+      "ai_response": "PWAs generally need the browser backend to be running to push notifications.\n\n**Fix:**\n1. In Edge/Chrome/Firefox settings, enable **'Continue running background apps when closed'**.\n2. Ensure notifications are allowed for `outlook.office.com` in Browser Settings.\n3. You might need to keep the Outlook window minimized rather than fully closed (Quit)."
+    },
+    "technical_tags": ["outlook", "pwa", "notifications", "sync"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_613",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "I have a huge local archive of emails in Thunderbird. How do I sync this to my laptop without using the cloud?",
+      "ai_response": "You can manually copy the Thunderbird profile folder.\n\n**Steps:**\n1. On PC 1: Locate `~/.thunderbird/xxxx.default-release/`.\n2. Copy the entire folder to a USB drive.\n3. On PC 2: Install Thunderbird, run it once, then close it.\n4. Replace the contents of PC 2's `~/.thunderbird/yyyy.default-release/` with the contents from the USB drive.\n5. Adjust `profiles.ini` if the folder name changed, or just rename the folder to match PC 2's generated name."
+    },
+    "technical_tags": ["thunderbird", "backup", "migration", "profile"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_614",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "WhatsApp Web"
+    },
+    "interaction": {
+      "user_query": "WhatsApp Web keeps disconnecting saying 'Phone not connected'. My phone is right there.",
+      "ai_response": "This happens if your phone puts WhatsApp to sleep to save battery.\n\n**Fix on Phone:**\n1. Go to **Settings > Battery > App Battery Usage**.\n2. Find WhatsApp and set it to **Unrestricted** or **Don't Optimize**.\n3. Ensure your phone has a stable Wi-Fi connection, or join the **WhatsApp Multi-Device Beta** (Linked Devices > Multi-device beta) which allows the web version to work even if the phone is offline."
+    },
+    "technical_tags": ["whatsapp", "sync", "battery-optimization"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_615",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Mailspring"
+    },
+    "interaction": {
+      "user_query": "Mailspring isn't showing the same Sent items as my phone.",
+      "ai_response": "Mailspring might be saving sent mail to a local folder instead of the server's 'Sent' folder.\n\n**Check Folder Mapping:**\n1. Go to **Preferences > Folders**.\n2. Ensure the **Sent** folder is mapped to `[Gmail]/Sent Mail` (or your provider's equivalent) and not a local folder.\n3. Resync the account: **Developer > Clear Cache and Reload**."
+    },
+    "technical_tags": ["mailspring", "imap", "folders", "sync"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_616",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Discord"
+    },
+    "interaction": {
+      "user_query": "My friend says my mic sounds robotic on Discord, but it's fine on my phone.",
+      "ai_response": "Robotic audio on Linux is usually a sample rate mismatch in PipeWire/PulseAudio or high CPU usage.\n\n**Fixes:**\n1. **Restart Discord** completely.\n2. Check `pw-top` (if using PipeWire) to see if Discord is struggling with quantum size.\n3. In Discord Settings > Voice & Video: Disable **'Noise Suppression'** (Krisp) and **'Echo Cancellation'** to see if the processing is causing the lag."
+    },
+    "technical_tags": ["discord", "audio", "pipewire", "robotic-voice"],
+    "friction_type": "wayland_conflict"
+  },
+  {
+    "id": "COMM_EMAIL_617",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "I changed my Gmail password. How do I update it in Thunderbird? It just keeps giving login errors.",
+      "ai_response": "Thunderbird uses OAuth tokens for Gmail, not just a saved password.\n\n**To reset:**\n1. Go to **Settings > Privacy & Security > Saved Passwords**.\n2. Delete the entry for `oauth://accounts.google.com` corresponding to your email.\n3. Restart Thunderbird. It will prompt you to log in via a Google web popup again."
+    },
+    "technical_tags": ["thunderbird", "gmail", "oauth", "password-reset"],
+    "friction_type": "auth_failure"
+  },
+  {
+    "id": "COMM_EMAIL_618",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Thunderbird"
+    },
+    "interaction": {
+      "user_query": "I have two computers. Can I put my Thunderbird profile on Dropbox to sync them?",
+      "ai_response": "**Do not do this.**\n\nStoring a live Thunderbird profile on Dropbox/Nextcloud often leads to **database corruption** (`sqlite` locking issues) if both computers access it, or if sync happens while the app is open.\n\n**Better Alternative:**\nUse IMAP for email and host a CalDAV/CardDAV server (or use Google/Nextcloud) to sync contacts and calendars properly."
+    },
+    "technical_tags": [
+      "thunderbird",
+      "cloud-storage",
+      "corruption",
+      "best-practices"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_619",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Element"
+    },
+    "interaction": {
+      "user_query": "Element says 'Encrypted messages usually aren't readable on this device' when I scroll up.",
+      "ai_response": "This means your current session doesn't have the keys for those old messages (keys are stored on the device that received them).\n\n**To fix:**\n1. **Verify** this session against your other logged-in device (phone/PC).\n2. Or, if you have **Secure Backup** enabled, go to Settings > Security and **Restore from Backup** using your recovery phrase/key."
+    },
+    "technical_tags": ["element", "encryption", "keys", "matrix"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_620",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Web Browser"
+    },
+    "interaction": {
+      "user_query": "I use Yahoo Mail in the browser. I have to login every single time I restart the computer.",
+      "ai_response": "Your browser is likely clearing cookies on exit.\n\n**In Firefox:**\nCheck **Settings > Privacy & Security > Cookies and Site Data**. Uncheck **'Delete cookies and site data when Firefox is closed'**.\n\n**In Chrome:**\nCheck **Settings > Privacy and security > Site settings > Cookies**. Ensure **'Clear cookies and site data when you close all windows'** is OFF."
+    },
+    "technical_tags": ["browser", "cookies", "yahoo", "login"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_621",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Gnome Calendar"
+    },
+    "interaction": {
+      "user_query": "GNOME Calendar is Read-Only for my Google Calendar events. I can't edit them.",
+      "ai_response": "This sometimes happens if the Google account token expires or permissions were revoked.\n\n**Fix:**\n1. Open **Settings > Online Accounts**.\n2. Remove the Google account.\n3. Add it again and ensure you grant **ALL** requested permissions (Calendar, Contacts, etc.).\n4. Restart GNOME Calendar."
+    },
+    "technical_tags": ["gnome-calendar", "google", "permissions", "sync"],
+    "friction_type": "auth_failure"
+  },
+  {
+    "id": "COMM_EMAIL_622",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Thunderbird"
+    },
+    "interaction": {
+      "user_query": "I want to export all my Thunderbird contacts to my Android phone manually.",
+      "ai_response": "1. In Thunderbird, open **Address Book**.\n2. Select the address book you want to export.\n3. **Tools > Export** > select **vCard (.vcf)** format.\n4. Transfer this `.vcf` file to your Android phone (USB, email, or KDE Connect).\n5. On Android, open **Contacts > Settings > Import** and select the file."
+    },
+    "technical_tags": ["thunderbird", "contacts", "export", "vcf"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_623",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Slack"
+    },
+    "interaction": {
+      "user_query": "Slack keeps signing me out every time I reboot Arch.",
+      "ai_response": "Slack stores session tokens in the keyring. If the keyring isn't unlocking automatically, Slack resets.\n\n**Check Keyring:**\nEnsure `gnome-keyring` or `kwallet` is installed and unlocked on login. \n\n**Workaround:**\nIf you are on a Window Manager (i3/Sway), you might need to add `gnome-keyring-daemon --start` to your startup script."
+    },
+    "technical_tags": ["slack", "keyring", "arch", "login"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_624",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Zoom"
+    },
+    "interaction": {
+      "user_query": "I scheduled a meeting in Zoom on the web, but it's not showing in the Zoom app on Mint.",
+      "ai_response": "1. In the Zoom app, click the **Refresh** icon near the Meetings tab.\n2. If that fails, log out and log back in.\n3. Ensure you are logged into the **same account** (check email address in top right profile icon)."
+    },
+    "technical_tags": ["zoom", "sync", "meetings"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "COMM_EMAIL_625",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "Thunderbird is downloading thousands of old emails and filling up my disk. How do I stop it?",
+      "ai_response": "You can limit how far back Thunderbird syncs.\n\n**Sync Settings:**\n1. Right-click the account > **Settings** > **Synchronization & Storage**.\n2. Check **'Synchronize the most recent'**.\n3. Set it to **30 days** or **6 months**.\n4. Click **OK**. Thunderbird will delete local copies of older emails (they remain on the server)."
+    },
+    "technical_tags": ["thunderbird", "imap", "storage", "sync"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_701",
+    "bucket": "Communication & Email",
+    "sub_category": "Work/Professional",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Microsoft Teams (PWA)"
+    },
+    "interaction": {
+      "user_query": "I can't join my company Teams meeting. It just says 'Browser not supported' when I use Firefox.",
+      "ai_response": "Microsoft Teams web (and PWA) works best on Chromium-based browsers (Chrome/Edge). Firefox support is limited.\n\n**Solution:**\n1. Install **Google Chrome** or **Microsoft Edge** for Linux.\n2. Navigate to `teams.microsoft.com`.\n3. Click the three dots in the browser > **Apps** > **Install Microsoft Teams**. This creates a standalone PWA that works reliably."
+    },
+    "technical_tags": ["teams", "browser-support", "pwa", "work"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_702",
+    "bucket": "Communication & Email",
+    "sub_category": "Work/Professional",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Zoom (Flatpak)"
+    },
+    "interaction": {
+      "user_query": "My boss can't see my screen when I share on Zoom. It's just black. I'm on Fedora.",
+      "ai_response": "Fedora uses Wayland by default, which Zoom (especially the Flatpak) sometimes struggles with.\n\n**Fix:**\n1. Open Zoom **Settings > Share Screen**.\n2. Uncheck **'Use hardware acceleration for screen sharing'**.\n3. Ensure you select the **'Desktop'** or **'PipeWire'** option when the share dialog pops up, not just a specific X11 window if it's acting up.\n4. If issues persist, log out of Fedora and choose **'GNOME on Xorg'** at the login screen."
+    },
+    "technical_tags": ["zoom", "wayland", "screen-sharing", "fedora"],
+    "friction_type": "wayland_conflict"
+  },
+  {
+    "id": "COMM_EMAIL_703",
+    "bucket": "Communication & Email",
+    "sub_category": "Work/Professional",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Thunderbird"
+    },
+    "interaction": {
+      "user_query": "I need to set an 'Out of Office' reply for my work email (Exchange). I can't find it in Thunderbird.",
+      "ai_response": "Thunderbird doesn't natively control Exchange 'Out of Office' unless you use a paid add-on like Owl for Exchange, or if the server supports standard Sieve filters (unlikely for Exchange).\n\n**Workaround:**\nYou usually have to log into the **Outlook Web App (OWA)** in your browser to set the Automatic Reply. It will then apply to all emails regardless of what client you use."
+    },
+    "technical_tags": ["thunderbird", "exchange", "out-of-office", "work"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_704",
+    "bucket": "Communication & Email",
+    "sub_category": "Work/Professional",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Evolution"
+    },
+    "interaction": {
+      "user_query": "My company uses MFA (Multi-Factor Authentication) and Evolution keeps failing to login to Office 365.",
+      "ai_response": "You must use the `evolution-ews` plugin with OAuth2. Basic password entry won't trigger the MFA prompt.\n\n**Check Setup:**\n1. Edit Account > **Receiving Email**.\n2. Authentication: **OAuth2 (Office365)**.\n3. Click **'Check for Supported Types'** or **'Fetch URL'**.\n4. If the browser popup for MFA doesn't appear, ensure you have `glib-networking` installed and default browser set correctly."
+    },
+    "technical_tags": ["evolution", "mfa", "office365", "oauth2"],
+    "friction_type": "auth_failure"
+  },
+  {
+    "id": "COMM_EMAIL_705",
+    "bucket": "Communication & Email",
+    "sub_category": "Work/Professional",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Slack"
+    },
+    "interaction": {
+      "user_query": "Screen sharing in Slack is totally broken on Arch. I just updated.",
+      "ai_response": "Slack relies on X11 or specific PipeWire portals for Wayland. \n\n**If using Wayland:**\nLaunch Slack with Ozone platform hints: \n```bash\nslack --enable-features=UseOzonePlatform --ozone-platform=wayland\n```\nOr, if using the web version in Chrome, ensure `chrome://flags/#enable-webrtc-pipewire-capturer` is enabled."
+    },
+    "technical_tags": ["slack", "wayland", "screen-sharing", "arch"],
+    "friction_type": "wayland_conflict"
+  },
+  {
+    "id": "COMM_EMAIL_706",
+    "bucket": "Communication & Email",
+    "sub_category": "Work/Professional",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "How do I add my HTML signature for work? I have the file.",
+      "ai_response": "1. Go to **Account Settings**.\n2. Select your account name.\n3. Check **'Attach the signature from a file instead'**.\n4. Click **Choose...** and select your HTML file.\n\n*Tip: Ensure the images in the HTML are hosted online (http://...), not local paths, or recipients won't see them.*"
+    },
+    "technical_tags": ["thunderbird", "signature", "html", "work"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_707",
+    "bucket": "Communication & Email",
+    "sub_category": "Work/Professional",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Google Meet (Chrome)"
+    },
+    "interaction": {
+      "user_query": "Google Meet background blur isn't working. The option is missing.",
+      "ai_response": "Background blur requires Hardware Acceleration to be enabled in Chrome.\n\n**Enable it:**\n1. Chrome **Settings > System**.\n2. Enable **'Use graphics acceleration when available'**.\n3. Restart Chrome.\n\nIf it's still missing, your GPU drivers might not support the WebGL features required. Check `chrome://gpu`."
+    },
+    "technical_tags": [
+      "google-meet",
+      "chrome",
+      "hardware-acceleration",
+      "video"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_708",
+    "bucket": "Communication & Email",
+    "sub_category": "Work/Professional",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Thunderbird"
+    },
+    "interaction": {
+      "user_query": "I need to view the Global Address List (GAL) from my company's Exchange server in Thunderbird.",
+      "ai_response": "Native Thunderbird doesn't support Exchange GAL seamlessly via IMAP.\n\n**Option 1: LDAP**\nAsk your IT for the **LDAP server details** (hostname, base DN, bind DN). Configure it in **Address Book > New LDAP Directory**.\n\n**Option 2: Owl Add-on**\nUse the 'Owl for Exchange' paid add-on, which integrates GAL, Calendar, and Mail via the native Exchange protocol."
+    },
+    "technical_tags": ["thunderbird", "ldap", "exchange", "gal"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_709",
+    "bucket": "Communication & Email",
+    "sub_category": "Work/Professional",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Zoom"
+    },
+    "interaction": {
+      "user_query": "My Bluetooth headset mic works in settings but not in Zoom calls.",
+      "ai_response": "Zoom sometimes defaults to the wrong audio device or profile (HSP/HFP vs A2DP).\n\n**During a meeting:**\n1. Click the arrow next to the **Mute/Mic** icon.\n2. Ensure the **Microphone** selected is your headset **(Handsfree/HSP)**, NOT the High Fidelity Playback one (which is output only).\n3. If quality is terrible, you might need to switch the PulseAudio profile in Sound Settings to **Headset Head Unit (HSP/HFP)** manually before the call."
+    },
+    "technical_tags": ["zoom", "bluetooth", "audio", "pulseaudio"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_710",
+    "bucket": "Communication & Email",
+    "sub_category": "Work/Professional",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "DavMail"
+    },
+    "interaction": {
+      "user_query": "I'm trying to use DavMail to connect Thunderbird to my strict corporate O365. It's not authenticating.",
+      "ai_response": "DavMail acts as a gateway. \n\n**Config Check:**\n1. Ensure DavMail mode is **O365Interactive** (or Modern).\n2. When you check mail in Thunderbird, a window should pop up from DavMail to log in to Microsoft.\n3. If it doesn't, check if `openjfx` is installed (`sudo apt install openjfx`) so DavMail can render the login window."
+    },
+    "technical_tags": ["davmail", "office365", "thunderbird", "gateway"],
+    "friction_type": "auth_failure"
+  },
+  {
+    "id": "COMM_EMAIL_801",
+    "bucket": "Communication & Email",
+    "sub_category": "Personal/Home",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Discord"
+    },
+    "interaction": {
+      "user_query": "I can't install Discord. I downloaded the .deb file but double clicking does nothing.",
+      "ai_response": "On Ubuntu 22.04+, the software center sometimes glitches with local .deb files.\n\n**Try this:**\n1. Right-click the file > **Open With** > **Software Install**.\n2. If that fails, open Terminal, drag the file into it, and add `sudo apt install ./` before the file path. \n   Example: `sudo apt install ./discord-0.0.1.deb`."
+    },
+    "technical_tags": ["discord", "installation", "deb", "ubuntu"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "COMM_EMAIL_802",
+    "bucket": "Communication & Email",
+    "sub_category": "Personal/Home",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "I want to change the ugly font in Thunderbird's folder list. It's too small.",
+      "ai_response": "In Thunderbird 115+, the UI density is adjustable, but fonts require CSS.\n\n**Easy Fix (Density):**\n1. Click the **Menu** (three lines) > **Density** > **Touch** (makes everything bigger).\n\n**Hard Fix (Font):**\n1. Enable `toolkit.legacyUserProfileCustomizations.stylesheets` in Config Editor.\n2. Create `chrome/userChrome.css` in your profile folder.\n3. Add: `* { font-size: 14px !important; }`."
+    },
+    "technical_tags": ["thunderbird", "ui", "css", "customization"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_803",
+    "bucket": "Communication & Email",
+    "sub_category": "Personal/Home",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Skype"
+    },
+    "interaction": {
+      "user_query": "My webcam is upside down in Skype! It works fine in other apps.",
+      "ai_response": "This is a rare driver or library issue.\n\n**Try:**\n1. Install `v4l-utils`: `sudo apt install v4l-utils`.\n2. Run `LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libv4l/v4l1compat.so skypeforlinux` (path may vary).\n\n**Easier:** Use Skype for Web (web.skype.com) in Chrome/Firefox, which usually handles the camera correctly via the browser."
+    },
+    "technical_tags": ["skype", "webcam", "drivers", "video"],
+    "friction_type": "driver_issue"
+  },
+  {
+    "id": "COMM_EMAIL_804",
+    "bucket": "Communication & Email",
+    "sub_category": "Personal/Home",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Viber (AppImage)"
+    },
+    "interaction": {
+      "user_query": "I downloaded Viber AppImage but it won't open when I click it.",
+      "ai_response": "AppImages need execution permission.\n\n**Steps:**\n1. Right-click the `.AppImage` file.\n2. Go to **Properties > Permissions**.\n3. Check **'Allow executing file as program'**.\n4. Close and double-click it again.\n\nIf it still fails, you might need FUSE 2: `sudo apt install libfuse2`."
+    },
+    "technical_tags": ["viber", "appimage", "permissions", "debian"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "COMM_EMAIL_805",
+    "bucket": "Communication & Email",
+    "sub_category": "Personal/Home",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Discord"
+    },
+    "interaction": {
+      "user_query": "Discord keeps updating and refusing to open until I install the update, but the Arch repo hasn't updated yet.",
+      "ai_response": "This is a classic Discord-on-Linux annoyance.\n\n**Workaround:**\n1. Open `~/.config/discord/settings.json`.\n2. Add or modify this line: `\"SKIP_HOST_UPDATE\": true`.\n3. Save and restart Discord. \n\nThis bypasses the version check until the Arch package maintainer pushes the update."
+    },
+    "technical_tags": ["discord", "updates", "arch", "json"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_806",
+    "bucket": "Communication & Email",
+    "sub_category": "Personal/Home",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Telegram"
+    },
+    "interaction": {
+      "user_query": "How do I make Telegram use the dark mode that matches my Ubuntu system theme?",
+      "ai_response": "1. Open Telegram Settings.\n2. Go to **Chat Settings**.\n3. Under 'Auto-Night Mode', select **System**.\n\nNow Telegram will switch between light/dark automatically based on your Ubuntu Appearance settings."
+    },
+    "technical_tags": ["telegram", "theme", "dark-mode"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_807",
+    "bucket": "Communication & Email",
+    "sub_category": "Personal/Home",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Thunderbird"
+    },
+    "interaction": {
+      "user_query": "I want to send a large video file (100MB) to my grandma. Thunderbird says it's too big.",
+      "ai_response": "Email isn't designed for large files (limit is usually 25MB).\n\n**Use File Link:**\n1. Thunderbird has a 'File Link' feature.\n2. Go to **Settings > Composition > Attachments**.\n3. Add a provider (like WeTransfer or Dropbox).\n4. When you attach a large file, Thunderbird will offer to upload it there and just insert a download link in the email body."
+    },
+    "technical_tags": ["thunderbird", "file-link", "attachments", "cloud"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_808",
+    "bucket": "Communication & Email",
+    "sub_category": "Personal/Home",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Discord"
+    },
+    "interaction": {
+      "user_query": "Discord audio crackles when I'm playing a game at the same time.",
+      "ai_response": "This is likely a CPU priority or PulseAudio latency issue.\n\n**Quick Fix:**\n1. Change the process priority of Discord. Run: `renice -n -10 -p $(pidof Discord)` (needs sudo).\n\n**Better Fix:**\nEdit `/etc/pulse/daemon.conf` and set `default-fragments = 5` and `default-fragment-size-msec = 2`, then restart pulseaudio (`pulseaudio -k`)."
+    },
+    "technical_tags": ["discord", "audio", "latency", "crackling"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_809",
+    "bucket": "Communication & Email",
+    "sub_category": "Personal/Home",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "How do I add a picture to my contact? I want to see faces when people email me.",
+      "ai_response": "1. Open **Address Book**.\n2. Double-click the contact.\n3. In the edit window, you'll see a placeholder image circle.\n4. Click it and select a photo from your computer.\n5. Click **Save**.\n\n*Note: This only changes what YOU see locally.*"
+    },
+    "technical_tags": ["thunderbird", "contacts", "ui"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_810",
+    "bucket": "Communication & Email",
+    "sub_category": "Personal/Home",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Signal"
+    },
+    "interaction": {
+      "user_query": "Signal won't start. It just shows a white screen and crashes.",
+      "ai_response": "This happens if the GPU cache gets corrupted or incompatible flags are used.\n\n**Reset Cache:**\n1. Close Signal.\n2. Delete the config folders: `rm -rf ~/.config/Signal/GPUCache`.\n3. Try launching again.\n\nIf that fails, launch with: `signal-desktop --disable-gpu`"
+    },
+    "technical_tags": ["signal", "crash", "gpu", "arch"],
+    "friction_type": "driver_issue"
+  },
+  {
+    "id": "COMM_EMAIL_901",
+    "bucket": "Communication & Email",
+    "sub_category": "Edge Cases",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Mutt"
+    },
+    "interaction": {
+      "user_query": "I want to feel like a hacker and use email in the terminal. I installed Mutt but I have no idea how to log into Gmail.",
+      "ai_response": "Gmail requires an App Password for Mutt (since Mutt doesn't do OAuth2 easily for beginners).\n\n1. Go to Google Account > Security > **2-Step Verification** (Enable it).\n2. Go to **App Passwords** > Create one for 'Mail'.\n3. Create `~/.muttrc`:\n```text\nset imap_user = \"yourname@gmail.com\"\nset imap_pass = \"your-app-password\"\nset folder = \"imaps://imap.gmail.com:993\"\nset spoolfile = \"+INBOX\"\n```\n4. Run `mutt`."
+    },
+    "technical_tags": ["mutt", "cli", "gmail", "config"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_902",
+    "bucket": "Communication & Email",
+    "sub_category": "Edge Cases",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Thunderbird"
+    },
+    "interaction": {
+      "user_query": "I have an old Outlook .pst file from my Windows days. How do I open it in Thunderbird?",
+      "ai_response": "Thunderbird cannot open `.pst` files natively.\n\n**Option 1 (Third-party tool):**\nInstall `readpst` package: `sudo apt install pstamail` (or `pst-utils`). Convert it: `readpst -D -M -b -e -o output_folder myarchive.pst`. Then drag the resulting `.eml` files into Thunderbird.\n\n**Option 2 (Paid):**\nUse a third-party conversion tool on Windows before moving to Linux."
+    },
+    "technical_tags": ["thunderbird", "pst", "outlook", "migration"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_903",
+    "bucket": "Communication & Email",
+    "sub_category": "Edge Cases",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "IRC (HexChat)"
+    },
+    "interaction": {
+      "user_query": "I was told to join an IRC channel for support. I installed HexChat but it keeps saying 'SASL authentication failed'.",
+      "ai_response": "Many IRC networks (like Libera.Chat) require you to register your nickname first.\n\n**Steps:**\n1. Connect without SASL first.\n2. Type `/msg NickServ REGISTER yourpassword youremail`.\n3. Verify your email.\n4. **Then** go to HexChat Network List > Edit > Login Method: **SASL (External)** or **SASL (username/password)** and enter the creds you just created."
+    },
+    "technical_tags": ["irc", "hexchat", "sasl", "auth"],
+    "friction_type": "auth_failure"
+  },
+  {
+    "id": "COMM_EMAIL_904",
+    "bucket": "Communication & Email",
+    "sub_category": "Edge Cases",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Thunderbird"
+    },
+    "interaction": {
+      "user_query": "I'm blind and use the Orca screen reader. Thunderbird is reading every single column header before the subject.",
+      "ai_response": "You can simplify the view for accessibility.\n\n**Adjust Columns:**\n1. Click the small column picker icon (right side of header bar).\n2. Uncheck unnecessary columns like Star, Attachment, Correspondent, Read Status.\n3. Leave only **Subject**, **From**, and **Date**.\n\n**Sort Order:**\nEnsure you aren't using 'Threaded' view if it's confusing navigation. **View > Sort by > Unthreaded**."
+    },
+    "technical_tags": ["accessibility", "orca", "screen-reader", "thunderbird"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_905",
+    "bucket": "Communication & Email",
+    "sub_category": "Edge Cases",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Discord"
+    },
+    "interaction": {
+      "user_query": "I want to stream a movie on Discord to my friends, but the audio from the movie player isn't capturing.",
+      "ai_response": "Screen sharing on Linux often captures video but not application audio due to PulseAudio limitations.\n\n**Solution:**\nUse a specialized tool or modified client like **Vesktop** (available as Flatpak/AppImage). Vesktop is a custom Discord client that fixes screen sharing audio on Linux."
+    },
+    "technical_tags": ["discord", "streaming", "audio", "vesktop"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_906",
+    "bucket": "Communication & Email",
+    "sub_category": "Edge Cases",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Thunderbird"
+    },
+    "interaction": {
+      "user_query": "I'm using a YubiKey for GPG. Thunderbird doesn't see it for signing emails.",
+      "ai_response": "Thunderbird needs to be told to use external GnuPG instead of its internal RNP library for smartcards.\n\n**Config:**\n1. **Settings > Config Editor**.\n2. Set `mail.openpgp.allow_external_gnupg` to `true`.\n3. In Account Settings > End-to-End Encryption, select **Add Key** > **Use external GnuPG key** and paste the Key ID mapped to your YubiKey."
+    },
+    "technical_tags": ["yubikey", "gpg", "smartcard", "thunderbird"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_907",
+    "bucket": "Communication & Email",
+    "sub_category": "Edge Cases",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I'm trying to use Gov.uk Verify / ID.me but the webcam verification fails in Firefox.",
+      "ai_response": "Strict browser privacy settings sometimes block the biometrics/camera checks.\n\n**Try:**\n1. Disable **Enhanced Tracking Protection** for that site (Shield icon > Toggle OFF).\n2. Ensure you haven't denied camera permissions globally.\n3. If all else fails, try Chromium/Chrome, as some government identity vendors optimize for Blink engine."
+    },
+    "technical_tags": ["firefox", "webcam", "identity", "compatibility"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_908",
+    "bucket": "Communication & Email",
+    "sub_category": "Edge Cases",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Thunderbird"
+    },
+    "interaction": {
+      "user_query": "I have two different email providers with the same email address (migration). How do I check both in Thunderbird?",
+      "ai_response": "Thunderbird won't let you create two accounts with the exact same email address string.\n\n**Workaround:**\n1. Set up the first account normally.\n2. For the second account, enter a fake email like `user@fake.domain` during setup to bypass the check.\n3. Once added, go to **Server Settings** and change the **User Name** and **Server Name** to the correct second provider.\n4. Change the **Email Address** in Account Settings back to the real one (Thunderbird might complain, but often allows it if the account ID is already created)."
+    },
+    "technical_tags": ["thunderbird", "migration", "duplicate-account", "hack"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_909",
+    "bucket": "Communication & Email",
+    "sub_category": "Edge Cases",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Element"
+    },
+    "interaction": {
+      "user_query": "I want to bridge my Telegram into Element so I only use one app. Is that hard?",
+      "ai_response": "It requires running a 'bridge' server (mautrix-telegram), which is usually too technical for a local desktop user.\n\n**Easier Alternative:**\nUse **Beeper** (AppImage/Flatpak). It is a Matrix client that handles the hosting of the bridges for you, allowing you to sign into Telegram, WhatsApp, and Discord all in one app without setting up a server."
+    },
+    "technical_tags": ["matrix", "bridging", "beeper", "aggregation"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_910",
+    "bucket": "Communication & Email",
+    "sub_category": "Edge Cases",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Thunderbird"
+    },
+    "interaction": {
+      "user_query": "My emails are showing the wrong time (3 hours off). The system clock is correct.",
+      "ai_response": "This happens if the `TZ` variable isn't passed to Thunderbird or the email headers are malformed.\n\n**Check:**\n1. Restart Thunderbird.\n2. Check **Settings > General > Date and Time Formatting**.\n3. Ensure your system's Time Zone is set correctly in Settings (`timedatectl`), specifically the Time Zone, not just the time."
+    },
+    "technical_tags": ["thunderbird", "timezone", "clock", "headers"],
+    "friction_type": "config_issue"
+  }
+]

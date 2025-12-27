@@ -121,7 +121,7 @@ For maximum security, consider running untrusted hooks in isolated environments:
 ```bash
 # Run hook in Docker container
 docker run --rm \
-  -v "$GEMINI_PROJECT_DIR:/workspace:ro" \
+  -v "$TERMINAI_PROJECT_DIR:/workspace:ro" \
   -i untrusted-hook-image \
   /hook-script.sh < input.json
 ```
@@ -155,7 +155,7 @@ Store results between invocations to avoid repeated computation:
 const fs = require('fs');
 const path = require('path');
 
-const CACHE_FILE = '.gemini/hook-cache.json';
+const CACHE_FILE = '.terminai/hook-cache.json';
 
 function readCache() {
   try {
@@ -258,7 +258,7 @@ Write debug information to dedicated log files:
 
 ```bash
 #!/usr/bin/env bash
-LOG_FILE=".gemini/hooks/debug.log"
+LOG_FILE=".terminai/hooks/debug.log"
 
 # Log with timestamp
 log() {
@@ -307,7 +307,7 @@ cat > test-input.json << 'EOF'
 EOF
 
 # Test the hook
-cat test-input.json | .gemini/hooks/my-hook.sh
+cat test-input.json | .terminai/hooks/my-hook.sh
 
 # Check exit code
 echo "Exit code: $?"
@@ -374,7 +374,7 @@ Begin with basic logging hooks before implementing complex logic:
 #!/usr/bin/env bash
 # Simple logging hook to understand input structure
 input=$(cat)
-echo "$input" >> .gemini/hook-inputs.log
+echo "$input" >> .terminai/hook-inputs.log
 echo "Logged input"
 ```
 
@@ -401,8 +401,8 @@ tool_name=$(echo "$input" | jq -r '.tool_name')
 Always make hook scripts executable:
 
 ```bash
-chmod +x .gemini/hooks/*.sh
-chmod +x .gemini/hooks/*.js
+chmod +x .terminai/hooks/*.sh
+chmod +x .terminai/hooks/*.js
 ```
 
 ### Version control
@@ -410,8 +410,8 @@ chmod +x .gemini/hooks/*.js
 Commit hooks to share with your team:
 
 ```bash
-git add .gemini/hooks/
-git add .gemini/settings.json
+git add .terminai/hooks/
+git add .terminai/settings.json
 git commit -m "Add project hooks for security and testing"
 ```
 
@@ -419,13 +419,13 @@ git commit -m "Add project hooks for security and testing"
 
 ```gitignore
 # Ignore hook cache and logs
-.gemini/hook-cache.json
-.gemini/hook-debug.log
-.gemini/memory/session-*.jsonl
+.terminai/hook-cache.json
+.terminai/hook-debug.log
+.terminai/memory/session-*.jsonl
 
 # Keep hook scripts
-!.gemini/hooks/*.sh
-!.gemini/hooks/*.js
+!.terminai/hooks/*.sh
+!.terminai/hooks/*.js
 ```
 
 ### Document behavior
@@ -442,7 +442,7 @@ Add descriptions to help others understand your hooks:
           {
             "name": "secret-scanner",
             "type": "command",
-            "command": "$GEMINI_PROJECT_DIR/.gemini/hooks/block-secrets.sh",
+            "command": "$TERMINAI_PROJECT_DIR/.terminai/hooks/block-secrets.sh",
             "description": "Scans code changes for API keys, passwords, and other secrets before writing"
           }
         ]
@@ -500,18 +500,18 @@ echo "write_file|replace" | grep -E "write_.*|replace"
 **Ensure script is executable:**
 
 ```bash
-ls -la .gemini/hooks/my-hook.sh
-chmod +x .gemini/hooks/my-hook.sh
+ls -la .terminai/hooks/my-hook.sh
+chmod +x .terminai/hooks/my-hook.sh
 ```
 
 **Verify script path:**
 
 ```bash
 # Check path expansion
-echo "$GEMINI_PROJECT_DIR/.gemini/hooks/my-hook.sh"
+echo "$TERMINAI_PROJECT_DIR/.terminai/hooks/my-hook.sh"
 
 # Verify file exists
-test -f "$GEMINI_PROJECT_DIR/.gemini/hooks/my-hook.sh" && echo "File exists"
+test -f "$TERMINAI_PROJECT_DIR/.terminai/hooks/my-hook.sh" && echo "File exists"
 ```
 
 ### Hook timing out
@@ -678,8 +678,8 @@ trap cleanup EXIT
 ```bash
 #!/usr/bin/env bash
 
-if [ -z "$GEMINI_PROJECT_DIR" ]; then
-  echo "GEMINI_PROJECT_DIR not set" >&2
+if [ -z "$TERMINAI_PROJECT_DIR" ]; then
+  echo "TERMINAI_PROJECT_DIR not set" >&2
   exit 1
 fi
 
@@ -695,12 +695,12 @@ fi
 #!/usr/bin/env bash
 
 # List all environment variables
-env > .gemini/hook-env.log
+env > .terminai/hook-env.log
 
 # Check specific variables
-echo "GEMINI_PROJECT_DIR: $GEMINI_PROJECT_DIR" >> .gemini/hook-env.log
-echo "GEMINI_SESSION_ID: $GEMINI_SESSION_ID" >> .gemini/hook-env.log
-echo "GEMINI_API_KEY: ${GEMINI_API_KEY:+<set>}" >> .gemini/hook-env.log
+echo "TERMINAI_PROJECT_DIR: $TERMINAI_PROJECT_DIR" >> .terminai/hook-env.log
+echo "TERMINAI_SESSION_ID: $TERMINAI_SESSION_ID" >> .terminai/hook-env.log
+echo "TERMINAI_API_KEY: ${TERMINAI_API_KEY:+<set>}" >> .terminai/hook-env.log
 ```
 
 **Use .env files:**
@@ -709,8 +709,8 @@ echo "GEMINI_API_KEY: ${GEMINI_API_KEY:+<set>}" >> .gemini/hook-env.log
 #!/usr/bin/env bash
 
 # Load .env file if it exists
-if [ -f "$GEMINI_PROJECT_DIR/.env" ]; then
-  source "$GEMINI_PROJECT_DIR/.env"
+if [ -f "$TERMINAI_PROJECT_DIR/.env" ]; then
+  source "$TERMINAI_PROJECT_DIR/.env"
 fi
 ```
 
@@ -762,7 +762,7 @@ outputs are excluded. Use this when:
 **Disable via environment variable:**
 
 ```bash
-export GEMINI_TELEMETRY_LOG_PROMPTS=false
+export TERMINAI_TELEMETRY_LOG_PROMPTS=false
 ```
 
 ### Sensitive data in hooks

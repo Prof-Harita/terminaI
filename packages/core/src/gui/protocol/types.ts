@@ -63,6 +63,13 @@ export interface ElementRef {
   elementId: string;
 }
 
+export interface SnapshotLimits {
+  maxDepth?: number;
+  maxNodes?: number;
+  nodeCount?: number;
+  truncated?: boolean;
+}
+
 export interface VisualDOMSnapshot {
   snapshotId: string;
   timestamp: string; // ISO 8601
@@ -89,6 +96,7 @@ export interface VisualDOMSnapshot {
     // Note: Actual screenshot blob is NOT sent here to keep payload small,
     // it's retrieved separately or stored by hash.
   };
+  limits?: SnapshotLimits;
   driver: DriverDescriptor;
 }
 

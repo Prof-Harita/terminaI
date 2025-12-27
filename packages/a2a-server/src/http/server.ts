@@ -7,6 +7,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import '../utils/envAliases.js';
 import * as url from 'node:url';
 import * as path from 'node:path';
 

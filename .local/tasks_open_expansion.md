@@ -6,7 +6,7 @@ Source plan: `.local/plan_expand_beyond_gemini_vGPT5.2.md`
 
 ### Phase 0: Gemini-compatible base URL override
 
-- Implemented: `TERMINAI_GEMINI_BASE_URL` plumbed into
+- Implemented: `TERMINAI_BASE_URL` plumbed into
   `GoogleGenAI({ httpOptions.baseUrl })` in
   `packages/core/src/core/contentGenerator.ts`.
 - Fixed: Base URL validation/normalization (http/https only; trailing slash
@@ -102,7 +102,7 @@ Cases:
 
 - default provider = Gemini AND `authType=LOGIN_WITH_GOOGLE` uses
   `createCodeAssistContentGenerator`.
-- setting `TERMINAI_GEMINI_BASE_URL` must not affect OAuth paths.
+- setting `TERMINAI_BASE_URL` must not affect OAuth paths.
 
 ### 2) OpenAI-compatible unit tests need to match production call shape
 

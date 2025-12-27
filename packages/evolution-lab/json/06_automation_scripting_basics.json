@@ -1,0 +1,447 @@
+[
+  {
+    "id": "AUTO_SCRIPT_001",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Cron",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "cron 3.0"
+    },
+    "interaction": {
+      "user_query": "My backup script works fine when I run it manually, but when cron runs it, it fails with 'command not found' errors.",
+      "ai_response": "Cron doesn't load your shell environment (.bashrc, .profile). It has a minimal PATH.\n\n**Fix: Use absolute paths**\n```bash\n#!/bin/bash\n# Instead of:\n# docker ps\n\n# Use:\n/usr/bin/docker ps\n```\n\n**Or set PATH in crontab:**\n```cron\nPATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\n\n0 2 * * * /home/user/backup.sh\n```\n\n**Find command locations:**\n```bash\nwhich docker  # Shows /usr/bin/docker\n```"
+    },
+    "technical_tags": ["cron", "environment-variables", "path", "automation"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "AUTO_SCRIPT_002",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Bash Scripting",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "bash 5.2"
+    },
+    "interaction": {
+      "user_query": "I'm trying to run a script I just wrote, but I keep getting 'Permission denied', even though I am the owner.",
+      "ai_response": "Being the file owner isn't enough; the file must have the **execute bit** set.\n\n**Fix:**\n```bash\nchmod +x myscript.sh\n./myscript.sh\n```\n\nAlternatively, you can run it by passing it to the interpreter explicitly:\n```bash\nbash myscript.sh\n```"
+    },
+    "technical_tags": ["bash", "permissions", "chmod", "execution"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "AUTO_SCRIPT_003",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Cron",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "cron 3.0"
+    },
+    "interaction": {
+      "user_query": "How do I redirect both stdout and stderr to a log file in a crontab entry? My current log is empty despite errors.",
+      "ai_response": "In standard shell syntax (which cron uses), you need to redirect stderr (`2`) to stdout (`1`) (`&1`) and then pipe or redirect that to a file.\n\n**Syntax:**\n```cron\n* * * * * /path/to/script.sh > /var/log/myscript.log 2>&1\n```\n\n**Breakdown:**\n- `>` redirects standard output.\n- `2>&1` redirects standard error to the same location as standard output."
+    },
+    "technical_tags": ["cron", "logging", "stderr", "redirection"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "AUTO_SCRIPT_004",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Systemd",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "systemd 255"
+    },
+    "interaction": {
+      "user_query": "I created a simple systemd service, but it fails with '203/EXEC'. What does this mean?",
+      "ai_response": "Exit code `203/EXEC` usually means systemd cannot find the executable specified in `ExecStart`.\n\n**Checklist:**\n1.  **Absolute Path:** Ensure you used the full path (e.g., `/usr/bin/python` not just `python`).\n2.  **Shebang:** If it's a script, ensure the first line (`#!/bin/bash`) is correct.\n3.  **Permissions:** Ensure the file is executable (`chmod +x`).\n\n**Debug:**\nRun `ls -l /path/to/executable` to verify existence and permissions."
+    },
+    "technical_tags": ["systemd", "debugging", "execstart", "service-units"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "AUTO_SCRIPT_005",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Bash Scripting",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "bash 5.1"
+    },
+    "interaction": {
+      "user_query": "I'm using variables in a heredoc within my script, but they are expanding prematurely on the local machine instead of the remote SSH server.",
+      "ai_response": "To prevent variable expansion in a heredoc, you must quote the delimiter.\n\n**Incorrect (expands locally):**\n```bash\nssh user@host <<EOF\necho $HOSTNAME\nEOF\n```\n\n**Correct (expands remotely):**\n```bash\nssh user@host <<'EOF'\necho $HOSTNAME\nEOF\n```\nAdding quotes around `'EOF'` tells bash to treat the content as a literal string until it is passed to the remote shell."
+    },
+    "technical_tags": ["bash", "ssh", "heredoc", "remote-execution"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "AUTO_SCRIPT_101",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Cron",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "cron 3.0"
+    },
+    "interaction": {
+      "user_query": "I am losing my mind. I put a script in `/etc/cron.daily` but it never runs. The permissions are 755.",
+      "ai_response": "Scripts in `/etc/cron.daily` (and similar directories) driven by `run-parts` have strict naming conventions in some distros (like Debian/Ubuntu).\n\n**The Trap:**\nFilenames cannot contain dots `.` or extensions like `.sh` unless explicitly configured otherwise.\n\n**Fix:**\nRename `backup.sh` to `backup`.\n```bash\nmv /etc/cron.daily/backup.sh /etc/cron.daily/backup\n```\nAlso ensure it doesn't rely on environment variables set in `.bashrc`."
+    },
+    "technical_tags": [
+      "cron",
+      "run-parts",
+      "troubleshooting",
+      "naming-conventions"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "AUTO_SCRIPT_102",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Systemd",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "systemd 255"
+    },
+    "interaction": {
+      "user_query": "Why does my systemd timer trigger the service immediately on boot even though I scheduled it for 2 AM? It's causing high load during startup.",
+      "ai_response": "You likely have `Persistent=true` in your `[Timer]` section.\n\n**Cause:**\nIf the machine was off at 2 AM, `Persistent=true` tells systemd to run the missed job immediately upon boot.\n\n**Fix:**\nSet `Persistent=false` in your `.timer` file if you prefer to skip missed runs rather than catch up at boot.\n```ini\n[Timer]\nOnCalendar=*-*-* 02:00:00\nPersistent=false\n```"
+    },
+    "technical_tags": ["systemd", "timers", "boot-performance", "scheduling"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "AUTO_SCRIPT_103",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Bash Scripting",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "bash 5.2"
+    },
+    "interaction": {
+      "user_query": "My script utilizes `set -e` to stop on errors, but it's exiting even when a grep command simply fails to find a match.",
+      "ai_response": "`grep` returns exit code `1` if no matches are found. With `set -e`, this terminates the script.\n\n**Fix:**\nAllow `grep` to fail without stopping the script by appending `|| true` or using an `if` statement.\n\n```bash\n# Option 1: Ignore failure\ngrep \"pattern\" file.txt || true\n\n# Option 2: Handle it\nif grep -q \"pattern\" file.txt; then\n  echo \"Found\"\nfi\n```"
+    },
+    "technical_tags": ["bash", "error-handling", "grep", "scripting"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "AUTO_SCRIPT_104",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Inotify",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "inotify-tools 3.22"
+    },
+    "interaction": {
+      "user_query": "I'm using `inotifywait` to watch a directory recursively, but it fails with 'No space left on device' despite having plenty of disk space.",
+      "ai_response": "This error refers to the limit on **inotify watches**, not disk storage.\n\n**Fix:**\nIncrease the `fs.inotify.max_user_watches` kernel parameter.\n\n**Temporary:**\n```bash\nsudo sysctl fs.inotify.max_user_watches=524288\n```\n\n**Permanent:**\nAdd `fs.inotify.max_user_watches=524288` to `/etc/sysctl.d/99-inotify.conf` and run `sudo sysctl --system`."
+    },
+    "technical_tags": ["inotify", "kernel-parameters", "sysctl", "limits"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "AUTO_SCRIPT_105",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Bash Scripting",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "bash 5.1"
+    },
+    "interaction": {
+      "user_query": "I have a loop processing files with spaces in their names, and my script is breaking them into multiple arguments.",
+      "ai_response": "This is a classic 'word splitting' issue. You are likely iterating over `$(ls)` or unquoted variables.\n\n**Fix:**\nUse a glob pattern and quote your variables.\n\n**Bad:**\n```bash\nfor file in $(ls *.jpg); do\n  mv $file new_folder/\ndone\n```\n\n**Good:**\n```bash\nfor file in *.jpg; do\n  mv \"$file\" new_folder/\ndone\n```\nAlways quote variable expansions: `\"$file\"`."
+    },
+    "technical_tags": ["bash", "quoting", "whitespace", "looping"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "AUTO_SCRIPT_201",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Systemd",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "systemd 255"
+    },
+    "interaction": {
+      "user_query": "How do I set up a systemd service that runs as my own user without sudo?",
+      "ai_response": "You can create **User Units** in `~/.config/systemd/user/`.\n\n1.  **Create directory:**\n    `mkdir -p ~/.config/systemd/user`\n2.  **Create unit file (e.g., `myscript.service`):**\n    ```ini\n    [Unit]\n    Description=My User Script\n\n    [Service]\n    ExecStart=%h/bin/myscript.sh\n    Restart=on-failure\n\n    [Install]\n    WantedBy=default.target\n    ```\n    *(Note: `%h` denotes home directory)*\n3.  **Enable and start:**\n    `systemctl --user enable --now myscript.service`\n4.  **Enable lingering (optional):**\n    `loginctl enable-linger $USER` (allows service to run when not logged in)."
+    },
+    "technical_tags": ["systemd", "user-units", "non-root", "configuration"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "AUTO_SCRIPT_202",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Bash Scripting",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "bash 5.2"
+    },
+    "interaction": {
+      "user_query": "How can I ensure only one instance of my script runs at a time? I want to avoid race conditions if the previous run is slow.",
+      "ai_response": "Use `flock` (file locking) to manage a mutex.\n\n**Implementation:**\nWrap your script execution or use a boilerplate inside the script.\n\n**Inside the script:**\n```bash\n#!/bin/bash\nexec 200>/var/tmp/myscript.lock\nflock -n 200 || { echo \"Script is already running.\"; exit 1; }\n\n# Your code here\nsleep 10\n```\nThe `-n` flag makes it non-blocking (exit immediately if locked)."
+    },
+    "technical_tags": ["bash", "concurrency", "flock", "locking"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "AUTO_SCRIPT_203",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Automation",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "rsync 3.2"
+    },
+    "interaction": {
+      "user_query": "How do I create a script that automatically backs up a folder to a remote server using rsync over SSH?",
+      "ai_response": "**1. Setup SSH Keys:**\nEnsure you have passwordless access: `ssh-copy-id user@remote`.\n\n**2. The Script:**\n```bash\n#!/bin/bash\nSRC=\"/home/user/documents/\"\nDEST=\"user@remote:/var/backups/user/\"\n\n# -a: archive mode (perms, times)\n# -v: verbose\n# -z: compress\n# --delete: remove files on dest that are gone on src\n\nrsync -avz --delete -e ssh \"$SRC\" \"$DEST\"\n```\n**3. Automate:**\nAdd this to your crontab."
+    },
+    "technical_tags": ["rsync", "ssh", "backups", "automation"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "AUTO_SCRIPT_204",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Bash Scripting",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "bash 5.1"
+    },
+    "interaction": {
+      "user_query": "How do I ensure my temporary files are deleted even if the user presses Ctrl+C while the script is running?",
+      "ai_response": "Use the `trap` command to catch signals and execute a cleanup function.\n\n```bash\n#!/bin/bash\nTEMP_FILE=$(mktemp)\n\ncleanup() {\n  echo \"Cleaning up...\"\n  rm -f \"$TEMP_FILE\"\n}\n\n# Trap EXIT (normal end) and INT (Ctrl+C)\ntrap cleanup EXIT INT\n\necho \"Working... (Press Ctrl+C to test)\"\nsleep 10\n```"
+    },
+    "technical_tags": ["bash", "trap", "signals", "cleanup"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "AUTO_SCRIPT_205",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Environment Variables",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "systemd 255"
+    },
+    "interaction": {
+      "user_query": "How do I pass secrets (like API keys) to a systemd service securely without hardcoding them in the unit file?",
+      "ai_response": "Use `EnvironmentFile` with restricted permissions or `LoadCredential` (newer systemd versions).\n\n**Method 1: EnvironmentFile**\n1. Create `/etc/my-service.env` with content `API_KEY=secret`.\n2. `chmod 600 /etc/my-service.env` (root only).\n3. In unit file:\n   ```ini\n   [Service]\n   EnvironmentFile=/etc/my-service.env\n   ```\n\n**Method 2: LoadCredential (Best Practice)**\n1. `systemd-creds encrypt --name=api-key plaintext-key -` (if using encryption) or just point to a file.\n2. Access in script via `$CREDENTIALS_DIRECTORY/api-key`."
+    },
+    "technical_tags": [
+      "systemd",
+      "security",
+      "environment-variables",
+      "secrets"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "AUTO_SCRIPT_301",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Comparison",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "N/A"
+    },
+    "interaction": {
+      "user_query": "I need to run a backup every 10 minutes. Should I use Cron or Systemd Timers? What's the trade-off?",
+      "ai_response": "**Systemd Timers are generally superior for modern systems.**\n\n**Systemd Pros:**\n* **Logging:** Output automatically goes to journald.\n* **Dependencies:** Can wait for network/mounts (`After=network.target`).\n* **Accuracy:** Randomized delays (`RandomizedDelaySec`) to prevent thundering herds.\n* **Management:** `systemctl list-timers` shows next run/last run.\n\n**Cron Pros:**\n* **Simplicity:** One line in a text file.\n* **Email:** Built-in MAILTO support (though often requires config).\n\n**Verdict:** Use Systemd for production/robustness; Cron for quick personal hacks."
+    },
+    "technical_tags": ["cron", "systemd", "comparison", "architecture"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "AUTO_SCRIPT_302",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Comparison",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "bash 5.2"
+    },
+    "interaction": {
+      "user_query": "I have a complex script parsing CSV logs. Should I stick with Bash/Awk or move to Python?",
+      "ai_response": "Switch to **Python** if:\n1.  **Complexity:** You need nested arrays, dictionaries, or JSON handling.\n2.  **Maintainability:** The bash script exceeds 100 lines.\n3.  **Libraries:** You need robust CSV parsing (Bash handles quoted CSVs poorly).\n\n**Stick with Bash/Awk if:**\n1.  **Speed:** You are simply filtering/piping text streams.\n2.  **Dependencies:** You cannot install Python libraries on the target machine.\n\n*Rule of Thumb: If you are using arrays in Bash, it's time for Python.*"
+    },
+    "technical_tags": ["bash", "python", "awk", "refactoring"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "AUTO_SCRIPT_303",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Comparison",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "anacron 2.3"
+    },
+    "interaction": {
+      "user_query": "My laptop isn't always on. Should I use standard cron or anacron for daily maintenance scripts?",
+      "ai_response": "Use **Anacron** (or Systemd Timers with `Persistent=true`).\n\n**Standard Cron:**\nIf the machine is off at 3 AM, the 3 AM job is skipped until the next day.\n\n**Anacron:**\nDesigned for non-24/7 systems. It checks if the job ran today; if not, it runs it immediately after boot (with a delay).\n\n*Note: Most modern Linux distros (Ubuntu/Debian) pre-configure standard cron to use anacron for daily/weekly/monthly folders.*"
+    },
+    "technical_tags": ["cron", "anacron", "scheduling", "laptop"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "AUTO_SCRIPT_304",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Comparison",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "N/A"
+    },
+    "interaction": {
+      "user_query": "What is the difference between `source script.sh` and `./script.sh`?",
+      "ai_response": "**`./script.sh` (Execute):**\nRuns in a **subshell**. Variables defined inside will vanish when the script finishes. It cannot change your current directory (`cd`).\n\n**`source script.sh` (or `. script.sh`):**\nRuns in the **current shell**. Variables set inside become available in your current terminal. `cd` commands inside will change your current terminal's directory.\n\n*Use `source` for loading environment variables; use execution for running tasks.*"
+    },
+    "technical_tags": ["bash", "sourcing", "subshell", "execution"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "AUTO_SCRIPT_305",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Comparison",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "zsh 5.9"
+    },
+    "interaction": {
+      "user_query": "I keep seeing `[[ ]]` vs `[ ]` in scripts. Which one should I use for automation scripts?",
+      "ai_response": "If you are writing for **Bash** or **Zsh** specifically, use **`[[ ... ]]`**.\n\n**Benefits of `[[ ]]`:**\n1.  **Safety:** No need to quote variables to prevent word splitting (e.g., `[[ -z $var ]]` works even if empty).\n2.  **Features:** Supports regex matching (`[[ $str =~ regex ]]`) and logical operators (`&&`, `||`) inside brackets.\n\n**Use `[ ... ]` only if:**\nYou need strict POSIX sh compatibility (e.g., running on minimal busybox or dash)."
+    },
+    "technical_tags": ["bash", "syntax", "posix", "best-practices"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "AUTO_SCRIPT_401",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Efficiency",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "xargs (GNU findutils)"
+    },
+    "interaction": {
+      "user_query": "I have thousands of images to convert using ImageMagick. A simple loop is taking forever. How can I speed this up?",
+      "ai_response": "Use `xargs` to run the command in parallel, utilizing multiple CPU cores.\n\n**Command:**\n```bash\nfind . -name \"*.png\" -print0 | xargs -0 -P $(nproc) -I {} convert \"{}\" \"{}.jpg\"\n```\n\n**Breakdown:**\n- `-print0 / -0`: Handles filenames with spaces correctly.\n- `-P $(nproc)`: Runs as many parallel processes as you have CPU cores.\n- `-I {}`: Placeholder for the filename."
+    },
+    "technical_tags": [
+      "xargs",
+      "parallel-processing",
+      "performance",
+      "image-processing"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "AUTO_SCRIPT_402",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Automation",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "curl 7.88"
+    },
+    "interaction": {
+      "user_query": "I need to check if a website is down from a script, but I want to avoid downloading the whole page content.",
+      "ai_response": "Use `curl` with the `--head` (or `-I`) flag to fetch only the headers, and check the HTTP status code.\n\n```bash\nresponse=$(curl -s -o /dev/null -w \"%{http_code}\" --head [https://example.com](https://example.com))\n\nif [[ \"$response\" == \"200\" ]]; then\n  echo \"Site is UP\"\nelse\n  echo \"Site is DOWN (Status: $response)\"\nfi\n```"
+    },
+    "technical_tags": ["curl", "monitoring", "http", "automation"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "AUTO_SCRIPT_403",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Efficiency",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "bash 5.2"
+    },
+    "interaction": {
+      "user_query": "I need to perform a search and replace on a configuration file string, but the string contains slashes (e.g., a file path), which breaks my sed command.",
+      "ai_response": "You don't have to use `/` as the delimiter in `sed`. You can use any character that isn't in your string, like `|` or `#`.\n\n**Broken:**\n`sed 's//var/www//opt/www/g' file` (Ambiguous)\n\n**Fixed:**\n```bash\nsed -i 's|/var/www|/opt/www|g' config.conf\n```\nThis avoids the \"leaning toothpick syndrome\" of escaping every slash (`\\/`)."
+    },
+    "technical_tags": ["sed", "regex", "text-processing", "efficiency"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "AUTO_SCRIPT_404",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Automation",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "bash 5.1"
+    },
+    "interaction": {
+      "user_query": "How can I automate a command that requires an interactive 'Yes/No' confirmation?",
+      "ai_response": "Use the `yes` command or the tool's specific non-interactive flag.\n\n**Option 1: Tool Flag (Preferred)**\nLook for `-y`, `--assume-yes`, or `--force`.\n`apt-get install -y package`\n\n**Option 2: The `yes` command**\nPipes 'y' continuously to the command.\n`yes | command_that_asks_confirmation`\n\n**Option 3: Specific input**\n`echo \"no\" | command` (to answer no)."
+    },
+    "technical_tags": [
+      "automation",
+      "interactive",
+      "pipes",
+      "input-redirection"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "AUTO_SCRIPT_405",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Efficiency",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "ssh"
+    },
+    "interaction": {
+      "user_query": "I have to run the same command on 10 different servers. SSHing into each one is tedious.",
+      "ai_response": "Use a `for` loop with SSH, or a tool like `pssh` (parallel ssh) or `Ansible`. For a quick bash solution:\n\n```bash\nSERVERS=\"host1 host2 host3\"\nfor host in $SERVERS; do\n  echo \"--- $host ---\"\n  ssh user@$host \"uptime\"\ndone\n```\n\n**Optimization:**\nUse SSH multiplexing (ControlMaster) in `~/.ssh/config` to reuse connections and speed up repeated connects."
+    },
+    "technical_tags": ["ssh", "loops", "remote-administration", "automation"],
+    "friction_type": "config_issue"
+  }
+]

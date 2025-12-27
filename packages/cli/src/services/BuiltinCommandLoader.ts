@@ -33,6 +33,8 @@ import { permissionsCommand } from '../ui/commands/permissionsCommand.js';
 import { privacyCommand } from '../ui/commands/privacyCommand.js';
 import { policiesCommand } from '../ui/commands/policiesCommand.js';
 import { profileCommand } from '../ui/commands/profileCommand.js';
+import { auditCommand } from '../ui/commands/auditCommand.js';
+import { recipesCommand } from '../ui/commands/recipesCommand.js';
 import { quitCommand } from '../ui/commands/quitCommand.js';
 import { restoreCommand } from '../ui/commands/restoreCommand.js';
 import { resumeCommand } from '../ui/commands/resumeCommand.js';
@@ -45,6 +47,7 @@ import { viewModeCommand } from '../ui/commands/viewModeCommand.js';
 import { setupGithubCommand } from '../ui/commands/setupGithubCommand.js';
 import { terminalSetupCommand } from '../ui/commands/terminalSetupCommand.js';
 import { sessionsCommand } from '../ui/commands/sessionsCommand.js';
+import { evaluateCommand } from '../ui/commands/evaluateCommand.js';
 
 /**
  * Loads the core, hard-coded slash commands that are an integral part
@@ -88,6 +91,8 @@ export class BuiltinCommandLoader implements ICommandLoader {
         ? [policiesCommand]
         : []),
       ...(isDevelopment ? [profileCommand] : []),
+      auditCommand,
+      recipesCommand(),
       quitCommand,
       restoreCommand(this.config),
       resumeCommand,
@@ -100,6 +105,7 @@ export class BuiltinCommandLoader implements ICommandLoader {
       viewModeCommand,
       setupGithubCommand,
       terminalSetupCommand,
+      evaluateCommand,
     ];
     handle?.end();
     return allDefinitions.filter((cmd): cmd is SlashCommand => cmd !== null);

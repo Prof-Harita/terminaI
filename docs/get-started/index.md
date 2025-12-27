@@ -58,7 +58,7 @@ To explore your configuration options, see
 
 If you want to override the system prompt (for example, to adopt the TerminaI
 operator persona), see
-[System Prompt Override (GEMINI_SYSTEM_MD)](../cli/system-prompt.md) and the
+[System Prompt Override (TERMINAI_SYSTEM_MD)](../cli/system-prompt.md) and the
 [TerminaI system prompt example](../termai-system.md).
 
 ## Use
@@ -73,4 +73,4 @@ To explore the power of Gemini CLI, see [Gemini CLI examples](./examples.md).
 
 - Find out more about [Gemini CLI's tools](../tools/index.md).
 - Review [Gemini CLI's commands](../cli/commands.md).
-- Learn how to [get started with Gemini 3](./gemini-3.md).
+- Learn how to [get started with Gemini 3](./gemini-2.0-flash-exp.md).

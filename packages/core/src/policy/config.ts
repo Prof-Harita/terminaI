@@ -10,6 +10,11 @@ import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Storage } from '../config/storage.js';
 import {
+  type BrainAuthority,
+  compareBrainAuthority,
+  isBrainAuthority,
+} from '../config/brainAuthority.js';
+import {
   type PolicyEngineConfig,
   PolicyDecision,
   type PolicyRule,
@@ -237,6 +242,98 @@ export async function createPolicyEngineConfig(
     checkers,
     defaultDecision: PolicyDecision.ASK_USER,
   };
+}
+
+export async function resolvePolicyBrainAuthority(
+  defaultPoliciesDir?: string,
+): Promise<BrainAuthority | undefined> {
+  const policyDirs = getPolicyDirectories(defaultPoliciesDir);
+  let effectiveAuthority: BrainAuthority | undefined;
+
+  const formatTier = (tier: number): string => {
+    if (tier === ADMIN_POLICY_TIER) return 'ADMIN';
+    if (tier === USER_POLICY_TIER) return 'USER';
+    return 'DEFAULT';
+  };
+
+  for (const dir of policyDirs) {
+    const tier = getPolicyTier(dir, defaultPoliciesDir);
+    let filesToLoad: string[];
+    try {
+      const dirEntries = await fs.readdir(dir, { withFileTypes: true });
+      filesToLoad = dirEntries
+        .filter((entry) => entry.isFile() && entry.name.endsWith('.toml'))
+        .map((entry) => entry.name);
+    } catch (e) {
+      const error = e as NodeJS.ErrnoException;
+      if (error.code === 'ENOENT') {
+        continue;
+      }
+      coreEvents.emitFeedback(
+        'error',
+        `[${formatTier(tier)}] Failed to read policy directory ${dir}`,
+        error,
+      );
+      continue;
+    }
+
+    for (const file of filesToLoad) {
+      const filePath = path.join(dir, file);
+      try {
+        const fileContent = await fs.readFile(filePath, 'utf-8');
+        const parsed = toml.parse(fileContent) as Record<string, unknown>;
+        const brainConfig = parsed['brain'];
+        if (brainConfig !== undefined) {
+          if (
+            typeof brainConfig !== 'object' ||
+            brainConfig === null ||
+            Array.isArray(brainConfig)
+          ) {
+            coreEvents.emitFeedback(
+              'error',
+              `[${formatTier(
+                tier,
+              )}] Invalid brain section in ${filePath}. Expected [brain] table.`,
+            );
+            continue;
+          }
+
+          const authority = (brainConfig as Record<string, unknown>)[
+            'authority'
+          ];
+          if (authority === undefined) {
+            continue;
+          }
+          if (!isBrainAuthority(authority)) {
+            coreEvents.emitFeedback(
+              'error',
+              `[${formatTier(
+                tier,
+              )}] Invalid brain.authority in ${filePath}. Expected advisory | escalate-only | governing.`,
+            );
+            continue;
+          }
+          if (
+            !effectiveAuthority ||
+            compareBrainAuthority(authority, effectiveAuthority) > 0
+          ) {
+            effectiveAuthority = authority;
+          }
+        }
+      } catch (e) {
+        const error = e as NodeJS.ErrnoException;
+        if (error.code !== 'ENOENT') {
+          coreEvents.emitFeedback(
+            'error',
+            `[${formatTier(tier)}] Failed to parse governance in ${filePath}`,
+            error,
+          );
+        }
+      }
+    }
+  }
+
+  return effectiveAuthority;
 }
 
 interface TomlRule {

@@ -1,0 +1,1747 @@
+[
+  {
+    "id": "WEB_RES_001",
+    "bucket": "Web & Research",
+    "sub_category": "Browser Performance",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Firefox 122"
+    },
+    "interaction": {
+      "user_query": "Why is my CPU at 100% when watching YouTube? My laptop gets super hot and the fans are loud.",
+      "ai_response": "Your browser is using software video decoding instead of your GPU. Enable hardware acceleration:\n\n**For Firefox:**\n1. Go to `about:config`\n2. Search for `media.ffmpeg.vaapi.enabled` and set to `true`\n3. Search for `media.rdd-vpx.enabled` and set to `false`\n4. Restart Firefox\n\n**Install VA-API drivers:**\n```bash\nsudo apt install va-driver-all\n```\n\n**Verify it's working:**\n```bash\nvainfo\n```\nYou should see your GPU listed. CPU usage should drop significantly during video playback."
+    },
+    "technical_tags": [
+      "hardware-acceleration",
+      "va-api",
+      "firefox",
+      "performance"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_002",
+    "bucket": "Web & Research",
+    "sub_category": "Installation",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Google Chrome Stable"
+    },
+    "interaction": {
+      "user_query": "How do I install Google Chrome on Ubuntu? I can't find it in the Software Center, only Chromium.",
+      "ai_response": "Google Chrome is not in the default Ubuntu repositories. You need to download the `.deb` file from Google.\n\n**Steps:**\n1. Download the package:\n```bash\nwget [https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb](https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb)\n```\n2. Install it using `apt`:\n```bash\nsudo apt install ./google-chrome-stable_current_amd64.deb\n```\nThis command will handle any necessary dependencies automatically."
+    },
+    "technical_tags": ["chrome", "installation", "deb-package", "apt"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_003",
+    "bucket": "Web & Research",
+    "sub_category": "Video Playback",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox 124"
+    },
+    "interaction": {
+      "user_query": "Netflix keeps giving me an error saying DRM is not supported. I just installed Fedora.",
+      "ai_response": "Fedora's Firefox installation sometimes requires enabling DRM content manually.\n\n1. Open Firefox Settings (`about:preferences`).\n2. Scroll down to **Digital Rights Management (DRM) Content**.\n3. Check the box **Play DRM-controlled content**.\n\nIf it still fails, ensure `libavcodec` is installed via RPM Fusion:\n```bash\nsudo dnf install ffmpeg-libs\n```"
+    },
+    "technical_tags": ["drm", "netflix", "firefox", "fedora", "widevine"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_004",
+    "bucket": "Web & Research",
+    "sub_category": "Browser Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Brave Browser"
+    },
+    "interaction": {
+      "user_query": "How do I sync my bookmarks from Brave on Windows to Brave on Linux Mint?",
+      "ai_response": "Brave uses a Sync Chain rather than a login account.\n\n1. **On your Windows PC:** Go to Menu → Settings → Sync. Select **Start a new Sync Chain**. Choose **Computer**. Copy the Sync Code words.\n2. **On Linux Mint:** Go to Menu → Settings → Sync. Select **I have a Sync Code**. Paste the code words there.\n\nYour bookmarks and settings will begin syncing immediately."
+    },
+    "technical_tags": ["brave", "sync", "migration", "bookmarks"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_005",
+    "bucket": "Web & Research",
+    "sub_category": "Rendering Issues",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Chromium"
+    },
+    "interaction": {
+      "user_query": "Screen tearing in Chromium when scrolling pages. Using NVIDIA proprietary drivers.",
+      "ai_response": "This is often a synchronization issue with NVIDIA drivers and the browser compositor.\n\n**Try this launch flag:**\nLaunch Chromium with `--disable-gpu-vsync` or `--use-gl=desktop`.\n\n**Permanent Fix (NVIDIA Settings):**\n1. Open **NVIDIA X Server Settings**.\n2. Go to **X Server Display Configuration** -> **Advanced**.\n3. Enable **Force Composition Pipeline**.\n4. Save to X Configuration file."
+    },
+    "technical_tags": ["nvidia", "screen-tearing", "chromium", "x11"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_006",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Firefox ESR"
+    },
+    "interaction": {
+      "user_query": "How do I stop websites from tracking me on Firefox without breaking everything?",
+      "ai_response": "Firefox has built-in Enhanced Tracking Protection.\n\n1. Click the shield icon in the address bar.\n2. Go to **Protection Settings**.\n3. Set it to **Strict**.\n\n**Note:** If a site breaks, simply click the shield icon and toggle off protection for that specific site. You can also install the **uBlock Origin** extension for robust, low-overhead ad and tracker blocking."
+    },
+    "technical_tags": ["privacy", "tracking", "firefox-esr", "ublock-origin"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_007",
+    "bucket": "Web & Research",
+    "sub_category": "Updates",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox Snap"
+    },
+    "interaction": {
+      "user_query": "Firefox Snap is too slow to open. How do I switch to the .deb version?",
+      "ai_response": "You can replace the Snap version with the official Mozilla PPA version.\n\n1. **Remove the Snap:**\n```bash\nsudo snap remove firefox\n```\n2. **Add the PPA:**\n```bash\nsudo add-apt-repository ppa:mozillateam/ppa\n```\n3. **Prioritize the PPA** (Create `/etc/apt/preferences.d/mozilla-firefox`):\n```text\nPackage: *\nPin: release o=LP-PPA-mozillateam\nPin-Priority: 1001\n```\n4. **Install:**\n```bash\nsudo apt update && sudo apt install firefox\n```"
+    },
+    "technical_tags": ["snap", "firefox", "apt", "performance"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_008",
+    "bucket": "Web & Research",
+    "sub_category": "Audio",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Manjaro",
+      "app_version": "Vivaldi"
+    },
+    "interaction": {
+      "user_query": "No sound coming from Vivaldi, but other apps work fine.",
+      "ai_response": "Check if Vivaldi is muted in the PulseAudio/PipeWire mixer.\n\n1. Open your terminal and run `pavucontrol` (install it if missing).\n2. Go to the **Playback** tab.\n3. Find Vivaldi and ensure the volume slider is up and the 'mute' icon isn't active.\n\nAlso, check Vivaldi tab muting: right-click the tab and ensure **Unmute Tab** isn't an option."
+    },
+    "technical_tags": ["audio", "pipewire", "vivaldi", "troubleshooting"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_009",
+    "bucket": "Web & Research",
+    "sub_category": "Extensions",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "I can't install extensions in Chrome. It says 'Download interrupted'.",
+      "ai_response": "This often happens if the download folder permissions are incorrect or if disk space is full.\n\n1. **Check Disk Space:**\n```bash\ndf -h\n```\n2. **Fix Downloads Folder Permissions:**\n```bash\nchown -R $USER:$USER ~/Downloads\n```\n3. **Clear Cache:** Go to Chrome Settings -> Privacy and security -> Clear browsing data -> Cached images and files."
+    },
+    "technical_tags": ["extensions", "permissions", "chrome", "storage"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_010",
+    "bucket": "Web & Research",
+    "sub_category": "Fonts",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "All Browsers"
+    },
+    "interaction": {
+      "user_query": "Web pages look ugly. Fonts are jagged and thin compared to Windows.",
+      "ai_response": "Arch doesn't pre-configure font rendering like Ubuntu does. You need to install good fonts and enable font configuration.\n\n1. **Install Fonts:**\n```bash\nsudo pacman -S ttf-dejavu ttf-liberation noto-fonts\n```\n2. **Create a local config** at `~/.config/fontconfig/fonts.conf` with anti-aliasing and hinting enabled.\n3. **Or try a preset:**\n```bash\nsudo pacman -S fontconfig\n```\nRestart your browser to apply changes."
+    },
+    "technical_tags": ["fonts", "rendering", "arch", "ui"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_011",
+    "bucket": "Web & Research",
+    "sub_category": "Hardware Acceleration",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Chromium"
+    },
+    "interaction": {
+      "user_query": "How do I force VA-API on Chromium with Intel graphics? `chrome://gpu` says Video Decode: Software only.",
+      "ai_response": "Chromium on Fedora needs specific flags and drivers.\n\n1. **Install Intel Media Driver:**\n```bash\nsudo dnf install intel-media-driver\n```\n2. **Launch Chromium with flags:**\n```bash\nchromium --enable-features=VaapiVideoDecodeLinuxGL --use-gl=angle --use-angle=gl --enable-gpu-rasterization\n```\n3. Check `chrome://gpu` again. If it works, add these flags to your `chromium.desktop` file or `~/.config/chromium-flags.conf`."
+    },
+    "technical_tags": ["intel", "va-api", "chromium", "fedora"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_012",
+    "bucket": "Web & Research",
+    "sub_category": "Startup",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Firefox opens with the previous session tabs every time. I want a blank page.",
+      "ai_response": "You can change this in the settings.\n\n1. Open Menu -> **Settings** -> **General**.\n2. Under **Startup**, uncheck the box that says **Open previous windows and tabs**.\n3. Restart Firefox to confirm it opens your Home page instead."
+    },
+    "technical_tags": [
+      "configuration",
+      "firefox",
+      "startup",
+      "session-restore"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_013",
+    "bucket": "Web & Research",
+    "sub_category": "Wayland",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "Chrome is blurry on Wayland (fractional scaling 125%).",
+      "ai_response": "Chrome runs via XWayland by default, which can cause blurriness with scaling. Force it to run natively on Wayland.\n\n1. Go to `chrome://flags`\n2. Search for **Preferred Ozone platform**.\n3. Change it from 'Default' to **Wayland**.\n4. Relaunch Chrome."
+    },
+    "technical_tags": ["wayland", "scaling", "chrome", "ozone"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_014",
+    "bucket": "Web & Research",
+    "sub_category": "Search Engines",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I change the default search engine from Google to DuckDuckGo in Firefox?",
+      "ai_response": "1. Go to Firefox Settings -> **Search**.\n2. Under **Default Search Engine**, use the dropdown menu to select **DuckDuckGo**.\n3. You can also uncheck other search engines in the 'Search Shortcuts' list below to clean up your search bar."
+    },
+    "technical_tags": ["search-engine", "firefox", "configuration", "privacy"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_015",
+    "bucket": "Web & Research",
+    "sub_category": "Network",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "All Browsers"
+    },
+    "interaction": {
+      "user_query": "Browsers are loading pages very slowly, but `ping google.com` in terminal is fast.",
+      "ai_response": "This is often a DNS resolution issue in the browser or IPv6 timeout.\n\n1. **Disable IPv6 temporarily** to test:\n```bash\nsudo sysctl -w net.ipv6.conf.all.disable_ipv6=1\n```\n2. If speed improves, configure your network settings to ignore IPv6 or fix your router settings.\n3. Alternatively, enable **DNS over HTTPS** in your browser settings to bypass system DNS."
+    },
+    "technical_tags": ["dns", "ipv6", "networking", "latency"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_016",
+    "bucket": "Web & Research",
+    "sub_category": "Browser Profile",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Firefox says 'Profile Missing' after I tried to move my home folder.",
+      "ai_response": "Your `profiles.ini` file likely points to a path that no longer exists.\n\n1. Open a terminal and run:\n```bash\nfirefox -P\n```\n2. This opens the Profile Manager.\n3. Create a new profile or delete the invalid entry and point it to your existing profile folder (usually inside `~/.mozilla/firefox/`)."
+    },
+    "technical_tags": [
+      "profile-manager",
+      "firefox",
+      "troubleshooting",
+      "file-system"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_017",
+    "bucket": "Web & Research",
+    "sub_category": "Shortcuts",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "I accidentally closed a tab. What is the shortcut to reopen it?",
+      "ai_response": "The shortcut to reopen the last closed tab is **Ctrl + Shift + T**.\nYou can press it multiple times to reopen several tabs in the order they were closed."
+    },
+    "technical_tags": ["shortcuts", "productivity", "chrome", "tabs"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_018",
+    "bucket": "Web & Research",
+    "sub_category": "Appearance",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "KDE Neon",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Firefox has a huge title bar. How do I remove it so it looks like Chrome?",
+      "ai_response": "1. Open Firefox Menu -> **More Tools** -> **Customize Toolbar**.\n2. In the bottom left corner, uncheck the box **Title Bar**.\n3. Click **Done**.\n\nThis will merge the tab bar with the window controls, saving vertical space."
+    },
+    "technical_tags": ["ui", "customization", "firefox", "kde"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_019",
+    "bucket": "Web & Research",
+    "sub_category": "Dark Mode",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "Some websites are still white even though my system theme is dark.",
+      "ai_response": "Websites must support dark mode for the system setting to apply. To force it everywhere:\n\n1. Go to `chrome://flags`\n2. Search for **Auto Dark Mode for Web Contents**.\n3. Set it to **Enabled**.\n4. Relaunch Chrome.\n\nNote: This might invert colors on some images, but generally works well for text."
+    },
+    "technical_tags": ["dark-mode", "chrome-flags", "accessibility", "ui"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_020",
+    "bucket": "Web & Research",
+    "sub_category": "Performance",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Firefox uses too much RAM. Is there a way to limit it?",
+      "ai_response": "Firefox handles RAM automatically, but you can optimize it:\n\n1. **Enable Auto Tab Discard:** Go to `about:config`, set `browser.tabs.unloadOnLowMemory` to `true` (default).\n2. **Install an extension:** 'Auto Tab Discard' aggressively suspends inactive tabs.\n3. **Reduce Content Processes:** Go to Settings -> General -> Performance -> Uncheck 'Use recommended settings' -> Limit 'Content process limit' (e.g., to 2 or 4), though this may slow down browsing slightly."
+    },
+    "technical_tags": ["ram-usage", "memory", "firefox", "optimization"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_021",
+    "bucket": "Web & Research",
+    "sub_category": "Hardware Acceleration",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I have an NVIDIA card. How do I get hardware video decoding in Firefox?",
+      "ai_response": "NVIDIA proprietary drivers don't support VA-API directly. You need the `nvidia-vaapi-driver` translation layer.\n\n1. **Install the driver:**\n```bash\nsudo pacman -S libva-nvidia-driver\n```\n2. **Set Environment Variable:**\nAdd `export MOZ_DISABLE_RDD_SANDBOX=1` and `export LIBVA_DRIVER_NAME=nvidia` to your profile (`~/.bash_profile` or `/etc/environment`).\n3. **Config Firefox:** In `about:config`, set `media.ffmpeg.vaapi.enabled` to `true`.\n4. **Verify:** Run `nvidia-smi` while playing a video to see if Firefox process is using GPU."
+    },
+    "technical_tags": ["nvidia", "va-api", "firefox", "arch"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_022",
+    "bucket": "Web & Research",
+    "sub_category": "Installation",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Microsoft Edge"
+    },
+    "interaction": {
+      "user_query": "Is it possible to install Microsoft Edge on Debian? I need it for work sites.",
+      "ai_response": "Yes, Microsoft provides official builds for Linux.\n\n1. Download the `.deb` file from the [Microsoft Edge Insider](https://www.microsoftedgeinsider.com/en-us/download) or official site.\n2. Install via terminal:\n```bash\nsudo apt install ./microsoft-edge-stable_*.deb\n```\n3. This will also add the Microsoft repository to your system for future updates."
+    },
+    "technical_tags": ["edge", "installation", "compatibility", "debian"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_023",
+    "bucket": "Web & Research",
+    "sub_category": "Errors",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "Chrome keeps showing 'Aw, Snap!' on specific pages.",
+      "ai_response": "This is a generic crash error. Try these fixes:\n\n1. **Incognito Mode:** If it works there, a bad extension is the cause. Disable them one by one.\n2. **Clear Cache:** Settings -> Privacy -> Clear Browsing Data.\n3. **Disable Hardware Acceleration:** Go to Settings -> System -> Toggle off 'Use graphics acceleration when available'. If this fixes it, your GPU drivers might be outdated or unstable."
+    },
+    "technical_tags": ["troubleshooting", "crash", "chrome", "aw-snap"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_024",
+    "bucket": "Web & Research",
+    "sub_category": "Printing",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I can't print from Firefox. The printer dialog opens but nothing happens when I click Print.",
+      "ai_response": "This happens if the browser cannot communicate with CUPS.\n\n1. Ensure the printer works in other apps (e.g., LibreOffice).\n2. If using Flatpak Firefox, check permissions:\n```bash\nflatpak permission-show org.mozilla.firefox\n```\nEnsure it has access to cups-control.\n3. As a workaround, select **Print to File (PDF)**, save the PDF, and print it using the system Document Viewer."
+    },
+    "technical_tags": ["printing", "cups", "firefox", "flatpak"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_025",
+    "bucket": "Web & Research",
+    "sub_category": "File Associations",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "Chrome tries to download PDF files instead of opening them.",
+      "ai_response": "1. Open Chrome Settings.\n2. Go to **Privacy and security** -> **Site Settings**.\n3. Scroll down and click on **Additional content settings** -> **PDF documents**.\n4. Select **Open PDFs in Chrome** (make sure 'Download PDFs' is not selected)."
+    },
+    "technical_tags": ["pdf", "file-handling", "chrome", "configuration"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_026",
+    "bucket": "Web & Research",
+    "sub_category": "Touchpad",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Pinch to zoom isn't working on my laptop touchpad in Firefox.",
+      "ai_response": "On Linux, this often requires using the Wayland protocol directly.\n\n1. Ensure you are logged into a Wayland session (check on login screen gear icon).\n2. Open Firefox with the Wayland backend:\n```bash\nMOZ_ENABLE_WAYLAND=1 firefox\n```\n3. If that works, add `export MOZ_ENABLE_WAYLAND=1` to your `~/.profile` to make it permanent."
+    },
+    "technical_tags": ["touchpad", "gestures", "wayland", "firefox"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_027",
+    "bucket": "Web & Research",
+    "sub_category": "VPN",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "All",
+      "app_version": "Opera"
+    },
+    "interaction": {
+      "user_query": "How do I turn on the free VPN in Opera?",
+      "ai_response": "1. Open Opera **Settings** (Alt+P).\n2. Click **Advanced** -> **Features**.\n3. Toggle the **Enable VPN** switch.\n4. A VPN badge will appear in the address bar. Click it to turn it on/off or change the virtual location."
+    },
+    "technical_tags": ["vpn", "opera", "privacy", "features"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_028",
+    "bucket": "Web & Research",
+    "sub_category": "Updates",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "Chrome says 'Update Failed (Error: 12)' when I check 'About Google Chrome'.",
+      "ai_response": "On Linux, Chrome updates are handled by the system package manager, not the browser itself.\n\nRun the system updater:\n```bash\nsudo apt update && sudo apt upgrade\n```\nRestart Chrome after the update completes."
+    },
+    "technical_tags": ["updates", "chrome", "apt", "error-codes"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_029",
+    "bucket": "Web & Research",
+    "sub_category": "Autofill",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Chromium"
+    },
+    "interaction": {
+      "user_query": "Chromium asks for a keyring password every time I open it. It's annoying.",
+      "ai_response": "Chromium uses the system keyring (GNOME Keyring or KWallet) to encrypt saved passwords.\n\n**Fix:**\nEnsure your keyring password matches your login password. The keyring should unlock automatically on login.\n\n**Workaround (Insecure):**\nLaunch Chromium with `--password-store=basic` to save passwords in plain text without the keyring prompt."
+    },
+    "technical_tags": ["keyring", "passwords", "chromium", "arch"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_030",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I completely disable WebRTC to prevent IP leaks?",
+      "ai_response": "1. Type `about:config` in the address bar and accept the risk.\n2. Search for `media.peerconnection.enabled`.\n3. Double-click to set it to `false`.\n\n**Note:** This will break video conferencing apps like Google Meet or Zoom in the browser."
+    },
+    "technical_tags": ["webrtc", "privacy", "firefox", "ip-leak"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_031",
+    "bucket": "Web & Research",
+    "sub_category": "Compatibility",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "My banking site says my browser is unsupported, but I'm on the latest Firefox.",
+      "ai_response": "Some sites check the 'User Agent' string and incorrectly block Linux.\n\n1. Install an extension like **User-Agent Switcher**.\n2. Set it to mimic 'Firefox on Windows' or 'Chrome on Windows'.\n3. Reload the banking page.\n\nUsually, the site works fine once it thinks you are on Windows."
+    },
+    "technical_tags": ["user-agent", "compatibility", "banking", "spoofing"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_032",
+    "bucket": "Web & Research",
+    "sub_category": "Shortcuts",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Manjaro",
+      "app_version": "Vivaldi"
+    },
+    "interaction": {
+      "user_query": "I want to set F1 to switch tabs in Vivaldi, but it opens Help.",
+      "ai_response": "Vivaldi allows full keyboard customization.\n\n1. Go to Settings -> **Keyboard**.\n2. Find **Window** or **Tab** commands.\n3. Locate **Next Tab**.\n4. Click the edit icon, press **F1**.\n5. If F1 is bound to Help, search for the **Help** command and remove the F1 binding first."
+    },
+    "technical_tags": ["shortcuts", "customization", "vivaldi", "keyboard"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_033",
+    "bucket": "Web & Research",
+    "sub_category": "Video Playback",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Firefox ESR"
+    },
+    "interaction": {
+      "user_query": "YouTube videos stop buffering after a few seconds. I have to refresh to continue.",
+      "ai_response": "This can be caused by HTTP/3 (QUIC) issues on some networks.\n\n1. Go to `about:config`.\n2. Search for `network.http.http3.enable`.\n3. Set it to `false`.\n4. Restart Firefox and check if playback is stable."
+    },
+    "technical_tags": ["youtube", "networking", "quic", "troubleshooting"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_034",
+    "bucket": "Web & Research",
+    "sub_category": "Installation",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Tor Browser"
+    },
+    "interaction": {
+      "user_query": "How do I safely install Tor Browser? Is it in the Ubuntu store?",
+      "ai_response": "While there is a package in the repo, it's safer to use the Tor Browser Launcher which verifies signatures.\n\n1. Install the launcher:\n```bash\nsudo apt install torbrowser-launcher\n```\n2. Run **Tor Browser Launcher** from your menu.\n3. It will download the latest verified binary from the Tor Project and install it."
+    },
+    "technical_tags": ["tor", "privacy", "installation", "security"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_035",
+    "bucket": "Web & Research",
+    "sub_category": "Performance",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I move my Firefox cache to RAM to save SSD writes?",
+      "ai_response": "1. Type `about:config` in the address bar.\n2. Search for `browser.cache.disk.enable` and set it to `false`.\n3. Search for `browser.cache.memory.enable` and ensure it is `true`.\n4. Create a new integer preference named `browser.cache.memory.capacity`.\n   - Set value to `-1` (auto-detect) or a specific amount in KB (e.g., `1048576` for 1GB).\n\nThis forces Firefox to use RAM for caching instead of the disk."
+    },
+    "technical_tags": ["ssd-optimization", "ram-disk", "firefox", "tweaks"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_036",
+    "bucket": "Web & Research",
+    "sub_category": "Interface",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "The text in Firefox is too small. I have a 4K monitor.",
+      "ai_response": "You can scale the browser interface independently of the web content.\n\n1. Go to `about:config`.\n2. Search for `layout.css.devPixelsPerPx`.\n3. Default is `-1.0`. Change it to `1.5` (for 150% scaling) or `2.0` (for 200%).\n4. Adjust until it looks comfortable."
+    },
+    "technical_tags": ["hidpi", "scaling", "firefox", "accessibility"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_037",
+    "bucket": "Web & Research",
+    "sub_category": "Downloads",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "Chrome blocks my download saying 'This file is dangerous'. It's just a python script I wrote.",
+      "ai_response": "Chrome's Safe Browsing can be overzealous with script files.\n\n1. Go to Downloads (Ctrl+J).\n2. Click **Keep dangerous file** (you might have to click 'Keep' multiple times).\n3. If you do this often, you can lower protection in Settings -> Privacy and security -> Security -> select **No protection** (Not recommended for general browsing)."
+    },
+    "technical_tags": ["security", "downloads", "chrome", "safe-browsing"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_038",
+    "bucket": "Web & Research",
+    "sub_category": "Bookmarks",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I export my bookmarks to an HTML file for backup?",
+      "ai_response": "1. Press **Ctrl + Shift + O** to open the Library window.\n2. Click the **Import and Backup** button in the toolbar.\n3. Select **Export Bookmarks to HTML...**.\n4. Save the file to your desired location."
+    },
+    "technical_tags": ["backup", "bookmarks", "firefox", "export"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_039",
+    "bucket": "Web & Research",
+    "sub_category": "Gaming",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "Browser games run slow. How do I enable WebGL?",
+      "ai_response": "WebGL should be on by default, but it might be blacklisted.\n\n1. Check `chrome://gpu`. Look for 'WebGL: Hardware accelerated'.\n2. If disabled, enable **Override software rendering list** in `chrome://flags`.\n3. Ensure your GPU drivers are installed:\n```bash\nsudo ubuntu-drivers autoinstall\n```"
+    },
+    "technical_tags": ["webgl", "gaming", "chrome", "drivers"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_040",
+    "bucket": "Web & Research",
+    "sub_category": "Automation",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I want to run a headless Firefox to take screenshots of websites via command line.",
+      "ai_response": "You can use Firefox's headless mode.\n\n```bash\nfirefox --headless --screenshot [https://example.com](https://example.com)\n```\n\nOptions:\n- `--screenshot image.png`: specify filename\n- `--window-size 1920,1080`: set resolution\n\nThe image will be saved in your current directory."
+    },
+    "technical_tags": ["headless", "automation", "firefox", "cli"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_041",
+    "bucket": "Web & Research",
+    "sub_category": "Translation",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Does Firefox have a built-in translator like Chrome? I don't want to install extensions.",
+      "ai_response": "Yes, modern Firefox has a local offline translation feature.\n\n1. Visit a page in a foreign language.\n2. Look for the **Translation icon** (a letter 'A' with a symbol) in the address bar.\n3. Click **Translate**. It might ask to download the language pack first, which improves privacy by not sending text to the cloud."
+    },
+    "technical_tags": ["translation", "firefox", "features", "privacy"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_042",
+    "bucket": "Web & Research",
+    "sub_category": "Crashes",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Firefox crashes immediately upon opening. Started after update.",
+      "ai_response": "This could be a corrupted profile or a theme issue.\n\n1. **Safe Mode:** Run `firefox --safe-mode` in terminal. If it opens, an extension or theme is the culprit.\n2. **Refresh Firefox:** In Safe Mode, select **Refresh Firefox** when prompted.\n3. **Check Logs:** Run `firefox` in terminal and watch the output for segmentation faults."
+    },
+    "technical_tags": ["crash", "troubleshooting", "firefox", "arch"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_043",
+    "bucket": "Web & Research",
+    "sub_category": "Installation",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Chromium"
+    },
+    "interaction": {
+      "user_query": "I want to install Chromium without Snap. Snap is too slow.",
+      "ai_response": "Ubuntu defaults to the Snap version. To get the `.deb`:\n\n1. Add the specific PPA:\n```bash\nsudo add-apt-repository ppa:savoury1/chromium\n```\n2. Update and install:\n```bash\nsudo apt update\nsudo apt install chromium-browser\n```\n**Note:** Be careful with PPAs; ensure they are maintained."
+    },
+    "technical_tags": ["snap", "chromium", "ppa", "installation"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_044",
+    "bucket": "Web & Research",
+    "sub_category": "Notifications",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "KDE Neon",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "I keep getting spam notifications from a news site. How do I stop them?",
+      "ai_response": "1. Go to Chrome Settings -> **Privacy and security** -> **Site Settings**.\n2. Click on **Notifications**.\n3. Under 'Allowed to send notifications', find the news site.\n4. Click the three dots next to it and select **Remove** or **Block**."
+    },
+    "technical_tags": ["notifications", "privacy", "chrome", "spam"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_045",
+    "bucket": "Web & Research",
+    "sub_category": "Cookies",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I make Firefox delete all cookies when I close it, but keep my history?",
+      "ai_response": "1. Go to Settings -> **Privacy & Security**.\n2. Under **Cookies and Site Data**, check **Delete cookies and site data when Firefox is closed**.\n3. Ensure **History** settings are set to 'Remember history' or custom settings where 'Clear history when Firefox closes' is NOT checking browsing history."
+    },
+    "technical_tags": ["cookies", "privacy", "firefox", "cleanup"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_046",
+    "bucket": "Web & Research",
+    "sub_category": "Shortcuts",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "All Browsers"
+    },
+    "interaction": {
+      "user_query": "What is the shortcut to jump to the address bar without using the mouse?",
+      "ai_response": "The standard shortcut for most Linux browsers (Firefox, Chrome, Brave) is:\n\n**Ctrl + L**\n\nAlternatively, **Alt + D** also works in many browsers."
+    },
+    "technical_tags": ["shortcuts", "productivity", "navigation", "ui"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_047",
+    "bucket": "Web & Research",
+    "sub_category": "Hardware Acceleration",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Manjaro",
+      "app_version": "Brave"
+    },
+    "interaction": {
+      "user_query": "Brave is flickering green when watching videos.",
+      "ai_response": "Green flickering usually indicates a hardware acceleration glitch with the GPU driver.\n\n**Quick Fix:**\nGo to Settings -> System -> Toggle off **Use graphics acceleration when available**.\n\n**Better Fix:**\nKeep acceleration on but update your graphics drivers (`sudo pacman -Syu`) and try changing the ANGLE backend in `brave://flags` (Search for 'Choose ANGLE graphics backend' -> Try OpenGL)."
+    },
+    "technical_tags": ["video-glitch", "brave", "gpu", "troubleshooting"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_048",
+    "bucket": "Web & Research",
+    "sub_category": "Search",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I add a custom search engine? I want to search Arch Wiki from the address bar.",
+      "ai_response": "1. Visit the site (e.g., https://wiki.archlinux.org).\n2. Right-click the search bar on the page.\n3. Select **Add 'ArchWiki' to Search Engine** (if supported).\n\n**Manual Method:**\n1. Settings -> Search -> Shortcuts.\n2. Add `https://wiki.archlinux.org/index.php?search=%s`.\n3. Assign a keyword like `@arch`."
+    },
+    "technical_tags": [
+      "search-engine",
+      "customization",
+      "firefox",
+      "productivity"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_049",
+    "bucket": "Web & Research",
+    "sub_category": "Storage",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "Where does Chrome store the user profile data on Linux?",
+      "ai_response": "Chrome stores user data in the `.config` directory of your home folder.\n\n**Path:**\n`~/.config/google-chrome/`\n\nThe 'Default' profile is usually in `~/.config/google-chrome/Default`."
+    },
+    "technical_tags": [
+      "file-system",
+      "chrome",
+      "backup",
+      "directory-structure"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_050",
+    "bucket": "Web & Research",
+    "sub_category": "Network",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I'm behind a proxy at work. How do I configure Firefox to use it?",
+      "ai_response": "1. Open Settings -> General.\n2. Scroll to bottom -> **Network Settings** -> Click **Settings**.\n3. Select **Manual proxy configuration**.\n4. Enter your HTTP/HTTPS proxy IP and port provided by your IT admin.\n5. If authentication is needed, Firefox will prompt you when you browse."
+    },
+    "technical_tags": ["proxy", "networking", "firefox", "enterprise"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_051",
+    "bucket": "Web & Research",
+    "sub_category": "Tabs",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "How do I group tabs in Chrome? I have too many open.",
+      "ai_response": "1. Right-click on a tab.\n2. Select **Add tab to new group**.\n3. Name the group and pick a color.\n4. You can drag other tabs into this group and click the group name to collapse/expand them."
+    },
+    "technical_tags": ["tab-groups", "productivity", "chrome", "organization"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_052",
+    "bucket": "Web & Research",
+    "sub_category": "Installation",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Google Chrome"
+    },
+    "interaction": {
+      "user_query": "Installing google-chrome from AUR. It fails verification.",
+      "ai_response": "This happens if the PGP keys are missing or the package is outdated.\n\n1. Import the GPG key manually:\n```bash\ngpg --recv-keys <KEY_ID>\n```\n(Look at the AUR comments for the current key ID).\n2. Clean build cache:\n```bash\nyay -Scc\n```\n3. Try installing again:\n```bash\nyay -S google-chrome\n```"
+    },
+    "technical_tags": ["aur", "installation", "chrome", "gpg-keys"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_053",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LibreWolf"
+    },
+    "interaction": {
+      "user_query": "Why does LibreWolf not save my passwords?",
+      "ai_response": "LibreWolf disables password saving by default for security.\n\n1. Go to Settings -> **Privacy & Security**.\n2. under **Logins and Passwords**, check **Ask to save logins and passwords for websites**.\n3. Note: LibreWolf clears history/cookies on close by default too; you may need to adjust that if you want persistence."
+    },
+    "technical_tags": ["librewolf", "privacy", "passwords", "configuration"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_054",
+    "bucket": "Web & Research",
+    "sub_category": "Hardware",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Touchscreen scrolling is jerky in Firefox.",
+      "ai_response": "1. Go to `about:config`.\n2. Search for `dom.w3c_touch_events.enabled`.\n3. Set value to `1` (Enabled).\n4. Search for `apz.overscroll.enabled` and set to `true`.\n5. Restart Firefox.\n\nEnsure you are using the Wayland session for best touch support."
+    },
+    "technical_tags": ["touchscreen", "firefox", "scrolling", "config"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_055",
+    "bucket": "Web & Research",
+    "sub_category": "Media",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "How do I cast a tab to my Chromecast from Linux?",
+      "ai_response": "1. Click the three-dot menu in the top right.\n2. Select **Save and Share** -> **Cast...**\n3. Select your Chromecast device.\n4. If no devices are found, ensure you are on the same Wi-Fi network and that the firewall isn't blocking local discovery."
+    },
+    "technical_tags": ["chromecast", "streaming", "chrome", "network"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_056",
+    "bucket": "Web & Research",
+    "sub_category": "Bookmarks",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I accidentally deleted a bookmark folder. Can I restore it?",
+      "ai_response": "Yes, Firefox automatically backs up bookmarks.\n\n1. Press **Ctrl + Shift + O** (Library).\n2. Click **Import and Backup**.\n3. Select **Restore**.\n4. Choose a date from before you deleted the folder.\n\n**Warning:** This reverts all bookmarks to that date."
+    },
+    "technical_tags": ["recovery", "bookmarks", "firefox", "backup"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_057",
+    "bucket": "Web & Research",
+    "sub_category": "CLI",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Curl"
+    },
+    "interaction": {
+      "user_query": "I need to download a file from a URL but the browser is stuck. How do I use terminal?",
+      "ai_response": "Use `wget` or `curl`.\n\n**Using wget (simplest):**\n```bash\nwget -c [https://example.com/file.zip](https://example.com/file.zip)\n```\n(`-c` allows resuming if interrupted).\n\n**Using curl:**\n```bash\ncurl -O [https://example.com/file.zip](https://example.com/file.zip)\n```"
+    },
+    "technical_tags": ["wget", "curl", "download", "cli"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_058",
+    "bucket": "Web & Research",
+    "sub_category": "Appearance",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Manjaro",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I install a new theme in Firefox?",
+      "ai_response": "1. Go to the [Firefox Add-ons Themes page](https://addons.mozilla.org/firefox/themes/).\n2. Browse for a theme you like.\n3. Click **Install Theme**.\n4. It applies immediately. You can manage it in Menu -> Add-ons and themes -> Themes."
+    },
+    "technical_tags": ["themes", "customization", "firefox", "ui"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_059",
+    "bucket": "Web & Research",
+    "sub_category": "Extensions",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "How do I load an unpacked extension in Chrome for development?",
+      "ai_response": "1. Go to `chrome://extensions`.\n2. Toggle **Developer mode** in the top right corner.\n3. Click **Load unpacked**.\n4. Select the folder containing the extension's `manifest.json` file."
+    },
+    "technical_tags": ["development", "extensions", "chrome", "debug"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_060",
+    "bucket": "Web & Research",
+    "sub_category": "Performance",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Firefox takes 10 seconds to start. I have an SSD.",
+      "ai_response": "Slow startup can be caused by the Places database being fragmented.\n\n1. Type `about:support` in the address bar.\n2. Scroll down to **Places Database**.\n3. Click **Verify Integrity**.\n\nThis will vacuum and optimize the database. Restart Firefox afterwards."
+    },
+    "technical_tags": ["performance", "database", "firefox", "startup"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_061",
+    "bucket": "Web & Research",
+    "sub_category": "Shortcuts",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "All"
+    },
+    "interaction": {
+      "user_query": "How do I clear browser history with a shortcut?",
+      "ai_response": "In almost all Linux browsers (Firefox, Chrome, Brave):\n\n**Ctrl + Shift + Delete**\n\nThis opens the 'Clear Browsing Data' dialog directly."
+    },
+    "technical_tags": ["shortcuts", "privacy", "history", "ui"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_062",
+    "bucket": "Web & Research",
+    "sub_category": "Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Firefox warns me 'Connection is not secure' on my own router page.",
+      "ai_response": "This is because your router uses a self-signed certificate, which Firefox doesn't trust by default.\n\n1. Click **Advanced** on the warning page.\n2. Click **Accept the Risk and Continue**.\n\nSince it's your local device, this is generally safe."
+    },
+    "technical_tags": ["ssl", "security", "firefox", "networking"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_063",
+    "bucket": "Web & Research",
+    "sub_category": "Tabs",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I make Firefox tabs vertical? I have a widescreen monitor.",
+      "ai_response": "Firefox doesn't have native vertical tabs yet, but you can use an extension + CSS hack or just an extension.\n\n**Easy way:** Install **Sidebery** or **Tree Style Tab** extension.\n**Cleaner look:** Hide the top tab bar by adding userChrome.css rules (requires `toolkit.legacyUserProfileCustomizations.stylesheets = true` in `about:config`)."
+    },
+    "technical_tags": [
+      "vertical-tabs",
+      "customization",
+      "firefox",
+      "extensions"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_064",
+    "bucket": "Web & Research",
+    "sub_category": "Installation",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Brave"
+    },
+    "interaction": {
+      "user_query": "How do I install Brave on Arch? It's not in standard pacman repo.",
+      "ai_response": "Brave is available in the AUR (Arch User Repository).\n\n1. Use an AUR helper like `yay`:\n```bash\nyay -S brave-bin\n```\n2. `brave-bin` installs the precompiled binary, which is much faster than compiling from source."
+    },
+    "technical_tags": ["aur", "brave", "installation", "yay"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_065",
+    "bucket": "Web & Research",
+    "sub_category": "Video Playback",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Twitch streams keep buffering or dropping quality.",
+      "ai_response": "1. **Disable Low Latency:** On the Twitch video player, click the gear icon -> Advanced -> uncheck **Low Latency**.\n2. **Alternate Player:** Install the **TTV LOL PRO** or similar extension to bypass specific ad-loading scripts that cause lag.\n3. **Hardware Acceleration:** Ensure VA-API is enabled (see guide for WEB_RES_001)."
+    },
+    "technical_tags": ["twitch", "streaming", "firefox", "performance"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_066",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "How do I clear the DNS cache in Chrome? I changed my DNS but Chrome ignores it.",
+      "ai_response": "Chrome maintains its own DNS cache.\n\n1. Type `chrome://net-internals/#dns` in the address bar.\n2. Click the **Clear host cache** button.\n3. Also consider running `sudo systemd-resolve --flush-caches` in terminal to clear the system cache."
+    },
+    "technical_tags": ["dns", "cache", "chrome", "networking"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_067",
+    "bucket": "Web & Research",
+    "sub_category": "Files",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox Snap"
+    },
+    "interaction": {
+      "user_query": "I can't save files to my external hard drive from Firefox Snap.",
+      "ai_response": "Snaps run in a sandbox and may not have permission to access removable media.\n\n1. Open **Ubuntu Software** -> Search Firefox -> Permissions -> Toggle ON **Read/write files on removable storage devices**.\n2. Or via terminal:\n```bash\nsudo snap connect firefox:removable-media\n```"
+    },
+    "technical_tags": ["snap", "permissions", "firefox", "storage"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_068",
+    "bucket": "Web & Research",
+    "sub_category": "Fonts",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Emoji are showing as squares or black and white outlines.",
+      "ai_response": "You are likely missing a color emoji font.\n\n1. Install Noto Color Emoji:\n```bash\nsudo pacman -S noto-fonts-emoji\n```\n2. Create/Edit `~/.config/fontconfig/fonts.conf` to prioritize Noto Color Emoji for the `emoji` family.\n3. Restart Firefox."
+    },
+    "technical_tags": ["fonts", "emoji", "arch", "configuration"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_069",
+    "bucket": "Web & Research",
+    "sub_category": "Interface",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "My Chrome bookmarks bar disappeared.",
+      "ai_response": "1. Press **Ctrl + Shift + B** to toggle the bookmarks bar.\n2. Alternatively, go to Menu -> Bookmarks -> Check **Show bookmarks bar**."
+    },
+    "technical_tags": ["ui", "bookmarks", "chrome", "shortcuts"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_070",
+    "bucket": "Web & Research",
+    "sub_category": "Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Firefox Sync isn't syncing my add-ons.",
+      "ai_response": "1. Check your Sync settings on the device that HAS the add-ons: Settings -> Sync -> Ensure **Add-ons** is checked.\n2. Force a sync: Click Menu -> Account Name -> **Sync Now**.\n3. Some add-ons are not compatible with mobile versions or differ between OSs, but most desktop-to-desktop syncs should work."
+    },
+    "technical_tags": ["sync", "extensions", "firefox", "troubleshooting"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_071",
+    "bucket": "Web & Research",
+    "sub_category": "Audio",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "The volume in Firefox is too low even at 100%.",
+      "ai_response": "You can boost the volume beyond 100% using system tools.\n\n1. Open **Settings** -> **Sound**.\n2. Enable **Over-Amplification**.\n3. Alternatively, install `pavucontrol`:\n```bash\nsudo apt install pavucontrol\n```\nOpen it and drag the Firefox playback slider above 100% (up to 150%)."
+    },
+    "technical_tags": ["audio", "volume", "firefox", "pavucontrol"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_072",
+    "bucket": "Web & Research",
+    "sub_category": "Performance",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Chromium"
+    },
+    "interaction": {
+      "user_query": "How do I run Chromium with temporary profile entirely in RAM?",
+      "ai_response": "You can mount a `tmpfs` and point user data there.\n\n```bash\nmkdir /tmp/chromeram\nmount -t tmpfs -o size=1G tmpfs /tmp/chromeram\nchromium --user-data-dir=/tmp/chromeram\n```\n**Note:** All data is lost when you reboot or unmount."
+    },
+    "technical_tags": ["ram-disk", "privacy", "chromium", "cli"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_073",
+    "bucket": "Web & Research",
+    "sub_category": "Search",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "When I type in address bar, it searches Amazon instead of Google.",
+      "ai_response": "You might have a keyword shortcut conflict or a changed default.\n\n1. Go to Settings -> **Search**.\n2. Check **Default Search Engine**.\n3. Look at **Search Shortcuts**. If Amazon has a keyword you use often, change or remove it."
+    },
+    "technical_tags": [
+      "search-engine",
+      "firefox",
+      "configuration",
+      "troubleshooting"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_074",
+    "bucket": "Web & Research",
+    "sub_category": "Appearance",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "KDE Neon",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Firefox context menus don't match my KDE dark theme.",
+      "ai_response": "Firefox might be using the GTK theme instead of following KDE colors.\n\n1. Install `plasma-browser-integration` package.\n2. In Firefox, go to `about:config`.\n3. Set `widget.use-xdg-desktop-portal` to `true`.\n4. Ensure you have a dark GTK theme set in KDE System Settings -> Appearance -> Application Style -> Configure GNOME/GTK Application Style."
+    },
+    "technical_tags": ["theming", "kde", "firefox", "gtk"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_075",
+    "bucket": "Web & Research",
+    "sub_category": "Shortcuts",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "All",
+      "app_version": "All"
+    },
+    "interaction": {
+      "user_query": "How do I quickly zoom in and out on a webpage?",
+      "ai_response": "- **Zoom In:** `Ctrl` + `+`\n- **Zoom Out:** `Ctrl` + `-`\n- **Reset Zoom:** `Ctrl` + `0`\n\nYou can also hold `Ctrl` and scroll the mouse wheel."
+    },
+    "technical_tags": ["shortcuts", "zoom", "accessibility", "ui"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_076",
+    "bucket": "Web & Research",
+    "sub_category": "Installation",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Vivaldi"
+    },
+    "interaction": {
+      "user_query": "Installing Vivaldi on Fedora. The repo setup seems complicated.",
+      "ai_response": "You can just install the RPM file, and it adds the repo automatically.\n\n1. Download the `.rpm` from vivaldi.com.\n2. Install:\n```bash\nsudo dnf install ./vivaldi-stable-*.rpm\n```\n3. This creates `/etc/yum.repos.d/vivaldi.repo` so you get updates with `dnf update`."
+    },
+    "technical_tags": ["vivaldi", "rpm", "installation", "dnf"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_077",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Does Firefox send my search data to Mozilla?",
+      "ai_response": "Firefox sends search queries to the search provider (Google/Bing), not Mozilla. However, it sends telemetry.\n\n**To opt out:**\n1. Settings -> **Privacy & Security**.\n2. Scroll to **Firefox Data Collection and Use**.\n3. Uncheck **Allow Firefox to send technical and interaction data to Mozilla**."
+    },
+    "technical_tags": ["telemetry", "privacy", "firefox", "data-collection"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_078",
+    "bucket": "Web & Research",
+    "sub_category": "Updates",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Firefox ESR"
+    },
+    "interaction": {
+      "user_query": "I want the latest Firefox features, but Debian only has ESR. How do I switch?",
+      "ai_response": "Debian Stable ships Firefox ESR for stability. For the rapid release:\n\n1. Download the tarball from Mozilla.\n2. Extract it to `/opt/firefox`.\n3. Create a `.desktop` file in `~/.local/share/applications/`.\n\n**Better option:** Install the Flatpak version.\n```bash\nsudo apt install flatpak\nflatpak install flathub org.mozilla.firefox\n```"
+    },
+    "technical_tags": ["flatpak", "firefox-esr", "debian", "updates"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_079",
+    "bucket": "Web & Research",
+    "sub_category": "DevTools",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "All",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "I pressed F12 and a weird code window opened. How do I close it?",
+      "ai_response": "You opened the Developer Tools. \n\n- Press **F12** again to close it.\n- Or click the **X** in the top right corner of that panel."
+    },
+    "technical_tags": ["devtools", "ui", "chrome", "shortcuts"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_080",
+    "bucket": "Web & Research",
+    "sub_category": "Extensions",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "UBlock Origin isn't blocking YouTube ads anymore.",
+      "ai_response": "YouTube frequently updates its ad delivery.\n\n1. Open uBlock Origin dashboard (click icon -> gears).\n2. Go to **Filter lists**.\n3. Click **Purge all caches**.\n4. Click **Update now**.\n\nThis forces a download of the latest blocking rules."
+    },
+    "technical_tags": ["ublock-origin", "ads", "youtube", "troubleshooting"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_081",
+    "bucket": "Web & Research",
+    "sub_category": "Hardware Acceleration",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How to verify if WebRender is enabled in Firefox?",
+      "ai_response": "1. Go to `about:support`.\n2. Look for the **Graphics** section.\n3. Check the **Compositing** field.\n   - If it says **WebRender**, it's on.\n   - If it says **WebRender (Software)**, hardware acceleration is failing.\n\nTo force it: set `gfx.webrender.all` to `true` in `about:config`."
+    },
+    "technical_tags": ["webrender", "graphics", "firefox", "performance"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_082",
+    "bucket": "Web & Research",
+    "sub_category": "Localization",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "Chrome spell check is marking all my French emails as wrong.",
+      "ai_response": "You need to add French to the spell check languages.\n\n1. Settings -> **Languages**.\n2. Under **Spell check**, enable **French**.\n3. If French isn't there, click **Add languages**, select French, and then enable the spell check toggle for it."
+    },
+    "technical_tags": ["spell-check", "language", "chrome", "configuration"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_083",
+    "bucket": "Web & Research",
+    "sub_category": "Processes",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Why are there so many Firefox processes in System Monitor?",
+      "ai_response": "Firefox (like Chrome) uses a multi-process architecture (Electrolysis) to separate tabs, extensions, and the GPU into different processes for stability and security.\n\nIt is normal. If you close one heavy tab, only that process dies, not the whole browser."
+    },
+    "technical_tags": [
+      "processes",
+      "architecture",
+      "firefox",
+      "system-monitor"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_084",
+    "bucket": "Web & Research",
+    "sub_category": "Bookmarks",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "All",
+      "app_version": "All"
+    },
+    "interaction": {
+      "user_query": "How do I remove a bookmark without searching through the menu?",
+      "ai_response": "Go to the webpage you bookmarked. You should see a filled (blue/colored) star icon in the address bar.\n\n1. Click the **Star icon**.\n2. Click **Remove Bookmark** or **Delete**."
+    },
+    "technical_tags": ["bookmarks", "ui", "productivity", "navigation"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_085",
+    "bucket": "Web & Research",
+    "sub_category": "Network",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Kali Linux",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I use Burp Suite with Firefox?",
+      "ai_response": "1. Configure Firefox Proxy: Settings -> Network -> Manual proxy -> IP `127.0.0.1`, Port `8080`.\n2. Import Burp CA Certificate: Navigate to `http://burp` in Firefox, download cert.\n3. Firefox Settings -> Privacy & Security -> Certificates -> View Certificates -> Import -> Select the downloaded cert -> Trust to identify websites."
+    },
+    "technical_tags": ["proxy", "security-testing", "burp-suite", "firefox"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_086",
+    "bucket": "Web & Research",
+    "sub_category": "Rendering",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "Some fonts look like squares (tofu) on foreign language sites.",
+      "ai_response": "You are missing fonts for those languages (likely CJK - Chinese/Japanese/Korean).\n\nInstall the Google Noto CJK fonts:\n```bash\nsudo dnf install google-noto-cjk-fonts\n```\nRestart Chrome."
+    },
+    "technical_tags": ["fonts", "rendering", "fedora", "language"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_087",
+    "bucket": "Web & Research",
+    "sub_category": "Video Playback",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Videos on Twitter don't play. It says 'The media could not be played'.",
+      "ai_response": "This is usually a missing codec issue.\n\n1. Ensure you have the restricted extras installed:\n```bash\nsudo apt install ubuntu-restricted-extras\n```\n2. If using Firefox Snap, this should be bundled, but try installing `ffmpeg`:\n```bash\nsudo apt install ffmpeg\n```"
+    },
+    "technical_tags": ["codecs", "video-playback", "troubleshooting", "ubuntu"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_088",
+    "bucket": "Web & Research",
+    "sub_category": "History",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "All",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "I visited a site yesterday but can't remember the name. How do I find it?",
+      "ai_response": "1. Press **Ctrl + H** to open History.\n2. Use the **search box** at the top to type keywords you remember from the page title or content.\n3. Scroll down to the 'Yesterday' section."
+    },
+    "technical_tags": ["history", "search", "navigation", "chrome"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_089",
+    "bucket": "Web & Research",
+    "sub_category": "Shortcuts",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "All",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Shortcut to activate the search bar in the page (Find in page)?",
+      "ai_response": "**Ctrl + F** opens the Find bar at the bottom.\n**F3** jumps to the next match.\n**Shift + F3** jumps to the previous match."
+    },
+    "technical_tags": ["shortcuts", "search", "firefox", "productivity"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_090",
+    "bucket": "Web & Research",
+    "sub_category": "Installation",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I want to install the developer edition of Firefox alongside the stable one.",
+      "ai_response": "1. Install it from the official repo:\n```bash\nsudo pacman -S firefox-developer-edition\n```\n2. It installs as a separate binary (`firefox-developer-edition`) and uses a separate profile, so it won't mess up your stable Firefox settings."
+    },
+    "technical_tags": [
+      "firefox-developer-edition",
+      "installation",
+      "arch",
+      "parallel-install"
+    ],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_091",
+    "bucket": "Web & Research",
+    "sub_category": "Tabs",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "Chrome tabs are too small to click when I have 50 open.",
+      "ai_response": "1. Try **Tab Search** (Drop-down arrow in top right) to find tabs by name.\n2. Enable **Tab Scrolling** in `chrome://flags` (search for 'Tab Scrolling'). This allows the tab strip to scroll left/right instead of shrinking tabs to microscopic size."
+    },
+    "technical_tags": ["ui", "tabs", "chrome-flags", "accessibility"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_092",
+    "bucket": "Web & Research",
+    "sub_category": "Security",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I see the saved password for a site in Firefox?",
+      "ai_response": "1. Menu -> **Settings** -> **Privacy & Security**.\n2. Scroll down to **Logins and Passwords** -> Click **Saved Logins**.\n3. Find the site, click the **Eye icon** to reveal the password (you may need to enter your OS user password)."
+    },
+    "technical_tags": ["passwords", "security", "firefox", "ui"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_093",
+    "bucket": "Web & Research",
+    "sub_category": "Performance",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Google Maps is very laggy in 3D mode.",
+      "ai_response": "This is a WebGL performance issue.\n\n1. Check `about:support` -> Graphics to ensure your GPU is detected.\n2. If you are on NVIDIA with Wayland, try switching to X11 on login.\n3. Force enabling WebGL: In `about:config`, set `webgl.force-enabled` to `true`."
+    },
+    "technical_tags": ["webgl", "maps", "performance", "firefox"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_094",
+    "bucket": "Web & Research",
+    "sub_category": "Customization",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "How do I change the Chrome background image on the New Tab page?",
+      "ai_response": "1. Open a **New Tab**.\n2. Click the **Pencil icon** (Customize Chrome) in the bottom right corner.\n3. Select **Change theme**.\n4. Upload your own image or choose a preset."
+    },
+    "technical_tags": ["customization", "ui", "chrome", "themes"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_095",
+    "bucket": "Web & Research",
+    "sub_category": "Shortcuts",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "All",
+      "app_version": "All"
+    },
+    "interaction": {
+      "user_query": "How do I refresh a page that is stuck?",
+      "ai_response": "- **Standard Refresh:** `F5` or `Ctrl + R`.\n- **Hard Refresh (Ignore Cache):** `Ctrl + Shift + R` or `Ctrl + F5`. This forces the browser to re-download all images and scripts."
+    },
+    "technical_tags": ["shortcuts", "troubleshooting", "cache", "navigation"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_096",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I enable Do Not Track?",
+      "ai_response": "1. Settings -> **Privacy & Security**.\n2. Under **Send websites a 'Do Not Track' signal**, select **Always**.\n\n*Note:* Most websites ignore this signal. It is better to use 'Strict' tracking protection or ad blockers."
+    },
+    "technical_tags": ["privacy", "do-not-track", "firefox", "configuration"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_097",
+    "bucket": "Web & Research",
+    "sub_category": "Installation",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Gentoo",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Compiling Firefox from source takes too long. Is there a bin package?",
+      "ai_response": "Yes, you can install the precompiled binary to save time.\n\n```bash\nemerge --ask www-client/firefox-bin\n```\nThis installs the official Mozilla binary instead of compiling it locally."
+    },
+    "technical_tags": ["gentoo", "compilation", "installation", "firefox-bin"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_098",
+    "bucket": "Web & Research",
+    "sub_category": "Tabs",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "All",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I closed the window with all my tabs. Can I get them back?",
+      "ai_response": "1. Open Firefox.\n2. Press **Menu** -> **History** -> **Restore Previous Session**.\n3. Alternatively, check under 'Recently Closed Windows' in the History menu."
+    },
+    "technical_tags": ["session-restore", "tabs", "recovery", "firefox"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_099",
+    "bucket": "Web & Research",
+    "sub_category": "Extensions",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "An extension changed my search engine to something weird. I can't change it back.",
+      "ai_response": "This is browser hijacking.\n\n1. Go to **Extensions** (`chrome://extensions`).\n2. Remove any recently installed or suspicious extensions.\n3. Go to Settings -> **Search engine** -> Select Google (or preferred).\n4. If the option is greyed out, it means an extension or a malicious enterprise policy is controlling it."
+    },
+    "technical_tags": ["malware", "extensions", "search-hijack", "chrome"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_100",
+    "bucket": "Web & Research",
+    "sub_category": "Performance",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Firefox freezes when I open a specific heavy website.",
+      "ai_response": "1. Try disabling hardware acceleration temporarily to see if it's a GPU hang.\n2. If it's a script issue, install **NoScript** or **uBlock Origin** to block heavy JavaScript on that specific site.\n3. Check `about:performance` (Task Manager) to see if a specific subframe or tracker is consuming the CPU."
+    },
+    "technical_tags": ["freeze", "performance", "debugging", "firefox"],
+    "friction_type": "config_issue"
+  }
+]

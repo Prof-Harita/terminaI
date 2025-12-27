@@ -1,0 +1,209 @@
+            <failure message="expected &quot;spy&quot; to be called with arguments: [ [ { text: &apos;Test input&apos; } ], …(2) ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[2m    [[22m
+[2m      {[22m
+[2m        &quot;text&quot;: &quot;Test input&quot;,[22m
+[2m      },[22m
+[31m+     {[90m
+[31m+       &quot;text&quot;: &quot;[Cognitive Strategy] Based on analysis, we will use this approach: Use Chrome for automation/rendering. Reasoning: Fallback heuristic used due to scanner failure.. Please proceed with this plan.&quot;,[90m
+[31m+     },[90m
+[2m    ],[22m
+[32m-   Any&lt;AbortSignal&gt;,[90m
+[31m+   AbortSignal {[90m
+[31m+     Symbol(kEvents): Map {},[90m
+[31m+     Symbol(events.maxEventTargetListeners): 0,[90m
+[31m+     Symbol(events.maxEventTargetListenersWarned): false,[90m
+[31m+     Symbol(kHandlers): Map {},[90m
+--
+            <failure message="expected &quot;spy&quot; to be called with arguments: [ [ …(4) ], Any&lt;AbortSignal&gt;, …(1) ][90m
+
+Number of calls: [1m0[22m
+[39m" type="AssertionError">
+AssertionError: expected &quot;spy&quot; to be called with arguments: [ [ …(4) ], Any&lt;AbortSignal&gt;, …(1) ]
+
+Number of calls: 0
+
+ ❯ src/nonInteractiveCli.test.ts:606:48
+            </failure>
+        </testcase>
+        <testcase classname="src/nonInteractiveCli.test.ts" name="runNonInteractive &gt; should process input and write JSON output with stats" time="0.003583645">
+            <failure message="expected &quot;spy&quot; to be called with arguments: [ [ { text: &apos;Test input&apos; } ], …(2) ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[2m    [[22m
+[2m      {[22m
+[2m        &quot;text&quot;: &quot;Test input&quot;,[22m
+[2m      },[22m
+[31m+     {[90m
+[31m+       &quot;text&quot;: &quot;[Cognitive Strategy] Based on analysis, we will use this approach: Use Chrome for automation/rendering. Reasoning: Fallback heuristic used due to scanner failure.. Please proceed with this plan.&quot;,[90m
+[31m+     },[90m
+[2m    ],[22m
+[32m-   Any&lt;AbortSignal&gt;,[90m
+[31m+   AbortSignal {[90m
+[31m+     Symbol(kEvents): Map {},[90m
+[31m+     Symbol(events.maxEventTargetListeners): 0,[90m
+[31m+     Symbol(events.maxEventTargetListenersWarned): false,[90m
+[31m+     Symbol(kHandlers): Map {},[90m
+--
+            <failure message="expected &quot;spy&quot; to be called with arguments: [ …(3) ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[2m    [[22m
+[2m      {[22m
+[2m        &quot;text&quot;: &quot;Empty response test&quot;,[22m
+[2m      },[22m
+[31m+     {[90m
+[31m+       &quot;text&quot;: &quot;[Cognitive Strategy] Based on analysis, we will use this approach: Use Chrome for automation/rendering. Reasoning: Fallback heuristic used due to scanner failure.. Please proceed with this plan.&quot;,[90m
+[31m+     },[90m
+[2m    ],[22m
+[32m-   Any&lt;AbortSignal&gt;,[90m
+[31m+   AbortSignal {[90m
+[31m+     Symbol(kEvents): Map {},[90m
+[31m+     Symbol(events.maxEventTargetListeners): 0,[90m
+[31m+     Symbol(events.maxEventTargetListenersWarned): false,[90m
+[31m+     Symbol(kHandlers): Map {},[90m
+--
+            <failure message="expected &quot;spy&quot; to be called with arguments: [ …(3) ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[2m    [[22m
+[2m      {[22m
+[2m        &quot;text&quot;: &quot;Prompt from command&quot;,[22m
+[2m      },[22m
+[31m+     {[90m
+[31m+       &quot;text&quot;: &quot;[Cognitive Strategy] Based on analysis, we will use this approach: Use Chrome for automation/rendering. Reasoning: Fallback heuristic used due to scanner failure.. Please proceed with this plan.&quot;,[90m
+[31m+     },[90m
+[2m    ],[22m
+[32m-   Any&lt;AbortSignal&gt;,[90m
+[31m+   AbortSignal {[90m
+[31m+     Symbol(kEvents): Map {},[90m
+[31m+     Symbol(events.maxEventTargetListeners): 0,[90m
+[31m+     Symbol(events.maxEventTargetListenersWarned): false,[90m
+[31m+     Symbol(kHandlers): Map {},[90m
+--
+            <failure message="expected &quot;spy&quot; to be called with arguments: [ …(3) ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[2m    [[22m
+[2m      {[22m
+[2m        &quot;text&quot;: &quot;Slash command output&quot;,[22m
+[2m      },[22m
+[31m+     {[90m
+[31m+       &quot;text&quot;: &quot;[Cognitive Strategy] Based on analysis, we will use this approach: Use Chrome for automation/rendering. Reasoning: Fallback heuristic used due to scanner failure.. Please proceed with this plan.&quot;,[90m
+[31m+     },[90m
+[2m    ],[22m
+[32m-   Any&lt;AbortSignal&gt;,[90m
+[31m+   AbortSignal {[90m
+[31m+     Symbol(kEvents): Map {},[90m
+[31m+     Symbol(events.maxEventTargetListeners): 0,[90m
+[31m+     Symbol(events.maxEventTargetListenersWarned): false,[90m
+[31m+     Symbol(kHandlers): Map {},[90m
+--
+            <failure message="expected &quot;spy&quot; to be called with arguments: [ …(3) ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[2m    [[22m
+[2m      {[22m
+[2m        &quot;text&quot;: &quot;/unknowncommand&quot;,[22m
+[2m      },[22m
+[31m+     {[90m
+[31m+       &quot;text&quot;: &quot;[Cognitive Strategy] Based on analysis, we will use this approach: Use Chrome for automation/rendering. Reasoning: Fallback heuristic used due to scanner failure.. Please proceed with this plan.&quot;,[90m
+[31m+     },[90m
+[2m    ],[22m
+[32m-   Any&lt;AbortSignal&gt;,[90m
+[31m+   AbortSignal {[90m
+[31m+     Symbol(kEvents): Map {},[90m
+[31m+     Symbol(events.maxEventTargetListeners): 0,[90m
+[31m+     Symbol(events.maxEventTargetListenersWarned): false,[90m
+[31m+     Symbol(kHandlers): Map {},[90m
+--
+            <failure message="expected &quot;spy&quot; to be called with arguments: [ &apos;proceed_once&apos; ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[2m    &quot;proceed_once&quot;,[22m
+[31m+   undefined,[90m
+[2m  ][22m
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m" type="AssertionError">
+AssertionError: expected &quot;spy&quot; to be called with arguments: [ &apos;proceed_once&apos; ]
+
+Received: 
+
+  1st spy call:
+
+  [
+--
+            <failure message="expected &quot;spy&quot; to be called with arguments: [ &apos;cancel&apos; ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[2m    &quot;cancel&quot;,[22m
+[31m+   undefined,[90m
+[2m  ][22m
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m" type="AssertionError">
+AssertionError: expected &quot;spy&quot; to be called with arguments: [ &apos;cancel&apos; ]
+
+Received: 
+
+  1st spy call:
+
+  [
+--
+        <testcase classname="src/ui/components/messages/CompressionMessage.test.tsx" name="&lt;CompressionMessage /&gt; &gt; message content validation &gt; shows compression failure message for large histories when new tokens &gt;= original tokens" time="0.021306455">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/ui/components/messages/DiffRenderer.test.tsx" timestamp="2025-12-26T02:16:54.316Z" hostname="ProfHarita" tests="26" failures="0" errors="0" skipped="0" time="0.388557167">
+        <testcase classname="src/ui/components/messages/DiffRenderer.test.tsx" name="&lt;OverflowProvider&gt;&lt;DiffRenderer /&gt;&lt;/OverflowProvider&gt; &gt; with useAlternateBuffer = true &gt; should call colorizeCode with correct language for new file with known extension" time="0.040217149">
+        </testcase>
+        <testcase classname="src/ui/components/messages/DiffRenderer.test.tsx" name="&lt;OverflowProvider&gt;&lt;DiffRenderer /&gt;&lt;/OverflowProvider&gt; &gt; with useAlternateBuffer = true &gt; should call colorizeCode with null language for new file with unknown extension" time="0.098540009">
+        </testcase>
+        <testcase classname="src/ui/components/messages/DiffRenderer.test.tsx" name="&lt;OverflowProvider&gt;&lt;DiffRenderer /&gt;&lt;/OverflowProvider&gt; &gt; with useAlternateBuffer = true &gt; should call colorizeCode with null language for new file if no filename is provided" time="0.011964772">
+        </testcase>
+        <testcase classname="src/ui/components/messages/DiffRenderer.test.tsx" name="&lt;OverflowProvider&gt;&lt;DiffRenderer /&gt;&lt;/OverflowProvider&gt; &gt; with useAlternateBuffer = true &gt; should render diff content for existing file (not calling colorizeCode directly for the whole block)" time="0.013880701">
+        </testcase>
+        <testcase classname="src/ui/components/messages/DiffRenderer.test.tsx" name="&lt;OverflowProvider&gt;&lt;DiffRenderer /&gt;&lt;/OverflowProvider&gt; &gt; with useAlternateBuffer = true &gt; should handle diff with only header and no changes" time="0.006974902">
+        </testcase>
+        <testcase classname="src/ui/components/messages/DiffRenderer.test.tsx" name="&lt;OverflowProvider&gt;&lt;DiffRenderer /&gt;&lt;/OverflowProvider&gt; &gt; with useAlternateBuffer = true &gt; should handle empty diff content" time="0.002645936">
+        </testcase>
+        <testcase classname="src/ui/components/messages/DiffRenderer.test.tsx" name="&lt;OverflowProvider&gt;&lt;DiffRenderer /&gt;&lt;/OverflowProvider&gt; &gt; with useAlternateBuffer = true &gt; should render a gap indicator for skipped lines" time="0.009337886">
+        </testcase>
+        <testcase classname="src/ui/components/messages/DiffRenderer.test.tsx" name="&lt;OverflowProvider&gt;&lt;DiffRenderer /&gt;&lt;/OverflowProvider&gt; &gt; with useAlternateBuffer = true &gt; should not render a gap indicator for small gaps (&lt;= MAX_CONTEXT_LINES_WITHOUT_GAP)" time="0.01495216">
+        </testcase>
+        <testcase classname="src/ui/components/messages/DiffRenderer.test.tsx" name="&lt;OverflowProvider&gt;&lt;DiffRenderer /&gt;&lt;/OverflowProvider&gt; &gt; with useAlternateBuffer = true &gt; should correctly render a diff with multiple hunks and a gap indicator &gt; with terminalWidth 80 and height undefined" time="0.016674455">

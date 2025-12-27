@@ -14,7 +14,6 @@ export type FrameworkId =
   | 'FW_DIRECT'
   | 'FW_CONSENSUS'
   | 'FW_SEQUENTIAL'
-  | 'FW_DECOMPOSE'
   | 'FW_REFLECT'
   | 'FW_SCRIPT';
 
@@ -55,8 +54,9 @@ export function selectFrameworkHeuristic(
 
   if (isLargeFeature(req)) {
     return {
-      frameworkId: 'FW_DECOMPOSE',
-      reasoning: 'Task involves building or implementing a complex feature.',
+      frameworkId: 'FW_CONSENSUS',
+      reasoning:
+        'Task involves building or implementing a complex feature with multiple viable paths.',
       confidence: 80,
     };
   }
@@ -100,7 +100,6 @@ Which thinking framework is most appropriate?
 - FW_DIRECT: Simple, one-shot, single-tool tasks (e.g., "what's my IP", "turn on night light").
 - FW_CONSENSUS: Open-ended tasks with multiple valid paths (e.g., "convert docx to pdf", "setup a REST API").
 - FW_SEQUENTIAL: Debugging, diagnosis, or tasks with unknown root causes (e.g., "why is my build failing", "fix this error").
-- FW_DECOMPOSE: Large, multi-part feature implementation (e.g., "build a dashboard", "add auth to this app").
 - FW_REFLECT: Safety-critical or high-precision tasks needing verification (e.g., "database migration", "refactor auth module").
 - FW_SCRIPT: Complex logic better handled by a throwaway script (e.g., "parse this complex JSON", "calculate memory usage").
 

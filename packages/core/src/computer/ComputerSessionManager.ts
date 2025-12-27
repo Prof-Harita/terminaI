@@ -7,6 +7,7 @@
 
 import { PersistentShell } from './PersistentShell.js';
 import { debugLogger } from '../index.js';
+import * as fs from 'node:fs';
 
 export interface ReplSession {
   name: string;
@@ -15,6 +16,7 @@ export interface ReplSession {
   outputBuffer: string[];
   startedAt: number;
   lastActivityAt: number;
+  cleanupPaths?: string[];
 }
 
 export interface ComputerSessionManagerInterface {
@@ -25,6 +27,7 @@ export interface ComputerSessionManagerInterface {
     language: ReplSession['language'],
     cwd: string,
     env?: Record<string, string>,
+    cleanupPaths?: string[],
   ): ReplSession;
   executeCode(
     name: string,
@@ -54,47 +57,55 @@ export class ComputerSessionManager implements ComputerSessionManagerInterface {
     language: ReplSession['language'],
     cwd: string,
     env?: Record<string, string>,
+    cleanupPaths?: string[],
   ): ReplSession {
     if (this.sessions.has(name)) {
       throw new Error(`Session "${name}" already exists.`);
     }
 
     const outputBuffer: string[] = [];
+    const sessionRef: { current: ReplSession | undefined } = {
+      current: undefined,
+    };
     const shell = new PersistentShell({
       language,
       cwd,
       env,
       onOutput: (data) => {
-        const session = this.sessions.get(name);
-        if (session) {
-          session.lastActivityAt = Date.now();
-
-          // Rate Limiting / Buffer Protection (Phase 4.2)
-          const MAX_BUFFER_SIZE = 100 * 1024; // 100KB limit
-          const CURRENT_SIZE = session.outputBuffer.reduce(
-            (acc, str) => acc + str.length,
-            0,
-          );
-
-          if (CURRENT_SIZE > MAX_BUFFER_SIZE) {
-            if (
-              session.outputBuffer.at(-1) !==
-              '\n... [Output truncated due to excessive length] ...\n'
-            ) {
-              session.outputBuffer.push(
-                '\n... [Output truncated due to excessive length] ...\n',
-              );
-            }
-            return;
-          }
-          session.outputBuffer.push(data);
+        const activeSession = sessionRef.current ?? this.sessions.get(name);
+        if (activeSession) {
+          activeSession.lastActivityAt = Date.now();
         }
+
+        // Rate Limiting / Buffer Protection (Phase 4.2)
+        const MAX_BUFFER_SIZE = 100 * 1024; // 100KB limit
+        const CURRENT_SIZE = outputBuffer.reduce(
+          (acc, str) => acc + str.length,
+          0,
+        );
+
+        if (CURRENT_SIZE > MAX_BUFFER_SIZE) {
+          if (
+            outputBuffer.at(-1) !==
+            '\n... [Output truncated due to excessive length] ...\n'
+          ) {
+            outputBuffer.push(
+              '\n... [Output truncated due to excessive length] ...\n',
+            );
+          }
+          return;
+        }
+        outputBuffer.push(data);
       },
       onExit: (code, signal) => {
         debugLogger.log(
           'session',
           `Session "${name}" exited with code ${code}, signal ${signal}`,
         );
+        const activeSession = sessionRef.current ?? this.sessions.get(name);
+        if (activeSession) {
+          this.cleanupSessionResources(activeSession);
+        }
         this.sessions.delete(name);
       },
     });
@@ -106,7 +117,9 @@ export class ComputerSessionManager implements ComputerSessionManagerInterface {
       outputBuffer,
       startedAt: Date.now(),
       lastActivityAt: Date.now(),
+      cleanupPaths,
     };
+    sessionRef.current = session;
 
     this.sessions.set(name, session);
     return session;
@@ -226,6 +239,7 @@ export class ComputerSessionManager implements ComputerSessionManagerInterface {
     const session = this.sessions.get(name);
     if (session) {
       session.shell.kill(signal);
+      this.cleanupSessionResources(session);
       this.sessions.delete(name);
     }
   }
@@ -237,8 +251,23 @@ export class ComputerSessionManager implements ComputerSessionManagerInterface {
   disposeAll(): void {
     for (const session of this.sessions.values()) {
       session.shell.dispose();
+      this.cleanupSessionResources(session);
     }
     this.sessions.clear();
+  }
+
+  private cleanupSessionResources(session: ReplSession): void {
+    if (!session.cleanupPaths?.length) {
+      return;
+    }
+
+    for (const cleanupPath of session.cleanupPaths) {
+      try {
+        fs.rmSync(cleanupPath, { recursive: true, force: true });
+      } catch (error) {
+        debugLogger.warn(`Failed to cleanup ${cleanupPath}: ${error}`);
+      }
+    }
   }
 }
 

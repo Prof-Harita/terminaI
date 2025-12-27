@@ -99,6 +99,11 @@ describe('ThinkingOrchestrator', () => {
       'parse this json',
       new AbortController().signal,
     );
-    expect(result.explanation).toContain('hello'); // From REPLManager execution
+    expect(result.suggestedAction).toBe('execute_tool');
+    expect(result.toolCall?.name).toBe('execute_repl');
+    expect(result.toolCall?.args).toMatchObject({
+      language: 'node',
+      code: 'console.log("hello")',
+    });
   });
 });

@@ -1,0 +1,745 @@
+[
+  {
+    "id": "PROD_DOC_001",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LibreOffice 7.3"
+    },
+    "interaction": {
+      "user_query": "I can't open my budget.xlsx. It says 'General Error' and there's a weird .~lock.budget.xlsx# file in my folder.",
+      "ai_response": "The `.~lock.budget.xlsx#` file indicates LibreOffice thinks the file is still open, likely from a previous crash.\n\nTo fix:\n1. Press `Ctrl+H` in your file manager to show hidden files\n2. Delete the `.~lock.budget.xlsx#` file\n3. Try opening your document again\n\nThis is a safety mechanism to prevent data corruption but can persist after crashes."
+    },
+    "technical_tags": ["file-locking", "libreoffice-calc", "crash-recovery"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_002",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Fonts",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "System"
+    },
+    "interaction": {
+      "user_query": "I opened a Word doc from my boss but the fonts look wrong. It's supposed to be Times New Roman but looks like a generic typewriter font.",
+      "ai_response": "Linux distributions don't include Microsoft fonts by default due to licensing. You can install them easily.\n\nOpen a terminal and run:\n`sudo apt update`\n`sudo apt install ttf-mscorefonts-installer`\n\nYou may need to press Tab and Enter to accept the EULA during installation."
+    },
+    "technical_tags": ["fonts", "microsoft-compatibility", "ttf-mscorefonts"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_003",
+    "bucket": "Productivity & Documents",
+    "sub_category": "PDF Viewing",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Evince"
+    },
+    "interaction": {
+      "user_query": "The PDF viewer that comes with Fedora won't let me type into this government form. I can click the boxes but can't type text.",
+      "ai_response": "The default viewer (Evince) has limited form-filling capabilities for complex XFA forms. \n\nTry installing Master PDF Editor (Free version) or use Chrome/Firefox to open the PDF, as browsers often handle forms better than basic system viewers."
+    },
+    "technical_tags": ["pdf-forms", "evince", "xfa-forms"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_004",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "LibreOffice 24.2"
+    },
+    "interaction": {
+      "user_query": "How do I make LibreOffice look more like Microsoft Office? I hate the old toolbar look.",
+      "ai_response": "You can enable the 'Tabbed' interface (similar to the Ribbon UI).\n\n1. Go to **View** > **User Interface**\n2. Select **Tabbed**\n3. Click **Apply to All**\n\nThis will organize tools into tabs like Home, Insert, and Layout."
+    },
+    "technical_tags": [
+      "ui-customization",
+      "ribbon-interface",
+      "libreoffice-writer"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_005",
+    "bucket": "Productivity & Documents",
+    "sub_category": "File Formats",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "LibreOffice Writer"
+    },
+    "interaction": {
+      "user_query": "When I save as .docx and send it to Windows users, the formatting of my images gets messed up. Should I use .odt?",
+      "ai_response": "For best compatibility with Word users, sticking to `.docx` is usually necessary, but formatting shifts happen because of font differences or anchor settings. \n\nRight-click your image > **Anchor** > **As Character** usually prevents images from jumping around when opened in Word. If they don't need to edit it, always send a PDF."
+    },
+    "technical_tags": ["interoperability", "docx-format", "image-anchoring"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_006",
+    "bucket": "Productivity & Documents",
+    "sub_category": "PDF Editing",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "LibreOffice Draw"
+    },
+    "interaction": {
+      "user_query": "I tried to edit a PDF in LibreOffice but it opened in Draw and every single line of text is a separate text box. It's impossible to edit paragraphs.",
+      "ai_response": "LibreOffice Draw treats PDFs as graphic layouts, not flowable text documents. It is not designed for heavy text editing.\n\nFor editing text content, it's better to convert the PDF to Word/ODT first using an online tool or CLI like `pdftohtml`, or use a dedicated PDF editor like Master PDF Editor."
+    },
+    "technical_tags": ["pdf-import", "libreoffice-draw", "text-flow"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_007",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "LibreOffice Calc"
+    },
+    "interaction": {
+      "user_query": "My spell check isn't working in Calc. It marks everything as wrong or does nothing.",
+      "ai_response": "This usually means the dictionary for your language isn't installed or selected.\n\n1. Check **Tools** > **Options** > **Language Settings** > **Languages**.\n2. Ensure your specific locale (e.g., English USA) has a checkmark icon next to it.\n3. If not, install the language pack: `sudo apt install hunspell-en-us` (replace en-us with your code)."
+    },
+    "technical_tags": ["spell-check", "hunspell", "localization"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_008",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Scanning",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Simple Scan"
+    },
+    "interaction": {
+      "user_query": "Document Scanner (Simple Scan) sees my scanner but fails when I click scan. 'Failed to scan'.",
+      "ai_response": "This is often a permissions issue or a missing backend driver.\n\n1. Try running `simple-scan` from the terminal to see specific errors.\n2. Ensure your user is in the `lpadmin` or `scanner` group: `sudo usermod -aG scanner $USER`.\n3. If it's an HP scanner, run `hp-setup` to ensure the proprietary plugin is installed."
+    },
+    "technical_tags": ["sane", "simple-scan", "scanner-drivers"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_009",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Manjaro",
+      "app_version": "LibreOffice 7.5"
+    },
+    "interaction": {
+      "user_query": "LibreOffice is super slow to start up. It takes like 15 seconds to open a blank page.",
+      "ai_response": "This can happen if Java is enabled but misconfigured, or simply not needed.\n\nTry disabling Java:\n1. **Tools** > **Options** > **LibreOffice** > **Advanced**\n2. Uncheck 'Use a Java runtime environment'\n3. Restart LibreOffice.\n\nMost features don't require Java anymore, except for some database (Base) functions."
+    },
+    "technical_tags": ["performance", "java-runtime", "startup-time"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_010",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Note Taking",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Xournal++"
+    },
+    "interaction": {
+      "user_query": "I need to annotate a PDF lecture slide with my Wacom tablet. What's the best app? Default viewer is bad for drawing.",
+      "ai_response": "**Xournal++** is the best tool for this on Linux.\n\nInstall it via `sudo apt install xournalpp`.\n\nIt allows you to import a PDF as a background and draw/write over it using proper pressure sensitivity, then export back to PDF."
+    },
+    "technical_tags": ["pdf-annotation", "xournalpp", "wacom-tablet"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_011",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Printing",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "CUPS"
+    },
+    "interaction": {
+      "user_query": "I'm trying to print a shipping label to my Brother printer but it prints mostly blank pages or gibberish.",
+      "ai_response": "Gibberish usually indicates a driver mismatch (e.g., sending PostScript to a printer expecting PCL).\n\n1. Remove the printer in Settings.\n2. When re-adding, avoid the 'Generic' driver options.\n3. Check if your specific model requires the `printer-driver-brlaser` package or an official RPM from Brother's website."
+    },
+    "technical_tags": ["printing", "drivers", "cups"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_012",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LibreOffice Writer"
+    },
+    "interaction": {
+      "user_query": "I have a CSV file I need to use for a mail merge in Writer. How do I connect them?",
+      "ai_response": "1. Open Writer.\n2. Go to **File** > **Wizards** > **Address Data Source**.\n3. Select **Other external data source** > **Next** > **Settings**.\n4. Choose 'Spreadsheet' and browse for your CSV.\n5. Once registered, press F4 to view data sources and drag column headers into your document."
+    },
+    "technical_tags": ["mail-merge", "csv-import", "database-connection"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_013",
+    "bucket": "Productivity & Documents",
+    "sub_category": "PDF Manipulation",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "CLI"
+    },
+    "interaction": {
+      "user_query": "I have two PDF files, page1.pdf and page2.pdf. How do I combine them into one file quickly?",
+      "ai_response": "The quickest way is using `pdfunite` (part of `poppler-utils`, usually installed by default).\n\nRun:\n`pdfunite page1.pdf page2.pdf combined.pdf`\n\nAlternatively, if you prefer a GUI, use **PDF Arranger**: `sudo apt install pdfarranger`."
+    },
+    "technical_tags": ["pdf-merge", "pdfunite", "pdfarranger"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_014",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LibreOffice Calc"
+    },
+    "interaction": {
+      "user_query": "In Excel, I used to drag the corner of a cell to fill a series of dates. In Calc it just copies the same date.",
+      "ai_response": "In Calc, the default behavior depends on the content. \n\nTo force a series fill (increment dates):\n1. Hold down the **Ctrl** key while dragging the fill handle (bottom right corner).\n\nAlternatively, select the cells, go to **Sheet** > **Fill Cells** > **Fill Series** for more control."
+    },
+    "technical_tags": ["autofill", "calc-shortcuts", "excel-transition"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_015",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Collaboration",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "LibreOffice"
+    },
+    "interaction": {
+      "user_query": "I need to track changes like in Word. My editor asked for 'Track Changes' enabled.",
+      "ai_response": "LibreOffice supports this fully and is compatible with Word's tracking.\n\n1. Go to **Edit** > **Track Changes** > **Record** (or press Ctrl+Shift+C).\n2. Any edits you make will now appear in a different color.\n3. To add comments, highlight text and press `Ctrl+Alt+C`."
+    },
+    "technical_tags": ["track-changes", "collaboration", "revision-history"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_016",
+    "bucket": "Productivity & Documents",
+    "sub_category": "File Management",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Nautilus"
+    },
+    "interaction": {
+      "user_query": "I can't see thumbnails for my PDF files in the folder view. They are just generic icons.",
+      "ai_response": "This happens if the thumbnailer isn't working or the file is too large.\n\n1. Check Preferences in Files (Nautilus): click the 3-dot menu > **Preferences** > **Performance**. Ensure 'Show Thumbnails' is set to 'All files' or 'Local files only'.\n2. If that fails, try clearing the cache: `rm -r ~/.cache/thumbnails/*` and restart the file manager."
+    },
+    "technical_tags": ["thumbnails", "nautilus", "file-browser"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_017",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "LibreOffice Base"
+    },
+    "interaction": {
+      "user_query": "I'm trying to open an old .odb database file but getting a 'JRE Required' error.",
+      "ai_response": "LibreOffice Base relies heavily on Java (HSQLDB engine).\n\n1. Install the default JRE: `sudo apt install default-jre`.\n2. Open LibreOffice, go to **Tools** > **Options** > **Advanced**.\n3. Ensure 'Use a Java runtime environment' is checked and the vendor/version you just installed is selected in the list."
+    },
+    "technical_tags": ["libreoffice-base", "java-runtime", "database-error"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_018",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Fonts",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "System"
+    },
+    "interaction": {
+      "user_query": "I downloaded a .ttf font file for a project. How do I actually install it so LibreOffice sees it?",
+      "ai_response": "You can install it for your user account easily:\n\n1. Double-click the `.ttf` file. The **GNOME Fonts** (or similar) viewer should open.\n2. Click the **Install** button in the top right corner.\n3. **Restart LibreOffice**. It only scans for fonts on startup."
+    },
+    "technical_tags": ["font-installation", "custom-fonts", "gnome-fonts"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_019",
+    "bucket": "Productivity & Documents",
+    "sub_category": "E-books",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Calibre"
+    },
+    "interaction": {
+      "user_query": "I have a Kindle file (.azw3) that I want to read on my laptop. Document Viewer won't open it.",
+      "ai_response": "The default document viewer (Xreader/Evince) usually handles PDFs and standard eBooks like ePub, but not proprietary Amazon formats.\n\nInstall **Calibre**: `sudo apt install calibre`.\n\nCalibre is a powerful library manager that includes a viewer capable of opening `.azw3`, `.mobi`, and converting them to PDF/ePub if needed."
+    },
+    "technical_tags": ["calibre", "ebook-formats", "file-conversion"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_020",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LibreOffice Impress"
+    },
+    "interaction": {
+      "user_query": "My PowerPoint (pptx) video won't play in LibreOffice Impress. It just shows a black box.",
+      "ai_response": "Media playback in Impress depends on system codecs (GStreamer).\n\n1. Ensure you have the 'ugly' and 'bad' plugin sets installed: `sudo apt install gstreamer1.0-plugins-ugly gstreamer1.0-plugins-bad`.\n2. If the format is proprietary (like newer HEVC), you might need to convert the video to a standard MP4 (H.264) using Handbrake before embedding it."
+    },
+    "technical_tags": ["multimedia-codecs", "impress", "video-playback"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_101",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LibreOffice 7.3"
+    },
+    "interaction": {
+      "user_query": "Why does LibreOffice look so ugly and old? It doesn't match my dark theme at all.",
+      "ai_response": "LibreOffice sometimes defaults to a generic toolkit look.\n\nTry installing the GTK integration package:\n`sudo apt install libreoffice-gtk3`\n\nThen go to **Tools** > **Options** > **View** and change the Icon Style to something modern like 'Breeze Dark' or 'Sifr Dark' to match your system theme."
+    },
+    "technical_tags": ["theming", "gtk3-integration", "visual-appearance"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_102",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Printing",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "CUPS"
+    },
+    "interaction": {
+      "user_query": "I am so done with this. My printer works fine on Windows but on Linux it says 'Processing - Not Connected' even though it's plugged in via USB.",
+      "ai_response": "This is often a permissions issue with the USB port or the `ipp-usb` service conflict.\n\n1. Try checking `lsusb` to see if the system detects the device.\n2. Sometimes `ipp-usb` claims the device, preventing the legacy USB driver from working. Try removing it: `sudo dnf remove ipp-usb` and re-plug the printer."
+    },
+    "technical_tags": ["usb-printing", "ipp-usb", "connection-error"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_103",
+    "bucket": "Productivity & Documents",
+    "sub_category": "File Management",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Nemo"
+    },
+    "interaction": {
+      "user_query": "Why can't I rename my PDF file? It says 'Read-only file system'. I'm just trying to rename a receipt!",
+      "ai_response": "If the error is specifically 'Read-only file system', it usually means the drive (USB stick or external drive) has file system errors and Linux mounted it in safe mode to prevent data loss.\n\nDon't force it. Copy the file to your Documents folder (local drive) and rename it there. To fix the drive, you'd need to run a disk check (fsck) or repair it in Windows if it's NTFS."
+    },
+    "technical_tags": ["file-permissions", "read-only", "disk-errors"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_104",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "LibreOffice Calc"
+    },
+    "interaction": {
+      "user_query": "Calc keeps crashing every time I try to sort this large dataset (50k rows). It just freezes and closes.",
+      "ai_response": "This could be a memory limit issue or a graphics acceleration bug.\n\n1. Disable Skia rendering: **Tools** > **Options** > **View** > Uncheck **Use Skia for all rendering**.\n2. If that doesn't work, try resetting your user profile by renaming the `~/.config/libreoffice/4/user` folder (LibreOffice will generate a fresh one)."
+    },
+    "technical_tags": [
+      "crash-troubleshooting",
+      "skia-rendering",
+      "performance"
+    ],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_105",
+    "bucket": "Productivity & Documents",
+    "sub_category": "PDF Viewing",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Okular"
+    },
+    "interaction": {
+      "user_query": "Okular is asking for a 'Wallet' password every time I open a signed PDF. I never set a wallet password!",
+      "ai_response": "This is KDE Wallet trying to store certificate passwords safely.\n\nIf you don't use KDE Wallet for anything else, you can disable the prompt:\n1. Search for 'KDE Wallet' in your application menu.\n2. In Wallet Preferences, uncheck 'Enable the KDE Wallet subsystem'.\n\nAlternatively, just set a blank password if prompted to create one, though this is less secure."
+    },
+    "technical_tags": ["kde-wallet", "digital-signatures", "password-prompt"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_106",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Compatibility",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "LibreOffice"
+    },
+    "interaction": {
+      "user_query": "Why does my Resume look perfect in Writer but when I export to PDF the margins are slightly cut off?",
+      "ai_response": "This is often a paper size mismatch (Letter vs A4).\n\n1. Go to **Format** > **Page Style**.\n2. Check the **Page** tab. Ensure the paper format matches your target (likely Letter for US, A4 for rest of world).\n3. Check your printer settings too, as LibreOffice sometimes takes the printable area from the default printer driver."
+    },
+    "technical_tags": ["pdf-export", "page-formatting", "paper-size"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_107",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Text Editors",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Gedit"
+    },
+    "interaction": {
+      "user_query": "I opened a text file I made on Windows and every line has `^M` at the end. How do I get rid of this clutter?",
+      "ai_response": "Those are Windows line endings (CRLF).\n\nYou can remove them easily with the `dos2unix` tool.\n1. Install it: `sudo apt install dos2unix`\n2. Run: `dos2unix filename.txt`\n\nThe file will be converted to Linux line endings instantly."
+    },
+    "technical_tags": ["line-endings", "dos2unix", "text-formatting"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_108",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "LibreOffice Writer"
+    },
+    "interaction": {
+      "user_query": "Writer keeps changing my words! I type 'teh' and it changes to 'the' which is fine, but it also changes technical codes I'm typing.",
+      "ai_response": "That's AutoCorrect.\n\nTo manage it:\n1. Go to **Tools** > **AutoCorrect** > **AutoCorrect Options**.\n2. In the **Replace** tab, you can delete specific entries (like changing (c) to ©).\n3. If you want to turn it off completely while typing code, uncheck **Tools** > **AutoCorrect** > **While Typing**."
+    },
+    "technical_tags": ["autocorrect", "typing-aids", "configuration"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_109",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Scanning",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "SANE"
+    },
+    "interaction": {
+      "user_query": "My scanner works as root (`sudo simple-scan`) but not as my regular user. This is so annoying.",
+      "ai_response": "This confirms it is purely a permissions issue.\n\nYou need to add your user to the `scanner` and `saned` groups.\nRun:\n`sudo usermod -aG scanner,saned $USER`\n\nThen **log out and log back in** for the group changes to apply."
+    },
+    "technical_tags": ["permissions", "udev-rules", "group-management"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_110",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "LibreOffice Calc"
+    },
+    "interaction": {
+      "user_query": "I imported a CSV into Calc but all the dates turned into random numbers like 44562.",
+      "ai_response": "Those aren't random numbers; that's how spreadsheets store dates internally (days since Dec 30, 1899).\n\n1. Select the column with the numbers.\n2. Right-click > **Format Cells**.\n3. Choose **Date** in the category list.\n4. Click OK. They should display as proper dates now."
+    },
+    "technical_tags": ["cell-formatting", "csv-import", "date-serial-numbers"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_201",
+    "bucket": "Productivity & Documents",
+    "sub_category": "PDF Manipulation",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "CLI"
+    },
+    "interaction": {
+      "user_query": "How do I extract just pages 5-10 from a large PDF file without paying for Adobe?",
+      "ai_response": "You can use `pdftk` (PDF Toolkit) from the command line.\n\n1. Install it: `sudo apt install pdftk-java`\n2. Run: `pdftk input.pdf cat 5-10 output extracted.pdf`\n\nAlternatively, open the PDF in Chrome or your viewer, select **Print**, choose **Save to PDF**, and specify the page range '5-10'."
+    },
+    "technical_tags": ["pdf-extraction", "pdftk", "cli-tools"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_202",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "LibreOffice Writer"
+    },
+    "interaction": {
+      "user_query": "I need to add a watermark that says 'DRAFT' to every page of my document.",
+      "ai_response": "1. Go to **Format** > **Watermark**.\n2. Type 'DRAFT' in the text box.\n3. Adjust the angle (usually 45°) and transparency (50% is standard).\n4. Click OK.\n\nThis will insert the watermark in the background of all pages."
+    },
+    "technical_tags": ["watermark", "document-formatting", "page-style"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_203",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Conversions",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Pandoc"
+    },
+    "interaction": {
+      "user_query": "How can I convert a Markdown file to a Word doc? I wrote my notes in Obsidian but my boss needs a .docx.",
+      "ai_response": "Pandoc is the best tool for this.\n\n1. Install it: `sudo apt install pandoc`\n2. Run: `pandoc notes.md -o output.docx`\n\nPandoc handles headers, lists, and bold/italic text remarkably well during the conversion."
+    },
+    "technical_tags": ["pandoc", "markdown-conversion", "docx-export"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_204",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Digital Signatures",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "LibreOffice"
+    },
+    "interaction": {
+      "user_query": "How do I digitally sign a PDF in LibreOffice? I have a .p12 certificate file.",
+      "ai_response": "1. You first need to import your certificate into the Firefox certificate store (LibreOffice uses Mozilla's store on Linux) or use Seahorse (Passwords & Keys) depending on your setup.\n2. Once imported, open the PDF in Writer (or export a doc as PDF).\n3. Go to **File** > **Export As** > **Export as PDF**.\n4. Go to the **Digital Signatures** tab.\n5. Select your certificate and click Export."
+    },
+    "technical_tags": ["digital-signatures", "certificates", "pdf-security"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_205",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Archiving",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "File Roller"
+    },
+    "interaction": {
+      "user_query": "Someone sent me a .7z file and I can't open it. The archive manager shows an error.",
+      "ai_response": "Ubuntu supports .zip by default but needs a package for .7z files.\n\nInstall the p7zip packages:\n`sudo apt install p7zip-full`\n\nOnce installed, try opening the file again with the Archive Manager."
+    },
+    "technical_tags": ["compression", "7zip", "archive-manager"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_206",
+    "bucket": "Productivity & Documents",
+    "sub_category": "OCR",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "OCRFeeder"
+    },
+    "interaction": {
+      "user_query": "I scanned a document as an image but I need to copy the text. How do I do OCR on Linux?",
+      "ai_response": "A simple way is using **OCRFeeder** or the CLI tool **tesseract**.\n\nFor a quick CLI command:\n1. `sudo apt install tesseract-ocr`\n2. `tesseract image.png output -l eng`\n\nThis will create `output.txt` containing the text from the image."
+    },
+    "technical_tags": ["ocr", "tesseract", "image-to-text"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_207",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Manjaro",
+      "app_version": "LibreOffice Writer"
+    },
+    "interaction": {
+      "user_query": "How do I create a Table of Contents that automatically updates when I add pages?",
+      "ai_response": "1. Ensure you use **Heading 1**, **Heading 2**, etc., styles for your chapter titles.\n2. Place cursor where you want the TOC.\n3. **Insert** > **Table of Contents and Index** > **Table of Contents**.\n4. Click OK.\n5. To update it later, right-click the TOC and select **Update Index**."
+    },
+    "technical_tags": ["table-of-contents", "styles", "document-automation"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_301",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Recommendations",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "General"
+    },
+    "interaction": {
+      "user_query": "I'm moving from Windows. Is LibreOffice really the best option or is there something closer to MS Office?",
+      "ai_response": "LibreOffice is the standard FOSS choice, but if you want the visual look and feel of MS Office, try **OnlyOffice Desktop Editors** or **WPS Office** (Note: WPS is proprietary).\n\nOnlyOffice uses .docx/.xlsx natively and has a very similar ribbon interface, which often preserves formatting better for complex MS Office files."
+    },
+    "technical_tags": ["alternatives", "onlyoffice", "wps-office"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_302",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Recommendations",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "General"
+    },
+    "interaction": {
+      "user_query": "I need a serious PDF editor to rearrange pages, edit text, and redact info. Evince is too basic.",
+      "ai_response": "**Master PDF Editor** (proprietary, paid version required for some features) is the closest to Adobe Acrobat.\n\nFor a free, open-source alternative:\n1. **PDF Arranger** for merging/splitting/rearranging.\n2. **LibreOffice Draw** for minor text edits.\n3. **Okular** for annotations.\n\nThere isn't one single FOSS app that does *everything* Acrobat does perfectly, but Master PDF Editor is the most comprehensive."
+    },
+    "technical_tags": [
+      "pdf-editor",
+      "software-recommendation",
+      "master-pdf-editor"
+    ],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_303",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Recommendations",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "General"
+    },
+    "interaction": {
+      "user_query": "What's a good Notepad++ alternative? I just need something lighter than LibreOffice for editing config files.",
+      "ai_response": "**Notepadqq** is designed to be a Linux clone of Notepad++.\n\nAlternatively, **Geany** is very lightweight, fast, and handles code highlighting perfectly. It's often pre-installed or available via `sudo apt install geany`."
+    },
+    "technical_tags": ["text-editor", "notepad++", "geany"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_401",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Automation",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LibreOffice CLI"
+    },
+    "interaction": {
+      "user_query": "I have 50 .odt files I need to convert to PDF. I don't want to open them one by one.",
+      "ai_response": "You can use LibreOffice in 'headless' mode from the terminal.\n\nRun:\n`libreoffice --headless --convert-to pdf *.odt`\n\nThis will batch convert every .odt file in the current directory to PDF without launching the GUI."
+    },
+    "technical_tags": ["batch-processing", "headless-mode", "cli-automation"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_402",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Automation",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "ImageMagick"
+    },
+    "interaction": {
+      "user_query": "How can I combine a folder of JPEGs into a single PDF file?",
+      "ai_response": "You can use ImageMagick's `convert` tool.\n\n1. Install it: `sudo apt install imagemagick`\n2. Run: `convert *.jpg output.pdf`\n\nNote: If you get a security policy error, you may need to edit `/etc/ImageMagick-6/policy.xml` to allow PDF rights, or simply use `img2pdf` (`sudo apt install img2pdf`) which is faster and lossless: `img2pdf *.jpg -o output.pdf`."
+    },
+    "technical_tags": ["imagemagick", "img2pdf", "file-conversion"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_403",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Automation",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Cron"
+    },
+    "interaction": {
+      "user_query": "I want to backup my Documents folder to a zip file every Friday automatically.",
+      "ai_response": "You can use a cron job.\n\n1. Open your crontab: `crontab -e`\n2. Add this line:\n`0 18 * * 5 zip -r /path/to/backup/docs_$(date +\\%F).zip /home/user/Documents`\n\nThis runs every Friday at 6:00 PM (18:00) and dates the filename."
+    },
+    "technical_tags": ["cron", "backups", "automation"],
+    "friction_type": "user_error"
+  }
+]

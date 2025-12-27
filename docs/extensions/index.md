@@ -130,12 +130,12 @@ gemini extensions link <path>
 
 ## How it works
 
-On startup, Gemini CLI looks for extensions in `<home>/.gemini/extensions`
+On startup, Gemini CLI looks for extensions in `<home>/.terminai/extensions`
 
 Extensions exist as a directory that contains a `gemini-extension.json` file.
 For example:
 
-`<home>/.gemini/extensions/my-extension/gemini-extension.json`
+`<home>/.terminai/extensions/my-extension/gemini-extension.json`
 
 ### `gemini-extension.json`
 
@@ -221,7 +221,7 @@ Each object in the array should have the following properties:
 
 When a user installs this extension, they will be prompted to enter their API
 key. The value will be saved to a `.env` file in the extension's directory
-(e.g., `<home>/.gemini/extensions/my-api-extension/.env`).
+(e.g., `<home>/.terminai/extensions/my-api-extension/.env`).
 
 You can view a list of an extension's settings by running:
 
@@ -250,7 +250,7 @@ standard naming conventions.
 An extension named `gcp` with the following structure:
 
 ```
-.gemini/extensions/gcp/
+.terminai/extensions/gcp/
 ├── gemini-extension.json
 └── commands/
     ├── deploy.toml
@@ -286,8 +286,8 @@ using `"cwd": "${extensionPath}${/}run.ts"`.
 
 **Supported variables:**
 
-| variable                   | description                                                                                                                                                     |
-| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `${extensionPath}`         | The fully-qualified path of the extension in the user's filesystem e.g., '/Users/username/.gemini/extensions/example-extension'. This will not unwrap symlinks. |
-| `${workspacePath}`         | The fully-qualified path of the current workspace.                                                                                                              |
-| `${/} or ${pathSeparator}` | The path separator (differs per OS).                                                                                                                            |
+| variable                   | description                                                                                                                                                       |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `${extensionPath}`         | The fully-qualified path of the extension in the user's filesystem e.g., '/Users/username/.terminai/extensions/example-extension'. This will not unwrap symlinks. |
+| `${workspacePath}`         | The fully-qualified path of the current workspace.                                                                                                                |
+| `${/} or ${pathSeparator}` | The path separator (differs per OS).                                                                                                                              |

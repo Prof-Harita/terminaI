@@ -26,6 +26,8 @@ import {
   WRITE_FILE_TOOL_NAME,
   SHELL_TOOL_NAMES,
   SHELL_TOOL_NAME,
+  REPL_TOOL_NAME,
+  type ReplSandboxTier,
   resolveTelemetrySettings,
   FatalConfigError,
   getPty,
@@ -48,7 +50,10 @@ import { appEvents } from '../utils/events.js';
 import { RESUME_LATEST } from '../utils/sessionUtils.js';
 
 import { isWorkspaceTrusted } from './trustedFolders.js';
-import { createPolicyEngineConfig } from './policy.js';
+import {
+  createPolicyEngineConfig,
+  resolvePolicyBrainAuthority,
+} from './policy.js';
 import { ExtensionManager } from './extension-manager.js';
 import type { ExtensionEvents } from '@terminai/core/src/utils/extensionLoader.js';
 import { requestConsentNonInteractive } from './extensions/consent.js';
@@ -76,6 +81,7 @@ export interface CliArgs {
   webRemoteToken: string | undefined;
   webRemoteRotateToken: boolean | undefined;
   iUnderstandWebRemoteRisk: boolean | undefined;
+  remoteBind: string | undefined;
 
   yolo: boolean | undefined;
   approvalMode: string | undefined;
@@ -298,6 +304,12 @@ export async function parseArguments(settings: Settings): Promise<CliArgs> {
           nargs: 1,
           description: 'Host to bind the web-remote server.',
         })
+        .option('remote-bind', {
+          type: 'string',
+          nargs: 1,
+          description:
+            'Explicit host binding for web-remote (required for non-loopback).',
+        })
         .option('web-remote-port', {
           type: 'number',
           nargs: 1,
@@ -385,13 +397,18 @@ export async function parseArguments(settings: Settings): Promise<CliArgs> {
       if (argv['webRemoteToken'] && argv['webRemoteRotateToken']) {
         return 'Cannot use both --web-remote-token and --web-remote-rotate-token together.';
       }
-      const webRemoteHost = argv['webRemoteHost'] as string | undefined;
+      const remoteBind = argv['remoteBind'] as string | undefined;
+      const webRemoteHost =
+        remoteBind ?? (argv['webRemoteHost'] as string | undefined);
       if (
-        webRemoteHost &&
-        !isLoopbackHost(webRemoteHost) &&
-        !argv['iUnderstandWebRemoteRisk']
+        remoteBind &&
+        argv['webRemoteHost'] &&
+        remoteBind !== argv['webRemoteHost']
       ) {
-        return 'Binding web-remote to a non-loopback host requires --i-understand-web-remote-risk';
+        return 'Cannot use both --remote-bind and --web-remote-host with different values.';
+      }
+      if (webRemoteHost && !isLoopbackHost(webRemoteHost) && !remoteBind) {
+        return 'Binding web-remote to a non-loopback host requires --remote-bind';
       }
       return true;
     });
@@ -424,6 +441,10 @@ export async function parseArguments(settings: Settings): Promise<CliArgs> {
     yargsInstance.showHelp();
     await runExitCleanup();
     process.exit(1);
+  }
+
+  if (result['remoteBind']) {
+    result['webRemoteHost'] = result['remoteBind'];
   }
 
   // Handle help and version flags manually since we disabled exitProcess
@@ -505,6 +526,7 @@ export async function loadCliConfig(
   const debugMode = isDebugMode(argv);
 
   if (argv.sandbox) {
+    process.env['TERMINAI_SANDBOX'] = 'true';
     process.env['GEMINI_SANDBOX'] = 'true';
   }
 
@@ -653,6 +675,7 @@ export async function loadCliConfig(
     settings,
     approvalMode,
   );
+  const policyBrainAuthority = await resolvePolicyBrainAuthority();
 
   const enableMessageBusIntegration =
     settings.tools?.enableMessageBusIntegration ?? true;
@@ -674,8 +697,9 @@ export async function loadCliConfig(
       EDIT_TOOL_NAME,
       WRITE_FILE_TOOL_NAME,
       WEB_FETCH_TOOL_NAME,
+      REPL_TOOL_NAME,
     ];
-    const autoEditExcludes = [SHELL_TOOL_NAME];
+    const autoEditExcludes = [SHELL_TOOL_NAME, REPL_TOOL_NAME];
 
     const toolExclusionFilter = createToolExclusionFilter(
       allowedTools,
@@ -715,6 +739,11 @@ export async function loadCliConfig(
     defaultModel;
 
   const sandboxConfig = await loadSandboxConfig(settings, argv);
+  const replDockerImage =
+    settings.tools?.repl?.dockerImage ??
+    process.env['TERMINAI_REPL_DOCKER_IMAGE'] ??
+    process.env['GEMINI_REPL_DOCKER_IMAGE'] ??
+    sandboxConfig?.image;
   const screenReader =
     argv.screenReader !== undefined
       ? argv.screenReader
@@ -810,6 +839,24 @@ export async function loadCliConfig(
     geminiMdFilePaths: filePaths,
     approvalMode,
     disableYoloMode: settings.security?.disableYoloMode,
+    brain: {
+      authority: settings.brain?.authority,
+      policyAuthority: policyBrainAuthority,
+    },
+    audit: {
+      redactUiTypedText: settings.audit?.redactUiTypedText,
+      retentionDays: settings.audit?.retentionDays,
+      exportFormat: settings.audit?.export?.format,
+      exportRedaction: settings.audit?.export?.redaction,
+    },
+    recipes: {
+      paths: settings.recipes?.paths,
+      communityPaths: settings.recipes?.communityPaths,
+      allowCommunity: settings.recipes?.allowCommunity,
+      confirmCommunityOnFirstLoad:
+        settings.recipes?.confirmCommunityOnFirstLoad,
+      trustedCommunityRecipes: settings.recipes?.trustedCommunityRecipes,
+    },
     showMemoryUsage: settings.ui?.showMemoryUsage || false,
     accessibility: {
       ...settings.ui?.accessibility,
@@ -854,6 +901,23 @@ export async function loadCliConfig(
     truncateToolOutputThreshold: settings.tools?.truncateToolOutputThreshold,
     truncateToolOutputLines: settings.tools?.truncateToolOutputLines,
     enableToolOutputTruncation: settings.tools?.enableToolOutputTruncation,
+    repl: {
+      sandboxTier: settings.tools?.repl?.sandboxTier as
+        | ReplSandboxTier
+        | undefined,
+      timeoutSeconds: settings.tools?.repl?.timeoutSeconds,
+      dockerImage: replDockerImage,
+    },
+    guiAutomation: {
+      minReviewLevel: settings.tools?.guiAutomation?.minReviewLevel,
+      clickMinReviewLevel: settings.tools?.guiAutomation?.clickMinReviewLevel,
+      typeMinReviewLevel: settings.tools?.guiAutomation?.typeMinReviewLevel,
+      redactTypedTextByDefault:
+        settings.tools?.guiAutomation?.redactTypedTextByDefault,
+      snapshotMaxDepth: settings.tools?.guiAutomation?.snapshotMaxDepth,
+      snapshotMaxNodes: settings.tools?.guiAutomation?.snapshotMaxNodes,
+      maxActionsPerMinute: settings.tools?.guiAutomation?.maxActionsPerMinute,
+    },
     eventEmitter: appEvents,
     useSmartEdit: argv.useSmartEdit ?? settings.useSmartEdit,
     useWriteTodos: argv.useWriteTodos ?? settings.useWriteTodos,

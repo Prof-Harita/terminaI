@@ -50,8 +50,8 @@ Non-optional scope note:
 - [ ] Provide an optional TermAI prompt override file and instructions
       (preferred minimal fork path):
   - [ ] Add `docs/termai-system.md` (example TermAI system prompt to use with
-        `GEMINI_SYSTEM_MD`).
-  - [ ] Update docs/README with: `GEMINI_SYSTEM_MD=... gemini` usage.
+        `TERMINAI_SYSTEM_MD`).
+  - [ ] Update docs/README with: `TERMINAI_SYSTEM_MD=... gemini` usage.
 - [ ] Add a regression test: “enabling CodebaseInvestigator does not reintroduce
       Software Engineering Tasks wording”.
 
@@ -226,5 +226,5 @@ Non-optional scope note:
 
 - [ ] Keep diffs small; avoid renames unless necessary.
 - [ ] Prefer feature flags/env toggles for risky or always-on features.
-- [ ] Document TermAI launch via `GEMINI_SYSTEM_MD` so upstream merges stay
+- [ ] Document TermAI launch via `TERMINAI_SYSTEM_MD` so upstream merges stay
       clean.

@@ -14,7 +14,7 @@ npm install -g @google/gemini-cli
 - **⚡️⚡️⚡️ Gemini 3 Flash + Gemini CLI:** If you are a paid user, you can now
   enable Gemini 3 Pro and Gemini 3 Flash. Go to `/settings` and set **Preview
   Features** to `true` to enable Gemini 3. For more information:
-  [Gemini 3 Flash is now available in Gemini CLI](https://developers.googleblog.com/gemini-3-flash-is-now-available-in-gemini-cli/).
+  [Gemini 3 Flash is now available in Gemini CLI](https://developers.googleblog.com/gemini-2.0-flash-exp-flash-is-now-available-in-gemini-cli/).
 
 ## What's Changed
 

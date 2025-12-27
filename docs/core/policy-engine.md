@@ -11,10 +11,10 @@ To create your first policy:
 
 1.  **Create the policy directory** if it doesn't exist:
     ```bash
-    mkdir -p ~/.gemini/policies
+    mkdir -p ~/.terminai/policies
     ```
-2.  **Create a new policy file** (e.g., `~/.gemini/policies/my-rules.toml`). You
-    can use any filename ending in `.toml`; all such files in this directory
+2.  **Create a new policy file** (e.g., `~/.terminai/policies/my-rules.toml`).
+    You can use any filename ending in `.toml`; all such files in this directory
     will be loaded and combined:
     ```toml
     [[rule]]

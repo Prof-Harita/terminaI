@@ -37,6 +37,7 @@ export default tseslint.config(
       'dist/**',
       'opencode/**',
       'open-interpreter/**',
+      'packages/desktop/src-tauri/target/**',
     ],
   },
   eslint.configs.recommended,

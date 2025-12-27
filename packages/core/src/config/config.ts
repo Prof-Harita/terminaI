@@ -94,6 +94,11 @@ import type { ModelConfigServiceConfig } from '../services/modelConfigService.js
 import { ModelConfigService } from '../services/modelConfigService.js';
 import { DEFAULT_MODEL_CONFIGS } from './defaultModelConfigs.js';
 import { ContextManager } from '../services/contextManager.js';
+import {
+  configureGuiAutomation,
+  getGuiAutomationConfig,
+  type GuiAutomationConfig,
+} from '../gui/config.js';
 
 // Re-export OAuth config type
 export type { MCPOAuthConfig, AnyToolInvocation };
@@ -121,6 +126,18 @@ import { debugLogger } from '../utils/debugLogger.js';
 import { startupProfiler } from '../telemetry/startupProfiler.js';
 
 import { ApprovalMode } from '../policy/types.js';
+import type { Provenance } from '../safety/approval-ladder/types.js';
+import {
+  DEFAULT_BRAIN_AUTHORITY,
+  type BrainAuthority,
+  resolveEffectiveBrainAuthority,
+} from './brainAuthority.js';
+import {
+  type AuditLedger,
+  FileAuditLedger,
+  type AuditExportOptions,
+} from '../audit/ledger.js';
+import type { AuditExportRedaction } from '../audit/export.js';
 
 export interface AccessibilitySettings {
   disableLoadingPhrases?: boolean;
@@ -261,6 +278,22 @@ export interface SandboxConfig {
   image: string;
 }
 
+export type ReplSandboxTier = 'tier1' | 'tier2';
+
+export interface ReplToolConfig {
+  sandboxTier: ReplSandboxTier;
+  timeoutMs: number;
+  dockerImage?: string;
+}
+
+export interface WebRemoteStatus {
+  active: boolean;
+  host: string;
+  port: number;
+  loopback: boolean;
+  url?: string;
+}
+
 export interface ConfigParameters {
   sessionId: string;
   embeddingModel?: string;
@@ -362,7 +395,41 @@ export interface ConfigParameters {
   security?: {
     approvalPin?: string;
   };
+  brain?: {
+    authority?: BrainAuthority;
+    policyAuthority?: BrainAuthority;
+  };
   providerConfig?: ProviderConfig;
+  logs?: {
+    retention?: {
+      days?: number;
+    };
+  };
+  repl?: {
+    sandboxTier?: ReplSandboxTier;
+    timeoutSeconds?: number;
+    dockerImage?: string;
+  };
+  sessionProvenance?: Provenance[];
+  webRemoteStatus?: WebRemoteStatus | null;
+  audit?: AuditSettings;
+  recipes?: RecipesSettings;
+  guiAutomation?: Partial<GuiAutomationConfig>;
+}
+
+export interface AuditSettings {
+  redactUiTypedText?: boolean;
+  retentionDays?: number;
+  exportFormat?: AuditExportOptions['format'];
+  exportRedaction?: AuditExportRedaction;
+}
+
+export interface RecipesSettings {
+  paths?: string[];
+  communityPaths?: string[];
+  allowCommunity?: boolean;
+  confirmCommunityOnFirstLoad?: boolean;
+  trustedCommunityRecipes?: string[];
 }
 
 export class Config {
@@ -424,6 +491,8 @@ export class Config {
   private readonly noBrowser: boolean;
   private readonly folderTrust: boolean;
   private ideMode: boolean;
+  private sessionProvenance: Provenance[];
+  private webRemoteStatus: WebRemoteStatus | null;
 
   private _activeModel: string;
   private readonly maxSessionTurns: number;
@@ -474,6 +543,7 @@ export class Config {
   readonly fakeResponses?: string;
   readonly recordResponses?: string;
   private readonly disableYoloMode: boolean;
+  private readonly brainAuthority: BrainAuthority;
   private pendingIncludeDirectories: string[];
   private readonly enableHooks: boolean;
   private readonly hooks:
@@ -487,10 +557,16 @@ export class Config {
   private readonly enableAgents: boolean;
 
   private readonly experimentalJitContext: boolean;
+  private readonly auditSettings: AuditSettings;
+  private readonly recipeSettings: RecipesSettings;
+  private readonly guiAutomationSettings: GuiAutomationConfig;
+  private readonly auditLedger: AuditLedger;
   private contextManager?: ContextManager;
   private terminalBackground: string | undefined = undefined;
   private readonly approvalPin: string;
   private readonly providerConfig: ProviderConfig;
+  private readonly logsRetentionDays: number;
+  private readonly replToolConfig: ReplToolConfig;
 
   constructor(params: ConfigParameters) {
     this.sessionId = params.sessionId;
@@ -506,6 +582,8 @@ export class Config {
     this.question = params.question;
     this.previewMode = params.previewMode ?? false;
     this.webRemoteRelayUrl = params.webRemoteRelayUrl;
+    this.sessionProvenance = params.sessionProvenance ?? [];
+    this.webRemoteStatus = params.webRemoteStatus ?? null;
 
     this.coreTools = params.coreTools;
     this.allowedTools = params.allowedTools;
@@ -631,6 +709,14 @@ export class Config {
     this.extensionManagement = params.extensionManagement ?? true;
     this.enableExtensionReloading = params.enableExtensionReloading ?? false;
     this.storage = new Storage(this.targetDir);
+    this.recipeSettings = {
+      paths: params.recipes?.paths ?? [this.storage.getProjectRecipesDir()],
+      communityPaths: params.recipes?.communityPaths ?? [],
+      allowCommunity: params.recipes?.allowCommunity ?? false,
+      confirmCommunityOnFirstLoad:
+        params.recipes?.confirmCommunityOnFirstLoad ?? true,
+      trustedCommunityRecipes: params.recipes?.trustedCommunityRecipes ?? [],
+    };
     this.fakeResponses = params.fakeResponses;
     this.recordResponses = params.recordResponses;
     this.enablePromptCompletion = params.enablePromptCompletion ?? false;
@@ -646,8 +732,39 @@ export class Config {
     this.hooks = params.hooks;
     this.experiments = params.experiments;
     this.approvalPin = params.security?.approvalPin ?? '000000';
+    const policyBrainAuthority = params.brain?.policyAuthority;
+    this.brainAuthority = resolveEffectiveBrainAuthority(
+      params.brain?.authority ?? DEFAULT_BRAIN_AUTHORITY,
+      policyBrainAuthority,
+    );
+    configureGuiAutomation(params.guiAutomation);
+    this.guiAutomationSettings = getGuiAutomationConfig();
+    this.auditSettings = {
+      redactUiTypedText:
+        params.audit?.redactUiTypedText ??
+        this.guiAutomationSettings.redactTypedTextByDefault ??
+        true,
+      retentionDays: params.audit?.retentionDays ?? 30,
+      exportFormat: params.audit?.exportFormat ?? 'jsonl',
+      exportRedaction: params.audit?.exportRedaction ?? 'enterprise',
+    };
+    this.auditLedger = new FileAuditLedger(
+      new Storage(this.targetDir).getSessionAuditPath(this.sessionId),
+      {
+        redactUiTypedText: this.auditSettings.redactUiTypedText,
+      },
+    );
     this.providerConfig = params.providerConfig ?? {
       provider: LlmProviderId.GEMINI,
+    };
+    this.logsRetentionDays = params.logs?.retention?.days ?? 7;
+    const replTimeoutSeconds = Math.max(params.repl?.timeoutSeconds ?? 30, 1);
+    const replSandboxTier =
+      params.repl?.sandboxTier === 'tier2' ? 'tier2' : 'tier1';
+    this.replToolConfig = {
+      sandboxTier: replSandboxTier,
+      timeoutMs: replTimeoutSeconds * 1000,
+      dockerImage: params.repl?.dockerImage,
     };
 
     if (params.contextFileName) {
@@ -875,12 +992,32 @@ export class Config {
     return this.baseLlmClient;
   }
 
+  getLogsRetentionDays(): number {
+    return this.logsRetentionDays;
+  }
+
   getSessionId(): string {
     return this.sessionId;
   }
 
   setSessionId(sessionId: string): void {
     this.sessionId = sessionId;
+  }
+
+  getSessionProvenance(): Provenance[] {
+    return [...this.sessionProvenance];
+  }
+
+  setSessionProvenance(provenance: Provenance[]): void {
+    this.sessionProvenance = [...provenance];
+  }
+
+  getWebRemoteStatus(): WebRemoteStatus | null {
+    return this.webRemoteStatus;
+  }
+
+  setWebRemoteStatus(status: WebRemoteStatus | null): void {
+    this.webRemoteStatus = status;
   }
 
   setTerminalBackground(terminalBackground: string | undefined): void {
@@ -1195,6 +1332,26 @@ export class Config {
     return this.approvalPin;
   }
 
+  getBrainAuthority(): BrainAuthority {
+    return this.brainAuthority;
+  }
+
+  getAuditLedger(): AuditLedger {
+    return this.auditLedger;
+  }
+
+  getAuditSettings(): AuditSettings {
+    return this.auditSettings;
+  }
+
+  getRecipeSettings(): RecipesSettings {
+    return this.recipeSettings;
+  }
+
+  getGuiAutomationSettings(): GuiAutomationConfig {
+    return this.guiAutomationSettings;
+  }
+
   setApprovalMode(mode: ApprovalMode): void {
     if (!this.isTrustedFolder() && mode !== ApprovalMode.DEFAULT) {
       throw new Error(
@@ -1277,6 +1434,10 @@ export class Config {
 
   getModelAvailabilityService(): ModelAvailabilityService {
     return this.modelAvailabilityService;
+  }
+
+  getReplToolConfig(): ReplToolConfig {
+    return this.replToolConfig;
   }
 
   getEnableRecursiveFileSearch(): boolean {

@@ -5,6 +5,9 @@ your conversation history. This allows you to interrupt your work and resume
 exactly where you left off, review past interactions, and manage your
 conversation history effectively.
 
+> Note: The preferred binary name is `terminai`; the `gemini` alias is kept for
+> compatibility.
+
 ## Automatic Saving
 
 Every time you interact with Gemini CLI, your session is automatically saved.
@@ -15,7 +18,7 @@ This happens in the background without any manual intervention.
   - All tool executions (inputs and outputs).
   - Token usage statistics (input/output/cached, etc.).
   - Assistant thoughts/reasoning summaries (when available).
-- **Location:** Sessions are stored in `~/.gemini/tmp/<project_hash>/chats/`.
+- **Location:** Sessions are stored in `~/.terminai/tmp/<project_hash>/chats/`.
 - **Scope:** Sessions are project-specific. Switching directories to a different
   project will switch to that project's session history.
 
@@ -31,7 +34,7 @@ When starting the CLI, you can use the `--resume` (or `-r`) flag:
 - **Resume latest:**
 
   ```bash
-  gemini --resume
+  terminai --resume
   ```
 
   This immediately loads the most recent session.
@@ -40,12 +43,12 @@ When starting the CLI, you can use the `--resume` (or `-r`) flag:
   [Listing Sessions](#listing-sessions)), then use the index number:
 
   ```bash
-  gemini --resume 1
+  terminai --resume 1
   ```
 
 - **Resume by ID:** You can also provide the full session UUID:
   ```bash
-  gemini --resume a1b2c3d4-e5f6-7890-abcd-ef1234567890
+  terminai --resume a1b2c3d4-e5f6-7890-abcd-ef1234567890
   ```
 
 ### From the Interactive Interface
@@ -74,7 +77,7 @@ To see a list of all available sessions for the current project from the command
 line:
 
 ```bash
-gemini --list-sessions
+terminai --list-sessions
 ```
 
 Output example:
@@ -95,7 +98,7 @@ history.
 **From the Command Line:** Use the `--delete-session` flag with an index or ID:
 
 ```bash
-gemini --delete-session 2
+terminai --delete-session 2
 ```
 
 **From the Session Browser:**

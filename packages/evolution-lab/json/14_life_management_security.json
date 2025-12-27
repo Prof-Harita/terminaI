@@ -1,0 +1,1192 @@
+[
+  {
+    "id": "LIFE_MGT_501",
+    "bucket": "Life Management",
+    "sub_category": "Privacy & Security",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "GnuCash 4.8"
+    },
+    "interaction": {
+      "user_query": "I share my laptop with my roommate and I don't want them seeing my financial data in GnuCash. Is there a way to password protect the file itself?",
+      "ai_response": "GnuCash does not support password protection for XML files natively. \n\n**Best Solution:** Use an encrypted database backend (SQLCipher) or store your file in an encrypted folder.\n\n**Option 1: Save as SQLite (Encrypted)**\n1. Open your file.\n2. `File` > `Save As`.\n3. Select Format: `sqlite3`.\n4. GnuCash might not encrypt this by default on all builds. \n\n**Option 2: GNOME Encrypted Vault (Easier)**\n1. Install `gnome-disk-utility`.\n2. Create a small encrypted disk image (LUKS).\n3. Mount it and save your `.gnucash` file there.\n\nAlternatively, use **KMyMoney**, which supports GPG encryption for files natively."
+    },
+    "technical_tags": ["gnucash", "encryption", "privacy"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_502",
+    "bucket": "Life Management",
+    "sub_category": "Privacy & Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Nextcloud Client"
+    },
+    "interaction": {
+      "user_query": "I'm syncing my calendar and contacts to a Nextcloud provider, but I'm worried about the server admin reading my events. Can I use end-to-end encryption for the calendar specifically?",
+      "ai_response": "Standard CalDAV/CardDAV protocols used by Nextcloud **do not** support End-to-End Encryption (E2EE) in a way that hides event details from the server. The server must be able to read the data to serve it to other clients.\n\n**Workaround:**\n1. Use **EteSync**. It provides an E2EE sync bridge.\n2. Install the EteSync module for Evolution or the bridge software.\n3. This encrypts data *before* it leaves your device."
+    },
+    "technical_tags": ["nextcloud", "caldav", "encryption"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_503",
+    "bucket": "Life Management",
+    "sub_category": "Privacy & Security",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "RedNotebook 2.22"
+    },
+    "interaction": {
+      "user_query": "I am using RedNotebook for my personal diary. I found the 'save' folder but the files are just plain text! Anyone can read them if they get on my computer. How do I lock this?",
+      "ai_response": "RedNotebook stores entries as plain text (YAML/txt) by design for portability. It does not have built-in encryption.\n\n**To secure it:**\n1. Move your journal directory to a password-protected zip or an encrypted volume.\n2. Or, switch to **Joplin** with the End-to-End Encryption setting enabled, or **Almanah Diary** which integrates with GPG encryption natively:\n   ```bash\n   sudo apt install almanah\n   ```"
+    },
+    "technical_tags": ["rednotebook", "diary", "security"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_504",
+    "bucket": "Life Management",
+    "sub_category": "Privacy & Security",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "KeepassXC 2.7"
+    },
+    "interaction": {
+      "user_query": "I'm storing my credit card pins and secure notes in KeepassXC. I want to ensure that even if my laptop is stolen while running, the database locks quickly. How do I configure strict timeout rules?",
+      "ai_response": "You can configure KeepassXC to lock aggressively.\n\n**Steps:**\n1. Go to `Tools` > `Settings` > `Security`.\n2. Check **Lock database after inactivity of**: set to `60` seconds.\n3. Check **Lock database when session is locked** (crucial for lid close).\n4. Check **Lock database when window is minimized**.\n\nFor extra security on Arch, ensure your swap partition is encrypted, otherwise keys could theoretically be dumped from RAM to swap."
+    },
+    "technical_tags": ["keepassxc", "security", "locking"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_505",
+    "bucket": "Life Management",
+    "sub_category": "Privacy & Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "I use Thunderbird for email and calendar. I keep getting prompted for my 'Primary Password' every time I open it. I want it secure, but can I make it ask only when I actually try to view a saved password or send an email?",
+      "ai_response": "The Primary Password protects all locally saved credentials (IMAP, SMTP, CalDAV). Thunderbird needs these immediately upon launch to sync your mail and calendar, which triggers the prompt instantly.\n\n**You cannot delay it** if you want automatic sync on startup.\n\n**Alternative:**\nRemove the Primary Password (less secure) or install the **'StartupMaster'** extension (if compatible with your version) to handle the prompt flow better, though native behavior is strict for security."
+    },
+    "technical_tags": ["thunderbird", "master-password", "security"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_506",
+    "bucket": "Life Management",
+    "sub_category": "Privacy & Security",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "GNOME Calendar"
+    },
+    "interaction": {
+      "user_query": "Does GNOME Calendar send my schedule to Google automatically? I see a 'Online Accounts' section but I want to keep everything offline on my disk.",
+      "ai_response": "GNOME Calendar only syncs if you explicitly sign in via **Settings > Online Accounts**.\n\n**To ensure local-only mode:**\n1. Open GNOME Calendar.\n2. Click the Calendar icon (top left).\n3. Ensure you are adding events to the calendar named **'Personal'** (which is local).\n4. Do not add Google/Microsoft accounts in system settings.\n\nYour data is stored locally at `~/.local/share/evolution/calendar/system/`."
+    },
+    "technical_tags": ["gnome-calendar", "privacy", "offline"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_507",
+    "bucket": "Life Management",
+    "sub_category": "Privacy & Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Syncthing"
+    },
+    "interaction": {
+      "user_query": "I set up Syncthing to sync my 'Documents/Financial' folder between my desktop and laptop. I see 'Global Discovery' is on. Does this mean Syncthing servers can see my file contents?",
+      "ai_response": "No, Syncthing servers **cannot** see your file contents. \n\n**How it works:**\n- **Global Discovery** just broadcasts your Device ID and IP address so your devices can find each other over the internet.\n- The data transfer itself is **End-to-End Encrypted** (TLS) between your devices directly.\n- If you are paranoid about metadata, you can disable Global Discovery and Relaying in `Actions > Settings > Connections`, but you will need static IPs or local-only syncing."
+    },
+    "technical_tags": ["syncthing", "privacy", "networking"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_508",
+    "bucket": "Life Management",
+    "sub_category": "Privacy & Security",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "HomeBank 5.6"
+    },
+    "interaction": {
+      "user_query": "I want to run HomeBank inside a sandbox so it can't access my other personal files. Is Flatpak enough for this?",
+      "ai_response": "Flatpak provides good isolation, but you should verify the permissions.\n\n**Check permissions:**\n1. Install **Flatseal** (`flatpak install flathub com.github.tchx84.Flatseal`).\n2. Select HomeBank.\n3. Under **Filesystem**, ensure 'All system files' is **OFF**.\n4. Only allow access to the specific folder where you keep your `.xhb` file (e.g., `~/Documents/Finance`).\n\nThis strictly limits what the application can read."
+    },
+    "technical_tags": ["homebank", "flatpak", "permissions"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_509",
+    "bucket": "Life Management",
+    "sub_category": "Privacy & Security",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Standard Notes"
+    },
+    "interaction": {
+      "user_query": "I just installed Standard Notes appimage. It says 'End-to-End Encrypted'. Does that mean I don't need a password for my account?",
+      "ai_response": "No, you absolutely need a password. In Standard Notes, your password **generates your encryption key**.\n\n1. If you lose your password, **you lose your data forever**. There is no password reset because the server cannot read your data.\n2. The encryption means the company hosting the sync server cannot read your notes, only you can."
+    },
+    "technical_tags": ["standard-notes", "encryption", "account-management"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_510",
+    "bucket": "Life Management",
+    "sub_category": "Privacy & Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Evolution"
+    },
+    "interaction": {
+      "user_query": "I'm connecting Evolution to my company's Exchange server (EWS). Does Evolution store the downloaded emails in plain text on my drive?",
+      "ai_response": "Yes, Evolution stores cached emails and contacts in unencrypted files by default.\n\n**Location:** `~/.cache/evolution/` and `~/.local/share/evolution/`.\n\n**Mitigation:**\nDebian 12 supports LUKS disk encryption during installation. If you did not encrypt your home folder or disk, anyone with physical access to the drive can read these caches. Software-level encryption for the cache is not a feature of Evolution."
+    },
+    "technical_tags": ["evolution", "exchange", "disk-encryption"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_511",
+    "bucket": "Life Management",
+    "sub_category": "Privacy & Security",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Bitwarden Desktop"
+    },
+    "interaction": {
+      "user_query": "I'm using the Bitwarden AppImage. Every time I update my system, I worry the AppImage might be tampered with. How do I verify it's the real one?",
+      "ai_response": "You can verify the AppImage signature using GPG.\n\n1. Download the `.AppImage` and the `checksums.txt` or `.asc` file from the official GitHub release.\n2. Check the SHA256 hash manually:\n   ```bash\n   sha256sum Bitwarden-*.AppImage\n   ```\n3. Compare the output string to the one on the release page. If they match, the file is identical to the one published by the developer."
+    },
+    "technical_tags": ["bitwarden", "security", "verification"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_512",
+    "bucket": "Life Management",
+    "sub_category": "Privacy & Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Thunderbird"
+    },
+    "interaction": {
+      "user_query": "I want to disable remote content in emails by default for privacy (tracking pixels), but allow it for specific senders like my bank. How do I do this in Thunderbird?",
+      "ai_response": "Thunderbird blocks remote content by default.\n\n**To allow specific senders:**\n1. When you open an email with blocked images, a yellow bar appears at the top.\n2. Click **Options** on that bar.\n3. Select **Allow remote content for [sender email]**.\n\nThis adds an exception to your address book whitelist. Check `Settings` > `Privacy & Security` > `Mail Content` to ensure 'Allow remote content in messages' is unchecked globally."
+    },
+    "technical_tags": ["thunderbird", "privacy", "tracking-prevention"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_513",
+    "bucket": "Life Management",
+    "sub_category": "Privacy & Security",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Nextcloud"
+    },
+    "interaction": {
+      "user_query": "I self-host Nextcloud for my calendar. I want to use Fail2Ban to block people trying to brute force my login page. What filter do I need?",
+      "ai_response": "You need to create a filter for Nextcloud's log format.\n\n1. **Create filter:** `/etc/fail2ban/filter.d/nextcloud.conf`\n   ```ini\n   [Definition]\n   failregex = ^.*Login failed: '.*' \\(Remote IP: '<HOST>'.*$\n   ```\n2. **Configure Jail:** `/etc/fail2ban/jail.local`\n   ```ini\n   [nextcloud]\n   backend = auto\n   enabled = true\n   port = 80,443\n   protocol = tcp\n   filter = nextcloud\n   logpath = /var/www/html/nextcloud/data/nextcloud.log\n   ```\n3. Ensure Nextcloud logging is set to file mode, not systemd."
+    },
+    "technical_tags": ["nextcloud", "fail2ban", "security"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_514",
+    "bucket": "Life Management",
+    "sub_category": "Privacy & Security",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "ActivityWatch"
+    },
+    "interaction": {
+      "user_query": "I installed ActivityWatch to track my screen time. Is it sending my browsing history to a cloud server? I see 'localhost:5600' in the browser.",
+      "ai_response": "ActivityWatch is **local-first** and privacy-focused. \n\n- `localhost:5600` means the server is running **on your own computer**, not the internet.\n- Your data (window titles, URLs) is stored in a local database on your hard drive.\n- It does not upload data anywhere unless you manually configure a sync server (which is not enabled by default)."
+    },
+    "technical_tags": ["activitywatch", "privacy", "local-host"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_515",
+    "bucket": "Life Management",
+    "sub_category": "Privacy & Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "KeePassXC"
+    },
+    "interaction": {
+      "user_query": "I enabled the 'Browser Integration' in KeePassXC for Firefox. A warning says 'KeePassXC-Browser has access to input data on all websites'. Is this safe?",
+      "ai_response": "Yes, this permission is required for the extension to function.\n\n**Context:**\n- The extension needs to read the URL to match it against your database entries.\n- It needs to modify the page (DOM) to autofill the username/password fields.\n\n**Safety Check:**\nEnsure you only connect the browser extension to KeePassXC via the official setup (Keys exchange). KeePassXC will **ask for confirmation** before filling credentials for a new URL."
+    },
+    "technical_tags": ["keepassxc", "browser-extension", "permissions"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_516",
+    "bucket": "Life Management",
+    "sub_category": "Privacy & Security",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Veracrypt"
+    },
+    "interaction": {
+      "user_query": "I keep my financial documents in a Veracrypt container. When I mount it, I want it to automatically run a script that opens HomeBank. How do I detect the mount event?",
+      "ai_response": "Veracrypt doesn't natively trigger scripts on mount in the GUI. You can wrap the mount command in a bash script:\n\n```bash\n#!/bin/bash\nveracrypt -t --mount /path/to/container /mnt/finance\nif [ $? -eq 0 ]; then\n    homebank /mnt/finance/mybudget.xhb &\nfi\n```\n\nSave this as `launch_finance.sh`, make it executable (`chmod +x`), and run this instead of opening Veracrypt manually."
+    },
+    "technical_tags": ["veracrypt", "scripting", "automation"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_517",
+    "bucket": "Life Management",
+    "sub_category": "Privacy & Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Signal Desktop"
+    },
+    "interaction": {
+      "user_query": "I use Signal Desktop. I know messages are encrypted in transit, but where are they stored on my disk? Can I back them up?",
+      "ai_response": "Signal Desktop stores data in an encrypted SQLCipher database locally.\n\n**Location:** `~/.config/Signal/sql/db.sqlite`\n\n**The Catch:** The decryption key is stored in `~/.config/Signal/config.json`. If you just copy the database without the config file (and the key inside it), you cannot read the messages. \n\nSignal Desktop does **not** have an official backup/export feature like the mobile app. You must back up the entire `~/.config/Signal` folder."
+    },
+    "technical_tags": ["signal", "backup", "encryption"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_518",
+    "bucket": "Life Management",
+    "sub_category": "Privacy & Security",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I am using Firefox to log into my bank. It keeps asking to 'Save Login'. I clicked 'Never' by mistake. How do I undo this so it asks me again?",
+      "ai_response": "You need to remove the exception in Firefox settings.\n\n1. Go to **Settings** > **Privacy & Security**.\n2. Scroll down to **Logins and Passwords**.\n3. Click the **Exceptions...** button next to 'Ask to save logins and passwords for websites'.\n4. Find your bank's URL in the list, select it, and click **Remove Website**."
+    },
+    "technical_tags": ["firefox", "password-manager", "configuration"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_519",
+    "bucket": "Life Management",
+    "sub_category": "Privacy & Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "QOwnNotes"
+    },
+    "interaction": {
+      "user_query": "I'm using QOwnNotes with Nextcloud. I want to encrypt my notes. QOwnNotes says it supports encryption but needs Keybase or GPG. Which is easier to set up?",
+      "ai_response": "QOwnNotes integrates well with **QOwnNotesAPI** on the Nextcloud server side, but for client-side encryption:\n\n**GPG is standard on Linux.**\n1. Generate a key: `gpg --gen-key`.\n2. In QOwnNotes: `Settings` > `Encryption`.\n3. Select 'Use internal encryption' or point it to your GPG key.\n\n**Note:** If you encrypt them, you won't be able to read the content via the Nextcloud Web interface, only inside QOwnNotes (or another tool that can decrypt that GPG file)."
+    },
+    "technical_tags": ["qownnotes", "gpg", "encryption"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_520",
+    "bucket": "Life Management",
+    "sub_category": "Privacy & Security",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Dropbox"
+    },
+    "interaction": {
+      "user_query": "I put my tax returns in the Dropbox folder. I want to encrypt just that folder before it uploads. Is there a simple tool for this?",
+      "ai_response": "Dropbox on Linux doesn't encrypt files client-side by default.\n\n**Best Tool:** **Cryptomator**.\n1. Install it (AppImage or PPA).\n2. Create a 'Vault' inside your Dropbox folder.\n3. Unlock the Vault -> it mounts as a virtual drive.\n4. Put your tax returns in that virtual drive.\n\nDropbox sees only encrypted nonsense files; you see your files when the vault is unlocked."
+    },
+    "technical_tags": ["dropbox", "cryptomator", "cloud-security"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_601",
+    "bucket": "Life Management",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "GNOME Online Accounts"
+    },
+    "interaction": {
+      "user_query": "I added my Google account to 'Online Accounts'. Calendar works, but 'Tasks' are missing in GNOME Calendar and Evolution. Where are my Google Tasks?",
+      "ai_response": "Google Tasks is a separate API from Google Calendar events, and standard CalDAV implementations often struggle with it.\n\n**For Evolution:**\n1. You often need to enable the specific 'Tasks' list in the calendar view.\n2. Evolution has better support than GNOME Calendar for this.\n\n**Alternative:**\nUse the **'Endeavour'** (formerly GNOME To Do) app or a dedicated client like **Errands** if the system integration is failing. Google intentionally keeps Tasks separate from the standard CalDAV specification."
+    },
+    "technical_tags": ["google-tasks", "gnome-online-accounts", "sync"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_602",
+    "bucket": "Life Management",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "I have an iCloud calendar. I can subscribe to it in Thunderbird, but it's read-only. How do I make it writeable so I can add events from my Linux laptop?",
+      "ai_response": "iCloud calendars are often read-only if you use the public URL. You need a specific **App-Specific Password** and the CalDAV URL.\n\n1. Login to appleid.apple.com and generate an App-Specific Password.\n2. In Thunderbird, create a New Calendar > On the Network.\n3. Format: `caldav://pXX-caldav.icloud.com/[your-apple-id]/calendars/[calendar-name]/` (The `pXX` varies, check your iOS settings or iCloud URL).\n4. Use your Apple ID as user, and the App-Specific Password you generated."
+    },
+    "technical_tags": ["thunderbird", "icloud", "caldav"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_603",
+    "bucket": "Life Management",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Syncthing"
+    },
+    "interaction": {
+      "user_query": "I use Syncthing to sync Obsidian notes between my phone and PC. I keep getting 'Sync Conflict' files. How do I stop this?",
+      "ai_response": "Sync conflicts happen when a file is modified on both devices before they have a chance to sync.\n\n**Fixes:**\n1. **Always close Obsidian** on one device before opening it on the other (Obsidian auto-saves constantly).\n2. Use **File Versioning** in Syncthing (Staggered File Versioning) so you can recover the 'lost' version easily.\n3. In Syncthing settings for the folder, ensure 'Watch for Changes' is enabled on both sides to trigger sync immediately upon save."
+    },
+    "technical_tags": ["syncthing", "obsidian", "conflict-resolution"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_604",
+    "bucket": "Life Management",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Spotify"
+    },
+    "interaction": {
+      "user_query": "I use Spotify on my phone and Linux Mint. The 'Connect' feature sees my Linux desktop, but when I click it, it tries to connect and then fails instantly. Firewall?",
+      "ai_response": "This is often a firewall issue. Spotify Connect requires port **5353** (mDNS) and a range of high ports (often **57621**).\n\n**Try allowing it in UFW:**\n```bash\nsudo ufw allow 5353/udp\nsudo ufw allow 57621/tcp\n```\nAlso, ensure both devices are on the exact same Wi-Fi subnet (e.g., not one on Guest and one on Main)."
+    },
+    "technical_tags": ["spotify", "firewall", "ufw"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_605",
+    "bucket": "Life Management",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Nextcloud"
+    },
+    "interaction": {
+      "user_query": "I want to mount my Nextcloud files as a local drive so I can open them directly in LibreOffice without syncing the whole folder. WebDAV is super slow.",
+      "ai_response": "WebDAV can be slow if mounted via GNOME Files (GVfs). \n\n**Better Alternative: `davfs2`**\n1. `sudo apt install davfs2`\n2. Add your user to the group: `sudo usermod -aG davfs2 $USER`\n3. Edit `/etc/davfs2/davfs2.conf` and set `use_locks 0` (often fixes LibreOffice save errors).\n4. Mount it via fstab or command line. \n\n*Warning:* Direct editing over WebDAV is risky for connection drops. The Nextcloud Desktop Client's **Virtual Files** feature (experimental on Linux) is safer if available."
+    },
+    "technical_tags": ["nextcloud", "webdav", "mounting"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_606",
+    "bucket": "Life Management",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Joplin"
+    },
+    "interaction": {
+      "user_query": "I'm using Joplin with filesystem sync to a mounted NAS drive. Sometimes the sync target is missing (NAS sleeping). Joplin throws errors. Can I automate a check before Joplin starts?",
+      "ai_response": "Yes, modify your Joplin .desktop shortcut to run a wrapper script.\n\n**Script (`start_joplin.sh`):**\n```bash\n#!/bin/bash\nif mountpoint -q /mnt/nas; then\n    joplin-desktop\nelse\n    notify-send \"Joplin Error\" \"NAS not mounted. Aborting.\"\nfi\n```\nUpdate the desktop entry `Exec` line to point to this script."
+    },
+    "technical_tags": ["joplin", "bash-scripting", "nas"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_607",
+    "bucket": "Life Management",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "KDE Connect"
+    },
+    "interaction": {
+      "user_query": "KDE Connect finds my phone, but 'Browse Files' doesn't work. It just spins and times out. I'm using Fedora Workstation (GNOME).",
+      "ai_response": "KDE Connect uses `sshfs` to browse files. \n\n**Check dependencies:**\nEnsure `sshfs` is installed: `sudo dnf install sshfs`.\n\n**Firewall:**\nFedora's firewall often blocks the dynamic ports used for file transfer even if the pairing worked. \n1. Open `firewall-config`.\n2. Ensure the `kde-connect` service is checked for your active zone (usually FedoraWorkstation).\n3. If it fails, try reloading the firewall: `sudo firewall-cmd --reload`."
+    },
+    "technical_tags": ["kde-connect", "sshfs", "firewall"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_608",
+    "bucket": "Life Management",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Evolution"
+    },
+    "interaction": {
+      "user_query": "I have contacts in a .csv file from Outlook. I imported them into Evolution, but now they don't sync to my Google Contacts. They are just 'On This Computer'.",
+      "ai_response": "Importing a CSV places contacts into whichever address book is selected or default—usually 'Personal' (local).\n\n**To Fix:**\n1. Go to Contacts view.\n2. Create/Connect your Google Address Book if you haven't yet.\n3. Open the 'Personal' address book where you imported the CSV.\n4. Select all (Ctrl+A).\n5. Drag and drop them into the Google Address Book in the sidebar.\n\nEvolution will now upload them to Google."
+    },
+    "technical_tags": ["evolution", "csv-import", "google-contacts"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_609",
+    "bucket": "Life Management",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Thunderbird"
+    },
+    "interaction": {
+      "user_query": "I'm using the 'Provider for Google Calendar' add-on. It stopped syncing yesterday. It asks for login, I do the OAuth loop, but it just asks again.",
+      "ai_response": "This is a common token issue or cookie restriction.\n\n**Steps:**\n1. Go to **Settings** > **Privacy & Security** > **Web Content**.\n2. Ensure 'Accept cookies from sites' is checked (temporarily needed for OAuth).\n3. Remove the stored password/token in **Saved Passwords**.\n4. Restart Thunderbird and try the login again.\n\nIf that fails, unsubscribe and resubscribe to the calendar using the built-in CalDAV support instead of the add-on (Thunderbird 115+ handles Google natively well)."
+    },
+    "technical_tags": ["thunderbird", "oauth", "google-calendar"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_610",
+    "bucket": "Life Management",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "vdirsyncer"
+    },
+    "interaction": {
+      "user_query": "I'm trying to setup vdirsyncer to sync my Fastmail calendars to local files. I get 'Critical: 404 Client Error'. My URL is correct.",
+      "ai_response": "Fastmail uses specific discovery URLs. You cannot point vdirsyncer to the generic domain.\n\n**Config Check (`~/.config/vdirsyncer/config`):**\nEnsure your storage section looks like this:\n```ini\n[storage remote_calendar]\ntype = \"caldav\"\nurl = \"[https://caldav.fastmail.com/dav/calendars/](https://caldav.fastmail.com/dav/calendars/)\"\nusername = \"user@fastmail.com\"\npassword = ...\n```\nAlso run `vdirsyncer discover` before `vdirsyncer sync` to find the specific collections."
+    },
+    "technical_tags": ["vdirsyncer", "fastmail", "caldav"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_611",
+    "bucket": "Life Management",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Google Drive (Online Accounts)"
+    },
+    "interaction": {
+      "user_query": "I mounted Google Drive via Online Accounts. I tried to copy a 4GB movie file to it, but it failed halfway with an 'Input/output error'.",
+      "ai_response": "The GNOME Google Drive mount (GVfs) is not designed for large file transfers. It buffers files in `~/.cache` and often times out or fills the cache partition.\n\n**Better Solution:**\nUse **rclone**.\n1. `sudo apt install rclone`\n2. `rclone config` (follow steps for Google Drive)\n3. `rclone copy mymovie.mp4 remote:Videos`\n\nRclone handles large files and retries much better than the GVfs mount."
+    },
+    "technical_tags": ["google-drive", "gvfs", "rclone"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_612",
+    "bucket": "Life Management",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Bitwarden"
+    },
+    "interaction": {
+      "user_query": "I switched from LastPass to Bitwarden. I exported my CSV from LastPass and imported to Bitwarden, but all my special characters in passwords look weird or are broken.",
+      "ai_response": "This is likely a **Character Encoding** issue. LastPass exports might not always be pure UTF-8 depending on how you saved the file.\n\n**Fix:**\n1. Open the CSV in a text editor (like Kate or Gedit).\n2. Do `Save As` and explicitly select **UTF-8** encoding (with BOM usually works best for importers).\n3. Check for any escaped characters (like `\\\"`) that might have confused the parser.\n4. Re-import into Bitwarden."
+    },
+    "technical_tags": ["bitwarden", "csv-import", "encoding"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_613",
+    "bucket": "Life Management",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Mailnag"
+    },
+    "interaction": {
+      "user_query": "I use Mailnag to check for emails without keeping Thunderbird open. It works for Gmail but fails for my office Office365 account. Authentication error.",
+      "ai_response": "Office365 disabled Basic Auth (username/password) for IMAP. You need **OAuth2** support.\n\nMailnag has limited support for OAuth2 configuration via GUI.\n\n**Workaround:**\nUse **DavMail** as a local gateway.\n1. Run DavMail locally.\n2. Authenticate DavMail with O365 (it supports the modern popup login).\n3. Point Mailnag to `localhost:1143` (DavMail IMAP port) with your credentials."
+    },
+    "technical_tags": ["mailnag", "office365", "davmail"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_614",
+    "bucket": "Life Management",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Telegram Desktop"
+    },
+    "interaction": {
+      "user_query": "I use Telegram to send photos to myself to get them from phone to PC. On Linux, the photos are saved in `~/Downloads/Telegram Desktop`. Can I change this default folder?",
+      "ai_response": "Yes.\n\n1. Open Telegram Settings.\n2. Go to **Advanced** > **Downloads**.\n3. Check **Ask download path for each file** if you want control, or click the path to change the default temporary folder.\n4. Note: If you just click the download arrow on an image, it might go to the Temp folder. Right-click > **Save As** gives you choice."
+    },
+    "technical_tags": ["telegram", "file-transfer", "configuration"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_615",
+    "bucket": "Life Management",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Morgen Calendar"
+    },
+    "interaction": {
+      "user_query": "I'm trying Morgen Calendar (Snap). It won't let me sign in to my Google account. The browser opens, I sign in, but the app never updates.",
+      "ai_response": "This is often a Snap sandboxing issue preventing the browser callback `morgen://` from reaching the app.\n\n**Fix:**\n1. Ensure `xdg-desktop-portal` is installed and running.\n2. Try using the **AppImage** version of Morgen from their website instead of the Snap. AppImages often handle the URL handler registration differently/better on Mint."
+    },
+    "technical_tags": ["morgen", "snap", "oauth"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_616",
+    "bucket": "Life Management",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Syncthing"
+    },
+    "interaction": {
+      "user_query": "I want to sync my `.config` folder between two Linux machines using Syncthing, but I want to exclude specific hardware configs like `monitors.xml`.",
+      "ai_response": "You need to use a **.stignore** file in the root of the sync folder (your home dir, if syncing dotfiles).\n\n**Create `.stignore`:**\n```text\n.config/monitors.xml\n.config/pulse/\n.local/share/Trash\n# Ignore everything else if you only want specific folders\n!/path/to/sync\n```\n*Warning:* Syncing the root of `.config` is dangerous. It's better to sync specific subfolders (e.g., `.config/nvim`) to avoid breaking system-specific settings."
+    },
+    "technical_tags": ["syncthing", "dotfiles", "ignore-patterns"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_617",
+    "bucket": "Life Management",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "OneDrive (onedriver)"
+    },
+    "interaction": {
+      "user_query": "I installed 'onedriver' to access my Microsoft files. It mounts fine, but I can't create files. 'Read-only file system'.",
+      "ai_response": "This happens if the filesystem permissions or the mount options are incorrect.\n\n1. Check if the mount point is owned by you: `ls -ld ~/OneDrive`.\n2. Onedriver usually mounts in user mode.\n3. **Crucial:** Microsoft freezes OneDrive accounts that are over storage limits. Check your quota online. If over quota, the API switches to read-only mode automatically."
+    },
+    "technical_tags": ["onedrive", "onedriver", "permissions"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_618",
+    "bucket": "Life Management",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Discord"
+    },
+    "interaction": {
+      "user_query": "I'm trying to stream my browser to my friends on Discord, but there is no audio! They see the video fine.",
+      "ai_response": "Discord on Linux has long-standing issues capturing audio from other applications due to how PulseAudio/PipeWire works.\n\n**Fix:**\n1. Ensure you are using the default PipeWire setup on Fedora 40.\n2. Use a tool like **Vesktop** (a third-party Discord client) which has patches for audio screen sharing on Linux.\n3. Or, use a virtual audio cable setup, but Vesktop is the user-friendly solution."
+    },
+    "technical_tags": ["discord", "audio-routing", "pipewire"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_619",
+    "bucket": "Life Management",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Insync"
+    },
+    "interaction": {
+      "user_query": "I'm using Insync for Google Drive. It keeps re-downloading files that I haven't changed. My bandwidth is getting killed.",
+      "ai_response": "This loop can happen if the **timestamp** of the local files is being modified by another process (like a backup script or `touch` command).\n\n1. Check if you have another sync tool running on the same folder.\n2. Check Insync's 'Ignore List'—sometimes temp files trigger a rescan.\n3. **Force a rescan:** Pause Insync, rename the local folder slightly, create a new empty folder with the original name, and let Insync re-download fresh metadata (or point it to the renamed folder as 'Existing location')."
+    },
+    "technical_tags": ["insync", "google-drive", "sync-loop"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_620",
+    "bucket": "Life Management",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Evolution"
+    },
+    "interaction": {
+      "user_query": "I'm syncing contacts with a CardDAV server that uses self-signed certificates. Evolution refuses to connect. How do I force it to accept the cert?",
+      "ai_response": "Evolution relies on the system trust store.\n\n**Steps:**\n1. Export your server's certificate to a file (e.g., `server.crt`).\n2. Copy it to `/usr/local/share/ca-certificates/`.\n3. Run `sudo update-ca-certificates`.\n4. Restart Evolution.\n\nAlternatively, if using the gnome-online-accounts backend, you might need to accept the cert warning in a browser first if it's a web-based flow, but for raw CardDAV, the system store is the key."
+    },
+    "technical_tags": ["evolution", "ssl-certificates", "carddav"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_701",
+    "bucket": "Life Management",
+    "sub_category": "Work Context",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LibreOffice Calc"
+    },
+    "interaction": {
+      "user_query": "I'm trying to track my work hours in Calc. I enter '8:00 AM' and '5:00 PM', but when I subtract them to get hours worked, I get a weird decimal number like 0.375.",
+      "ai_response": "Spreadsheets store time as a fraction of a day (24 hours = 1.0). 0.375 is actually 9 hours (9/24).\n\n**To fix the display:**\n1. Right-click the result cell.\n2. Select **Format Cells**.\n3. Choose **Time** (e.g., `13:37` format) or **Number** if you want to multiply by an hourly rate.\n4. If calculating pay: `=(End-Start)*24 * HourlyRate`."
+    },
+    "technical_tags": ["libreoffice", "calc", "time-tracking"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_702",
+    "bucket": "Life Management",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Project Hamster"
+    },
+    "interaction": {
+      "user_query": "I installed Project Hamster to track time. It works, but I want to export my monthly report to a PDF to send to my boss. I only see HTML export.",
+      "ai_response": "Hamster's native export is limited to HTML/TSV.\n\n**Workaround:**\n1. Export as HTML.\n2. Open the HTML file in your browser or LibreOffice Writer.\n3. Print to File -> PDF.\n\nAlternatively, check out **Hamster-CLI** tools which can pipe output to other formatters, but the browser 'Print to PDF' is the quickest user-friendly method."
+    },
+    "technical_tags": ["project-hamster", "export", "pdf"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_703",
+    "bucket": "Life Management",
+    "sub_category": "Work Context",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "GnuCash"
+    },
+    "interaction": {
+      "user_query": "I am a freelancer. I setup GnuCash for invoicing. I modified the invoice report stylesheet to add my logo, but now the layout is broken (text overlapping). CSS issue?",
+      "ai_response": "GnuCash report customization uses Scheme/Guile and a specific HTML/CSS engine (Webkit or GtkHTML depending on version).\n\n**Debug:**\n1. Images in reports must be referenced by absolute path or embedded base64 in some versions.\n2. If using the 'CSS' stylesheet option, ensure you aren't using modern CSS grid/flexbox, as the renderer might be older.\n3. Stick to **Tables** for layout in GnuCash reports; it's archaic but reliable."
+    },
+    "technical_tags": ["gnucash", "invoicing", "css"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_704",
+    "bucket": "Life Management",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Thunderbird"
+    },
+    "interaction": {
+      "user_query": "I need to sign my work emails with an S/MIME certificate my company gave me (.p12 file). Thunderbird imported it, but the 'Digitally Sign' button is greyed out.",
+      "ai_response": "You must assign the certificate to the specific email identity.\n\n1. Go to **Account Settings**.\n2. Select your account > **End-To-End Encryption**.\n3. Under S/MIME, click **Select...** next to 'Personal certificate for digital signing'.\n4. Choose the imported certificate. (If it doesn't appear, the email address in the cert might not match your account email exactly)."
+    },
+    "technical_tags": ["thunderbird", "smime", "email-security"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_705",
+    "bucket": "Life Management",
+    "sub_category": "Work Context",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Slack"
+    },
+    "interaction": {
+      "user_query": "Slack notifications don't make a sound. I see the banner, but I miss messages when I'm not looking. Sound settings in Slack are on.",
+      "ai_response": "Check your system's sound settings for 'Notification Sounds'.\n\n1. Open **Sound** settings in Mint.\n2. Ensure **Sound Effects** volume is not muted.\n3. Also, check the notification applet settings; sometimes 'Do Not Disturb' suppresses sounds but leaves banners.\n4. In Slack: `Preferences` > `Notifications` > check `Play a sound for incoming messages`."
+    },
+    "technical_tags": ["slack", "audio", "notifications"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_706",
+    "bucket": "Life Management",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Zoom"
+    },
+    "interaction": {
+      "user_query": "I'm using Zoom for work. When I share my screen, my computer slows to a crawl. I have an NVIDIA card. Is Zoom using it?",
+      "ai_response": "Zoom on Linux doesn't always default to hardware acceleration correctly.\n\n1. Open Zoom **Settings** > **Video** > **Advanced**.\n2. Ensure all Hardware Acceleration checkboxes are checked.\n3. **System Check:** Ensure you are using the proprietary NVIDIA drivers (check `Software & Updates` > `Additional Drivers`), not Nouveau.\n4. If on Wayland, try switching to Xorg (logout, click gear icon, select Ubuntu on Xorg), as screen sharing efficiency is better on Xorg for Zoom."
+    },
+    "technical_tags": ["zoom", "nvidia", "performance"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_707",
+    "bucket": "Life Management",
+    "sub_category": "Work Context",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "OnlyOffice Desktop"
+    },
+    "interaction": {
+      "user_query": "I'm collaborating on a doc in OnlyOffice connected to Nextcloud. The fonts are messed up; my colleague uses Arial and Times New Roman, but I see substitutes.",
+      "ai_response": "Fedora doesn't ship Microsoft Core Fonts (Arial, Times, etc.) by default due to licensing.\n\n**Install them:**\n1. Install `msttcore-fonts-installer` (requires RPM Fusion or manual extraction).\n2. Or, simpler: Copy the `.ttf` files from a Windows machine to `~/.local/share/fonts/`.\n3. Run `fc-cache -fv` to rebuild the font cache.\n4. Restart OnlyOffice."
+    },
+    "technical_tags": ["onlyoffice", "fonts", "compatibility"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_708",
+    "bucket": "Life Management",
+    "sub_category": "Work Context",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Super Productivity"
+    },
+    "interaction": {
+      "user_query": "I'm using Super Productivity. It says it can sync with Jira. I put in my Jira URL and password, but it fails.",
+      "ai_response": "Jira Cloud no longer accepts passwords for third-party apps. You need an **API Token**.\n\n1. Go to `id.atlassian.com` > Security > Create and manage API tokens.\n2. Create a token.\n3. In Super Productivity, use your **Email** as the username and the **API Token** as the password."
+    },
+    "technical_tags": ["super-productivity", "jira", "api-token"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_709",
+    "bucket": "Life Management",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Remmina"
+    },
+    "interaction": {
+      "user_query": "I use Remmina to RDP into my work Windows machine. Copy-paste (clipboard sync) stops working randomly. I have to disconnect and reconnect to fix it.",
+      "ai_response": "This is a known issue with `rdpclip` on the Windows side or the Remmina plugin.\n\n**Try this before disconnecting:**\n1. On the remote Windows machine, open Task Manager.\n2. Kill `rdpclip.exe`.\n3. Run `rdpclip.exe` again (Win+R > rdpclip.exe).\n\nIn Remmina settings, ensure 'Sync Clipboard' is checked. If using Wayland locally, ensure `wl-clipboard` is installed."
+    },
+    "technical_tags": ["remmina", "rdp", "clipboard"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_710",
+    "bucket": "Life Management",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "PDF Arranger"
+    },
+    "interaction": {
+      "user_query": "I need to merge three PDF contracts and sign the last page. I used PDF Arranger to merge them, but how do I sign it? It has no pen tool.",
+      "ai_response": "PDF Arranger is only for splitting/merging pages, not editing content.\n\n**Workflow:**\n1. Save the merged PDF.\n2. Open it in **Xournal++** (`sudo apt install xournalpp`).\n3. Use the Pen tool or 'Insert Image' (signature scan) to sign.\n4. Export as PDF."
+    },
+    "technical_tags": ["pdf-arranger", "xournalpp", "pdf-signing"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_711",
+    "bucket": "Life Management",
+    "sub_category": "Work Context",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Thunderbird"
+    },
+    "interaction": {
+      "user_query": "My work uses a custom 'Exchange Online' setup that requires MFA (Modern Auth). Thunderbird's automatic setup keeps failing at the password stage.",
+      "ai_response": "You need to select the correct authentication method manually.\n\n1. During setup, click **Manual Config**.\n2. Change Authentication method for both Incoming (IMAP) and Outgoing (SMTP) to **OAuth2**.\n3. When you click Done/Re-test, a Microsoft login window should pop up for MFA.\n4. If OAuth2 isn't listed, install the **'Owl for Exchange'** addon (paid/trial) which handles proprietary Exchange protocols better than standard IMAP."
+    },
+    "technical_tags": ["thunderbird", "exchange", "oauth2"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_712",
+    "bucket": "Life Management",
+    "sub_category": "Work Context",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Warpinator"
+    },
+    "interaction": {
+      "user_query": "I'm in an office with other Linux users. I want to send a file to my colleague using Warpinator, but I can't see them. We are on the same Wi-Fi.",
+      "ai_response": "Check the **Group Code**.\n\n1. Both you and your colleague must have the exact same 'Group Code' set in Warpinator preferences (default is 'Warpinator').\n2. If that matches, check the firewall settings. Warpinator needs port **42000** (TCP/UDP). Mint usually allows this by default, but your colleague might have blocked it."
+    },
+    "technical_tags": ["warpinator", "network-transfer", "troubleshooting"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_713",
+    "bucket": "Life Management",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Mattermost Desktop"
+    },
+    "interaction": {
+      "user_query": "I'm using Mattermost for team chat. Every time I click a link, it opens in a new Mattermost window instead of Firefox. It's annoying.",
+      "ai_response": "This is a default browser association issue within the app's scope.\n\n**Fix:**\n1. Check your system default browser in GNOME Settings > Default Applications.\n2. If that's correct, check Mattermost settings (if available) or simply reinstall the app if it's a Flatpak/Snap, as sometimes the sandboxing breaks the 'open in host browser' link.\n3. **Pro tip:** Ctrl+Click the link often forces the external browser."
+    },
+    "technical_tags": ["mattermost", "browser-association", "flatpak"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_714",
+    "bucket": "Life Management",
+    "sub_category": "Work Context",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Taskwarrior"
+    },
+    "interaction": {
+      "user_query": "I use Taskwarrior. I want to sync it with a Taskserver I set up on a VPS. I generated the certs, but when I run `task sync`, I get 'Handshake failed'.",
+      "ai_response": "Handshake failed usually means a certificate mismatch or configuration path error.\n\n**Check list:**\n1. Ensure paths in `.taskrc` are absolute: `taskd.certificate=/home/user/.task/user.cert.pem`.\n2. **CN Match:** The Common Name (CN) in the certificate MUST match the server hostname or IP you are connecting to, OR you must set `taskd.trust=ignore hostname` (less secure) in `.taskrc`.\n3. Verify the CA cert is the one that signed your user cert."
+    },
+    "technical_tags": ["taskwarrior", "ssl", "cli"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_715",
+    "bucket": "Life Management",
+    "sub_category": "Work Context",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Skype"
+    },
+    "interaction": {
+      "user_query": "My webcam works in Cheese, but Skype shows a black screen. I toggled the video button but nothing happens.",
+      "ai_response": "This often happens if another app (like Cheese or Browser) is holding onto the camera device.\n\n1. Close Cheese and any other video apps.\n2. Restart Skype.\n3. If it persists, check permissions (if installed via Snap): `snap connect skype:camera`."
+    },
+    "technical_tags": ["skype", "webcam", "snap"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_716",
+    "bucket": "Life Management",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Freeplane"
+    },
+    "interaction": {
+      "user_query": "I'm mind mapping with Freeplane. I want to link a node to a local file `/home/me/Docs/Contract.pdf`. When I click it, it tries to open in Firefox instead of my PDF viewer.",
+      "ai_response": "Freeplane uses Java's default file handling or the system's MIME types.\n\n**Fix:**\n1. Go to `Tools` > `Preferences` > `Environment`.\n2. Look for 'Hyperlink types' or 'Open file links'.\n3. You might need to force the command: create a script `xdg-open $1` and tell Freeplane to use that script for opening files if the internal handler is misbehaving."
+    },
+    "technical_tags": ["freeplane", "mime-types", "java"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_717",
+    "bucket": "Life Management",
+    "sub_category": "Work Context",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Zotero"
+    },
+    "interaction": {
+      "user_query": "I use Zotero for research. I want to store my PDF library on my NAS (mounted at `/mnt/nas`) but keep the database local for speed. How do I split them?",
+      "ai_response": "1. **Database:** Keep it in the default location.\n2. **Files:**\n   - Go to Zotero Preferences > Advanced > Files and Folders.\n   - Set **Base Directory** to `/mnt/nas/zotero_files`.\n   - Set **Data Directory Location** to Default (local).\n3. You must manually move your existing storage folder contents to the NAS and use the **ZotFile** plugin to rename/move attachments automatically to that custom location."
+    },
+    "technical_tags": ["zotero", "nas", "academic"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_718",
+    "bucket": "Life Management",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "GIMP"
+    },
+    "interaction": {
+      "user_query": "I need to edit a screenshot for a manual. I want to add an arrow and text. GIMP seems like overkill and I can't figure out how to just draw a simple arrow.",
+      "ai_response": "GIMP does not have a simple 'Line/Arrow' tool like Paint. You have to draw a path and stroke it.\n\n**Better Tool:** Use **Flameshot** or **Shutter**.\n1. `sudo dnf install flameshot`\n2. Open your image with Flameshot (or take the screenshot with it).\n3. Press the 'Arrow' icon and drag. Much faster for annotation."
+    },
+    "technical_tags": ["gimp", "flameshot", "annotation"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_719",
+    "bucket": "Life Management",
+    "sub_category": "Work Context",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "AnyDesk"
+    },
+    "interaction": {
+      "user_query": "I installed AnyDesk to help my mom. When I close the window, it stays in the tray. How do I fully quit it so it's not running in the background?",
+      "ai_response": "AnyDesk installs a background service (`anydesk.service`) to allow incoming connections.\n\n**To quit the GUI:** Right-click the tray icon > Quit.\n**To stop the background service:**\n```bash\nsudo systemctl stop anydesk\n```\n(Disable it permanently with `disable` if you only use it for outgoing support)."
+    },
+    "technical_tags": ["anydesk", "systemd", "background-processes"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_720",
+    "bucket": "Life Management",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LibreOffice Writer"
+    },
+    "interaction": {
+      "user_query": "I saved my CV as a .docx file to send to a recruiter. They said the formatting is all over the place. I thought LibreOffice was compatible?",
+      "ai_response": "Compatibility is good but not perfect, especially with complex tables, floating images, or proprietary fonts.\n\n**Best Practice:**\n1. Always send a **PDF** (`File` > `Export as PDF`) unless they explicitly need to edit it.\n2. If they need editable format, use the **Microsoft Core Fonts** (Arial/Times) instead of Liberation Sans/Serif to minimize layout shifting.\n3. Avoid using 'Text Boxes'; use standard paragraphs and tables."
+    },
+    "technical_tags": ["libreoffice", "docx", "compatibility"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_801",
+    "bucket": "Life Management",
+    "sub_category": "Personal/Home Context",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Gourmet Recipe Manager"
+    },
+    "interaction": {
+      "user_query": "I installed Gourmet to store recipes. I found a recipe on a website and tried to 'Import from Webpage', but it fails to grab the ingredients.",
+      "ai_response": "Web scraping in recipe apps is fragile because websites change layouts constantly. The plugin in Gourmet might be outdated.\n\n**Workaround:**\n1. Copy the text from the website.\n2. In Gourmet, choose `File` > `Import` > `Text`.\n3. Paste the ingredients. Gourmet is smart enough to parse lines like \"1 cup sugar\" automatically into amounts and items."
+    },
+    "technical_tags": ["gourmet", "recipes", "import"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_802",
+    "bucket": "Life Management",
+    "sub_category": "Personal/Home Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Gramps"
+    },
+    "interaction": {
+      "user_query": "I'm building my family tree in Gramps. I added photos to people, but when I moved the .gramps file to my laptop, the photos are missing.",
+      "ai_response": "Gramps does **not** store media inside the database file; it only stores the *path* to the file (e.g., `/home/user/Pictures/grandpa.jpg`).\n\n**Solution:**\n1. Convert your paths to **Relative Paths** in Gramps media manager.\n2. Create a 'FamilyTree' folder containing both the Gramps database and a 'Media' subfolder.\n3. Move the entire 'FamilyTree' folder to the laptop.\n4. Or, create a **Backup Bundle (.gpkg)** which *does* include media files for transfer."
+    },
+    "technical_tags": ["gramps", "genealogy", "file-paths"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_803",
+    "bucket": "Life Management",
+    "sub_category": "Personal/Home Context",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "GNOME Weather"
+    },
+    "interaction": {
+      "user_query": "GNOME Weather says 'Location disabled'. I turned on Location Services in Settings, but it still doesn't find my city automatically.",
+      "ai_response": "Automatic geolocation on Linux (via Mozilla Location Service/GeoClue) can be spotty on desktops without GPS/Wi-Fi scanning.\n\n**Fix:**\n1. Open GNOME Weather.\n2. Click the search button (top left).\n3. Type your city manually (e.g., \"Houston, Texas\").\n4. Select it. It will remember this location regardless of the GPS sensor status."
+    },
+    "technical_tags": ["gnome-weather", "geolocation", "privacy"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_804",
+    "bucket": "Life Management",
+    "sub_category": "Personal/Home Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Calibre"
+    },
+    "interaction": {
+      "user_query": "I have a Kindle Paperwhite. When I plug it in, Calibre sees it, but I can't transfer books. It says 'Read-only filesystem'.",
+      "ai_response": "This happens if the Kindle wasn't ejected properly last time, or if the filesystem needs repair.\n\n**Fix:**\n1. Unplug Kindle.\n2. Restart the Kindle (hold power button 40s).\n3. Reconnect.\n4. If still read-only, run `dosfsck` on the partition (e.g., `/dev/sdX1`)—but be careful. Usually, a simple Kindle restart fixes the dirty bit flag."
+    },
+    "technical_tags": ["calibre", "kindle", "usb-mount"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_805",
+    "bucket": "Life Management",
+    "sub_category": "Personal/Home Context",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Home Assistant"
+    },
+    "interaction": {
+      "user_query": "I'm running Home Assistant in a Docker container. I can't discover my Philips Hue bridge. Network discovery seems broken.",
+      "ai_response": "Docker containers isolate the network by default. Discovery protocols like mDNS/UPnP won't work.\n\n**Fix:**\nRun the container with **host networking**.\n```bash\ndocker run -d --name homeassistant --net=host ...\n```\nWithout `--net=host`, you must manually enter the IP address of the Hue Bridge in the Home Assistant integration setup."
+    },
+    "technical_tags": ["home-assistant", "docker", "networking"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_806",
+    "bucket": "Life Management",
+    "sub_category": "Personal/Home Context",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "VLC"
+    },
+    "interaction": {
+      "user_query": "I'm trying to watch a workout DVD. VLC opens it but the menu buttons don't work when I click them. I can't start the video.",
+      "ai_response": "DVD menu navigation requires `libdvdnav` and css decryption.\n\n**Ensure you have the restricted extras:**\n1. `sudo apt install ubuntu-restricted-extras`\n2. `sudo dpkg-reconfigure libdvd-pkg` (to enable decryption).\n3. In VLC, use the keyboard arrows and Enter key to navigate the menu if mouse clicks are misaligned (common issue)."
+    },
+    "technical_tags": ["vlc", "dvd", "codecs"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_807",
+    "bucket": "Life Management",
+    "sub_category": "Personal/Home Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Tellico"
+    },
+    "interaction": {
+      "user_query": "I'm cataloging my book collection in Tellico. I bought a cheap USB barcode scanner. It scans the ISBN into the search box, but Tellico doesn't fetch the book info automatically.",
+      "ai_response": "The scanner acts like a keyboard. You need to focus the correct field first.\n\n**Workflow:**\n1. `Edit` > `Internet Search`.\n2. Click inside the **ISBN** search field.\n3. Scan the barcode.\n4. Ensure your scanner is configured to send an 'Enter' key after the code (most are by default). If not, you have to click 'Search' manually."
+    },
+    "technical_tags": ["tellico", "hardware", "barcode-scanner"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_808",
+    "bucket": "Life Management",
+    "sub_category": "Personal/Home Context",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "OpenPyn (Python script)"
+    },
+    "interaction": {
+      "user_query": "I wrote a python script to track my water intake and save it to a CSV. I want it to send a desktop notification every hour to remind me.",
+      "ai_response": "Use a systemd user timer or cron.\n\n**Systemd Timer (Better):**\n1. `~/.config/systemd/user/water.service`: ExecStart your script.\n2. `~/.config/systemd/user/water.timer`:\n   ```ini\n   [Timer]\n   OnCalendar=*-*-* 09..17:00:00\n   ```\n3. In your script, use `notify-send \"Drink Water\"`.\n4. `systemctl --user enable --now water.timer`."
+    },
+    "technical_tags": ["scripting", "systemd", "automation"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_809",
+    "bucket": "Life Management",
+    "sub_category": "Personal/Home Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Kodi"
+    },
+    "interaction": {
+      "user_query": "I installed Kodi to watch movies from my external hard drive. The drive is mounted in `/media/me/Drive`, but Kodi can't see it when I browse for sources.",
+      "ai_response": "This is a permission issue. The user 'kodi' (if running standalone) or the confined Snap/Flatpak might not have read access to `/media/$USER`.\n\n**Fix:**\n1. If Snap: `snap connect kodi:removable-media`.\n2. If native: Ensure the folder permissions allow 'Others' to read/execute, or run Kodi as your user.\n3. Browse to **Root filesystem** > `media` > `me` > `Drive` explicitly."
+    },
+    "technical_tags": ["kodi", "permissions", "external-drive"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_810",
+    "bucket": "Life Management",
+    "sub_category": "Personal/Home Context",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Shotwell"
+    },
+    "interaction": {
+      "user_query": "I imported photos from my camera to Shotwell. I deleted a blurry photo in Shotwell, but the file is still on my disk. I want to delete the file too to save space.",
+      "ai_response": "Shotwell's default 'Delete' key removes the photo from the *Library database* only.\n\n**To delete from disk:**\n1. Select the photo.\n2. Press **Shift + Delete**.\n3. Or right-click and select **Move to Trash** (not just 'Remove from Library')."
+    },
+    "technical_tags": ["shotwell", "file-management", "photo-organizer"],
+    "friction_type": "user_error"
+  }
+]

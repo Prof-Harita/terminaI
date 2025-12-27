@@ -154,9 +154,9 @@ messages and how to resolve them.
 - **Message:**
   `🔴 Disconnected: Failed to connect to IDE companion extension in [IDE Name]. Please ensure the extension is running. To install the extension, run /ide install.`
   - **Cause:** terminaI could not find the necessary environment variables
-    (`GEMINI_CLI_IDE_WORKSPACE_PATH` or `GEMINI_CLI_IDE_SERVER_PORT`) to connect
-    to the IDE. This usually means the IDE companion extension is not running or
-    did not initialize correctly.
+    (`TERMINAI_CLI_IDE_WORKSPACE_PATH` or `TERMINAI_CLI_IDE_SERVER_PORT`) to
+    connect to the IDE. This usually means the IDE companion extension is not
+    running or did not initialize correctly.
   - **Solution:**
     1.  Make sure you have installed the **terminaI Companion** extension in
         your IDE and that it is enabled.

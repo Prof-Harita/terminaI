@@ -25,7 +25,7 @@ on GitHub.
 - **⚡️⚡️⚡️ Gemini 3 Flash + Gemini CLI:** If you are a paid user, you can now
   enable Gemini 3 Pro and Gemini 3 Flash. Go to `/settings` and set **Preview
   Features** to `true` to enable Gemini 3. For more information:
-  [Gemini 3 Flash is now available in Gemini CLI](https://developers.googleblog.com/gemini-3-flash-is-now-available-in-gemini-cli/).
+  [Gemini 3 Flash is now available in Gemini CLI](https://developers.googleblog.com/gemini-2.0-flash-exp-flash-is-now-available-in-gemini-cli/).
 
 ### What's Changed
 
@@ -239,7 +239,7 @@ https://github.com/google-gemini/gemini-cli/compare/v0.20.2...v0.21.0
 
 ### What's Changed
 
-- feat(ide): fallback to GEMINI_CLI_IDE_AUTH_TOKEN env var by @skeshive in
+- feat(ide): fallback to TERMINAI_CLI_IDE_AUTH_TOKEN env var by @skeshive in
   https://github.com/google-gemini/gemini-cli/pull/14843
 - feat: display quota stats for unused models in /stats by @sehoon38 in
   https://github.com/google-gemini/gemini-cli/pull/14764
@@ -324,7 +324,7 @@ https://github.com/google-gemini/gemini-cli/compare/v0.20.2...v0.21.0
   @gemini-cli-robot in https://github.com/google-gemini/gemini-cli/pull/15029
 - Disallow redundant typecasts. by @gundermanc in
   https://github.com/google-gemini/gemini-cli/pull/15030
-- fix(auth): prioritize GEMINI_API_KEY env var and skip unnecessary key… by
+- fix(auth): prioritize TERMINAI_API_KEY env var and skip unnecessary key… by
   @galz10 in https://github.com/google-gemini/gemini-cli/pull/14745
 - fix: use zod for safety check result validation by @allenhutchison in
   https://github.com/google-gemini/gemini-cli/pull/15026
@@ -773,8 +773,9 @@ https://github.com/google-gemini/gemini-cli/compare/v0.18.0-preview.4...v0.19.0-
   to use this feature.
 - **Gemini 3 support rolled out for some users**: Some users can now enable
   Gemini 3 by using the `/settings` flag and toggling **Preview Features**. See
-  our [Gemini 3 on Gemini CLI documentation](../get-started/gemini-3.md) to find
-  out more about using Gemini 3.
+  our
+  [Gemini 3 on Gemini CLI documentation](../get-started/gemini-2.0-flash-exp.md)
+  to find out more about using Gemini 3.
 - **Updated UI rollback:** We've temporarily rolled back a previous UI update,
   which enabled embedded scrolling and mouse support. This can be re-enabled by
   using the `/settings` command and setting **Use Alternate Screen Buffer** to

@@ -871,6 +871,10 @@ export class LocalAgentExecutor<TOutput extends z.ZodTypeAny> {
         args,
         isClientInitiated: true,
         prompt_id: promptId,
+        provenance: [
+          'local_user',
+          ...this.runtimeContext.getSessionProvenance(),
+        ],
       };
 
       // Create a promise for the tool execution

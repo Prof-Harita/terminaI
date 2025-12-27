@@ -15,7 +15,7 @@ Slash commands provide meta-level control over the CLI itself.
     filed within the GitHub repository for Gemini CLI. The string you enter
     after `/bug` will become the headline for the bug being filed. The default
     `/bug` behavior can be modified using the `advanced.bugCommand` setting in
-    your `.gemini/settings.json` files.
+    your `.terminai/settings.json` files.
 
 - **`/chat`**
   - **Description:** Save and resume conversation history for branching
@@ -28,8 +28,8 @@ Slash commands provide meta-level control over the CLI itself.
       - **Usage:** `/chat save <tag>`
       - **Details on checkpoint location:** The default locations for saved chat
         checkpoints are:
-        - Linux/macOS: `~/.gemini/tmp/<project_hash>/`
-        - Windows: `C:\Users\<YourUsername>\.gemini\tmp\<project_hash>\`
+        - Linux/macOS: `~/.terminai/tmp/<project_hash>/`
+        - Windows: `C:\Users\<YourUsername>\.terminai\tmp\<project_hash>\`
         - **Behavior:** Chats are saved into a project-specific directory,
           determined by where you run the CLI. Consequently, saved chats are
           only accessible when working within that same project.
@@ -185,7 +185,7 @@ Slash commands provide meta-level control over the CLI itself.
     settings.
   - **Details:** This command provides a user-friendly interface for changing
     settings that control the behavior and appearance of Gemini CLI. It is
-    equivalent to manually editing the `.gemini/settings.json` file, but with
+    equivalent to manually editing the `.terminai/settings.json` file, but with
     validation and guidance to prevent errors. See the
     [settings documentation](./settings.md) for a full list of available
     settings.
@@ -246,7 +246,7 @@ Slash commands provide meta-level control over the CLI itself.
     - **Count support:** Prefix commands with numbers (e.g., `3h`, `5w`, `10G`)
     - **Repeat last command:** Use `.` to repeat the last editing operation
     - **Persistent setting:** Vim mode preference is saved to
-      `~/.gemini/settings.json` and restored between sessions
+      `~/.terminai/settings.json` and restored between sessions
   - **Status indicator:** When enabled, shows `[NORMAL]` or `[INSERT]` in the
     footer
 
@@ -349,6 +349,6 @@ Gemini CLI.
   same permissions and impact as if you ran them directly in your terminal.
 
 - **Environment variable:** When a command is executed via `!` or in shell mode,
-  the `GEMINI_CLI=1` environment variable is set in the subprocess's
+  the `TERMINAI_CLI=1` environment variable is set in the subprocess's
   environment. This allows scripts or tools to detect if they are being run from
   within the Gemini CLI.

@@ -10,6 +10,8 @@ import { Box, Text } from 'ink';
 import { Composer } from '../components/Composer.js';
 import { useUIState } from '../contexts/UIStateContext.js';
 import { theme } from '../semantic-colors.js';
+import { useConfig } from '../contexts/ConfigContext.js';
+import { RemoteIndicator } from '../components/RemoteIndicator.js';
 
 // Large ASCII art logo - "DOS Rebel" style (Exact user request)
 // 'termina' (lowercase)
@@ -42,7 +44,9 @@ const LOGO_I = `
  */
 export const ZenView = () => {
   const { terminalHeight, mainAreaWidth, terminalWidth } = useUIState();
+  const config = useConfig();
   const [blink, setBlink] = useState(true);
+  const webRemoteStatus = config.getWebRemoteStatus();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -91,6 +95,20 @@ export const ZenView = () => {
           <Text color="#E2231A" bold dimColor={!blink}>
             {LOGO_I}
           </Text>
+        </Box>
+      )}
+
+      {webRemoteStatus?.active && (
+        <Box
+          width={Math.min(80, mainAreaWidth)}
+          justifyContent="center"
+          marginBottom={2}
+        >
+          <RemoteIndicator
+            host={webRemoteStatus.host}
+            port={webRemoteStatus.port}
+            loopback={webRemoteStatus.loopback}
+          />
         </Box>
       )}
 

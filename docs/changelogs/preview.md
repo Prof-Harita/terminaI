@@ -13,7 +13,7 @@ npm install -g @google/gemini-cli@preview
 
 ## What's Changed
 
-- feat(ide): fallback to GEMINI_CLI_IDE_AUTH_TOKEN env var by @skeshive in
+- feat(ide): fallback to TERMINAI_CLI_IDE_AUTH_TOKEN env var by @skeshive in
   https://github.com/google-gemini/gemini-cli/pull/14843
 - feat: display quota stats for unused models in /stats by @sehoon38 in
   https://github.com/google-gemini/gemini-cli/pull/14764
@@ -98,7 +98,7 @@ npm install -g @google/gemini-cli@preview
   @gemini-cli-robot in https://github.com/google-gemini/gemini-cli/pull/15029
 - Disallow redundant typecasts. by @gundermanc in
   https://github.com/google-gemini/gemini-cli/pull/15030
-- fix(auth): prioritize GEMINI_API_KEY env var and skip unnecessary key… by
+- fix(auth): prioritize TERMINAI_API_KEY env var and skip unnecessary key… by
   @galz10 in https://github.com/google-gemini/gemini-cli/pull/14745
 - fix: use zod for safety check result validation by @allenhutchison in
   https://github.com/google-gemini/gemini-cli/pull/15026

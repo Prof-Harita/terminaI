@@ -3,6 +3,9 @@
 This document provides a guide to sandboxing in the Gemini CLI, including
 prerequisites, quickstart, and configuration.
 
+> Note: The preferred binary name is `terminai`; the `gemini` alias is kept for
+> compatibility.
+
 ## Prerequisites
 
 Before using sandboxing, you need to install and set up the Gemini CLI:
@@ -14,7 +17,7 @@ npm install -g @google/gemini-cli
 To verify the installation
 
 ```bash
-gemini --version
+terminai --version
 ```
 
 ## Overview of sandboxing
@@ -54,11 +57,11 @@ from your organization's registry.
 
 ```bash
 # Enable sandboxing with command flag
-gemini -s -p "analyze the code structure"
+terminai -s -p "analyze the code structure"
 
 # Use environment variable
-export GEMINI_SANDBOX=true
-gemini -p "run the test suite"
+export TERMINAI_SANDBOX=true
+terminai -p "run the test suite"
 
 # Configure in settings.json
 {
@@ -73,7 +76,7 @@ gemini -p "run the test suite"
 ### Enable sandboxing (in order of precedence)
 
 1. **Command flag**: `-s` or `--sandbox`
-2. **Environment variable**: `GEMINI_SANDBOX=true|docker|podman|sandbox-exec`
+2. **Environment variable**: `TERMINAI_SANDBOX=true|docker|podman|sandbox-exec`
 3. **Settings file**: `"sandbox": true` in the `tools` object of your
    `settings.json` file (e.g., `{"tools": {"sandbox": true}}`).
 
@@ -140,21 +143,21 @@ export SANDBOX_SET_UID_GID=false  # Disable UID/GID mapping
 ### Debug mode
 
 ```bash
-DEBUG=1 gemini -s -p "debug command"
+DEBUG=1 terminai -s -p "debug command"
 ```
 
 **Note:** If you have `DEBUG=true` in a project's `.env` file, it won't affect
-gemini-cli due to automatic exclusion. Use `.gemini/.env` files for gemini-cli
+gemini-cli due to automatic exclusion. Use `.terminai/.env` files for gemini-cli
 specific debug settings.
 
 ### Inspect sandbox
 
 ```bash
 # Check environment
-gemini -s -p "run shell command: env | grep SANDBOX"
+terminai -s -p "run shell command: env | grep SANDBOX"
 
 # List mounts
-gemini -s -p "run shell command: mount | grep workspace"
+terminai -s -p "run shell command: mount | grep workspace"
 ```
 
 ## Security notes

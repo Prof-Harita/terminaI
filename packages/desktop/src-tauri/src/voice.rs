@@ -1,8 +1,8 @@
-use std::process::{Command, Stdio};
-use std::io::Write;
-use std::fs;
-use std::path::PathBuf;
 use serde::{Deserialize, Serialize};
+use std::fs;
+use std::io::Write;
+use std::path::PathBuf;
+use std::process::{Command, Stdio};
 
 #[derive(Serialize, Deserialize)]
 pub struct SttResult {
@@ -25,7 +25,11 @@ fn get_voice_cache_dir() -> Result<PathBuf, String> {
 #[tauri::command]
 pub fn stt_transcribe(wav_bytes: Vec<u8>) -> Result<SttResult, String> {
     let cache_dir = get_voice_cache_dir()?;
-    let whisper_bin = cache_dir.join(if cfg!(windows) { "whisper.exe" } else { "whisper" });
+    let whisper_bin = cache_dir.join(if cfg!(windows) {
+        "whisper.exe"
+    } else {
+        "whisper"
+    });
     let model_path = cache_dir.join("ggml-base.en.bin");
 
     if !whisper_bin.exists() {
@@ -124,7 +128,7 @@ pub fn tts_synthesize(text: String) -> Result<TtsResult, String> {
     // Piper outputs raw PCM, we need to add WAV header
     let pcm_data = output.stdout;
     let wav_bytes = create_wav_header(pcm_data.len(), 22050, 1, 16);
-    
+
     let mut result = wav_bytes;
     result.extend_from_slice(&pcm_data);
 
@@ -132,17 +136,22 @@ pub fn tts_synthesize(text: String) -> Result<TtsResult, String> {
 }
 
 /// Create WAV header for PCM data
-fn create_wav_header(data_size: usize, sample_rate: u32, channels: u16, bits_per_sample: u16) -> Vec<u8> {
+fn create_wav_header(
+    data_size: usize,
+    sample_rate: u32,
+    channels: u16,
+    bits_per_sample: u16,
+) -> Vec<u8> {
     let byte_rate = sample_rate * u32::from(channels) * u32::from(bits_per_sample) / 8;
     let block_align = channels * bits_per_sample / 8;
 
     let mut header = Vec::with_capacity(44);
-    
+
     // RIFF header
     header.extend_from_slice(b"RIFF");
     header.extend_from_slice(&(36 + data_size as u32).to_le_bytes());
     header.extend_from_slice(b"WAVE");
-    
+
     // fmt chunk
     header.extend_from_slice(b"fmt ");
     header.extend_from_slice(&16u32.to_le_bytes()); // chunk size
@@ -152,10 +161,10 @@ fn create_wav_header(data_size: usize, sample_rate: u32, channels: u16, bits_per
     header.extend_from_slice(&byte_rate.to_le_bytes());
     header.extend_from_slice(&block_align.to_le_bytes());
     header.extend_from_slice(&bits_per_sample.to_le_bytes());
-    
+
     // data chunk
     header.extend_from_slice(b"data");
     header.extend_from_slice(&(data_size as u32).to_le_bytes());
-    
+
     header
 }

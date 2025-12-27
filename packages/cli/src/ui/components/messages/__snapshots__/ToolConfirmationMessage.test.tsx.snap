@@ -61,7 +61,6 @@ exports[`ToolConfirmationMessage > with folder trust > 'for exec confirmations' 
 
 Allow execution of: 'echo'?
 
-
 ● 1. Allow once
   2. No, suggest changes (esc)
 "
@@ -71,7 +70,6 @@ exports[`ToolConfirmationMessage > with folder trust > 'for exec confirmations' 
 "echo "hello"
 
 Allow execution of: 'echo'?
-
 
 ● 1. Allow once
   2. Allow for this session

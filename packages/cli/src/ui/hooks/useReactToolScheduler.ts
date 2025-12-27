@@ -5,23 +5,25 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type {
-  Config,
-  ToolCallRequestInfo,
-  ExecutingToolCall,
-  ScheduledToolCall,
-  ValidatingToolCall,
-  WaitingToolCall,
-  CompletedToolCall,
-  CancelledToolCall,
-  OutputUpdateHandler,
-  AllToolCallsCompleteHandler,
-  ToolCallsUpdateHandler,
-  ToolCall,
-  Status as CoreStatus,
-  EditorType,
+import {
+  CoreToolScheduler,
+  debugLogger,
+  type Logger,
+  type Config,
+  type ToolCallRequestInfo,
+  type ExecutingToolCall,
+  type ScheduledToolCall,
+  type ValidatingToolCall,
+  type WaitingToolCall,
+  type CompletedToolCall,
+  type CancelledToolCall,
+  type OutputUpdateHandler,
+  type AllToolCallsCompleteHandler,
+  type ToolCallsUpdateHandler,
+  type ToolCall,
+  type Status as CoreStatus,
+  type EditorType,
 } from '@terminai/core';
-import { CoreToolScheduler, debugLogger } from '@terminai/core';
 import { useCallback, useState, useMemo, useEffect, useRef } from 'react';
 import type {
   HistoryItemToolGroup,
@@ -69,6 +71,7 @@ export function useReactToolScheduler(
   onComplete: (tools: CompletedToolCall[]) => Promise<void>,
   config: Config,
   getPreferredEditor: () => EditorType | undefined,
+  logger?: Logger,
 ): [
   TrackedToolCall[],
   ScheduleFn,
@@ -112,9 +115,19 @@ export function useReactToolScheduler(
 
   const allToolCallsCompleteHandler: AllToolCallsCompleteHandler = useCallback(
     async (completedToolCalls) => {
+      // Log tool results for Phase 1
+      for (const call of completedToolCalls) {
+        await logger?.logEventFull('tool_result', {
+          callId: call.request.callId,
+          name: call.request.name,
+          status: call.status,
+          result: call.response.resultDisplay,
+          error: call.response.error?.message,
+        });
+      }
       await onCompleteRef.current(completedToolCalls);
     },
-    [],
+    [logger],
   );
 
   const toolCallsUpdateHandler: ToolCallsUpdateHandler = useCallback(

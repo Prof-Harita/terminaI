@@ -51,7 +51,7 @@ describe('historyTracker', () => {
     logOutcome(outcome);
 
     const contents = fs.readFileSync(
-      '/home/test/.termai/history.jsonl',
+      '/home/test/.terminai/history.jsonl',
       'utf-8',
     );
     expect(contents.trim()).toBe(JSON.stringify(outcome));
@@ -61,6 +61,25 @@ describe('historyTracker', () => {
   it('returns empty history when file is missing', () => {
     const outcomes = getRecentOutcomes();
     expect(outcomes).toEqual([]);
+  });
+
+  it('reads legacy history when primary path is missing', () => {
+    const outcome = {
+      timestamp: '2025-01-02T00:00:00Z',
+      request: 'list files',
+      command: 'ls -la',
+      assessedRisk: 'trivial',
+      actualOutcome: 'success' as const,
+      userApproved: true,
+    };
+
+    fs.mkdirSync('/home/test/.termai', { recursive: true });
+    fs.writeFileSync(
+      '/home/test/.termai/history.jsonl',
+      `${JSON.stringify(outcome)}\n`,
+    );
+
+    expect(getRecentOutcomes(1)[0]).toMatchObject(outcome);
   });
 
   it('applies confidence adjustments for similar commands', () => {

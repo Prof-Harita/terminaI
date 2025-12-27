@@ -41,11 +41,11 @@ more surfaces.
 
 - [x] Add TermAI prompt override file for minimal-fork launch:
   - [x] Add `docs/termai-system.md` (example TermAI system prompt to use with
-        `GEMINI_SYSTEM_MD`).
+        `TERMINAI_SYSTEM_MD`).
   - [x] Update `README.md` with a dedicated “TermAI prompt override” section
-        showing `GEMINI_SYSTEM_MD=... gemini`.
+        showing `TERMINAI_SYSTEM_MD=... gemini`.
   - [x] Add a short pointer in `docs/get-started/index.md` (or most appropriate
-        get-started page) to `GEMINI_SYSTEM_MD` usage.
+        get-started page) to `TERMINAI_SYSTEM_MD` usage.
 - [x] Add regression test: “enabling CodebaseInvestigator does not reintroduce
       Software Engineering Tasks wording”.
   - Target: `packages/core/src/core/prompts.test.ts`
@@ -386,5 +386,5 @@ Goal: keep memory local and minimal; reuse existing `memoryTool` + hierarchical
 
 - [ ] Keep diffs small; avoid renames unless necessary.
 - [ ] Prefer feature flags/env toggles for risky or always-on features.
-- [ ] Document TermAI launch via `GEMINI_SYSTEM_MD` so upstream merges stay
+- [ ] Document TermAI launch via `TERMINAI_SYSTEM_MD` so upstream merges stay
       clean.

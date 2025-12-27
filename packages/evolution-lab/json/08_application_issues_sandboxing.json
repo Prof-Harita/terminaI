@@ -1,0 +1,559 @@
+[
+  {
+    "id": "APP_ISSUES_501",
+    "bucket": "Application Issues",
+    "sub_category": "Flatpak",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Discord (Flatpak)"
+    },
+    "interaction": {
+      "user_query": "I installed Discord from the Software Center (Flatpak), but it can't access my Downloads folder to send files. It acts like the folder is empty.",
+      "ai_response": "Flatpak apps are sandboxed and often restricted from accessing personal folders by default.\n\n**Fix:**\n1. Install **Flatseal** from the Software Center.\n2. Open Flatseal, select Discord, and toggle on **Filesystem > All user files** (or specific folders).\n3. Restart Discord.\n\nAlternatively, use the command line:\n```bash\nflatpak override --user --filesystem=~/Downloads com.discordapp.Discord\n```"
+    },
+    "technical_tags": [
+      "flatpak",
+      "sandboxing",
+      "permissions",
+      "fedora-40",
+      "flatseal"
+    ],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_502",
+    "bucket": "Application Issues",
+    "sub_category": "Snap",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Firefox (Snap)"
+    },
+    "interaction": {
+      "user_query": "I'm worried about my privacy. Does the Firefox Snap send data back to Canonical or Ubuntu? How do I check what permissions it has?",
+      "ai_response": "Snaps do send some telemetry about installation statistics, but app data is governed by the app developer (Mozilla).\n\n**To audit permissions:**\nGo to **Settings > Apps > Firefox** to view what hardware it can access.\n\nTo view/revoke permissions via terminal:\n```bash\nsnap connections firefox\nsnap disconnect firefox:camera  # Example to block camera\n```"
+    },
+    "technical_tags": [
+      "snap",
+      "privacy",
+      "telemetry",
+      "permissions",
+      "ubuntu-24.04"
+    ],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_503",
+    "bucket": "Application Issues",
+    "sub_category": "AppImage",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Bitwarden"
+    },
+    "interaction": {
+      "user_query": "I downloaded the Bitwarden AppImage. It runs, but I don't want it storing my vault password in plain text. Does it use the system keyring?",
+      "ai_response": "AppImages sometimes struggle to connect to the system keyring (gnome-keyring or kwallet) due to isolation.\n\n**Fix:**\nLaunch the AppImage with the `--no-sandbox` flag temporarily to test, or ensure `libsecret-1-0` is installed:\n```bash\nsudo apt install libsecret-1-0\n```\nIf issues persist, consider using the Flatpak version which has better integrated portal support for keyrings."
+    },
+    "technical_tags": [
+      "appimage",
+      "security",
+      "keyring",
+      "debian-12",
+      "encryption"
+    ],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_504",
+    "bucket": "Application Issues",
+    "sub_category": "Native (.deb)",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "N/A"
+    },
+    "interaction": {
+      "user_query": "I keep getting a GPG error about 'NO_PUBKEY' when I try to update my apps. I think I added a repo for Chrome ages ago and now it's breaking my secure updates.",
+      "ai_response": "This happens when a repository key is missing or expired, preventing secure verification of packages.\n\n**Fix:**\nIdentify the missing key ID (last 8 characters from the error) and import it:\n```bash\nsudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys [KEY_ID]\n```\n*Note: `apt-key` is deprecated. Ideally, download the `.gpg` key to `/etc/apt/trusted.gpg.d/` directly from the vendor's site.*"
+    },
+    "technical_tags": [
+      "apt",
+      "gpg-keys",
+      "security",
+      "linux-mint-21",
+      "repository"
+    ],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_505",
+    "bucket": "Application Issues",
+    "sub_category": "Flatpak",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Obsidian"
+    },
+    "interaction": {
+      "user_query": "I don't trust this Flatpak to access my internet. How do I completely block network access for just this one app?",
+      "ai_response": "You can revoke the network permission for a specific Flatpak.\n\n**Command:**\n```bash\nflatpak override --user --unshare=network md.obsidian.Obsidian\n```\n\nTo revert this change later:\n```bash\nflatpak override --user --reset md.obsidian.Obsidian\n```"
+    },
+    "technical_tags": [
+      "flatpak",
+      "network-security",
+      "arch-linux",
+      "permissions",
+      "cli"
+    ],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_601",
+    "bucket": "Application Issues",
+    "sub_category": "Native (.rpm)",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "My Firefox Sync is acting up. I signed in, but my bookmarks from my Windows PC aren't showing up on Fedora. Is there a sync interval setting?",
+      "ai_response": "Sync should be near-instant. If it's stuck, force a sync.\n\n**Fix:**\n1. Open the Firefox menu (three lines) > Click your account email.\n2. Click **Sync Now**.\n\nIf that fails, check if you have a 'Master Password' set on the Windows machine; you must enter that primary password to decrypt the data locally."
+    },
+    "technical_tags": [
+      "firefox",
+      "sync",
+      "fedora-40",
+      "cross-platform",
+      "browser"
+    ],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_602",
+    "bucket": "Application Issues",
+    "sub_category": "AppImage",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Nextcloud Client"
+    },
+    "interaction": {
+      "user_query": "I'm using the Nextcloud AppImage. Every time I reboot, I have to log in again. It's not saving my account credentials between sessions.",
+      "ai_response": "The AppImage likely lacks permission or integration to access the GNOME Keyring to store your session token safely.\n\n**Fix:**\nInstall the native desktop client instead for better system integration:\n```bash\nsudo add-apt-repository ppa:nextcloud-devs/client\nsudo apt update\nsudo apt install nextcloud-desktop\n```"
+    },
+    "technical_tags": [
+      "nextcloud",
+      "appimage",
+      "authentication",
+      "ubuntu-22.04",
+      "sync"
+    ],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_603",
+    "bucket": "Application Issues",
+    "sub_category": "Flatpak",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Syncthing"
+    },
+    "interaction": {
+      "user_query": "I set up Syncthing via Flatpak to sync my photos to my phone, but it says 'Permission Denied' when I try to point it to my external USB drive.",
+      "ai_response": "Flatpaks cannot see external drives mounted at `/media` or `/mnt` by default.\n\n**Fix:**\nUse Flatseal or the command line to grant access to the mount point:\n```bash\nflatpak override --user --filesystem=/media/username/DriveName me.syncthing.Syncthing\n```\nReplace `username` and `DriveName` with your actual path."
+    },
+    "technical_tags": [
+      "syncthing",
+      "flatpak",
+      "external-drive",
+      "permissions",
+      "linux-mint-21"
+    ],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_701",
+    "bucket": "Application Issues",
+    "sub_category": "Native (.deb)",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Microsoft Teams"
+    },
+    "interaction": {
+      "user_query": "I can't share my screen on Teams. The option is there, but when I click it, the viewers just see a black screen. I'm on the default Ubuntu desktop.",
+      "ai_response": "Ubuntu 24.04 uses Wayland by default, which has stricter screen recording security.\n\n**Fix:**\n1. When sharing, choose **'Window'** instead of 'Entire Screen' if possible.\n2. Or, log out, click your user, click the gear icon bottom-right, and select **'Ubuntu on Xorg'** to switch to X11, where screen sharing works universally."
+    },
+    "technical_tags": [
+      "teams",
+      "wayland",
+      "screen-sharing",
+      "ubuntu-24.04",
+      "xorg"
+    ],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_702",
+    "bucket": "Application Issues",
+    "sub_category": "Snap",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Slack"
+    },
+    "interaction": {
+      "user_query": "Slack (Snap) doesn't show the red badge count on the icon in the dock when I get new messages. I keep missing work DMs.",
+      "ai_response": "This is often a limitation of the integration between Snap apps and the GNOME dock.\n\n**Workaround:**\nCheck **Settings > Notifications > Slack** and ensure notifications are enabled.\nIf the badge persists in failing, consider installing the `.deb` version from the Slack website, which often integrates better with desktop indicators."
+    },
+    "technical_tags": [
+      "slack",
+      "snap",
+      "notifications",
+      "ubuntu-22.04",
+      "ux-friction"
+    ],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_703",
+    "bucket": "Application Issues",
+    "sub_category": "Flatpak",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Zoom"
+    },
+    "interaction": {
+      "user_query": "Zoom crashes instantly when I try to enable the Virtual Background feature. I installed it from Flathub.",
+      "ai_response": "The Flatpak version of Zoom sometimes crashes with virtual backgrounds due to missing libraries in the sandbox.\n\n**Fix:**\n1. Open Zoom Settings -> Background & Effects.\n2. If it crashes, try the RPM version from the Zoom website instead.\n3. Alternatively, check if you are using the open-source GPU drivers; proprietary drivers (NVIDIA) sometimes need specific Flatpak extensions."
+    },
+    "technical_tags": [
+      "zoom",
+      "flatpak",
+      "crash",
+      "virtual-background",
+      "fedora-40"
+    ],
+    "friction_type": "dependencies"
+  },
+  {
+    "id": "APP_ISSUES_801",
+    "bucket": "Application Issues",
+    "sub_category": "Steam (Native)",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Steam"
+    },
+    "interaction": {
+      "user_query": "I'm trying to play a Windows game on Steam. It launches, I hear sound, but the screen is just black. I enabled Proton Experimental.",
+      "ai_response": "A black screen with audio often indicates a video codec issue or a Vulkan shader compilation hang.\n\n**Fix:**\n1. Right-click the game in Steam > Properties > Launch Options.\n2. Add: `PROTON_USE_WINED3D=1 %command%`\n3. If that fails, remove that command and try switching Proton versions to **Proton 8.0** or **GE-Proton** (community build)."
+    },
+    "technical_tags": ["steam", "proton", "gaming", "arch-linux", "vulkan"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_802",
+    "bucket": "Application Issues",
+    "sub_category": "Flatpak",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Spotify"
+    },
+    "interaction": {
+      "user_query": "Spotify can't play my 'Local Files'. I pointed it to my Music folder, but the songs are greyed out.",
+      "ai_response": "The Spotify Flatpak cannot read your home Music directory without permission.\n\n**Fix:**\n```bash\nflatpak override --user --filesystem=~/Music com.spotify.Client\n```\nRestart Spotify, and toggle the 'Local Files' source off and on again in settings."
+    },
+    "technical_tags": [
+      "spotify",
+      "flatpak",
+      "local-files",
+      "permissions",
+      "linux-mint-21"
+    ],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_803",
+    "bucket": "Application Issues",
+    "sub_category": "Native (.deb)",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "VLC Media Player"
+    },
+    "interaction": {
+      "user_query": "VLC looks tiny on my 4K monitor. The interface text is unreadable. How do I scale just this app up?",
+      "ai_response": "VLC (Qt interface) sometimes doesn't auto-detect HiDPI settings correctly on GNOME.\n\n**Fix:**\nLaunch VLC with this environment variable:\n```bash\nQT_AUTO_SCREEN_SCALE_FACTOR=1 QT_SCALE_FACTOR=2 vlc\n```\nIf this works, you can edit the `.desktop` file in `/usr/share/applications/` to include these variables permanently."
+    },
+    "technical_tags": ["vlc", "hidpi", "scaling", "ubuntu-24.04", "ui-issues"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_901",
+    "bucket": "Application Issues",
+    "sub_category": "Native (AUR)",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Waydroid"
+    },
+    "interaction": {
+      "user_query": "I installed Waydroid to run Android apps, but the session stops immediately. Logs say 'binder node not found'.",
+      "ai_response": "Waydroid requires a specific kernel module called `binder_linux`.\n\n**Fix:**\nEnsure you are using a kernel that supports it (like `linux-zen` on Arch):\n```bash\nsudo pacman -S linux-zen linux-zen-headers\n```\nUpdate your bootloader config, reboot into the Zen kernel, and run:\n```bash\nsudo waydroid init\n```"
+    },
+    "technical_tags": [
+      "waydroid",
+      "kernel-modules",
+      "arch-linux",
+      "android",
+      "emulation"
+    ],
+    "friction_type": "dependencies"
+  },
+  {
+    "id": "APP_ISSUES_902",
+    "bucket": "Application Issues",
+    "sub_category": "Native (.deb)",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Wine"
+    },
+    "interaction": {
+      "user_query": "I'm trying to run an old Windows XP app with Wine. It says 'Bad EXE format'. I think I need a 32-bit prefix?",
+      "ai_response": "Yes, 'Bad EXE format' usually means you are trying to run a 32-bit app in a 64-bit Wine environment without 32-bit libraries.\n\n**Fix:**\n1. Enable 32-bit architecture:\n   ```bash\n   sudo dpkg --add-architecture i386 && sudo apt update\n   sudo apt install wine32\n   ```\n2. Create a 32-bit prefix:\n   ```bash\n   WINEARCH=win32 WINEPREFIX=~/.wine32 wine cfg\n   ```\n3. Run your app:\n   ```bash\n   WINEPREFIX=~/.wine32 wine application.exe\n   ```"
+    },
+    "technical_tags": [
+      "wine",
+      "32-bit",
+      "legacy",
+      "debian-12",
+      "compatibility"
+    ],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_903",
+    "bucket": "Application Issues",
+    "sub_category": "Manual Install",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Blender (Tarball)"
+    },
+    "interaction": {
+      "user_query": "I downloaded Blender as a tar.xz file and extracted it. It works if I click the executable, but it's not in my App Grid/Start Menu.",
+      "ai_response": "You need to create a `.desktop` entry for the system to recognize it.\n\n**Fix:**\nCreate a file at `~/.local/share/applications/blender.desktop` with:\n```ini\n[Desktop Entry]\nName=Blender\nExec=/path/to/extracted/blender\nIcon=/path/to/extracted/blender.svg\nType=Application\nCategories=Graphics;\n```\nMake it executable, and it will appear in your menu."
+    },
+    "technical_tags": [
+      "desktop-entry",
+      "blender",
+      "manual-install",
+      "ubuntu-24.04",
+      "menu"
+    ],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_904",
+    "bucket": "Application Issues",
+    "sub_category": "Native (.deb)",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "N/A"
+    },
+    "interaction": {
+      "user_query": "The latest update broke my specialized accounting software. How do I downgrade a specific package (e.g., `gnucash`) to the previous version via apt?",
+      "ai_response": "You can check available versions and force an install of an older one.\n\n**Fix:**\n1. List versions: `apt-cache madison gnucash`\n2. Install specific version:\n   ```bash\n   sudo apt install gnucash=1:4.8-1ubuntu1\n   ```\n3. Hold the package to prevent auto-updates:\n   ```bash\n   sudo apt-mark hold gnucash\n   ```"
+    },
+    "technical_tags": [
+      "apt",
+      "downgrade",
+      "package-management",
+      "ubuntu-22.04",
+      "version-control"
+    ],
+    "friction_type": "dependencies"
+  },
+  {
+    "id": "APP_ISSUES_506",
+    "bucket": "Application Issues",
+    "sub_category": "Snap",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Chromium"
+    },
+    "interaction": {
+      "user_query": "Chromium takes forever to open the first time I click it after turning on my computer. Is it broken?",
+      "ai_response": "This is a known 'cold boot' issue with Snaps due to the time required to mount the squashfs filesystem.\n\n**Context:** It is not broken. Subsequent launches will be fast. You can try the Flatpak version or native `.deb` (from a PPA) if the startup delay is critical for you."
+    },
+    "technical_tags": [
+      "snap",
+      "performance",
+      "startup-time",
+      "ubuntu-24.04",
+      "chromium"
+    ],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_507",
+    "bucket": "Application Issues",
+    "sub_category": "AppImage",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Krita"
+    },
+    "interaction": {
+      "user_query": "My Krita AppImage looks weird; the mouse cursor is huge and the theme doesn't match my Mint dark mode.",
+      "ai_response": "AppImages often don't inherit the GTK/Qt theme of the host system perfectly.\n\n**Fix:**\nTry installing `qt5-style-plugins`:\n```bash\nsudo apt install qt5-style-plugins\n```\nThen launch the AppImage with:\n```bash\nQT_QPA_PLATFORMTHEME=gtk2 ./krita.appimage\n```"
+    },
+    "technical_tags": ["appimage", "theming", "ui", "linux-mint-21", "qt"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_704",
+    "bucket": "Application Issues",
+    "sub_category": "Flatpak",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "VS Code"
+    },
+    "interaction": {
+      "user_query": "I installed VS Code via Flatpak. When I open the terminal inside VS Code, I can't use `dnf` or `gcc`. It says command not found.",
+      "ai_response": "The VS Code Flatpak runs in a sandbox and cannot see your host system's development tools (like gcc or dnf).\n\n**Fix:**\nIt is highly recommended to use the **native RPM** for VS Code on Fedora for development:\n```bash\nsudo rpm --import [https://packages.microsoft.com/keys/microsoft.asc](https://packages.microsoft.com/keys/microsoft.asc)\n# (Add repo and install code)\n```\nAlternatively, install the Flatpak SDK extensions, but this is complex for beginners."
+    },
+    "technical_tags": [
+      "vscode",
+      "flatpak",
+      "development",
+      "fedora-40",
+      "sandboxing"
+    ],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_804",
+    "bucket": "Application Issues",
+    "sub_category": "Native (.deb)",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Rhythmbox"
+    },
+    "interaction": {
+      "user_query": "Rhythmbox won't play MP3 files. It asks for a plugin but fails to install it.",
+      "ai_response": "Ubuntu restricts proprietary codecs by default.\n\n**Fix:**\nInstall the 'Ubuntu Restricted Extras' package to get MP3, AAC, and font support:\n```bash\nsudo apt install ubuntu-restricted-extras\n```\nRestart Rhythmbox afterwards."
+    },
+    "technical_tags": [
+      "codecs",
+      "mp3",
+      "multimedia",
+      "ubuntu-22.04",
+      "dependencies"
+    ],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_805",
+    "bucket": "Application Issues",
+    "sub_category": "Flatpak",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Lutris"
+    },
+    "interaction": {
+      "user_query": "I installed Lutris (Flatpak) to run my GOG games. I can't find where the games are installed on my hard drive.",
+      "ai_response": "Flatpak apps store data in specific locations.\n\n**Location:**\nLutris Flatpak data is usually in:\n`~/.var/app/net.lutris.Lutris/data/lutris/games`\n\nIf you want them installed elsewhere (e.g., a secondary drive), you must grant filesystem permission via Flatseal first."
+    },
+    "technical_tags": [
+      "lutris",
+      "flatpak",
+      "file-paths",
+      "debian-12",
+      "gaming"
+    ],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_905",
+    "bucket": "Application Issues",
+    "sub_category": "Native (PPA)",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "N/A"
+    },
+    "interaction": {
+      "user_query": "I added a PPA for a beta version of GIMP, but now my system updates are blocked because the PPA doesn't support 'noble' (24.04) yet.",
+      "ai_response": "This is common when upgrading distros while keeping old PPAs.\n\n**Fix:**\nRemove the PPA to allow updates to proceed:\n```bash\nsudo add-apt-repository --remove ppa:example/gimp-beta\n```\nThen run `sudo apt update`. You can stick to the repository version of GIMP until the PPA is updated for 24.04."
+    },
+    "technical_tags": [
+      "ppa",
+      "apt",
+      "update-error",
+      "ubuntu-24.04",
+      "dependencies"
+    ],
+    "friction_type": "dependencies"
+  },
+  {
+    "id": "APP_ISSUES_508",
+    "bucket": "Application Issues",
+    "sub_category": "Native (.deb)",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Google Chrome"
+    },
+    "interaction": {
+      "user_query": "Every time I open Chrome, it asks me to 'Enter password to unlock your login keyring'. How do I stop this popup?",
+      "ai_response": "This happens if you have auto-login enabled, so the keyring didn't unlock with your user session.\n\n**Fix:**\n1. Open 'Passwords and Keys' (Seahorse).\n2. Right-click 'Login' -> Change Password.\n3. Enter your current password, and leave the *new* password blank (press Continue -> Continue).\n*Warning: This stores passwords unencrypted, but stops the popup.*"
+    },
+    "technical_tags": [
+      "keyring",
+      "authentication",
+      "chrome",
+      "ubuntu-24.04",
+      "usability"
+    ],
+    "friction_type": "user_error"
+  }
+]

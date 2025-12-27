@@ -42,11 +42,11 @@ describe('Cognitive Architecture Integration', () => {
       expect(selection?.frameworkId).toBe('FW_SEQUENTIAL');
     });
 
-    it('should select FW_DECOMPOSE for large feature requests', () => {
+    it('should select FW_CONSENSUS for large feature requests', () => {
       const selection = selectFrameworkHeuristic(
         'implement a new authentication service with JWT and database integration',
       );
-      expect(selection?.frameworkId).toBe('FW_DECOMPOSE');
+      expect(selection?.frameworkId).toBe('FW_CONSENSUS');
     });
   });
 

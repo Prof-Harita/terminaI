@@ -63,6 +63,14 @@ export class Storage {
     return path.join(Storage.getGlobalGeminiDir(), 'agents');
   }
 
+  static getCommunityRecipesTrustStorePath(): string {
+    return path.join(
+      Storage.getGlobalGeminiDir(),
+      'recipes',
+      'community-trust.json',
+    );
+  }
+
   static getSystemSettingsPath(): string {
     if (process.env['GEMINI_CLI_SYSTEM_SETTINGS_PATH']) {
       return process.env['GEMINI_CLI_SYSTEM_SETTINGS_PATH'];
@@ -82,6 +90,14 @@ export class Storage {
 
   static getGlobalTempDir(): string {
     return path.join(Storage.getGlobalGeminiDir(), TMP_DIR_NAME);
+  }
+
+  static getGlobalLogsDir(): string {
+    return path.join(Storage.getGlobalGeminiDir(), 'logs');
+  }
+
+  static getGlobalAuditDir(): string {
+    return path.join(Storage.getGlobalLogsDir(), 'audit');
   }
 
   static getGlobalBinDir(): string {
@@ -132,6 +148,14 @@ export class Storage {
     return path.join(this.getGeminiDir(), 'agents');
   }
 
+  getCommunityRecipesTrustStorePath(): string {
+    return Storage.getCommunityRecipesTrustStorePath();
+  }
+
+  getProjectRecipesDir(): string {
+    return path.join(this.getGeminiDir(), 'recipes');
+  }
+
   getProjectTempCheckpointsDir(): string {
     return path.join(this.getProjectTempDir(), 'checkpoints');
   }
@@ -146,5 +170,9 @@ export class Storage {
 
   getHistoryFilePath(): string {
     return path.join(this.getProjectTempDir(), 'shell_history');
+  }
+
+  getSessionAuditPath(sessionId: string): string {
+    return path.join(Storage.getGlobalAuditDir(), `${sessionId}.jsonl`);
   }
 }

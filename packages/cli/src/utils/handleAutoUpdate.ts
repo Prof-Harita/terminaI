@@ -24,7 +24,11 @@ export function handleAutoUpdate(
     return;
   }
 
-  if (settings.merged.tools?.sandbox || process.env['GEMINI_SANDBOX']) {
+  if (
+    settings.merged.tools?.sandbox ||
+    process.env['TERMINAI_SANDBOX'] ||
+    process.env['GEMINI_SANDBOX']
+  ) {
     updateEventEmitter.emit('update-info', {
       message: `${info.message}\nAutomatic update is not available in sandbox mode.`,
     });

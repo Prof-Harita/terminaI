@@ -85,7 +85,8 @@ import { useApp, useStdout, useStdin } from 'ink';
 import { calculateMainAreaWidth } from './utils/ui-sizing.js';
 import ansiEscapes from 'ansi-escapes';
 import * as fs from 'node:fs';
-import { basename } from 'node:path';
+import { basename, join } from 'node:path';
+import { homedir } from 'node:os';
 import { computeWindowTitle } from '../utils/windowTitle.js';
 import { useTextBuffer } from './components/shared/text-buffer.js';
 import { useLogger } from './hooks/useLogger.js';
@@ -141,6 +142,8 @@ import {
   type VoiceUiState,
 } from './contexts/VoiceContext.js';
 import { ConversationStack } from '../voice/ConversationStack.js';
+import { StreamingWhisper } from '../voice/stt/StreamingWhisper.js';
+import { AudioRecorder } from '../voice/stt/AudioRecorder.js';
 
 const WARNING_PROMPT_DURATION_MS = 1000;
 const QUEUE_ERROR_DISPLAY_DURATION_MS = 3000;
@@ -185,12 +188,19 @@ export type VoiceOverrides = {
   maxWords?: number;
 };
 
+type WhisperRuntimeConfig = {
+  binaryPath?: string;
+  modelPath?: string;
+  device?: string;
+};
+
 type VoiceConfig = {
   enabled: boolean;
   pttKey: 'space' | 'ctrl+space';
   sttProvider: 'auto' | 'whispercpp' | 'none';
   ttsProvider: 'auto' | 'none';
   maxWords: number;
+  whisper: WhisperRuntimeConfig;
 };
 
 const DEFAULT_VOICE_CONFIG: VoiceConfig = {
@@ -199,7 +209,10 @@ const DEFAULT_VOICE_CONFIG: VoiceConfig = {
   sttProvider: 'auto',
   ttsProvider: 'auto',
   maxWords: 30,
+  whisper: {},
 };
+
+const VOICE_CACHE_DIR = join(homedir(), '.terminai', 'voice');
 
 function normalizePttKey(value: string | undefined): VoiceConfig['pttKey'] {
   return value === 'ctrl+space' ? 'ctrl+space' : 'space';
@@ -220,10 +233,65 @@ function normalizeTtsProvider(
   return value === 'none' ? 'none' : 'auto';
 }
 
+function readVoiceMetadata(): {
+  paths?: {
+    whisperBinary?: string;
+    whisperModel?: string;
+  };
+  components?: {
+    whisper?: { binaryPath?: string | null; model?: string | null };
+  };
+} | null {
+  try {
+    const raw = fs.readFileSync(join(VOICE_CACHE_DIR, 'metadata.json'), 'utf8');
+    return JSON.parse(raw);
+  } catch (_error) {
+    return null;
+  }
+}
+
+function pickExistingPath(candidates: Array<string | undefined | null>) {
+  return candidates.find(
+    (p) => p && p.trim().length > 0 && fs.existsSync(p.trim()),
+  );
+}
+
+function resolveWhisperRuntime(
+  settingsVoice: Settings['voice'] | undefined,
+): WhisperRuntimeConfig {
+  const metadata = readVoiceMetadata();
+  const defaultBinary = join(
+    VOICE_CACHE_DIR,
+    process.platform === 'win32' ? 'whisper.exe' : 'whisper',
+  );
+  const defaultModel = join(VOICE_CACHE_DIR, 'ggml-base.en.bin');
+
+  const binaryPath = pickExistingPath([
+    settingsVoice?.stt?.whispercpp?.binaryPath,
+    metadata?.paths?.whisperBinary,
+    metadata?.components?.whisper?.binaryPath || undefined,
+    defaultBinary,
+  ]);
+  const modelPath = pickExistingPath([
+    settingsVoice?.stt?.whispercpp?.modelPath,
+    metadata?.paths?.whisperModel,
+    metadata?.components?.whisper?.model || undefined,
+    defaultModel,
+  ]);
+  const device = settingsVoice?.stt?.whispercpp?.device;
+
+  return {
+    binaryPath: binaryPath || undefined,
+    modelPath: modelPath || undefined,
+    device,
+  };
+}
+
 function resolveVoiceConfig(
   settingsVoice: Settings['voice'] | undefined,
   overrides?: VoiceOverrides,
 ): VoiceConfig {
+  const whisper = resolveWhisperRuntime(settingsVoice);
   const enabled =
     overrides?.enabled ??
     settingsVoice?.enabled ??
@@ -248,14 +316,22 @@ function resolveVoiceConfig(
     settingsVoice?.spokenReply?.maxWords ??
     DEFAULT_VOICE_CONFIG.maxWords;
 
+  const resolvedStt =
+    sttProvider === 'auto'
+      ? whisper.binaryPath && whisper.modelPath
+        ? 'whispercpp'
+        : 'none'
+      : sttProvider;
+
   return {
     enabled,
     pttKey,
-    sttProvider,
+    sttProvider: resolvedStt,
     ttsProvider,
     maxWords: Number.isFinite(maxWords)
       ? Math.max(0, maxWords)
       : DEFAULT_VOICE_CONFIG.maxWords,
+    whisper,
   };
 }
 
@@ -353,6 +429,12 @@ export const AppContainer = (props: AppContainerProps) => {
       voiceEnabled ? new VoiceController(ttsProvider, voiceStateMachine) : null,
     [voiceEnabled, ttsProvider, voiceStateMachine],
   );
+  const voiceRecorderRef = useRef<AudioRecorder | null>(null);
+  const whisperRef = useRef<StreamingWhisper | null>(null);
+  const transcriptRef = useRef<{ partial: string; final: string }>({
+    partial: '',
+    final: '',
+  });
   useEffect(() => {
     setVoiceUiState((prev) => ({
       ...prev,
@@ -1238,6 +1320,119 @@ Logging in with Google... Restarting terminaI to continue.
     [addMessage, addInput, viewMode, setViewMode],
   );
 
+  useEffect(() => {
+    if (!voiceStateMachine || !voiceEnabled) {
+      voiceRecorderRef.current?.stop();
+      whisperRef.current?.stopStreaming();
+      voiceRecorderRef.current = null;
+      whisperRef.current = null;
+      return;
+    }
+
+    if (voiceConfig.sttProvider !== 'whispercpp') {
+      return;
+    }
+
+    if (!voiceConfig.whisper.modelPath || !voiceConfig.whisper.binaryPath) {
+      debugLogger.warn(
+        'Voice STT unavailable: whisper binary/model not found in settings or /voice install.',
+      );
+      setWarningMessage((prev) => prev ?? 'Voice transcription unavailable.');
+      return;
+    }
+
+    const recorder = new AudioRecorder({
+      device: voiceConfig.whisper.device,
+    });
+    const whisper = new StreamingWhisper({
+      modelPath: voiceConfig.whisper.modelPath,
+      binary: voiceConfig.whisper.binaryPath,
+    });
+    voiceRecorderRef.current = recorder;
+    whisperRef.current = whisper;
+    transcriptRef.current = { partial: '', final: '' };
+
+    const handleTranscription = (chunk: { text: string; isFinal: boolean }) => {
+      if (!chunk.text) {
+        return;
+      }
+      transcriptRef.current.partial = chunk.text;
+      if (chunk.isFinal) {
+        transcriptRef.current.final = chunk.text;
+      }
+    };
+
+    const handleWhisperError = (error: unknown) => {
+      debugLogger.warn(`Voice STT error: ${getErrorMessage(error)}`);
+      setWarningMessage((prev) => prev ?? 'Voice transcription unavailable.');
+    };
+
+    const handleStartRecording = () => {
+      transcriptRef.current = { partial: '', final: '' };
+      if (!whisper.isRunning()) {
+        whisper.startStreaming();
+      }
+      recorder.start();
+    };
+
+    const handleStopRecording = () => {
+      recorder.stop();
+    };
+
+    const handleTranscribe = () => {
+      recorder.stop();
+      if (whisper.isRunning()) {
+        whisper.stopStreaming();
+      }
+      const text = (
+        transcriptRef.current.final || transcriptRef.current.partial
+      ).trim();
+      if (!text) {
+        debugLogger.warn('Voice STT produced no transcript.');
+        return;
+      }
+      voiceStateMachine.transition({ type: 'TRANSCRIPTION_READY', text });
+    };
+
+    const handleSendToLLM = (text: string) => {
+      const trimmed = text.trim();
+      if (!trimmed) return;
+      handleFinalSubmit(trimmed);
+    };
+
+    recorder.on('error', handleWhisperError);
+    recorder.on('end', () => whisper.stopStreaming());
+    whisper.on('error', handleWhisperError);
+    whisper.on('transcription', handleTranscription);
+    whisper.on('close', () => recorder.stop());
+
+    voiceStateMachine.on('startRecording', handleStartRecording);
+    voiceStateMachine.on('stopRecording', handleStopRecording);
+    voiceStateMachine.on('transcribe', handleTranscribe);
+    voiceStateMachine.on('sendToLLM', handleSendToLLM);
+
+    return () => {
+      voiceStateMachine.off('startRecording', handleStartRecording);
+      voiceStateMachine.off('stopRecording', handleStopRecording);
+      voiceStateMachine.off('transcribe', handleTranscribe);
+      voiceStateMachine.off('sendToLLM', handleSendToLLM);
+      recorder.removeAllListeners();
+      whisper.removeAllListeners();
+      recorder.stop();
+      whisper.stopStreaming();
+      voiceRecorderRef.current = null;
+      whisperRef.current = null;
+    };
+  }, [
+    voiceStateMachine,
+    voiceEnabled,
+    voiceConfig.sttProvider,
+    voiceConfig.whisper.binaryPath,
+    voiceConfig.whisper.modelPath,
+    voiceConfig.whisper.device,
+    handleFinalSubmit,
+  ]);
+
   const handleClearScreen = useCallback(() => {
     historyManager.clearItems();
     clearConsoleMessagesState();
@@ -1570,13 +1765,16 @@ Logging in with Google... Restarting terminaI to continue.
   const handleGlobalKeypress = useCallback(
     (key: Key) => {
       const voiceKeyPressed = voiceEnabled && isPttKey(key, voiceConfig.pttKey);
-      if (voiceKeyPressed) {
+      if (voiceKeyPressed && voiceStateMachine) {
+        const currentState = voiceStateMachine.getState();
         if (voiceController?.isSpeaking()) {
-          voiceStateMachine?.transition({ type: 'USER_VOICE_DETECTED' });
-          voiceStateMachine?.transition({ type: 'PTT_PRESS' });
+          voiceStateMachine.transition({ type: 'USER_VOICE_DETECTED' });
           voiceController.stopSpeaking();
+        }
+        if (currentState === 'LISTENING') {
+          voiceStateMachine.transition({ type: 'PTT_RELEASE' });
         } else {
-          voiceStateMachine?.transition({ type: 'PTT_PRESS' });
+          voiceStateMachine.transition({ type: 'PTT_PRESS' });
         }
       } else if (voiceController?.isSpeaking()) {
         if (key.insertable || key.name === 'escape') {

@@ -8,16 +8,16 @@ and servers.
 TerminaI is a **general-purpose terminal operator** for everyone — from laymen
 to sysadmins — built on a stable upstream core.
 
-**Running on:** Stable Core v0.21
+**Running on:** Stable Core v0.21.0
 
 ## Key Features
 
 - **Voice**: Desktop supports offline STT+TTS (download once → offline) with
-  barge-in; CLI supports TTS spoken replies
+  barge-in; CLI supports TTS spoken replies (STT planned)
 - **Web Remote (A2A)**: Single agent backend for local + remote clients
   (Desktop + browser `/ui` use this)
-- **Authentication**: Model access via OAuth or `GEMINI_API_KEY`; remote clients
-  via A2A token + replay signatures
+- **Authentication**: Model access via OAuth or `TERMINAI_API_KEY`; remote
+  clients via A2A token + replay signatures
 - **Safety**: Deterministic approval ladder (A/B/C) with Level C PIN protection
   (`security.approvalPin`)
 - **🔧 Extensible**: MCP (Model Context Protocol) ecosystem support

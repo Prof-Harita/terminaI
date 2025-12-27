@@ -49,24 +49,28 @@ topics on:
 
 ## Common error messages and solutions
 
+> Note: The preferred binary name is `terminai`; the `gemini` alias is kept for
+> compatibility.
+
 - **Error: `EADDRINUSE` (Address already in use) when starting an MCP server.**
   - **Cause:** Another process is already using the port that the MCP server is
     trying to bind to.
   - **Solution:** Either stop the other process that is using the port or
     configure the MCP server to use a different port.
 
-- **Error: Command not found (when attempting to run Gemini CLI with
-  `gemini`).**
+- **Error: Command not found (when attempting to run Gemini CLI with `terminai`
+  or `gemini`).**
   - **Cause:** Gemini CLI is not correctly installed or it is not in your
     system's `PATH`.
   - **Solution:** The update depends on how you installed Gemini CLI:
-    - If you installed `gemini` globally, check that your `npm` global binary
-      directory is in your `PATH`. You can update Gemini CLI using the command
-      `npm install -g @google/gemini-cli@latest`.
-    - If you are running `gemini` from source, ensure you are using the correct
-      command to invoke it (e.g., `node packages/cli/dist/index.js ...`). To
-      update Gemini CLI, pull the latest changes from the repository, and then
-      rebuild using the command `npm run build`.
+    - If you installed `terminai` globally (or use the `gemini` alias), check
+      that your `npm` global binary directory is in your `PATH`. You can update
+      Gemini CLI using the command `npm install -g @google/gemini-cli@latest`.
+    - If you are running `terminai` from source, ensure you are using the
+      correct command to invoke it (e.g.,
+      `node packages/cli/dist/index.js ...`). To update Gemini CLI, pull the
+      latest changes from the repository, and then rebuild using the command
+      `npm run build`.
 
 - **Error: `MODULE_NOT_FOUND` or import errors.**
   - **Cause:** Dependencies are not installed correctly, or the project hasn't
@@ -97,14 +101,14 @@ topics on:
     interactive mode.
   - **Solution:** If the `CI_` prefixed variable is not needed for the CLI to
     function, you can temporarily unset it for the command. e.g.,
-    `env -u CI_TOKEN gemini`
+    `env -u CI_TOKEN terminai`
 
 - **DEBUG mode not working from project .env file**
   - **Issue:** Setting `DEBUG=true` in a project's `.env` file doesn't enable
     debug mode for gemini-cli.
   - **Cause:** The `DEBUG` and `DEBUG_MODE` variables are automatically excluded
     from project `.env` files to prevent interference with gemini-cli behavior.
-  - **Solution:** Use a `.gemini/.env` file instead, or configure the
+  - **Solution:** Use a `.terminai/.env` file instead, or configure the
     `advanced.excludedEnvVars` setting in your `settings.json` to exclude fewer
     variables.
 

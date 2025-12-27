@@ -466,6 +466,34 @@
               "default": "auto",
               "type": "string",
               "enum": ["auto", "whispercpp", "none"]
+            },
+            "whispercpp": {
+              "title": "whisper.cpp",
+              "description": "whisper.cpp configuration overrides.",
+              "markdownDescription": "whisper.cpp configuration overrides.\n\n- Category: `Voice`\n- Requires restart: `no`\n- Default: `{}`",
+              "default": {},
+              "type": "object",
+              "properties": {
+                "binaryPath": {
+                  "title": "Binary Path",
+                  "description": "Override path to the whisper.cpp binary.",
+                  "markdownDescription": "Override path to the whisper.cpp binary.\n\n- Category: `Voice`\n- Requires restart: `no`",
+                  "type": "string"
+                },
+                "modelPath": {
+                  "title": "Model Path",
+                  "description": "Override path to the whisper.cpp model file.",
+                  "markdownDescription": "Override path to the whisper.cpp model file.\n\n- Category: `Voice`\n- Requires restart: `no`",
+                  "type": "string"
+                },
+                "device": {
+                  "title": "Input Device",
+                  "description": "Optional microphone device name to pass to the recorder.",
+                  "markdownDescription": "Optional microphone device name to pass to the recorder.\n\n- Category: `Voice`\n- Requires restart: `no`",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
             }
           },
           "additionalProperties": false
@@ -597,6 +625,24 @@
           "markdownDescription": "Skip the next speaker check.\n\n- Category: `Model`\n- Requires restart: `no`\n- Default: `true`",
           "default": true,
           "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "brain": {
+      "title": "Brain",
+      "description": "Brain authority settings.",
+      "markdownDescription": "Brain authority settings.\n\n- Category: `Security`\n- Requires restart: `yes`\n- Default: `{}`",
+      "default": {},
+      "type": "object",
+      "properties": {
+        "authority": {
+          "title": "Brain Authority",
+          "description": "Controls how much the brain can raise approval review levels.",
+          "markdownDescription": "Controls how much the brain can raise approval review levels.\n\n- Category: `Security`\n- Requires restart: `yes`\n- Default: `escalate-only`",
+          "default": "escalate-only",
+          "type": "string",
+          "enum": ["advisory", "escalate-only", "governing"]
         }
       },
       "additionalProperties": false
@@ -1209,6 +1255,36 @@
           },
           "additionalProperties": false
         },
+        "repl": {
+          "title": "REPL",
+          "description": "Settings for REPL execution.",
+          "markdownDescription": "Settings for REPL execution.\n\n- Category: `Tools`\n- Requires restart: `no`\n- Default: `{}`",
+          "default": {},
+          "type": "object",
+          "properties": {
+            "sandboxTier": {
+              "title": "REPL Sandbox Tier",
+              "description": "Select the REPL sandbox tier (tier1 local temp sandbox, tier2 Docker).",
+              "markdownDescription": "Select the REPL sandbox tier (tier1 local temp sandbox, tier2 Docker).\n\n- Category: `Tools`\n- Requires restart: `no`\n- Default: `tier1`",
+              "default": "tier1",
+              "type": "string"
+            },
+            "timeoutSeconds": {
+              "title": "REPL Timeout (Seconds)",
+              "description": "Maximum execution time for REPL runs in seconds.",
+              "markdownDescription": "Maximum execution time for REPL runs in seconds.\n\n- Category: `Tools`\n- Requires restart: `no`\n- Default: `30`",
+              "default": 30,
+              "type": "number"
+            },
+            "dockerImage": {
+              "title": "REPL Docker Image",
+              "description": "Docker image to use for tier2 REPL execution.",
+              "markdownDescription": "Docker image to use for tier2 REPL execution.\n\n- Category: `Tools`\n- Requires restart: `no`",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
         "autoAccept": {
           "title": "Auto Accept",
           "description": "Automatically accept and execute tool calls that are considered safe (e.g., read-only operations).",
@@ -1289,6 +1365,75 @@
           "markdownDescription": "Enable policy-based tool confirmation via message bus integration. When enabled, tools automatically respect policy engine decisions (ALLOW/DENY/ASK_USER) without requiring individual tool implementations.\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `true`",
           "default": true,
           "type": "boolean"
+        },
+        "guiAutomation": {
+          "title": "GUI Automation",
+          "description": "Settings for desktop GUI automation (mouse, keyboard control).",
+          "markdownDescription": "Settings for desktop GUI automation (mouse, keyboard control).\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `{}`",
+          "default": {},
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "title": "Enable GUI Automation",
+              "description": "Enable desktop GUI automation tools (ui.click, ui.type, etc.). Requires AT-SPI on Linux.",
+              "markdownDescription": "Enable desktop GUI automation tools (ui.click, ui.type, etc.). Requires AT-SPI on Linux.\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `false`",
+              "default": false,
+              "type": "boolean"
+            },
+            "minReviewLevel": {
+              "title": "Minimum Review Level",
+              "description": "Default minimum review level for GUI automation tools.",
+              "markdownDescription": "Default minimum review level for GUI automation tools.\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `B`",
+              "default": "B",
+              "type": "string",
+              "enum": ["A", "B", "C"]
+            },
+            "clickMinReviewLevel": {
+              "title": "Click Minimum Review Level",
+              "description": "Minimum review level enforced for ui.click.",
+              "markdownDescription": "Minimum review level enforced for ui.click.\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `B`",
+              "default": "B",
+              "type": "string",
+              "enum": ["A", "B", "C"]
+            },
+            "typeMinReviewLevel": {
+              "title": "Type Minimum Review Level",
+              "description": "Minimum review level enforced for ui.type.",
+              "markdownDescription": "Minimum review level enforced for ui.type.\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `B`",
+              "default": "B",
+              "type": "string",
+              "enum": ["A", "B", "C"]
+            },
+            "redactTypedTextByDefault": {
+              "title": "Redact Typed Text by Default",
+              "description": "Redact ui.type text in audit logs by default.",
+              "markdownDescription": "Redact ui.type text in audit logs by default.\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `true`",
+              "default": true,
+              "type": "boolean"
+            },
+            "snapshotMaxDepth": {
+              "title": "Snapshot Max Depth",
+              "description": "Maximum depth for captured UI trees.",
+              "markdownDescription": "Maximum depth for captured UI trees.\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `10`",
+              "default": 10,
+              "type": "number"
+            },
+            "snapshotMaxNodes": {
+              "title": "Snapshot Max Nodes",
+              "description": "Maximum number of nodes included in UI snapshots. Applies both in the driver and as a core backstop.",
+              "markdownDescription": "Maximum number of nodes included in UI snapshots. Applies both in the driver and as a core backstop.\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `100`",
+              "default": 100,
+              "type": "number"
+            },
+            "maxActionsPerMinute": {
+              "title": "Max Actions Per Minute",
+              "description": "Rate limit for GUI automation actions per minute.",
+              "markdownDescription": "Rate limit for GUI automation actions per minute.\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `60`",
+              "default": 60,
+              "type": "number"
+            }
+          },
+          "additionalProperties": false
         },
         "enableHooks": {
           "title": "Enable Hooks System",
@@ -1420,6 +1565,110 @@
             }
           },
           "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "audit": {
+      "title": "Audit",
+      "description": "Audit logging configuration (cannot be disabled).",
+      "markdownDescription": "Audit logging configuration (cannot be disabled).\n\n- Category: `Security`\n- Requires restart: `yes`\n- Default: `{}`",
+      "default": {},
+      "type": "object",
+      "properties": {
+        "redactUiTypedText": {
+          "title": "Redact UI typed text",
+          "description": "Redact UI typed text in audit logs. Audit logging cannot be disabled.",
+          "markdownDescription": "Redact UI typed text in audit logs. Audit logging cannot be disabled.\n\n- Category: `Security`\n- Requires restart: `yes`\n- Default: `true`",
+          "default": true,
+          "type": "boolean"
+        },
+        "retentionDays": {
+          "title": "Audit retention (days)",
+          "description": "Retention window for audit logs (metadata only).",
+          "markdownDescription": "Retention window for audit logs (metadata only).\n\n- Category: `Security`\n- Requires restart: `yes`\n- Default: `30`",
+          "default": 30,
+          "type": "number"
+        },
+        "export": {
+          "title": "Audit export",
+          "description": "Export options for audit logs.",
+          "markdownDescription": "Export options for audit logs.\n\n- Category: `Security`\n- Requires restart: `no`\n- Default: `{}`",
+          "default": {},
+          "type": "object",
+          "properties": {
+            "format": {
+              "title": "Export format",
+              "description": "Format to use when exporting audit logs.",
+              "markdownDescription": "Format to use when exporting audit logs.\n\n- Category: `Security`\n- Requires restart: `no`\n- Default: `jsonl`",
+              "default": "jsonl",
+              "type": "string",
+              "enum": ["jsonl", "json"]
+            },
+            "redaction": {
+              "title": "Export redaction level",
+              "description": "Export redaction. Enterprise removes payloads; debug keeps more detail.",
+              "markdownDescription": "Export redaction. Enterprise removes payloads; debug keeps more detail.\n\n- Category: `Security`\n- Requires restart: `no`\n- Default: `enterprise`",
+              "default": "enterprise",
+              "type": "string",
+              "enum": ["enterprise", "debug"]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "recipes": {
+      "title": "Recipes",
+      "description": "Governed recipes configuration. Built-ins are always enabled; community recipes require confirmation.",
+      "markdownDescription": "Governed recipes configuration. Built-ins are always enabled; community recipes require confirmation.\n\n- Category: `Automation`\n- Requires restart: `yes`\n- Default: `{}`",
+      "default": {},
+      "type": "object",
+      "properties": {
+        "paths": {
+          "title": "Recipe directories",
+          "description": "Additional directories to load user-authored recipes from.",
+          "markdownDescription": "Additional directories to load user-authored recipes from.\n\n- Category: `Automation`\n- Requires restart: `yes`\n- Default: `[]`",
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "communityPaths": {
+          "title": "Community recipe directories",
+          "description": "Directories containing community recipes. These require confirmation before first use.",
+          "markdownDescription": "Directories containing community recipes. These require confirmation before first use.\n\n- Category: `Automation`\n- Requires restart: `yes`\n- Default: `[]`",
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowCommunity": {
+          "title": "Allow community recipes",
+          "description": "Enable loading community recipes. Community recipes still require first-load confirmation.",
+          "markdownDescription": "Enable loading community recipes. Community recipes still require first-load confirmation.\n\n- Category: `Automation`\n- Requires restart: `yes`\n- Default: `false`",
+          "default": false,
+          "type": "boolean"
+        },
+        "confirmCommunityOnFirstLoad": {
+          "title": "Confirm community recipes on first load",
+          "description": "When enabled, the CLI will ask for confirmation the first time a community recipe is encountered.",
+          "markdownDescription": "When enabled, the CLI will ask for confirmation the first time a community recipe is encountered.\n\n- Category: `Automation`\n- Requires restart: `yes`\n- Default: `true`",
+          "default": true,
+          "type": "boolean"
+        },
+        "trustedCommunityRecipes": {
+          "title": "Trusted community recipes",
+          "description": "Recipe IDs that have already been confirmed. These will not prompt again.",
+          "markdownDescription": "Recipe IDs that have already been confirmed. These will not prompt again.\n\n- Category: `Automation`\n- Requires restart: `yes`\n- Default: `[]`",
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "additionalProperties": false
@@ -1556,6 +1805,33 @@
               "markdownDescription": "Enable the Introspection Agent.\n\n- Category: `Experimental`\n- Requires restart: `yes`\n- Default: `false`",
               "default": false,
               "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "logs": {
+      "title": "Logs",
+      "description": "Session logging and retention settings.",
+      "markdownDescription": "Session logging and retention settings.\n\n- Category: `General`\n- Requires restart: `no`\n- Default: `{}`",
+      "default": {},
+      "type": "object",
+      "properties": {
+        "retention": {
+          "title": "Retention",
+          "description": "Log retention settings.",
+          "markdownDescription": "Log retention settings.\n\n- Category: `General`\n- Requires restart: `no`\n- Default: `{}`",
+          "default": {},
+          "type": "object",
+          "properties": {
+            "days": {
+              "title": "Retention Days",
+              "description": "Number of days to keep session logs.",
+              "markdownDescription": "Number of days to keep session logs.\n\n- Category: `General`\n- Requires restart: `no`\n- Default: `7`",
+              "default": 7,
+              "type": "number"
             }
           },
           "additionalProperties": false

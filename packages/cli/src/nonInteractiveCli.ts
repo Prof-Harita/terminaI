@@ -27,6 +27,7 @@ import {
   recordToolCallInteractions,
   ThinkingOrchestrator,
   BrainModelAdapter,
+  Logger,
 } from '@terminai/core';
 import { isSlashCommand } from './ui/utils/commandUtils.js';
 import type { LoadedSettings } from './config/settings.js';
@@ -251,11 +252,19 @@ export async function runNonInteractive({
         query = processedQuery as Part[];
       }
 
+      // Log full event for Phase 1
+      const logger = new Logger(config.getSessionId(), config.storage);
+      await logger.initialize();
+
       // Task 2.1: Hook Framework Selector / Thinking Orchestrator
       const orchestrator = new ThinkingOrchestrator(
         config,
         new BrainModelAdapter(geminiClient, config),
+        logger,
       );
+
+      await logger.logEventFull('user_prompt', { prompt: input });
+
       const brainResult = await orchestrator.executeTask(
         input,
         abortController.signal,
@@ -272,6 +281,106 @@ export async function runNonInteractive({
           if (!streamFormatter) {
             textOutput.write(`Result: ${brainResult.explanation}\n`);
           }
+          return;
+        }
+
+        if (brainResult.suggestedAction === 'execute_tool') {
+          if (!brainResult.toolCall) {
+            throw new FatalInputError(
+              'Brain requested tool execution without a tool call payload.',
+            );
+          }
+
+          const toolCallRequest: ToolCallRequestInfo = {
+            callId: `brain-${Date.now()}-${Math.random()
+              .toString(16)
+              .slice(2)}`,
+            name: brainResult.toolCall.name,
+            args: brainResult.toolCall.args,
+            isClientInitiated: true,
+            prompt_id,
+            provenance: ['local_user', ...config.getSessionProvenance()],
+          };
+
+          if (streamFormatter) {
+            streamFormatter.emitEvent({
+              type: JsonStreamEventType.TOOL_USE,
+              timestamp: new Date().toISOString(),
+              tool_name: toolCallRequest.name,
+              tool_id: toolCallRequest.callId,
+              parameters: toolCallRequest.args,
+            });
+          }
+
+          const completedToolCall = await executeToolCall(
+            config,
+            toolCallRequest,
+            abortController.signal,
+          );
+          const toolResponse = completedToolCall.response;
+
+          if (streamFormatter) {
+            streamFormatter.emitEvent({
+              type: JsonStreamEventType.TOOL_RESULT,
+              timestamp: new Date().toISOString(),
+              tool_id: toolCallRequest.callId,
+              status: toolResponse.error ? 'error' : 'success',
+              output:
+                typeof toolResponse.resultDisplay === 'string'
+                  ? toolResponse.resultDisplay
+                  : undefined,
+              error: toolResponse.error
+                ? {
+                    type: toolResponse.errorType || 'TOOL_EXECUTION_ERROR',
+                    message: toolResponse.error.message,
+                  }
+                : undefined,
+            });
+          }
+
+          if (toolResponse.error) {
+            handleToolError(
+              toolCallRequest.name,
+              toolResponse.error,
+              config,
+              toolResponse.errorType || 'TOOL_EXECUTION_ERROR',
+              typeof toolResponse.resultDisplay === 'string'
+                ? toolResponse.resultDisplay
+                : undefined,
+            );
+          }
+
+          if (streamFormatter) {
+            const metrics = uiTelemetryService.getMetrics();
+            const durationMs = Date.now() - startTime;
+            streamFormatter.emitEvent({
+              type: JsonStreamEventType.RESULT,
+              timestamp: new Date().toISOString(),
+              status: 'success',
+              stats: streamFormatter.convertToStreamStats(metrics, durationMs),
+            });
+            return;
+          }
+
+          if (config.getOutputFormat() === OutputFormat.JSON) {
+            const formatter = new JsonFormatter();
+            const stats = uiTelemetryService.getMetrics();
+            const resultText =
+              typeof toolResponse.resultDisplay === 'string'
+                ? toolResponse.resultDisplay
+                : '';
+            textOutput.write(
+              formatter.format(config.getSessionId(), resultText, stats),
+            );
+            return;
+          }
+
+          const resultText =
+            typeof toolResponse.resultDisplay === 'string'
+              ? toolResponse.resultDisplay
+              : '';
+          textOutput.write(`Result: ${resultText}`);
+          textOutput.ensureTrailingNewline();
           return;
         }
 

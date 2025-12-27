@@ -15,6 +15,7 @@ import type {
   DriverCapabilities,
   DriverDescriptor,
 } from '../protocol/types.js';
+import { getGuiAutomationConfig } from '../config.js';
 import type { ResolvedElement } from '../selectors/resolve.js';
 import type {
   UiClickArgs,
@@ -37,6 +38,8 @@ export class DesktopAutomationService {
   private static readonly SNAPSHOT_TTL_MS = 200; // Cache valid for 200ms
   // Default to false for security - must be explicitly enabled via settings
   private enabled = false;
+  private driverDescriptor?: DriverDescriptor;
+  private actionTimestamps: number[] = [];
 
   private constructor() {
     this.driver = getDesktopDriver();
@@ -61,12 +64,14 @@ export class DesktopAutomationService {
   async getDriverDescriptor(): Promise<DriverDescriptor> {
     await this.ensureConnected();
     const caps = await this.driver.getCapabilities();
-    return {
+    const descriptor: DriverDescriptor = {
       name: this.driver.name,
       kind: this.driver.kind,
       version: this.driver.version,
       capabilities: caps,
     };
+    this.driverDescriptor = descriptor;
+    return descriptor;
   }
 
   private async ensureConnected(): Promise<void> {
@@ -94,10 +99,16 @@ export class DesktopAutomationService {
 
   async snapshot(args: UiSnapshotArgs): Promise<VisualDOMSnapshot> {
     await this.ensureConnected();
-    const snap = await this.driver.snapshot(args);
-    this.lastSnapshot = snap;
+    const {
+      args: boundedArgs,
+      maxDepth,
+      maxNodes,
+    } = this.buildBoundedSnapshotArgs(args);
+    const snap = await this.driver.snapshot(boundedArgs);
+    const boundedSnapshot = this.applySnapshotBounds(snap, maxDepth, maxNodes);
+    this.lastSnapshot = boundedSnapshot;
     this.lastSnapshotTime = Date.now();
-    return snap;
+    return boundedSnapshot;
   }
 
   async query(args: UiQueryArgs): Promise<UiActionResult> {
@@ -110,17 +121,25 @@ export class DesktopAutomationService {
     // Limit
     const subset = matches.slice(0, args.limit || 1);
 
-    return {
-      status: 'success',
-      driver: snap.driver,
-      data: subset.map((m) => ({
-        element: m.node,
-        confidence: m.confidence,
-      })),
-    };
+    return this.buildResultWithEvidence(
+      {
+        status: 'success',
+        driver: snap.driver,
+        data: subset.map((m) => ({
+          element: m.node,
+          confidence: m.confidence,
+        })),
+      },
+      snap,
+    );
   }
 
   async click(args: UiClickArgs): Promise<UiActionResult> {
+    const rateLimited = await this.enforceActionRateLimit();
+    if (rateLimited) {
+      return rateLimited;
+    }
+
     // 1. Resolve Target
     const result = await this.resolveTargetForAction(args.target);
     const { snapshot, targetNode, targetId, matches } = result;
@@ -169,14 +188,25 @@ export class DesktopAutomationService {
       this.lastSnapshot = undefined;
       this.lastSnapshotTime = 0;
     }
-    return actionResult;
+    return this.buildResultWithEvidence(
+      actionResult,
+      snapshot,
+      targetNode,
+      matches?.[0]?.confidence,
+    );
   }
 
   async type(args: UiTypeArgs): Promise<UiActionResult> {
+    const rateLimited = await this.enforceActionRateLimit();
+    if (rateLimited) {
+      return rateLimited;
+    }
+
     let result: {
       snapshot: VisualDOMSnapshot;
       targetId?: string;
       targetNode?: ElementNode;
+      confidence?: number;
     };
 
     if (args.target) {
@@ -195,35 +225,81 @@ export class DesktopAutomationService {
     if (res.status === 'success') {
       this.lastSnapshot = undefined; // Invalidate cache
     }
-    return res;
+    return this.buildResultWithEvidence(
+      res,
+      result.snapshot,
+      result.targetNode,
+      result.confidence,
+    );
   }
 
   async key(args: UiKeyArgs): Promise<UiActionResult> {
+    const rateLimited = await this.enforceActionRateLimit();
+    if (rateLimited) {
+      return rateLimited;
+    }
+
     await this.ensureConnected();
-    return this.driver.key(args);
+    const result = await this.driver.key(args);
+    return this.buildResultWithEvidence(result, this.lastSnapshot);
   }
 
   async scroll(args: UiScrollArgs): Promise<UiActionResult> {
+    const rateLimited = await this.enforceActionRateLimit();
+    if (rateLimited) {
+      return rateLimited;
+    }
+
     await this.ensureConnected();
     let targetId: string | undefined;
+    let targetNode: ElementNode | undefined;
+    let snapshot: VisualDOMSnapshot | undefined;
+    let confidence: number | undefined;
     if (args.target) {
       const resolved = await this.resolveTargetForAction(args.target);
       targetId = resolved.targetId;
+      targetNode = resolved.targetNode;
+      snapshot = resolved.snapshot;
+      confidence = resolved.confidence;
     }
     const refinedArgs = { ...args, target: targetId ?? args.target };
-    return this.driver.scroll(refinedArgs);
+    const result = await this.driver.scroll(refinedArgs);
+    return this.buildResultWithEvidence(
+      result,
+      snapshot,
+      targetNode,
+      confidence,
+    );
   }
 
   async focus(args: UiFocusArgs): Promise<UiActionResult> {
+    const rateLimited = await this.enforceActionRateLimit();
+    if (rateLimited) {
+      return rateLimited;
+    }
+
     await this.ensureConnected();
-    const { targetId } = await this.resolveTargetForAction(args.target);
+    const { targetId, targetNode, snapshot, confidence } =
+      await this.resolveTargetForAction(args.target);
     const refinedArgs = { ...args, target: targetId ?? args.target };
-    return this.driver.focus(refinedArgs);
+    const result = await this.driver.focus(refinedArgs);
+    return this.buildResultWithEvidence(
+      result,
+      snapshot,
+      targetNode,
+      confidence,
+    );
   }
 
   async clickXy(args: UiClickXyArgs): Promise<UiActionResult> {
+    const rateLimited = await this.enforceActionRateLimit();
+    if (rateLimited) {
+      return rateLimited;
+    }
+
     await this.ensureConnected();
-    return this.driver.clickXy(args);
+    const result = await this.driver.clickXy(args);
+    return this.buildResultWithEvidence(result, this.lastSnapshot);
   }
 
   async waitFor(
@@ -251,21 +327,28 @@ export class DesktopAutomationService {
       }
 
       if (pass) {
-        return {
-          status: 'success',
-          driver: snapshot.driver,
-          message: `Waited for '${args.selector}' to be ${args.state}`,
-        };
+        return this.buildResultWithEvidence(
+          {
+            status: 'success',
+            driver: snapshot.driver,
+            message: `Waited for '${args.selector}' to be ${args.state}`,
+          },
+          snapshot,
+        );
       }
 
       await new Promise((r) => setTimeout(r, 500));
     }
 
-    return {
-      status: 'error',
-      driver: (this.lastSnapshot || (await this.ensureSnapshot())).driver,
-      message: `Timeout waiting for '${args.selector}' to be ${args.state}`,
-    };
+    const snapshot = this.lastSnapshot || (await this.ensureSnapshot());
+    return this.buildResultWithEvidence(
+      {
+        status: 'error',
+        driver: snapshot.driver,
+        message: `Timeout waiting for '${args.selector}' to be ${args.state}`,
+      },
+      snapshot,
+    );
   }
 
   async assert(args: UiAssertArgs): Promise<UiActionResult> {
@@ -294,24 +377,183 @@ export class DesktopAutomationService {
         passed = !!actualValue && String(actualValue) === (args.value || '');
         break;
       default:
-        return {
-          status: 'error',
-          driver: snapshot.driver,
-          message: `Unknown assertion: ${args.assertion}`,
-        };
+        return this.buildResultWithEvidence(
+          {
+            status: 'error',
+            driver: snapshot.driver,
+            message: `Unknown assertion: ${args.assertion}`,
+          },
+          snapshot,
+        );
+    }
+
+    return this.buildResultWithEvidence(
+      {
+        status: passed ? 'success' : 'error',
+        driver: snapshot.driver,
+        verification: {
+          passed,
+          details: `Assertion '${args.assertion}' on '${args.target}'. Expected '${args.value}', got '${actualValue}'`,
+        },
+      },
+      snapshot,
+    );
+  }
+
+  // --- Helpers ---
+
+  private async enforceActionRateLimit(): Promise<UiActionResult | null> {
+    const { maxActionsPerMinute } = getGuiAutomationConfig();
+    if (!maxActionsPerMinute || maxActionsPerMinute <= 0) {
+      return null;
+    }
+
+    const now = Date.now();
+    const windowStart = now - 60_000;
+    this.actionTimestamps = this.actionTimestamps.filter(
+      (timestamp) => timestamp >= windowStart,
+    );
+
+    if (this.actionTimestamps.length >= maxActionsPerMinute) {
+      const driver =
+        this.driverDescriptor ?? (await this.getDriverDescriptor());
+      return {
+        status: 'error',
+        driver,
+        message: `GUI automation rate limit exceeded (${maxActionsPerMinute} actions/minute).`,
+      };
+    }
+
+    this.actionTimestamps.push(now);
+    return null;
+  }
+
+  private buildBoundedSnapshotArgs(args: UiSnapshotArgs): {
+    args: UiSnapshotArgs;
+    maxDepth: number;
+    maxNodes: number;
+  } {
+    const config = getGuiAutomationConfig();
+    const maxDepth = Math.min(
+      args.maxDepth ?? config.snapshotMaxDepth,
+      config.snapshotMaxDepth,
+    );
+    const maxNodes = Math.min(
+      args.maxNodes ?? config.snapshotMaxNodes,
+      config.snapshotMaxNodes,
+    );
+
+    return {
+      args: { ...args, maxDepth, maxNodes },
+      maxDepth,
+      maxNodes,
+    };
+  }
+
+  private applySnapshotBounds(
+    snapshot: VisualDOMSnapshot,
+    maxDepth: number,
+    maxNodes: number,
+  ): VisualDOMSnapshot {
+    let nodeCount = 0;
+    let truncated = false;
+
+    const prune = (
+      node: ElementNode | undefined,
+      depth: number,
+    ): ElementNode | undefined => {
+      if (!node) return undefined;
+
+      if (depth >= maxDepth) {
+        if (node.children && node.children.length > 0) {
+          truncated = true;
+        }
+        return { ...node, children: undefined };
+      }
+
+      if (nodeCount >= maxNodes) {
+        truncated = true;
+        return undefined;
+      }
+
+      nodeCount += 1;
+      const children: ElementNode[] = [];
+      if (node.children?.length) {
+        for (const child of node.children) {
+          if (nodeCount >= maxNodes) {
+            truncated = true;
+            break;
+          }
+          const pruned = prune(child, depth + 1);
+          if (pruned) {
+            children.push(pruned);
+          }
+        }
+      }
+
+      return {
+        ...node,
+        children: children.length > 0 ? children : undefined,
+      };
+    };
+
+    const prunedTree = prune(snapshot.tree, 0);
+    const limitedTextIndex = snapshot.textIndex?.slice(0, maxNodes);
+    if (
+      limitedTextIndex &&
+      snapshot.textIndex &&
+      snapshot.textIndex.length > limitedTextIndex.length
+    ) {
+      truncated = true;
     }
 
     return {
-      status: passed ? 'success' : 'error',
-      driver: snapshot.driver,
-      verification: {
-        passed,
-        details: `Assertion '${args.assertion}' on '${args.target}'. Expected '${args.value}', got '${actualValue}'`,
+      ...snapshot,
+      tree: prunedTree,
+      textIndex: limitedTextIndex ?? snapshot.textIndex,
+      limits: {
+        maxDepth,
+        maxNodes,
+        nodeCount,
+        truncated,
       },
     };
   }
 
-  // --- Helpers ---
+  private buildResultWithEvidence(
+    result: UiActionResult,
+    snapshot?: VisualDOMSnapshot,
+    targetNode?: ElementNode,
+    confidence?: number,
+  ): UiActionResult {
+    const config = getGuiAutomationConfig();
+    const evidence =
+      result.evidence ??
+      (snapshot
+        ? {
+            snapshotId: snapshot.snapshotId,
+            redactions: config.redactTypedTextByDefault,
+          }
+        : undefined);
+
+    const resolvedTarget =
+      result.resolvedTarget ??
+      (targetNode
+        ? {
+            elementId: targetNode.id,
+            bounds: targetNode.bounds,
+            role: targetNode.role,
+            name: targetNode.name,
+            confidence: confidence ?? 1,
+          }
+        : undefined);
+
+    return {
+      ...result,
+      evidence,
+      resolvedTarget,
+    };
+  }
 
   private async ensureSnapshot(force = false): Promise<VisualDOMSnapshot> {
     const now = Date.now();
@@ -325,8 +567,10 @@ export class DesktopAutomationService {
 
     return this.snapshot({
       includeTree: true,
-      includeScreenshot: false, // Default: no screenshot for perf
+      includeScreenshot: false,
       includeTextIndex: false,
+      maxDepth: 50,
+      maxNodes: 500,
     });
   }
 
@@ -335,6 +579,7 @@ export class DesktopAutomationService {
     targetNode?: ElementNode;
     targetId?: string;
     matches?: ResolvedElement[];
+    confidence?: number;
   }> {
     const snap = await this.ensureSnapshot();
     const matches = resolveSelector(snap, target);
@@ -343,6 +588,7 @@ export class DesktopAutomationService {
     }
 
     const match = matches[0].node;
+    const confidence = matches[0]?.confidence;
     let robustId = target;
     if (match.platformIds?.automationId) {
       robustId = `uia:automationId="${match.platformIds.automationId}"`;
@@ -352,6 +598,12 @@ export class DesktopAutomationService {
       robustId = `atspi:atspiPath="${match.platformIds.atspiPath}"`;
     }
 
-    return { snapshot: snap, targetNode: match, targetId: robustId, matches };
+    return {
+      snapshot: snap,
+      targetNode: match,
+      targetId: robustId,
+      matches,
+      confidence,
+    };
   }
 }

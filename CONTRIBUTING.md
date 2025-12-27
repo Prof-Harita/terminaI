@@ -198,7 +198,7 @@ Available built-in profiles are `{permissive,restrictive}-{open,closed,proxied}`
 #### Container-based sandboxing (all platforms)
 
 For stronger container-based sandboxing on macOS or other platforms, you can set
-`GEMINI_SANDBOX=true|docker|podman|<command>` in your environment or `.env`
+`TERMINAI_SANDBOX=true|docker|podman|<command>` in your environment or `.env`
 file. The specified command (or if `true` then either `docker` or `podman`) must
 be installed on the host machine. Once enabled, `npm run build:all` will build a
 minimal container ("sandbox") image and `npm start` will launch inside a fresh
@@ -222,12 +222,12 @@ sandbox.
 
 All sandboxing methods, including macOS Seatbelt using `*-proxied` profiles,
 support restricting outbound network traffic through a custom proxy server that
-can be specified as `GEMINI_SANDBOX_PROXY_COMMAND=<command>`, where `<command>`
-must start a proxy server that listens on `:::8877` for relevant requests. See
-`docs/examples/proxy-script.md` for a minimal proxy that only allows `HTTPS`
-connections to `example.com:443` (e.g. `curl https://example.com`) and declines
-all other requests. The proxy is started and stopped automatically alongside the
-sandbox.
+can be specified as `TERMINAI_SANDBOX_PROXY_COMMAND=<command>`, where
+`<command>` must start a proxy server that listens on `:::8877` for relevant
+requests. See `docs/examples/proxy-script.md` for a minimal proxy that only
+allows `HTTPS` connections to `example.com:443` (e.g.
+`curl https://example.com`) and declines all other requests. The proxy is
+started and stopped automatically alongside the sandbox.
 
 ### Manual publish
 
