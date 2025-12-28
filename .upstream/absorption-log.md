@@ -14,8 +14,10 @@
 
 ### Week of 2025-12-28
 
-_Initial setup — no upstream sync performed yet._
+| Date       | Upstream Commits | PR  | Classification | Our Action | Status |
+| ---------- | ---------------- | --- | -------------- | ---------- | ------ |
+| 2025-12-28 | 25 CORE commits  | #16 | Documented     | Cataloged  | ✅     |
 
-| Date | Upstream Commit | PR  | Classification | Our Action | Status |
-| ---- | --------------- | --- | -------------- | ---------- | ------ |
-| -    | -               | -   | -              | -          | -      |
+**Notes:** First automated sync by Jules. 25 commits classified as CORE, 7 as
+IRRELEVANT. Classification docs merged — actual upstream code integration
+pending manual review.
