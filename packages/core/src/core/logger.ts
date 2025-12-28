@@ -13,7 +13,7 @@ import { Storage } from '../config/storage.js';
 import { debugLogger } from '../utils/debugLogger.js';
 import { coreEvents } from '../utils/events.js';
 
-const LOG_FILE_NAME = 'logs.json';
+const LOG_FILE_NAME = 'logs.jsonl';
 
 export enum MessageSenderType {
   USER = 'user',
@@ -95,7 +95,6 @@ export class Logger {
   private sessionId: string | undefined;
   private messageId = 0; // Instance-specific counter for the next messageId
   private initialized = false;
-  private logs: LogEntry[] = []; // In-memory cache, ideally reflects the last known state of the file
 
   constructor(
     sessionId: string,
@@ -109,52 +108,26 @@ export class Logger {
       throw new Error('Log file path not set during read attempt.');
     }
     try {
-      const fileContent = await fs.readFile(this.logFilePath, 'utf-8');
-      const parsedLogs = JSON.parse(fileContent);
-      if (!Array.isArray(parsedLogs)) {
-        debugLogger.debug(
-          `Log file at ${this.logFilePath} is not a valid JSON array. Starting with empty logs.`,
-        );
-        await this._backupCorruptedLogFile('malformed_array');
-        return [];
-      }
-      return parsedLogs.filter(
-        (entry) =>
-          typeof entry.sessionId === 'string' &&
-          typeof entry.messageId === 'number' &&
-          typeof entry.timestamp === 'string' &&
-          typeof entry.type === 'string' &&
-          typeof entry.message === 'string',
-      ) as LogEntry[];
+      const content = await fs.readFile(this.logFilePath, 'utf-8');
+      const lines = content
+        .trim()
+        .split('\n')
+        .filter((line) => line.length > 0);
+      return lines
+        .map((line) => {
+          try {
+            return JSON.parse(line) as LogEntry;
+          } catch {
+            return null;
+          }
+        })
+        .filter((entry): entry is LogEntry => entry !== null);
     } catch (error) {
       const nodeError = error as NodeJS.ErrnoException;
       if (nodeError.code === 'ENOENT') {
         return [];
       }
-      if (error instanceof SyntaxError) {
-        debugLogger.debug(
-          `Invalid JSON in log file ${this.logFilePath}. Backing up and starting fresh.`,
-          error,
-        );
-        await this._backupCorruptedLogFile('invalid_json');
-        return [];
-      }
-      debugLogger.debug(
-        `Failed to read or parse log file ${this.logFilePath}:`,
-        error,
-      );
       throw error;
-    }
-  }
-
-  private async _backupCorruptedLogFile(reason: string): Promise<void> {
-    if (!this.logFilePath) return;
-    const backupPath = `${this.logFilePath}.${reason}.${Date.now()}.bak`;
-    try {
-      await fs.rename(this.logFilePath, backupPath);
-      debugLogger.debug(`Backed up corrupted log file to ${backupPath}`);
-    } catch (_backupError) {
-      // If rename fails (e.g. file doesn't exist), no need to log an error here as the primary error (e.g. invalid JSON) is already handled.
     }
   }
 
@@ -172,25 +145,35 @@ export class Logger {
 
     try {
       await fs.mkdir(this.geminiDir, { recursive: true });
-      let fileExisted = true;
+
+      // Migrate legacy logs.json if it exists
+      const legacyPath = path.join(this.geminiDir, 'logs.json');
       try {
-        await fs.access(this.logFilePath);
-      } catch (_e) {
-        fileExisted = false;
+        const legacyContent = await fs.readFile(legacyPath, 'utf-8');
+        const legacyLogs = JSON.parse(legacyContent);
+        if (Array.isArray(legacyLogs) && legacyLogs.length > 0) {
+          const jsonlContent =
+            legacyLogs.map((entry) => JSON.stringify(entry)).join('\n') + '\n';
+          await fs.appendFile(this.logFilePath, jsonlContent, 'utf-8');
+          await fs.rename(legacyPath, legacyPath + '.migrated');
+          debugLogger.debug('Migrated legacy logs.json to logs.jsonl');
+        }
+      } catch {
+        // No legacy file or already migrated
       }
-      this.logs = await this._readLogFile();
-      if (!fileExisted && this.logs.length === 0) {
-        await fs.writeFile(this.logFilePath, '[]', 'utf-8');
-      }
+
+      const logs = await this._readLogFile();
       const logsDirFull = path.dirname(this.logFilePathFull);
       await fs.mkdir(logsDirFull, { recursive: true });
-      const sessionLogs = this.logs.filter(
+
+      const sessionLogs = logs.filter(
         (entry) => entry.sessionId === this.sessionId,
       );
       this.messageId =
         sessionLogs.length > 0
           ? Math.max(...sessionLogs.map((entry) => entry.messageId)) + 1
           : 0;
+
       this.initialized = true;
     } catch (err) {
       coreEvents.emitFeedback('error', 'Failed to initialize logger:', err);
@@ -198,75 +181,21 @@ export class Logger {
     }
   }
 
-  private async _updateLogFile(
-    entryToAppend: LogEntry,
-  ): Promise<LogEntry | null> {
+  private async _appendLogEntry(entry: LogEntry): Promise<void> {
     if (!this.logFilePath) {
-      debugLogger.debug('Log file path not set. Cannot persist log entry.');
-      throw new Error('Log file path not set during update attempt.');
+      throw new Error('Log file path not set during append attempt.');
     }
-
-    let currentLogsOnDisk: LogEntry[];
-    try {
-      currentLogsOnDisk = await this._readLogFile();
-    } catch (readError) {
-      debugLogger.debug(
-        'Critical error reading log file before append:',
-        readError,
-      );
-      throw readError;
-    }
-
-    // Determine the correct messageId for the new entry based on current disk state for its session
-    const sessionLogsOnDisk = currentLogsOnDisk.filter(
-      (e) => e.sessionId === entryToAppend.sessionId,
+    await fs.appendFile(
+      this.logFilePath,
+      JSON.stringify(entry) + '\n',
+      'utf-8',
     );
-    const nextMessageIdForSession =
-      sessionLogsOnDisk.length > 0
-        ? Math.max(...sessionLogsOnDisk.map((e) => e.messageId)) + 1
-        : 0;
-
-    // Update the messageId of the entry we are about to append
-    entryToAppend.messageId = nextMessageIdForSession;
-
-    // Check if this entry (same session, same *recalculated* messageId, same content) might already exist
-    // This is a stricter check for true duplicates if multiple instances try to log the exact same thing
-    // at the exact same calculated messageId slot.
-    const entryExists = currentLogsOnDisk.some(
-      (e) =>
-        e.sessionId === entryToAppend.sessionId &&
-        e.messageId === entryToAppend.messageId &&
-        e.timestamp === entryToAppend.timestamp && // Timestamps are good for distinguishing
-        e.message === entryToAppend.message,
-    );
-
-    if (entryExists) {
-      debugLogger.debug(
-        `Duplicate log entry detected and skipped: session ${entryToAppend.sessionId}, messageId ${entryToAppend.messageId}`,
-      );
-      this.logs = currentLogsOnDisk; // Ensure in-memory is synced with disk
-      return null; // Indicate that no new entry was actually added
-    }
-
-    currentLogsOnDisk.push(entryToAppend);
-
-    try {
-      await fs.writeFile(
-        this.logFilePath,
-        JSON.stringify(currentLogsOnDisk, null, 2),
-        'utf-8',
-      );
-      this.logs = currentLogsOnDisk;
-      return entryToAppend; // Return the successfully appended entry
-    } catch (error) {
-      debugLogger.debug('Error writing to log file:', error);
-      throw error;
-    }
   }
 
   async getPreviousUserMessages(): Promise<string[]> {
     if (!this.initialized) return [];
-    return this.logs
+    const logs = await this._readLogFile();
+    return logs
       .filter((entry) => entry.type === MessageSenderType.USER)
       .sort((a, b) => {
         const dateA = new Date(a.timestamp).getTime();
@@ -278,31 +207,22 @@ export class Logger {
 
   async logMessage(type: MessageSenderType, message: string): Promise<void> {
     if (!this.initialized || this.sessionId === undefined) {
-      debugLogger.debug(
-        'Logger not initialized or session ID missing. Cannot log message.',
-      );
+      debugLogger.debug('Logger not initialized. Cannot log message.');
       return;
     }
 
-    // The messageId used here is the instance's idea of the next ID.
-    // _updateLogFile will verify and potentially recalculate based on the file's actual state.
-    const newEntryObject: LogEntry = {
+    const entry: LogEntry = {
       sessionId: this.sessionId,
-      messageId: this.messageId, // This will be recalculated in _updateLogFile
+      messageId: this.messageId++,
       type,
       message,
       timestamp: new Date().toISOString(),
     };
 
     try {
-      const writtenEntry = await this._updateLogFile(newEntryObject);
-      if (writtenEntry) {
-        // If an entry was actually written (not a duplicate skip),
-        // then this instance can increment its idea of the next messageId for this session.
-        this.messageId = writtenEntry.messageId + 1;
-      }
-    } catch (_error) {
-      // Error already logged by _updateLogFile or _readLogFile
+      await this._appendLogEntry(entry);
+    } catch (error) {
+      debugLogger.debug('Error appending to log file:', error);
     }
   }
 
@@ -516,7 +436,6 @@ export class Logger {
   close(): void {
     this.initialized = false;
     this.logFilePath = undefined;
-    this.logs = [];
     this.sessionId = undefined;
     this.messageId = 0;
   }

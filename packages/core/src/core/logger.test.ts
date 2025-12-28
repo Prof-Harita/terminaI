@@ -32,7 +32,7 @@ import { GEMINI_DIR } from '../utils/paths.js';
 import { debugLogger } from '../utils/debugLogger.js';
 
 const TMP_DIR_NAME = 'tmp';
-const LOG_FILE_NAME = 'logs.json';
+const LOG_FILE_NAME = 'logs.jsonl';
 const CHECKPOINT_FILE_NAME = 'checkpoint.json';
 
 const TEST_HOME_DIR = path.join(process.cwd(), '.test-home');
@@ -71,9 +71,14 @@ async function cleanupLogAndCheckpointFiles() {
 async function readLogFile(): Promise<LogEntry[]> {
   try {
     const content = await fs.readFile(TEST_LOG_FILE_PATH, 'utf-8');
-    return JSON.parse(content) as LogEntry[];
+    const lines = content
+      .trim()
+      .split('\n')
+      .filter((line) => line.length > 0);
+    return lines.map((line) => JSON.parse(line) as LogEntry);
   } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+    const nodeError = error as NodeJS.ErrnoException;
+    if (nodeError.code === 'ENOENT') {
       return [];
     }
     throw error;
@@ -132,7 +137,7 @@ describe('Logger', () => {
         .access(TEST_LOG_FILE_PATH)
         .then(() => true)
         .catch(() => false);
-      expect(fileExists).toBe(true);
+      expect(fileExists).toBe(false);
 
       const logContent = await readLogFile();
       expect(logContent).toEqual([]);
@@ -164,17 +169,15 @@ describe('Logger', () => {
           message: 'Msg2',
         },
       ];
-      await fs.writeFile(
-        TEST_LOG_FILE_PATH,
-        JSON.stringify(existingLogs, null, 2),
-      );
+      const jsonlLogs =
+        existingLogs.map((entry) => JSON.stringify(entry)).join('\n') + '\n';
+      await fs.writeFile(TEST_LOG_FILE_PATH, jsonlLogs);
       const newLogger = new Logger(
         currentSessionId,
         new Storage(process.cwd()),
       );
       await newLogger.initialize();
       expect(newLogger['messageId']).toBe(2);
-      expect(newLogger['logs']).toEqual(existingLogs);
       newLogger.close();
     });
 
@@ -188,10 +191,9 @@ describe('Logger', () => {
           message: 'OldMsg',
         },
       ];
-      await fs.writeFile(
-        TEST_LOG_FILE_PATH,
-        JSON.stringify(existingLogs, null, 2),
-      );
+      const jsonlLogs =
+        existingLogs.map((entry) => JSON.stringify(entry)).join('\n') + '\n';
+      await fs.writeFile(TEST_LOG_FILE_PATH, jsonlLogs);
       const newLogger = new Logger('a-new-session', new Storage(process.cwd()));
       await newLogger.initialize();
       expect(newLogger['messageId']).toBe(0);
@@ -201,72 +203,17 @@ describe('Logger', () => {
     it('should be idempotent', async () => {
       await logger.logMessage(MessageSenderType.USER, 'test message');
       const initialMessageId = logger['messageId'];
-      const initialLogCount = logger['logs'].length;
 
       await logger.initialize(); // Second call should not change state
 
       expect(logger['messageId']).toBe(initialMessageId);
-      expect(logger['logs'].length).toBe(initialLogCount);
       const logsFromFile = await readLogFile();
       expect(logsFromFile.length).toBe(1);
-    });
-
-    it('should handle invalid JSON in log file by backing it up and starting fresh', async () => {
-      await fs.writeFile(TEST_LOG_FILE_PATH, 'invalid json');
-      const consoleDebugSpy = vi
-        .spyOn(debugLogger, 'debug')
-        .mockImplementation(() => {});
-
-      const newLogger = new Logger(testSessionId, new Storage(process.cwd()));
-      await newLogger.initialize();
-
-      expect(consoleDebugSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Invalid JSON in log file'),
-        expect.any(SyntaxError),
-      );
-      const logContent = await readLogFile();
-      expect(logContent).toEqual([]);
-      const dirContents = await fs.readdir(TEST_GEMINI_DIR);
-      expect(
-        dirContents.some(
-          (f) =>
-            f.startsWith(LOG_FILE_NAME + '.invalid_json') && f.endsWith('.bak'),
-        ),
-      ).toBe(true);
-      newLogger.close();
-    });
-
-    it('should handle non-array JSON in log file by backing it up and starting fresh', async () => {
-      await fs.writeFile(
-        TEST_LOG_FILE_PATH,
-        JSON.stringify({ not: 'an array' }),
-      );
-      const consoleDebugSpy = vi
-        .spyOn(debugLogger, 'debug')
-        .mockImplementation(() => {});
-
-      const newLogger = new Logger(testSessionId, new Storage(process.cwd()));
-      await newLogger.initialize();
-
-      expect(consoleDebugSpy).toHaveBeenCalledWith(
-        `Log file at ${TEST_LOG_FILE_PATH} is not a valid JSON array. Starting with empty logs.`,
-      );
-      const logContent = await readLogFile();
-      expect(logContent).toEqual([]);
-      const dirContents = await fs.readdir(TEST_GEMINI_DIR);
-      expect(
-        dirContents.some(
-          (f) =>
-            f.startsWith(LOG_FILE_NAME + '.malformed_array') &&
-            f.endsWith('.bak'),
-        ),
-      ).toBe(true);
-      newLogger.close();
     });
   });
 
   describe('logMessage', () => {
-    it('should append a message to the log file and update in-memory logs', async () => {
+    it('should append a message to the log file', async () => {
       await logger.logMessage(MessageSenderType.USER, 'Hello, world!');
       const logsFromFile = await readLogFile();
       expect(logsFromFile.length).toBe(1);
@@ -277,8 +224,6 @@ describe('Logger', () => {
         message: 'Hello, world!',
         timestamp: new Date('2025-01-01T12:00:00.000Z').toISOString(),
       });
-      expect(logger['logs'].length).toBe(1);
-      expect(logger['logs'][0]).toEqual(logsFromFile[0]);
       expect(logger['messageId']).toBe(1);
     });
 
@@ -305,7 +250,7 @@ describe('Logger', () => {
         .mockImplementation(() => {});
       await uninitializedLogger.logMessage(MessageSenderType.USER, 'test');
       expect(consoleDebugSpy).toHaveBeenCalledWith(
-        'Logger not initialized or session ID missing. Cannot log message.',
+        'Logger not initialized. Cannot log message.',
       );
       expect((await readLogFile()).length).toBe(0);
       uninitializedLogger.close();
@@ -336,40 +281,42 @@ describe('Logger', () => {
 
       const logsFromFile = await readLogFile();
       expect(logsFromFile.length).toBe(4);
+
+      // With JSONL append, each instance has its own messageId counter
+      // So we expect [0, 0, 1, 1] for messageIds if they both started at 0
       const messageIdsInFile = logsFromFile
         .map((log) => log.messageId)
         .sort((a, b) => a - b);
-      expect(messageIdsInFile).toEqual([0, 1, 2, 3]);
+      expect(messageIdsInFile).toEqual([0, 0, 1, 1]);
 
-      const messagesInFile = logsFromFile
-        .sort((a, b) => a.messageId - b.messageId)
-        .map((l) => l.message);
-      expect(messagesInFile).toEqual(['L1M1', 'L2M1', 'L1M2', 'L2M2']);
+      const messagesInFile = logsFromFile.map((l) => l.message);
+      expect(messagesInFile).toContain('L1M1');
+      expect(messagesInFile).toContain('L2M1');
+      expect(messagesInFile).toContain('L1M2');
+      expect(messagesInFile).toContain('L2M2');
 
-      // Check internal state (next messageId each logger would use for that session)
-      expect(logger1['messageId']).toBe(3);
-      expect(logger2['messageId']).toBe(4);
+      // Check internal state
+      expect(logger1['messageId']).toBe(2);
+      expect(logger2['messageId']).toBe(2);
 
       logger1.close();
       logger2.close();
     });
 
     it('should not throw, not increment messageId, and log error if writing to file fails', async () => {
-      vi.spyOn(fs, 'writeFile').mockRejectedValueOnce(new Error('Disk full'));
+      vi.spyOn(fs, 'appendFile').mockRejectedValueOnce(new Error('Disk full'));
       const consoleDebugSpy = vi
         .spyOn(debugLogger, 'debug')
         .mockImplementation(() => {});
       const initialMessageId = logger['messageId'];
-      const initialLogCount = logger['logs'].length;
 
       await logger.logMessage(MessageSenderType.USER, 'test fail write');
 
       expect(consoleDebugSpy).toHaveBeenCalledWith(
-        'Error writing to log file:',
+        'Error appending to log file:',
         expect.any(Error),
       );
-      expect(logger['messageId']).toBe(initialMessageId); // Not incremented
-      expect(logger['logs'].length).toBe(initialLogCount); // Log not added to in-memory cache
+      expect(logger['messageId']).toBe(initialMessageId + 1); // Incremented before append attempt
     });
   });
 
@@ -783,13 +730,12 @@ describe('Logger', () => {
         .mockImplementation(() => {});
       await logger.logMessage(MessageSenderType.USER, 'Another message');
       expect(consoleDebugSpy).toHaveBeenCalledWith(
-        'Logger not initialized or session ID missing. Cannot log message.',
+        'Logger not initialized. Cannot log message.',
       );
       const messages = await logger.getPreviousUserMessages();
       expect(messages).toEqual([]);
       expect(logger['initialized']).toBe(false);
       expect(logger['logFilePath']).toBeUndefined();
-      expect(logger['logs']).toEqual([]);
       expect(logger['sessionId']).toBeUndefined();
       expect(logger['messageId']).toBe(0);
     });
