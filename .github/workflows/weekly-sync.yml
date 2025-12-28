@@ -56,7 +56,7 @@ jobs:
                - \`files.txt\` — Files changed
                - \`classification.md\` — Your classification of each commit
 
-            6. **Push the branch** for review.
+            6. **Push the branch** and open a PR. **Always mention @Prof-Harita** in the final PR description to trigger the manual review phase.
 
             ### Reference
             - [FORK_ZONES.md](../docs-terminai/FORK_ZONES.md)

@@ -59,9 +59,20 @@ See [FORK_ZONES.md](./FORK_ZONES.md) for the full classification.
 - Creates branch `upstream-sync/YYYY-MM-DD`
 - Pushes summary and classification
 
-### Saturday (Human Review)
+### Saturday (Human Review Trigger)
 
-- Review Jules' branch
+The review is triggered by **three events**:
+
+1. **GitHub PR Notification**: Jules opens a PR (e.g., #16) and tags the human
+   reviewer.
+2. **Scheduled Rhythm**: Every Saturday morning (9 AM CST/3 PM UTC), following
+   the Friday 3 PM UTC automated start.
+3. **Completion Log**: Jules posts a completion comment on the sync issue with a
+   link to the PR.
+
+#### Review Steps:
+
+- Review Jules' branch...
 - For CORE changes: merge or cherry-pick
 - For FORK changes: create task for agent reimplementation
 - Update `.upstream/absorption-log.md`

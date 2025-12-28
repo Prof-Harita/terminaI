@@ -1,12 +1,15 @@
 # Upstream Commit Classification: 2025-12-28
 
-This document classifies new commits from the upstream repository (`google-gemini/gemini-cli`) for the week of 2025-12-28, based on the guidelines in `docs-terminai/FORK_ZONES.md`.
+This document classifies new commits from the upstream repository
+(`google-gemini/gemini-cli`) for the week of 2025-12-28, based on the guidelines
+in `docs-terminai/FORK_ZONES.md`.
 
 ---
 
 ## 🟢 CORE (Can merge directly)
 
-- `37be16243` fix(core): enable granular shell command allowlisting in policy engine
+- `37be16243` fix(core): enable granular shell command allowlisting in policy
+  engine
 - `5566292cc` refactor(core): extract static concerns from CoreToolScheduler
 - `a26d19540` fix(cli): add enableShellOutputEfficiency to settings schema
 - `21388a0a4` fix(core): handle checkIsRepo failure in GitService.initialize
@@ -15,16 +18,20 @@ This document classifies new commits from the upstream repository (`google-gemin
 - `546baf993` Added modifyOtherKeys protocol support for tmux
 - `e6344a8c2` Security: Project-level hook warnings
 - `873d10df4` feat: terse transformations of image paths in text buffer
-- `563d81e08` Add experimental in-CLI extension install and uninstall subcommands
+- `563d81e08` Add experimental in-CLI extension install and uninstall
+  subcommands
 - `5f2861476` chore: limit MCP resources display to 10 by default
 - `b6b0727e2` Make schema validation errors non-fatal
 - `e9a601c1f` fix: add missing type field to MCPServerConfig
-- `308aa7071` refactor(core): remove deprecated permission aliases from BeforeToolHookOutput
+- `308aa7071` refactor(core): remove deprecated permission aliases from
+  BeforeToolHookOutput
 - `6be034392` feat: automatic /model persistence across Gemini CLI sessions
-- `3b1dbcd42` Implemented unified secrets sanitization and env. redaction options
+- `3b1dbcd42` Implemented unified secrets sanitization and env. redaction
+  options
 - `2ac9fe08f` chore: remove clipboard file
 - `24c722454` chore: improve error messages for --resume
-- `0a216b28f` fix #15369, prevent crash on unhandled EIO error in readStdin cleanup
+- `0a216b28f` fix #15369, prevent crash on unhandled EIO error in readStdin
+  cleanup
 - `9c48cd849` feat(ui): Add security warning and improve layout for Hooks list
 - `0843d9af5` fix(core): use debugLogger.debug for startup profiler logs
 - `b0d5c4c05` feat(policy): implement dynamic mode-aware policy evaluation
