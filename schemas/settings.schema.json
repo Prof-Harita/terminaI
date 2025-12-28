@@ -1376,8 +1376,8 @@
             "enabled": {
               "title": "Enable GUI Automation",
               "description": "Enable desktop GUI automation tools (ui.click, ui.type, etc.). Requires AT-SPI on Linux.",
-              "markdownDescription": "Enable desktop GUI automation tools (ui.click, ui.type, etc.). Requires AT-SPI on Linux.\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `false`",
-              "default": false,
+              "markdownDescription": "Enable desktop GUI automation tools (ui.click, ui.type, etc.). Requires AT-SPI on Linux.\n\n- Category: `Tools`\n- Requires restart: `yes`\n- Default: `true`",
+              "default": true,
               "type": "boolean"
             },
             "minReviewLevel": {

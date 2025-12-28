@@ -786,7 +786,7 @@ their corresponding top-level category object in your `settings.json` file.
 - **`tools.guiAutomation.enabled`** (boolean):
   - **Description:** Enable desktop GUI automation tools (ui.click, ui.type,
     etc.). Requires AT-SPI on Linux.
-  - **Default:** `false`
+  - **Default:** `true`
   - **Requires restart:** Yes
 
 - **`tools.guiAutomation.minReviewLevel`** (enum):
