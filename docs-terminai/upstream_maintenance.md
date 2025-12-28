@@ -9,110 +9,127 @@
 
 ## Executive Summary
 
-TerminaI is forked from Google's
-[Gemini CLI](https://github.com/google-gemini/gemini-cli). We use a **hybrid
-maintenance strategy**: GitHub Actions triggers weekly, Jules (AI agent)
-classifies and syncs, human reviews and merges.
+TerminaI is forked from
+[Gemini CLI](https://github.com/google-gemini/gemini-cli). We run a **2-stage
+weekly sync**: Jules does 90% of the work overnight, human approves in the
+morning.
 
 ---
 
 ## Architecture
 
 ```
-Friday 3 PM UTC              Jules (on issue created)           Saturday
-      │                             │                              │
-      ▼                             ▼                              ▼
-┌─────────────┐              ┌─────────────────┐            ┌──────────────┐
-│ GitHub      │              │ Fetches upstream│            │ Human review │
-│ Action runs │──creates────▶│ Classifies      │──pushes───▶│ Approve PR   │
-│             │   issue      │ Creates branch  │   branch   │ Merge        │
-└─────────────┘              └─────────────────┘            └──────────────┘
+Saturday 3 AM UTC                                   Saturday 9 AM CST
+       │                                                    │
+       ▼                                                    ▼
+┌──────────────────────────────────────┐           ┌───────────────┐
+│            JULES (90%)               │           │  HUMAN (10%)  │
+│                                      │           │               │
+│  1. Fetch upstream                   │           │  1. Read      │
+│  2. Classify commits                 │───PR───▶  │     release   │
+│  3. Cherry-pick CORE                 │           │     notes     │
+│  4. Reimplement FORK intent          │           │  2. Spot-     │
+│  5. Run tests + lint                 │           │     check     │
+│  6. Self-review + fix                │           │  3. Merge     │
+│  7. Open PR with full report         │           │     (~8 min)  │
+└──────────────────────────────────────┘           └───────────────┘
 ```
 
 ---
 
 ## Zone Classification
 
-See [FORK_ZONES.md](./FORK_ZONES.md) for the full classification.
+Jules classifies every upstream commit into one of three zones:
 
-| Zone           | Description               | Action                  |
-| -------------- | ------------------------- | ----------------------- |
-| **IRRELEVANT** | Google-specific, seasonal | Skip                    |
-| **FORK**       | Files we've diverged      | Reimplement from intent |
-| **CORE**       | Everything else           | Merge directly          |
+| Zone              | Description               | Jules' Action                   |
+| ----------------- | ------------------------- | ------------------------------- |
+| 🟢 **CORE**       | Files we haven't modified | Cherry-pick directly            |
+| 🟡 **FORK**       | Files we've diverged      | Reimplement upstream's _intent_ |
+| ⚪ **IRRELEVANT** | Google-specific, seasonal | Skip entirely                   |
+
+Full classification rules: [FORK_ZONES.md](./FORK_ZONES.md)
 
 ---
 
-## Weekly Workflow
+## What "Reimplement Intent" Means
 
-### Friday (Automated)
+When upstream changes a FORK file, Jules doesn't merge — it reads the diff,
+understands the _problem being solved_, and applies that solution to our
+diverged code.
 
-- GitHub Action runs at 3 PM UTC (9 AM CST)
-- Creates issue titled `[Upstream Sync] Week of YYYY-MM-DD`
-- Issue contains instructions for Jules
+**Example:**
 
-### Friday-Saturday (Jules)
+Upstream improves error handling in `gemini.tsx`:
 
-- Jules picks up the issue
-- Fetches upstream, compares to our main
-- Classifies each commit using FORK_ZONES.md
-- Creates branch `upstream-sync/YYYY-MM-DD`
-- Pushes summary and classification
+```diff
+- catch (e) { console.error(e); }
++ catch (e) { logger.error('Failed', { error: e }); process.exit(1); }
+```
 
-### Saturday (Human Review Trigger)
+Jules applies the same improvement to our `terminai.tsx`:
 
-The review is triggered by **three events**:
+```typescript
+catch (e) { logger.error('TerminaI failed', { error: e }); process.exit(1); }
+```
 
-1. **GitHub PR Notification**: Jules opens a PR (e.g., #16) and tags the human
-   reviewer.
-2. **Scheduled Rhythm**: Every Saturday morning (9 AM CST/3 PM UTC), following
-   the Friday 3 PM UTC automated start.
-3. **Completion Log**: Jules posts a completion comment on the sync issue with a
-   link to the PR.
+Same pattern, our branding.
 
-#### Review Steps:
+---
 
-- Review Jules' branch...
-- For CORE changes: merge or cherry-pick
-- For FORK changes: create task for agent reimplementation
-- Update `.upstream/absorption-log.md`
-- Merge PR
+## Weekly Schedule
+
+| Day      | Time (UTC) | Actor         | Action                         |
+| -------- | ---------- | ------------- | ------------------------------ |
+| Saturday | 3:00 AM    | GitHub Action | Creates sync issue for Jules   |
+| Saturday | 3:01 AM    | Jules         | Starts work on issue           |
+| Saturday | ~3:30 AM   | Jules         | Opens PR with full integration |
+| Saturday | 3:00 PM    | Human         | Reviews and merges (~8 min)    |
+
+---
+
+## Jules' Deliverables
+
+Every sync PR from Jules must include:
+
+```
+.upstream/patches/YYYY-MM-DD/
+├── classification.md    # CORE/FORK/IRRELEVANT breakdown
+├── commits.txt          # Raw commit list from upstream
+├── release_notes.md     # Human-readable summary
+└── integration_log.md   # What was cherry-picked, what was reimplemented
+```
+
+Plus:
+
+- All CORE commits cherry-picked
+- All FORK intents reimplemented
+- Tests passing
+- Lint passing
+- PR description with summary
+
+---
+
+## Human Review Checklist
+
+Saturday morning review should take <10 minutes:
+
+1. [ ] Read `release_notes.md` (1 min)
+2. [ ] If FORK reimplementations exist, spot-check one (3 min)
+3. [ ] Check CI is green
+4. [ ] Merge
+
+If issues found, add comments. Jules or human fixes on Monday.
 
 ---
 
 ## Conflict Resolution
 
-When Jules' branch has merge conflicts:
+If Jules can't resolve a conflict:
 
-1. Check which files conflict
-2. If file is in FORK zone → keep ours, reimplement intent
-3. If file is in CORE zone → resolve conflict manually
-4. Run `npm run test:ci` to verify
-5. Commit resolution
-
----
-
-## Rollback
-
-If a merged upstream change causes issues:
-
-```bash
-git revert <commit-hash>
-```
-
-Trace back via `.upstream/absorption-log.md` to find which upstream commit
-caused the problem.
-
----
-
-## Files
-
-| File                                | Purpose                |
-| ----------------------------------- | ---------------------- |
-| `docs-terminai/FORK_ZONES.md`       | Zone classification    |
-| `.github/workflows/weekly-sync.yml` | Weekly trigger         |
-| `.upstream/absorption-log.md`       | Track absorbed commits |
-| `.upstream/patches/`                | Store weekly diffs     |
+1. Document in `integration_log.md`
+2. Skip the problematic commit
+3. Open PR with partial integration
+4. Human resolves remaining conflicts
 
 ---
 
@@ -124,48 +141,37 @@ For emergencies or testing:
 gh workflow run weekly-sync.yml
 ```
 
-Or via GitHub UI: Actions → Weekly Upstream Sync → Run workflow
+Or: Actions → Weekly Upstream Sync → Run workflow
 
 ---
 
-## Settings Required
+## Files
 
-1. **Enable auto-delete merged branches** (Settings → General → Automatically
-   delete head branches)
-2. **Create labels** (if not exists): `upstream-sync`, `automated`
-3. **Jules access**: Ensure Jules can create branches and close issues
+| File                                | Purpose                         |
+| ----------------------------------- | ------------------------------- |
+| `AGENTS.md`                         | Complete instructions for Jules |
+| `docs-terminai/FORK_ZONES.md`       | Zone classification rules       |
+| `.github/workflows/weekly-sync.yml` | Weekly trigger                  |
+| `.upstream/absorption-log.md`       | Track merged commits            |
+| `.upstream/patches/`                | Weekly sync artifacts           |
 
 ---
 
-## Quick Reference
+## Success Metrics
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                   UPSTREAM SYNC CHEAT SHEET                     │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  WEEKLY (automated):                                            │
-│    GitHub Action creates issue → Jules syncs → You review       │
-│                                                                 │
-│  MANUAL TRIGGER:                                                │
-│    gh workflow run weekly-sync.yml                              │
-│                                                                 │
-│  CLASSIFICATION:                                                │
-│    ⚪ IRRELEVANT → Skip                                         │
-│    🟢 CORE → Merge                                              │
-│    🟡 FORK → Reimplement                                        │
-│                                                                 │
-│  AFTER MERGE:                                                   │
-│    Update .upstream/absorption-log.md                           │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
-```
+| Metric             | Target                                   |
+| ------------------ | ---------------------------------------- |
+| Human review time  | <10 minutes                              |
+| Jules success rate | >90% of syncs need no human code changes |
+| Test pass rate     | 100% before PR opened                    |
+| Weekly cadence     | 52 syncs/year                            |
 
 ---
 
 ## Changelog
 
-| Date       | Author      | Change                                               |
-| ---------- | ----------- | ---------------------------------------------------- |
-| 2025-12-27 | Antigravity | Initial document                                     |
-| 2025-12-28 | Antigravity | Finalized with Jules integration and hybrid workflow |
+| Date       | Author      | Change                                        |
+| ---------- | ----------- | --------------------------------------------- |
+| 2025-12-27 | Antigravity | Initial document                              |
+| 2025-12-28 | Antigravity | Finalized with Jules integration              |
+| 2025-12-28 | Antigravity | Simplified to 2-stage (Jules 90% / Human 10%) |

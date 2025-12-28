@@ -2,7 +2,7 @@ name: Weekly Upstream Sync
 
 on:
   schedule:
-    - cron: '0 15 * * FRI' # Every Friday at 3 PM UTC (9 AM CST)
+    - cron: '0 3 * * SAT' # Saturday 3 AM UTC
   workflow_dispatch: # Manual trigger
 
 permissions:
@@ -23,44 +23,78 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: `[Upstream Sync] Week of ${today}`,
-              body: `## Weekly Upstream Sync Task
+              body: `## Weekly Upstream Sync
 
-            Please analyze the upstream repository (google-gemini/gemini-cli) for new commits since our last sync.
+            **Your mission:** Absorb upstream improvements while preserving TerminaI identity.
 
-            ### Instructions
+            Read \`AGENTS.md\` Section 5.1 for complete instructions. Summary below:
 
-            1. **Setup upstream remote** (if not already added):
-               \`\`\`bash
-               git remote add upstream https://github.com/google-gemini/gemini-cli.git || true
-               git fetch upstream
-               \`\`\`
+            ---
 
-            2. **Generate diff summary**:
-               \`\`\`bash
-               git log --oneline HEAD..upstream/main
-               git diff --stat HEAD..upstream/main
-               \`\`\`
+            ### Phase 1: Fetch & Classify
 
-            3. **Classify each commit** using \`docs-terminai/FORK_ZONES.md\`:
-               - ⚪ IRRELEVANT → Skip (telemetry, themes, etc.)
-               - 🟢 CORE → Can merge directly
-               - 🟡 FORK → Needs reimplementation
+            \`\`\`bash
+            git remote add upstream https://github.com/google-gemini/gemini-cli.git 2>/dev/null || true
+            git fetch upstream
+            git log --oneline HEAD..upstream/main
+            \`\`\`
 
-            4. **Create a summary** in a new branch:
-               \`\`\`bash
-               git checkout -b upstream-sync/${today}
-               \`\`\`
+            Classify each commit:
+            - 🟢 **CORE** → Cherry-pick directly
+            - 🟡 **FORK** → Reimplement the *intent* in our code
+            - ⚪ **IRRELEVANT** → Skip entirely
 
-            5. **Document findings** in \`.upstream/patches/${today}/\`:
-               - \`commits.txt\` — List of upstream commits
-               - \`files.txt\` — Files changed
-               - \`classification.md\` — Your classification of each commit
+            ---
 
-            6. **Push the branch** and open a PR. **Always mention @Prof-Harita** in the final PR description to trigger the manual review phase.
+            ### Phase 2: Integrate
+
+            \`\`\`bash
+            git checkout -b upstream-sync/${today}
+            \`\`\`
+
+            For CORE commits:
+            \`\`\`bash
+            git cherry-pick -x <hash>
+            \`\`\`
+
+            For FORK commits:
+            - Read the upstream diff
+            - Understand the problem being solved
+            - Apply the same solution to our diverged files
+            - **Keep TerminaI branding** (never "Gemini" in user-facing strings)
+
+            ---
+
+            ### Phase 3: Verify
+
+            \`\`\`bash
+            npm run test:ci
+            npm run lint
+            npx prettier --write .
+            \`\`\`
+
+            All tests must pass before opening PR.
+
+            ---
+
+            ### Phase 4: Document & PR
+
+            Create in \`.upstream/patches/${today}/\`:
+            - \`classification.md\` — Your CORE/FORK/IRRELEVANT breakdown
+            - \`commits.txt\` — Raw commit list
+            - \`release_notes.md\` — Human-readable summary
+
+            Open PR with:
+            - Title: \`[Upstream Sync] Week of ${today}\`
+            - Assign: @Prof-Harita
+            - Labels: \`upstream-sync\`, \`automated\`
+
+            ---
 
             ### Reference
-            - [FORK_ZONES.md](../docs-terminai/FORK_ZONES.md)
-            - [Upstream Maintenance Strategy](../docs-terminai/upstream_maintenance.md)
+
+            - [\`AGENTS.md\`](../AGENTS.md) — Complete instructions
+            - [\`FORK_ZONES.md\`](../docs-terminai/FORK_ZONES.md) — Zone classification
             `,
               labels: ['upstream-sync', 'automated']
             });

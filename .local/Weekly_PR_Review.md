@@ -1,169 +1,120 @@
-# Master Prompt: Weekly Upstream PR Review
+# Saturday Morning Sync Review
 
-> **Purpose:** Guide a weekly review session of Jules' upstream sync PR  
-> **Trigger:** Every Saturday (or upon Jules PR creation)  
-> **Estimated Time:** ~15-20 minutes
-
----
-
-## Pre-Requisites
-
-Before executing this prompt:
-
-1. Ensure an open upstream sync PR from `google-labs-jules[bot]` exists.
-2. Have access to the following reference documents:
-   - [FORK_ZONES.md](../docs-terminai/FORK_ZONES.md) — Classification rules
-   - [upstream_maintenance.md](../docs-terminai/upstream_maintenance.md) —
-     Strategy overview
+> **Time required:** ~8 minutes  
+> **Trigger:** Saturday 9 AM CST (after Jules' overnight work)
 
 ---
 
-## Step 1: Find the Latest PR
-
-Automatically get the most recent upstream sync PR from Jules:
+## Step 1: Find Jules' PR
 
 ```bash
-# Get the latest Jules PR number (open PRs only)
-LATEST_PR=$(gh pr list --author "app/google-labs-jules" --state open --json number --jq '.[0].number')
-echo "Latest Jules PR: #$LATEST_PR"
-
-# Open in browser
-gh pr view $LATEST_PR --web
+gh pr list --author "app/google-labs-jules"
 ```
 
-If no open PR exists, check all recent PRs:
+Open it:
 
 ```bash
-gh pr list --author "app/google-labs-jules" --state all --limit 5
+gh pr view <PR_NUMBER> --web
 ```
 
 ---
 
-## Step 2: Validate Jules' Classification
+## Step 2: Read Release Notes (1 min)
 
-Jules creates a classification in `.upstream/patches/<DATE>/classification.md`.
+Jules creates `.upstream/patches/YYYY-MM-DD/release_notes.md`.
 
-Review each section against [FORK_ZONES.md](../docs-terminai/FORK_ZONES.md):
+Skim for:
 
-| Zone              | Criteria                                 | Action if Misclassified           |
-| ----------------- | ---------------------------------------- | --------------------------------- |
-| 🟢 **CORE**       | General features, security, tools, utils | Should be safe to merge           |
-| 🟡 **FORK**       | Files we've diverged (logger, voice)     | Create issue for reimplementation |
-| ⚪ **IRRELEVANT** | Telemetry, themes, Google-specific       | Confirm skip, no further action   |
-
-### Questions to Ask:
-
-1. Are all CORE commits truly safe to merge? Any breaking changes?
-2. Are FORK commits properly flagged? Do we need to adapt their intent?
-3. Are any important updates classified as IRRELEVANT by mistake?
+- What upstream features are coming in
+- Any breaking changes flagged
+- Security fixes (these are always priority)
 
 ---
 
-## Step 3: Inspect Changed Files
+## Step 3: Check Classification (2 min)
 
-Jules also creates `commits.txt` and `files.txt` in the patches directory.
+Look at `classification.md`:
 
-For a quick overview:
+| Check      | Question                         |
+| ---------- | -------------------------------- |
+| CORE       | Are these truly safe to merge?   |
+| FORK       | Did Jules reimplement correctly? |
+| IRRELEVANT | Anything important missed?       |
+
+---
+
+## Step 4: Spot-Check FORK Reimplementations (3 min)
+
+If Jules reimplemented FORK intent, do a quick sanity check:
+
+- Does the code still have "TerminaI" branding? (not "Gemini")
+- Does the logger still use JSONL pattern?
+- Does `terminai.tsx` look correct?
 
 ```bash
-gh pr diff <PR_NUMBER> --name-only
+gh pr diff <PR_NUMBER> --name-only | grep -E "terminai|logger"
 ```
 
-For the full diff:
-
-```bash
-gh pr diff <PR_NUMBER>
-```
+If files touched, review those diffs.
 
 ---
 
-## Step 4: Run Tests (if merging CORE)
+## Step 5: Verify CI Green
 
-If the PR contains CORE changes you intend to merge:
+Check the PR checks. All must be green:
 
-```bash
-npm run test:ci
-npm run lint
-```
-
----
-
-## Step 5: Approve or Request Changes
-
-### If classification is correct:
-
-1. Mark PR as "Ready for Review" (if draft).
-2. Approve via:
-   ```bash
-   gh pr review <PR_NUMBER> --approve -b "Classification verified. Merging CORE changes."
-   ```
-3. Merge with:
-   ```bash
-   gh pr merge <PR_NUMBER> --squash
-   ```
-
-### If classification has issues:
-
-1. Comment on the PR with specific corrections.
-2. Close the PR without merging (or request Jules to re-analyze if possible).
+- Tests pass
+- Lint passes
+- Build succeeds
 
 ---
 
-## Step 6: Update Absorption Log
-
-After merging, record the absorbed commits:
+## Step 6: Approve & Merge
 
 ```bash
-# Add entry to .upstream/absorption-log.md
-echo "| $(date +%Y-%m-%d) | v<upstream_version> | Merged <N> CORE commits | PR #<PR_NUMBER> |" >> .upstream/absorption-log.md
-git add .upstream/absorption-log.md
-git commit -m "chore: update absorption log for $(date +%Y-%m-%d)"
-git push
+gh pr review <PR_NUMBER> --approve -b "LGTM. Merging upstream sync."
+gh pr merge <PR_NUMBER> --squash --delete-branch
 ```
 
 ---
 
-## Step 7: Close the Tracking Issue
+## Step 7: Verify Issue Closed
 
-Jules links the sync issue in the PR description (e.g., "Fixes #15"). Verify the
-issue is auto-closed upon merge. If not:
+The PR should have "Fixes #XX" which auto-closes the sync issue.
 
 ```bash
-gh issue close <ISSUE_NUMBER>
+gh issue list --label upstream-sync
 ```
 
----
-
-## Success Checklist
-
-- [ ] Opened and reviewed the PR
-- [ ] Validated classification against FORK_ZONES.md
-- [ ] Ran tests for CORE changes (if applicable)
-- [ ] Approved or requested changes
-- [ ] Merged the PR (if approved)
-- [ ] Updated `.upstream/absorption-log.md`
-- [ ] Verified tracking issue is closed
+Should show no open issues (or close manually if needed).
 
 ---
 
-## Quick Reference Commands
+## If Issues Found
+
+Don't merge. Add comments to PR explaining what needs fixing.
+
+Options:
+
+1. **Minor fix:** Do it yourself, push, then merge
+2. **Needs Jules:** Comment and wait for Monday
+
+---
+
+## Quick Reference
 
 ```bash
-# List Jules PRs
+# List Jules' PRs
 gh pr list --author "app/google-labs-jules"
 
 # View PR
-gh pr view <PR_NUMBER>
-gh pr view <PR_NUMBER> --web
+gh pr view <NUM> --web
 
-# Diff
-gh pr diff <PR_NUMBER>
-gh pr diff <PR_NUMBER> --name-only
+# Check diff
+gh pr diff <NUM>
+gh pr diff <NUM> --name-only
 
-# Approve & Merge
-gh pr review <PR_NUMBER> --approve
-gh pr merge <PR_NUMBER> --squash
-
-# Close issue
-gh issue close <ISSUE_NUMBER>
+# Approve & merge
+gh pr review <NUM> --approve
+gh pr merge <NUM> --squash --delete-branch
 ```
