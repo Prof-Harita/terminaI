@@ -110,7 +110,15 @@ function ToolEventCard({ event }: { event: ToolEvent }) {
             <span className="text-xs text-muted-foreground">{JSON.stringify(event.inputArguments)}</span>
           )}
         </div>
-        <StatusBadge status={event.status} />
+        <div className="flex items-center gap-4">
+          <div className="text-[10px] text-muted-foreground flex flex-col items-end leading-none">
+            <span>{new Date(event.startedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+            {event.completedAt && (
+              <span>{((event.completedAt - event.startedAt) / 1000).toFixed(1)}s duration</span>
+            )}
+          </div>
+          <StatusBadge status={event.status} />
+        </div>
       </div>
 
       {/* Terminal output */}

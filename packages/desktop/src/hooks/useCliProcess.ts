@@ -13,6 +13,7 @@ import { useSettingsStore } from '../stores/settingsStore';
 import { useVoiceStore } from '../stores/voiceStore';
 import { useTts } from './useTts';
 import { useExecutionStore } from '../stores/executionStore';
+import { useHistoryStore } from '../stores/historyStore';
 import { deriveSpokenReply } from '../utils/spokenReply';
 
 const BLOCKING_PROMPT_REGEX =
@@ -104,7 +105,7 @@ async function buildSignedHeaders(input: {
  * @returns {function} respondToConfirmation - Respond to tool confirmation
  * @returns {function} closeTerminal - Close terminal session
  */
-export function useCliProcess() {
+export function useCliProcess(options?: { onComplete?: () => void }) {
   const agentUrl = useSettingsStore((s) => s.agentUrl);
   const agentToken = useSettingsStore((s) => s.agentToken);
   const agentWorkspacePath = useSettingsStore((s) => s.agentWorkspacePath);
@@ -335,6 +336,9 @@ export function useCliProcess() {
         setWaitingForInput(false);
         activeStreamAbortRef.current = null;
 
+        // Return focus to chat input
+        options?.onComplete?.();
+
         if (voiceEnabled) {
           const assistantText = currentAssistantTextRef.current;
           const spoken = deriveSpokenReply(assistantText, 30);
@@ -414,6 +418,16 @@ export function useCliProcess() {
       };
       setMessages((prev) => [...prev, userMessage]);
       setIsProcessing(true);
+
+      // Update history
+      const currentTaskId = activeTaskIdRef.current || 'default';
+      useHistoryStore.getState().addSession({
+        id: currentTaskId,
+        title: text.length > 30 ? text.slice(0, 30) + '...' : text,
+        lastMessage: text,
+        timestamp: Date.now(),
+      });
+
       useExecutionStore.getState().clearEvents(); // Clear tool events for new task
       startAssistantMessage();
       setAssistantPendingConfirmation(undefined);

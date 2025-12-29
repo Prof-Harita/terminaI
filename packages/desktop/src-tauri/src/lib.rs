@@ -47,6 +47,13 @@ async fn read_directory(path: String) -> Result<Vec<FileEntry>, String> {
 }
 
 #[tauri::command]
+fn get_current_dir() -> Result<String, String> {
+    std::env::current_dir()
+        .map(|p| p.to_string_lossy().to_string())
+        .map_err(|e| format!("Failed to get current dir: {}", e))
+}
+
+#[tauri::command]
 fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
@@ -54,6 +61,18 @@ fn greet(name: &str) -> String {
 #[tauri::command]
 fn start_cli(app: tauri::AppHandle, state: State<AppState>) -> Result<(), String> {
     let bridge = CliBridge::spawn(app)?;
+    *state.cli.lock().unwrap() = Some(bridge);
+    Ok(())
+}
+
+#[tauri::command]
+fn spawn_cli_backend(
+    app: tauri::AppHandle,
+    state: State<AppState>,
+    workspace: String,
+) -> Result<(), String> {
+    // Spawn CLI with web-remote enabled
+    let bridge = cli_bridge::CliBridge::spawn_web_remote(app, workspace)?;
     *state.cli.lock().unwrap() = Some(bridge);
     Ok(())
 }
@@ -146,7 +165,9 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             greet,
+            get_current_dir,
             start_cli,
+            spawn_cli_backend,
             send_to_cli,
             stop_cli,
             start_pty_session,

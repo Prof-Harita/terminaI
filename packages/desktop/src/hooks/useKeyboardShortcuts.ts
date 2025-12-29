@@ -14,6 +14,8 @@ interface KeyboardShortcuts {
   onOpenSettings?: () => void;
   onNewConversation?: () => void;
   onEscape?: () => void;
+  onApprove?: () => void;
+  onShowCheatSheet?: () => void;
 }
 
 // Keyboard shortcut reference:
@@ -61,6 +63,20 @@ export function useKeyboardShortcuts(handlers: KeyboardShortcuts) {
       if (isMod && e.key === 'n') {
         e.preventDefault();
         handlers.onNewConversation?.();
+        return;
+      }
+
+      // Ctrl+/: Show keyboard cheat sheet
+      if (e.ctrlKey && e.key === '/') {
+        e.preventDefault();
+        handlers.onShowCheatSheet?.();
+        return;
+      }
+
+      // Ctrl+Enter: Approve pending confirmation
+      if (e.ctrlKey && e.key === 'Enter') {
+        e.preventDefault();
+        handlers.onApprove?.();
         return;
       }
 

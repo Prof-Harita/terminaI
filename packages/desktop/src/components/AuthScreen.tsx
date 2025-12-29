@@ -10,9 +10,11 @@ import { useSettingsStore } from '../stores/settingsStore';
 
 interface Props {
   onAuthenticated: () => void;
+  isBootstrapping?: boolean;
+  bootstrapError?: string | null;
 }
 
-export function AuthScreen({ onAuthenticated }: Props) {
+export function AuthScreen({ onAuthenticated, isBootstrapping, bootstrapError }: Props) {
   const agentUrl = useSettingsStore((s) => s.agentUrl);
   const setAgentUrl = useSettingsStore((s) => s.setAgentUrl);
   const agentToken = useSettingsStore((s) => s.agentToken);
@@ -38,6 +40,22 @@ export function AuthScreen({ onAuthenticated }: Props) {
       onAuthenticated();
     }
   }, [canContinue, isSubmitting, onAuthenticated]);
+
+  // Show bootstrapping state
+  if (isBootstrapping) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full bg-[var(--bg-primary)]">
+        <h1 className="text-4xl font-bold mb-2 text-white">TerminaI</h1>
+        <div className="flex items-center gap-3 text-gray-400">
+          <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+          <span>Starting agent backend...</span>
+        </div>
+        {bootstrapError && (
+          <p className="mt-4 text-red-400 text-sm">{bootstrapError}</p>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center justify-center h-full bg-[var(--bg-primary)]">

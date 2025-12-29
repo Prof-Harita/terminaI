@@ -11,6 +11,7 @@ export type VoiceState = 'IDLE' | 'LISTENING' | 'PROCESSING' | 'SPEAKING';
 
 interface VoiceStoreState {
   state: VoiceState;
+  error: string | null;
   ttsAbortController: AbortController | null;
 
   startListening: () => void;
@@ -19,10 +20,12 @@ interface VoiceStoreState {
 
   startSpeaking: () => AbortSignal;
   stopSpeaking: () => void;
+  setError: (error: string | null) => void;
 }
 
 export const useVoiceStore = create<VoiceStoreState>((set, get) => ({
   state: 'IDLE',
+  error: null,
   ttsAbortController: null,
 
   startListening: () => {
@@ -56,5 +59,9 @@ export const useVoiceStore = create<VoiceStoreState>((set, get) => ({
       current.abort();
     }
     set({ state: 'IDLE', ttsAbortController: null });
+  },
+
+  setError: (error: string | null) => {
+    set({ error });
   },
 }));

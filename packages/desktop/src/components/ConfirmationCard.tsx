@@ -128,6 +128,7 @@ export function ConfirmationCard({ confirmation, onRespond }: Props) {
           }}
         >
           Yes, proceed
+          <kbd style={{ marginLeft: 8, opacity: 0.7, fontSize: '0.7em', background: 'rgba(0,0,0,0.2)', padding: '2px 6px', borderRadius: '4px' }}>Ctrl+↵</kbd>
         </button>
         <button
           className="btn btn-secondary"
@@ -135,6 +136,7 @@ export function ConfirmationCard({ confirmation, onRespond }: Props) {
           style={{ flex: 1 }}
         >
           Cancel
+          <kbd style={{ marginLeft: 8, opacity: 0.7, fontSize: '0.7em', background: 'rgba(0,0,0,0.1)', padding: '2px 6px', borderRadius: '4px' }}>Esc</kbd>
         </button>
       </div>
     </div>

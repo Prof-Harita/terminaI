@@ -20,13 +20,36 @@ export function CommandPalette({ isOpen, onClose, onSelect }: Props) {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const filtered = useMemo(() => {
-    if (!query) return COMMANDS;
+    const list = [...COMMANDS];
+    if (!query) return list;
+
     const lower = query.toLowerCase();
-    return COMMANDS.filter(
-      (cmd) =>
-        cmd.name.toLowerCase().includes(lower) ||
-        cmd.description.toLowerCase().includes(lower),
-    );
+    const weights = { 
+      'Conversation': 10, 
+      'Sessions': 8, 
+      'System': 7,
+      'Security': 5, 
+      'Help': 1 
+    };
+
+    return list
+      .filter(
+        (cmd) =>
+          cmd.name.toLowerCase().includes(lower) ||
+          cmd.description.toLowerCase().includes(lower),
+      )
+      .sort((a, b) => {
+        // Priority by category weight
+        const weightA = weights[a.category as keyof typeof weights] || 0;
+        const weightB = weights[b.category as keyof typeof weights] || 0;
+        if (weightA !== weightB) return weightB - weightA;
+
+        // Exact match boost
+        if (a.name.toLowerCase() === lower) return -1;
+        if (b.name.toLowerCase() === lower) return 1;
+
+        return a.name.localeCompare(b.name);
+      });
   }, [query]);
 
   useEffect(() => {
@@ -160,17 +183,34 @@ export function CommandPalette({ isOpen, onClose, onSelect }: Props) {
                   marginBottom: 'var(--space-1)',
                 }}
               >
-                <span
-                  style={{
-                    fontFamily: 'monospace',
-                    fontSize: 'var(--text-sm)',
-                    fontWeight: 500,
-                    color:
-                      i === selectedIndex ? 'white' : 'var(--text-primary)',
-                  }}
-                >
-                  {cmd.name}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                  <span
+                    style={{
+                      fontFamily: 'monospace',
+                      fontSize: 'var(--text-sm)',
+                      fontWeight: 600,
+                      color:
+                        i === selectedIndex ? 'white' : 'var(--text-primary)',
+                    }}
+                  >
+                    {cmd.name}
+                  </span>
+                  {cmd.shortcut && (
+                    <kbd
+                      style={{
+                        padding: '1px 4px',
+                        background: i === selectedIndex ? 'rgba(255,255,255,0.2)' : 'var(--bg-tertiary)',
+                        border: i === selectedIndex ? '1px solid rgba(255,255,255,0.3)' : '1px solid var(--border)',
+                        borderRadius: '3px',
+                        fontSize: '10px',
+                        color: i === selectedIndex ? 'white' : 'var(--text-muted)',
+                        fontFamily: 'monospace',
+                      }}
+                    >
+                      {cmd.shortcut}
+                    </kbd>
+                  )}
+                </div>
                 <span
                   style={{
                     fontSize: 'var(--text-xs)',
