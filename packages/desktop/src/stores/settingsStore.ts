@@ -42,6 +42,33 @@ interface SettingsState {
   theme: 'light' | 'dark' | 'system';
   setTheme: (theme: 'light' | 'dark' | 'system') => void;
 
+  // MCP Servers
+  mcpServers: Array<{
+    id: string;
+    name: string;
+    command: string;
+    args: string[];
+    enabled: boolean;
+  }>;
+  addMcpServer: (server: {
+    name: string;
+    command: string;
+    args: string[];
+  }) => void;
+  removeMcpServer: (id: string) => void;
+  toggleMcpServer: (id: string) => void;
+
+  // Notifications
+  enableNotifications: boolean;
+  setEnableNotifications: (enabled: boolean) => void;
+  notificationSound: boolean;
+  setNotificationSound: (enabled: boolean) => void;
+  notificationType: 'toast' | 'none';
+  setNotificationType: (type: 'toast' | 'none') => void;
+
+  relayClientCount: number;
+  setRelayClientCount: (count: number) => void;
+
   // Actions
   signOut: () => void;
 }
@@ -106,6 +133,45 @@ export const useSettingsStore = create<SettingsState>()(
             : theme;
         document.documentElement.setAttribute('data-theme', resolved);
       },
+
+      // MCP Servers
+      mcpServers: [],
+      addMcpServer: (server) => {
+        const id = crypto.randomUUID();
+        set((state) => ({
+          mcpServers: [...state.mcpServers, { ...server, id, enabled: true }],
+        }));
+        syncToCli(`mcp.server.${server.name}`, JSON.stringify(server));
+      },
+      removeMcpServer: (id) => {
+        set((state) => ({
+          mcpServers: state.mcpServers.filter((s) => s.id !== id),
+        }));
+      },
+      toggleMcpServer: (id) => {
+        set((state) => {
+          const mcpServers = state.mcpServers.map((s) =>
+            s.id === id ? { ...s, enabled: !s.enabled } : s,
+          );
+          const server = mcpServers.find((s) => s.id === id);
+          if (server) {
+            syncToCli(`mcp.server.${server.name}.enabled`, server.enabled);
+          }
+          return { mcpServers };
+        });
+      },
+
+      // Notifications
+      enableNotifications: true,
+      setEnableNotifications: (enableNotifications) =>
+        set({ enableNotifications }),
+      notificationSound: true,
+      setNotificationSound: (notificationSound) => set({ notificationSound }),
+      notificationType: 'toast',
+      setNotificationType: (notificationType) => set({ notificationType }),
+
+      relayClientCount: 0,
+      setRelayClientCount: (relayClientCount) => set({ relayClientCount }),
 
       // Actions
       signOut: () => set({ email: '' }),

@@ -85,4 +85,38 @@ export const COMMANDS: Command[] = [
     category: 'Help',
     action: '/bug',
   },
+
+  // System (Task 32)
+  {
+    id: 'settings',
+    name: 'Open Settings',
+    description: 'Manage app configuration',
+    category: 'System',
+    action: 'frontend:settings',
+    shortcut: 'Ctrl+,',
+  },
+  {
+    id: 'palette',
+    name: 'Command Palette',
+    description: 'Find and run commands',
+    category: 'System',
+    action: 'frontend:palette',
+    shortcut: 'Ctrl+K',
+  },
+  {
+    id: 'new-chat',
+    name: 'New Conversation',
+    description: 'Start a fresh chat',
+    category: 'System',
+    action: 'frontend:new-chat',
+    shortcut: 'Ctrl+N',
+  },
+  {
+    id: 'shortcuts',
+    name: 'Keyboard Shortcuts',
+    description: 'View all shortcuts',
+    category: 'System',
+    action: 'frontend:shortcuts',
+    shortcut: 'Ctrl+/',
+  },
 ];

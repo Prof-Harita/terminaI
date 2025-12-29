@@ -29,3 +29,27 @@
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
 }
+
+@keyframes waveform {
+  0%, 100% { transform: scaleY(0.4); opacity: 0.5; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
+
+.animate-waveform {
+  animation: waveform 0.8s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* Global focus ring unification */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  transition: outline-offset 0.1s ease;
+}
+
+/* Reset for elements where the default ring is better or handled specifically */
+button:focus-visible:not(:active),
+input:focus-visible,
+textarea:focus-visible {
+  outline-offset: 1px;
+}
