@@ -1,0 +1,18 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@800&amp;display=swap');
+    </style>
+  </defs>
+  <rect width="32" height="32" rx="6" fill="#1a1a1a"/>
+  <text 
+    x="50%" 
+    y="55%" 
+    text-anchor="middle" 
+    dominant-baseline="middle"
+    font-family="JetBrains Mono, monospace"
+    font-size="22"
+    font-weight="800"
+    fill="#E2231A"
+  >I</text>
+</svg>

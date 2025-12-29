@@ -38,6 +38,10 @@ interface SettingsState {
   voiceVolume: number;
   setVoiceVolume: (volume: number) => void;
 
+  // Theme
+  theme: 'light' | 'dark' | 'system';
+  setTheme: (theme: 'light' | 'dark' | 'system') => void;
+
   // Actions
   signOut: () => void;
 }
@@ -89,6 +93,19 @@ export const useSettingsStore = create<SettingsState>()(
       setVoiceEnabled: (voiceEnabled) => set({ voiceEnabled }),
       voiceVolume: 80,
       setVoiceVolume: (voiceVolume) => set({ voiceVolume }),
+
+      // Theme
+      theme: 'dark',
+      setTheme: (theme) => {
+        set({ theme });
+        const resolved =
+          theme === 'system'
+            ? window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light'
+            : theme;
+        document.documentElement.setAttribute('data-theme', resolved);
+      },
 
       // Actions
       signOut: () => set({ email: '' }),

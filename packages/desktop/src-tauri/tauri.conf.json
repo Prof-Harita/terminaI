@@ -13,10 +13,11 @@
     "windows": [
       {
         "title": "TerminaI",
-        "width": 900,
-        "height": 700,
-        "minWidth": 600,
-        "minHeight": 400,
+        "width": 1200,
+        "height": 800,
+        "minWidth": 800,
+        "minHeight": 500,
+        "resizable": true,
         "decorations": true,
         "transparent": false
       }

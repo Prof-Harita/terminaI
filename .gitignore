@@ -63,4 +63,4 @@ __pycache__/
 *.pyo
 
 # Local scratch files (not committed)
-# .local/
+local/

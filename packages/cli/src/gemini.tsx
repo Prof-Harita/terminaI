@@ -475,8 +475,8 @@ export async function main() {
     const config = await loadCliConfig(settings.merged, sessionId, argv);
     loadConfigHandle?.end();
 
-    // Enable GUI automation if configured
-    if (settings.merged.tools?.guiAutomation?.enabled) {
+    // Enable GUI automation if configured (defaults to true per schema)
+    if (settings.merged.tools?.guiAutomation?.enabled ?? true) {
       DesktopAutomationService.getInstance().setEnabled(true);
       debugLogger.log('GUI Automation enabled');
     }

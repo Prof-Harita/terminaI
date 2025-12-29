@@ -1,22 +1,26 @@
 /**
  * @license
- * Copyright 2025 Google LLC
- * Portions Copyright 2025 TerminaI Authors
+ * Copyright 2025 TerminaI Authors
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { ChatView } from './components/ChatView';
-import { SessionsSidebar } from './components/SessionsSidebar';
-import { CommandPalette } from './components/CommandPalette';
-import { SettingsPanel } from './components/SettingsPanel';
-import { AuthScreen } from './components/AuthScreen';
-import { SplitLayout } from './components/SplitLayout';
-import { EmbeddedTerminal } from './components/EmbeddedTerminal';
-import { useCliProcess } from './hooks/useCliProcess';
-import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
-import type { Command } from './data/commands';
-import { useSettingsStore } from './stores/settingsStore';
+import { useRef, useState, useEffect } from 'react'
+import { useCliProcess } from './hooks/useCliProcess'
+import { useSettingsStore } from './stores/settingsStore'
+import { useExecutionStore } from './stores/executionStore'
+// TriPaneLayout removed - using direct flex layout
+import { ChatView } from './components/ChatView'
+import { LeftSidebar } from './components/LeftSidebar'
+import { EngineRoomPane } from './components/EngineRoomPane'
+import { ResizableHandle } from './components/ResizableHandle'
+import { ThemeProvider } from './components/ThemeProvider'
+import { CommandPalette } from './components/CommandPalette'
+import { SettingsPanel } from './components/SettingsPanel'
+import { AuthScreen } from './components/AuthScreen'
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
+import { Button } from './components/ui/button'
+import { Sun, Moon, Menu, Settings } from 'lucide-react'
+import { TerminaILogo } from './components/TerminaILogo'
 
 function App() {
   const {
@@ -26,138 +30,150 @@ function App() {
     activeTerminalSession,
     sendMessage,
     respondToConfirmation,
-    closeTerminal,
-  } = useCliProcess();
+  } = useCliProcess()
 
-  const agentToken = useSettingsStore((s) => s.agentToken);
-  const [showAuth, setShowAuth] = useState(true);
-  const [isPaletteOpen, setIsPaletteOpen] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const chatInputRef = useRef<HTMLTextAreaElement>(null);
+  const { currentToolStatus } = useExecutionStore()
+  const agentToken = useSettingsStore((s) => s.agentToken)
+  const theme = useSettingsStore((s) => s.theme)
+  const setTheme = useSettingsStore((s) => s.setTheme)
 
+  const [showAuth, setShowAuth] = useState(true)
+  const [isPaletteOpen, setIsPaletteOpen] = useState(false)
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [showLeftSidebar, setShowLeftSidebar] = useState(true)
+  const [leftWidth, setLeftWidth] = useState(280)
+  const [rightWidth, setRightWidth] = useState(600)
+  const chatInputRef = useRef<HTMLTextAreaElement>(null)
+
+  const resolvedTheme =
+    theme === 'system'
+      ? window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light'
+      : theme
+
+  // Keep legacy behavior for any code still relying on the dark class.
   useEffect(() => {
-    setShowAuth(agentToken.trim().length === 0 || !isConnected);
-  }, [agentToken, isConnected]);
+    const root = document.documentElement
+    if (resolvedTheme === 'dark') {
+      root.classList.add('dark')
+    } else {
+      root.classList.remove('dark')
+    }
+  }, [resolvedTheme])
 
-  // Use centralized keyboard shortcuts hook
   useKeyboardShortcuts({
-    onToggleTerminal: closeTerminal, // Close terminal if open
-    onFocusChat: () => chatInputRef.current?.focus(),
     onOpenPalette: () => setIsPaletteOpen(true),
     onOpenSettings: () => setIsSettingsOpen(true),
-    onNewConversation: () => {
-      // Clear messages would require exposing a reset in useCliProcess
-      chatInputRef.current?.focus();
-    },
-    onEscape: () => {
-      setIsPaletteOpen(false);
-      setIsSettingsOpen(false);
-    },
-  });
+    onFocusChat: () => chatInputRef.current?.focus(),
+  })
 
-  const handleCommandSelect = useCallback(
-    async (command: Command) => {
-      try {
-        sendMessage(command.action);
-      } catch (err) {
-        console.error('Failed to execute command:', err);
-      }
-    },
-    [sendMessage],
-  );
+  // Keyboard shortcuts handler is configured above
 
-  if (showAuth) {
-    return <AuthScreen onAuthenticated={() => setShowAuth(false)} />;
+  const handleLeftResize = (deltaX: number) => {
+    setLeftWidth((prev) => Math.max(250, Math.min(500, prev + deltaX)))
+  }
+
+  const handleRightResize = (deltaX: number) => {
+    setRightWidth((prev) => Math.max(250, Math.min(600, prev - deltaX)))
+  }
+
+  const toggleTheme = () => {
+    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
+  }
+
+  if (showAuth && !agentToken) {
+    return <AuthScreen onAuthenticated={() => setShowAuth(false)} />
   }
 
   return (
-    <div
-      className="h-screen w-screen flex flex-col"
-      style={{ background: 'var(--bg-primary)' }}
-    >
-      {/* Header - Clean, minimal, good spacing */}
-      <header
-        className="flex items-center justify-between shrink-0"
-        style={{
-          padding: 'var(--space-4) var(--space-6)',
-          borderBottom: '1px solid var(--border)',
-          background: 'var(--bg-secondary)',
-        }}
-      >
-        <h1
-          className="font-semibold"
-          style={{ fontSize: 'var(--text-lg)', color: 'var(--text-primary)' }}
-        >
-          TerminaI
-        </h1>
+    <ThemeProvider theme={resolvedTheme}>
+      <div className="h-screen w-screen overflow-hidden bg-background text-foreground flex flex-col">
+        {/* Header */}
+        <header className="h-12 border-b border-border bg-card flex items-center justify-between px-4 flex-shrink-0">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowLeftSidebar(!showLeftSidebar)}
+              className="h-8 w-8 lg:hidden"
+            >
+              <Menu className="h-4 w-4" />
+            </Button>
+            <TerminaILogo size="small" />
+          </div>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-8 w-8">
+              {resolvedTheme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
+            <Button variant="ghost" size="icon" onClick={() => setIsSettingsOpen(true)} className="h-8 w-8">
+              <Settings className="h-4 w-4" />
+            </Button>
+          </div>
+        </header>
 
-        <div className="flex items-center" style={{ gap: 'var(--space-2)' }}>
-          <button
-            className="btn btn-ghost"
-            onClick={() => setIsPaletteOpen(true)}
-            title="Command Palette (⌘K)"
-            aria-label="Open command palette"
-            style={{
-              fontSize: 'var(--text-xs)',
-              padding: 'var(--space-2) var(--space-3)',
-            }}
-          >
-            ⌘K
-          </button>
-          <button
-            className="btn btn-ghost"
-            onClick={() => setIsSettingsOpen(true)}
-            title="Settings (⌘,)"
-            aria-label="Open settings"
-            style={{ fontSize: 'var(--text-base)', padding: 'var(--space-2)' }}
-          >
-            ⚙️
-          </button>
-        </div>
-      </header>
+        {/* Three-pane layout */}
+        <div className="flex-1 flex overflow-hidden">
+          {/* Left Sidebar - hidden on mobile by default */}
+          {showLeftSidebar && (
+            <>
+              <div
+                className="border-r border-border bg-sidebar overflow-hidden flex-shrink-0"
+                style={{ width: `${leftWidth}px` }}
+              >
+                <LeftSidebar onCommandSelect={sendMessage} />
+              </div>
 
-      {/* Main content area */}
-      <div className="flex flex-1 min-h-0" role="main">
-        <SplitLayout
-          leftPanel={
+              {/* Left Resizer */}
+              <ResizableHandle onResize={handleLeftResize} />
+            </>
+          )}
+
+          {/* Middle Chat Pane */}
+          <div className="flex-1 overflow-hidden min-w-0">
             <ChatView
               messages={messages}
               isConnected={isConnected}
               isProcessing={isProcessing}
+              currentToolStatus={currentToolStatus}
               sendMessage={sendMessage}
               respondToConfirmation={respondToConfirmation}
               inputRef={chatInputRef}
             />
-          }
-          rightPanel={
-            activeTerminalSession ? (
-              <EmbeddedTerminal
-                sessionId={activeTerminalSession}
-                onExit={closeTerminal}
-              />
-            ) : null
-          }
-          rightPanelVisible={!!activeTerminalSession}
+          </div>
+
+          {/* Right Resizer */}
+          <ResizableHandle onResize={handleRightResize} />
+
+          {/* Right Terminal Pane */}
+          <div
+            className="border-l border-border bg-card overflow-hidden flex-shrink-0"
+            style={{ width: `${rightWidth}px` }}
+          >
+            <EngineRoomPane
+              terminalSessionId={activeTerminalSession}
+              onCloseTerminal={() => {}}
+            />
+          </div>
+        </div>
+
+        {/* Global Overlays */}
+        <CommandPalette
+          isOpen={isPaletteOpen}
+          onClose={() => setIsPaletteOpen(false)}
+          onSelect={(cmd) => {
+            sendMessage(cmd.action)
+            setIsPaletteOpen(false)
+          }}
         />
-
-        {/* Sessions Sidebar */}
-        <SessionsSidebar />
+        <SettingsPanel
+          isOpen={isSettingsOpen}
+          onClose={() => setIsSettingsOpen(false)}
+        />
       </div>
-
-      {/* Command Palette Modal */}
-      <CommandPalette
-        isOpen={isPaletteOpen}
-        onClose={() => setIsPaletteOpen(false)}
-        onSelect={handleCommandSelect}
-      />
-
-      {/* Settings Panel */}
-      <SettingsPanel
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-      />
-    </div>
-  );
+    </ThemeProvider>
+  )
 }
 
-export default App;
+export default App
+

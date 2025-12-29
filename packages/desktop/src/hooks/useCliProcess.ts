@@ -12,7 +12,11 @@ import { hmacSha256Hex, sha256Hex } from '../utils/webCrypto';
 import { useSettingsStore } from '../stores/settingsStore';
 import { useVoiceStore } from '../stores/voiceStore';
 import { useTts } from './useTts';
+import { useExecutionStore } from '../stores/executionStore';
 import { deriveSpokenReply } from '../utils/spokenReply';
+
+const BLOCKING_PROMPT_REGEX =
+  /^.*(password|\[y\/n\]|confirm|enter value|sudo).*:/i;
 
 type JsonRpcResponse = {
   jsonrpc?: string;
@@ -110,6 +114,14 @@ export function useCliProcess() {
   const voiceState = useVoiceStore((s) => s.state);
   const startSpeaking = useVoiceStore((s) => s.startSpeaking);
   const stopSpeaking = useVoiceStore((s) => s.stopSpeaking);
+
+  const {
+    addToolEvent,
+    updateToolEvent,
+    appendTerminalOutput,
+    setToolStatus,
+    setWaitingForInput,
+  } = useExecutionStore();
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [isConnected, setIsConnected] = useState(false);
@@ -268,19 +280,50 @@ export function useCliProcess() {
         }
       }
 
-      // Handle tool execution output (terminal output, command results, etc.)
+      // Handle tool execution output (routed to Engine Room instead of chat)
       if (coderKind === CODER_KIND.TOOL_CALL_UPDATE) {
+        setToolStatus('Agent is executing tools...');
         const parts = result.status?.message?.parts ?? [];
         for (const part of parts) {
-          // Handle text output from tool execution
-          if (part?.kind === 'text' && typeof part.text === 'string') {
-            appendToAssistant(part.text);
-          }
-          // Handle data output (e.g., tool result summaries)
           if (part?.kind === 'data' && part.data) {
-            const output = part.data?.output ?? part.data?.result;
-            if (typeof output === 'string' && output.trim()) {
-              appendToAssistant(`\n\`\`\`\n${output}\n\`\`\`\n`);
+            const toolData = part.data;
+            const callId =
+              toolData?.request?.callId ??
+              toolData?.callId ??
+              crypto.randomUUID();
+
+            // If it's a new tool call, add it
+            if (toolData.request) {
+              addToolEvent({
+                id: callId,
+                toolName: toolData.request.name,
+                inputArguments: toolData.request.args ?? {},
+                status: 'running',
+                terminalOutput: '',
+                startedAt: Date.now(),
+              });
+            }
+
+            // Handle output
+            const output = toolData?.output ?? toolData?.result;
+            if (typeof output === 'string') {
+              appendTerminalOutput(callId, output);
+
+              // Detect blocking prompts for Flash Alert
+              if (BLOCKING_PROMPT_REGEX.test(output)) {
+                setWaitingForInput(true);
+              }
+            }
+
+            // Handle completion
+            if (
+              toolData.status === 'completed' ||
+              toolData.status === 'failed'
+            ) {
+              updateToolEvent(callId, {
+                status: toolData.status,
+                completedAt: Date.now(),
+              });
             }
           }
         }
@@ -288,6 +331,8 @@ export function useCliProcess() {
 
       if (result.final === true) {
         setIsProcessing(false);
+        setToolStatus(null);
+        setWaitingForInput(false);
         activeStreamAbortRef.current = null;
 
         if (voiceEnabled) {
@@ -369,6 +414,7 @@ export function useCliProcess() {
       };
       setMessages((prev) => [...prev, userMessage]);
       setIsProcessing(true);
+      useExecutionStore.getState().clearEvents(); // Clear tool events for new task
       startAssistantMessage();
       setAssistantPendingConfirmation(undefined);
 

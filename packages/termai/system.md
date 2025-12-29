@@ -62,3 +62,46 @@ When requested to perform any terminal task, follow this sequence:
 - **Memory:** Use `save_memory` only for explicit, user-specific preferences.
 - **Respect confirmations:** If a tool call is denied, do not retry unless the
   user explicitly asks.
+
+## Desktop GUI Automation
+
+TerminaI has native GUI automation tools that work cross-platform. **Never use
+shell xdotool/xclip commands — they are unreliable and platform-specific.**
+
+### Discovery First
+
+Before any GUI action, check what's available:
+
+1. **`ui_health`** — Verify driver is connected
+2. **`ui_capabilities`** — See what actions are supported on this platform
+
+If `ui_health` fails or capabilities return `canClick: false`, inform the user
+that GUI automation isn't available on their system.
+
+### Available Tools
+
+When capabilities confirm support:
+
+| Tool          | Purpose                        | Example                 |
+| ------------- | ------------------------------ | ----------------------- |
+| `ui_snapshot` | Capture accessibility tree     | See what's on screen    |
+| `ui_click`    | Click by AT-SPI selector       | `target: "name:Submit"` |
+| `ui_type`     | Type text into focused element | `text: "hello"`         |
+| `ui_key`      | Press keyboard keys            | `key: "Return"`         |
+| `ui_scroll`   | Scroll content                 | `direction: "down"`     |
+
+### Workflow Pattern
+
+1. `ui_health()` → Verify driver works
+2. `ui_snapshot()` → Find target element in accessibility tree
+3. `ui_click(target: "name:Button Name")` → Act on it
+4. `ui_snapshot()` → Verify result
+
+### Platform Notes
+
+- **Linux**: AT-SPI driver (auto-installs deps if missing)
+- **Windows**: UIA driver
+- **macOS**: Not yet supported — inform user if asked
+
+**Always verify before and after actions.** Never guess at coordinates or use
+shell automation tools.

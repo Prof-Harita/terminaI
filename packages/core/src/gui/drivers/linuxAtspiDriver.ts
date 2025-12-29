@@ -33,6 +33,10 @@ import type {
   UiClickXyArgs,
   UiSnapshotArgs,
 } from '../protocol/schemas.js';
+import {
+  isMissingPythonModuleError,
+  installPythonDependencies,
+} from '../../utils/pythonDepsInstaller.js';
 
 export class LinuxAtspiDriver implements DesktopDriver {
   readonly name = 'linux-atspi';
@@ -58,52 +62,94 @@ export class LinuxAtspiDriver implements DesktopDriver {
   }
 
   async connect(): Promise<DriverConnectionStatus> {
-    try {
-      this.process = spawn('python3', [this.sidecarPath], {
-        stdio: ['pipe', 'pipe', 'inherit'], // inherit stderr for logging
-      });
+    const maxRetries = 2;
 
-      if (!this.process.stdout || !this.process.stdin) {
-        throw new Error('Failed to spawn sidecar with stdio');
-      }
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        const result = await this.attemptConnection();
+        return result;
+      } catch (e) {
+        const errorStr = String(e);
 
-      this.rl = readline.createInterface({
-        input: this.process.stdout,
-        terminal: false,
-      });
-
-      this.rl.on('line', (line) => {
-        try {
-          const response = JSON.parse(line);
-          if (response.id !== undefined) {
-            const pending = this.pendingRequests.get(response.id);
-            if (pending) {
-              if (response.error) {
-                pending.reject(new Error(response.error.message));
-              } else {
-                pending.resolve(response.result);
-              }
-              this.pendingRequests.delete(response.id);
-            }
+        // Check if this is a missing module error on first attempt
+        if (attempt === 0 && isMissingPythonModuleError(errorStr)) {
+          console.log(
+            'Python dependencies missing, installing automatically...',
+          );
+          const installed = await installPythonDependencies(errorStr);
+          if (installed) {
+            continue; // Retry connection
           }
-        } catch (e) {
-          console.error('Failed to parse sidecar output:', line, e);
         }
-      });
 
-      this.process.on('exit', (code) => {
-        console.warn(`Sidecar exited with code ${code}`);
-        this.process = undefined;
-      });
-
-      // Verification ping
-      await this.getCapabilities();
-
-      return { connected: true, version: '0.1.0' };
-    } catch (e) {
-      console.error('Failed to connect to Linux sidecar:', e);
-      return { connected: false, error: String(e) };
+        console.error('Failed to connect to Linux sidecar:', e);
+        return { connected: false, error: errorStr };
+      }
     }
+
+    return { connected: false, error: 'Max retries exceeded' };
+  }
+
+  private async attemptConnection(): Promise<DriverConnectionStatus> {
+    this.process = spawn('python3', [this.sidecarPath], {
+      stdio: ['pipe', 'pipe', 'pipe'], // Capture stderr to detect import errors
+    });
+
+    if (!this.process.stdout || !this.process.stdin || !this.process.stderr) {
+      throw new Error('Failed to spawn sidecar with stdio');
+    }
+
+    // Collect stderr to detect missing module errors
+    let stderrOutput = '';
+    this.process.stderr.on('data', (data: Buffer) => {
+      stderrOutput += data.toString();
+    });
+
+    this.rl = readline.createInterface({
+      input: this.process.stdout,
+      terminal: false,
+    });
+
+    this.rl.on('line', (line) => {
+      try {
+        const response = JSON.parse(line);
+        if (response.id !== undefined) {
+          const pending = this.pendingRequests.get(response.id);
+          if (pending) {
+            if (response.error) {
+              pending.reject(new Error(response.error.message));
+            } else {
+              pending.resolve(response.result);
+            }
+            this.pendingRequests.delete(response.id);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to parse sidecar output:', line, e);
+      }
+    });
+
+    // Wait briefly for process to fail on import errors
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // Check if process died due to import error
+    if (
+      this.process.exitCode !== null ||
+      stderrOutput.includes('ModuleNotFoundError')
+    ) {
+      this.process = undefined;
+      throw new Error(stderrOutput || 'Sidecar process exited unexpectedly');
+    }
+
+    this.process.on('exit', (code) => {
+      console.warn(`Sidecar exited with code ${code}`);
+      this.process = undefined;
+    });
+
+    // Verification ping
+    await this.getCapabilities();
+
+    return { connected: true, version: '0.1.0' };
   }
 
   async disconnect(): Promise<void> {

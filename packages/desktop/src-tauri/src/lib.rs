@@ -15,6 +15,37 @@ struct AppState {
     pty_sessions: Mutex<HashMap<String, PtySession>>,
 }
 
+#[derive(serde::Serialize)]
+struct FileEntry {
+    name: String,
+    is_dir: bool,
+    path: String,
+}
+
+#[tauri::command]
+async fn read_directory(path: String) -> Result<Vec<FileEntry>, String> {
+    let entries = std::fs::read_dir(&path)
+        .map_err(|e| format!("Failed to read directory '{}': {}", path, e))?;
+
+    let mut result = Vec::new();
+    for entry in entries.filter_map(|e| e.ok()) {
+        let name = entry.file_name().to_string_lossy().to_string();
+        let is_dir = entry.file_type().map(|t| t.is_dir()).unwrap_or(false);
+        let path = entry.path().to_string_lossy().to_string();
+        result.push(FileEntry { name, is_dir, path });
+    }
+
+    // Sort: directories first, then alphabetically
+    result.sort_by(|a, b| {
+        if a.is_dir != b.is_dir {
+            return b.is_dir.cmp(&a.is_dir);
+        }
+        a.name.to_lowercase().cmp(&b.name.to_lowercase())
+    });
+
+    Ok(result)
+}
+
 #[tauri::command]
 fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
@@ -125,6 +156,7 @@ pub fn run() {
             resize_pty_session,
             voice::stt_transcribe,
             voice::tts_synthesize,
+            read_directory,
             // oauth::start_oauth
         ])
         .run(tauri::generate_context!())

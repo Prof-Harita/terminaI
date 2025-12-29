@@ -43,3 +43,12 @@ export interface Message {
   pendingConfirmation?: PendingConfirmation;
   progress?: Progress;
 }
+export interface ToolEvent {
+  id: string;
+  toolName: string;
+  inputArguments: Record<string, unknown>;
+  status: 'running' | 'completed' | 'failed' | 'awaiting_input';
+  terminalOutput: string;
+  startedAt: number;
+  completedAt?: number;
+}
