@@ -534,7 +534,9 @@ export async function main() {
         await runExitCleanup();
         process.exit(ExitCodes.FATAL_INPUT_ERROR);
       }
-      if (!hasAcceptedWebRemoteConsent()) {
+      // Check if consent was granted via CLI flag OR persistent state
+      const consentedViaFlag = argv.iUnderstandWebRemoteRisk === true;
+      if (!consentedViaFlag && !hasAcceptedWebRemoteConsent()) {
         let consented = false;
         if (config.isInteractive() && process.stdin.isTTY) {
           consented = await requestWebRemoteConsentInteractive(
@@ -574,6 +576,7 @@ export async function main() {
         tokenOverride: argv.webRemoteToken,
         rotateToken: argv.webRemoteRotateToken,
         activeToken: authResult.token,
+        outputFormat: argv.outputFormat as 'text' | 'json' | 'stream-json' | undefined,
       });
       webRemoteServer = server;
       registerCleanup(
