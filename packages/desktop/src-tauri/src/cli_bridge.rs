@@ -1,13 +1,15 @@
-use std::io::{BufRead, BufReader, Write};
-use std::process::{Child, Command, Stdio};
 use std::sync::{Arc, Mutex};
-use std::thread;
-use tauri::{AppHandle, Emitter};
+use tauri::{AppHandle, Emitter, Manager};
+use rand::Rng;
+use serde_json::Value;
+
+use tauri_plugin_shell::process::CommandChild;
+use tauri_plugin_shell::ShellExt;
+use tauri_plugin_shell::process::CommandEvent;
 
 pub struct CliBridge {
-    stdin: Arc<Mutex<std::process::ChildStdin>>,
     #[allow(dead_code)]
-    child: Arc<Mutex<Child>>,
+    child: Arc<Mutex<Option<CommandChild>>>,
     running: Arc<Mutex<bool>>,
 }
 
@@ -18,124 +20,141 @@ pub struct CliReadyEvent {
     pub workspace: String,
 }
 
+fn generate_token() -> String {
+    let mut rng = rand::rng();
+    (0..32)
+        .map(|_| format!("{:02x}", rng.random::<u8>()))
+        .collect()
+}
+
 impl CliBridge {
     pub fn spawn_web_remote(app: AppHandle, workspace: String) -> Result<Self, String> {
-        // Try to find termai/gemini binary
-        let cli_cmd = std::env::var("TERMAI_CLI_PATH").unwrap_or_else(|_| "terminai".to_string());
+        // V2: Dynamic Port Assignment
+        let port = 0; 
 
-        // Fixed port for predictable connection
-        let port = std::env::var("CODER_AGENT_PORT").unwrap_or_else(|_| "41242".to_string());
+        // Generate a token that we control
+        let token = std::env::var("TERMINAI_WEB_REMOTE_TOKEN")
+            .ok()
+            .unwrap_or_else(generate_token);
+        
+        // Resolve bundled Web UI path (Legacy support, though sidecar usually serves its own or none)
+        let resource_dir = app.path().resource_dir().unwrap_or_default();
+        let mut web_ui_path = resource_dir.join("resources").join("web-ui").to_string_lossy().to_string();
+        
+        if !std::path::Path::new(&web_ui_path).exists() {
+             // Fallback for dev
+            web_ui_path = std::env::var("TERMINAI_DEV_UI_PATH")
+            .unwrap_or_else(|_| "./packages/desktop/dist".to_string());
+        }
 
-        let mut child = Command::new(&cli_cmd)
-            .args([
+        println!("[CLI BRIDGE] Spawning sidecar 'terminai-cli' (Dynamic Port)...");
+
+        // Spawn Sidecar with V2 Flags
+        let (mut rx, child) = app.shell()
+            .sidecar("terminai-cli") // use the configured externalBin name
+            .map_err(|e| format!("Failed to create sidecar command: {}", e))?
+            .args(&[
                 "--web-remote",
-                "--web-remote-port", &port,
-                "--output-format", "stream-json",
+                "--web-remote-port", &port.to_string(), // 0 = Dynamic
+                "--web-remote-token", &token,
+                "--output-format", "json", // Request JSON mode if supported
             ])
-            .current_dir(&workspace)
-            .stdin(Stdio::piped())
-            .stdout(Stdio::piped())
-            .stderr(Stdio::piped())
+            .env("TERMINAI_SIDECAR", "1") // V2 Signal
+            .env("GEMINI_WEB_CLIENT_PATH", &web_ui_path)
             .spawn()
-            .map_err(|e| format!("Failed to spawn CLI '{}': {}", cli_cmd, e))?;
+            .map_err(|e| format!("Failed to spawn sidecar: {}", e))?;
 
-        let stdin = child
-            .stdin
-            .take()
-            .ok_or_else(|| "Failed to capture stdin".to_string())?;
-        let stdout = child
-            .stdout
-            .take()
-            .ok_or_else(|| "Failed to capture stdout".to_string())?;
-
-        let stdin = Arc::new(Mutex::new(stdin));
+        println!("[CLI BRIDGE] Sidecar spawned successfully");
+        
+        // Store child for cleanup
+        let child_arc = Arc::new(Mutex::new(Some(child)));
         let running = Arc::new(Mutex::new(true));
-        let running_clone = running.clone();
-        let child = Arc::new(Mutex::new(child));
-
+        
+        let running_clone = running.clone();    
         let workspace_clone = workspace.clone();
+        let token_clone = token.clone();
         let app_clone = app.clone();
 
-        // Stream stdout and capture web-remote ready signal
-        thread::spawn(move || {
-            let reader = BufReader::new(stdout);
-            let mut token_found = false;
+        tauri::async_runtime::spawn(async move {
+            let mut buffer = String::new();
 
-            for line in reader.lines() {
+            while let Some(event) = rx.recv().await {
                 if !*running_clone.lock().unwrap() {
-                    break;
+                     break;
                 }
-                if let Ok(line) = line {
-                    // Look for the web-remote token in output
-                    // Format: "Token stored at /path" or contains token
-                    if !token_found && line.contains("Token") {
-                        // Try to read token from auth file
-                        if let Ok(token) = Self::read_web_remote_token() {
-                            let url = format!("http://127.0.0.1:{}", port);
-                            let _ = app.emit("cli-ready", CliReadyEvent {
-                                url: url.clone(),
-                                token: token.clone(),
-                                workspace: workspace_clone.clone(),
-                            });
-                            token_found = true;
-                        }
-                    }
+                match event {
+                    CommandEvent::Stdout(line_bytes) => {
+                         let raw_output = String::from_utf8_lossy(&line_bytes).to_string();
+                         print!("[SIDECAR] {}", raw_output); 
+                         
+                         // V2: Try parsing JSON handshake
+                         // Looking for {"terminai_status": "ready", ...}
+                         if let Ok(json) = serde_json::from_str::<Value>(&raw_output) {
+                             if json["terminai_status"] == "ready" {
+                                 let port = json["port"].as_u64().unwrap_or(41242);
+                                 let _token = json["token"].as_str().unwrap_or(&token_clone);
+                                 let url = format!("http://127.0.0.1:{}", port);
+                                 
+                                 println!("[SIDECAR READY] Parsed JSON Handshake. URL: {}", url);
+                                 let _ = app_clone.emit("cli-ready", CliReadyEvent {
+                                     url,
+                                     token: _token.to_string(),
+                                     workspace: workspace_clone.clone(),
+                                 });
+                                 continue;
+                             }
+                         }
 
-                    // Also check for "Server listening" message
-                    if !token_found && line.contains("listening") {
-                        if let Ok(token) = Self::read_web_remote_token() {
-                            let url = format!("http://127.0.0.1:{}", port);
-                            let _ = app.emit("cli-ready", CliReadyEvent {
-                                url,
-                                token,
-                                workspace: workspace_clone.clone(),
-                            });
-                            token_found = true;
-                        }
+                         // V1 Fallback: Regex/String Match (Legacy CLI)
+                         // "Web Remote: http://127.0.0.1:41242/?token=..."
+                         if raw_output.contains("Web Remote") {
+                             // Extract Port if possible, or assume 41242 if we passed 0 and it failed to bind dynamic? 
+                             // Actually if we passed 0 and CLI isn't V2, it might default to 41242 or error.
+                             // Legacy CLI might not handle port=0.
+                             // But we verified CLI supports --web-remote-port.
+                             // If Legacy CLI gets port=0, hopefully it behaves dynamically or binds to something.
+                             // We'll scrape the URL. 
+                             
+                             // Simple scrape for now:
+                             if let Some(start) = raw_output.find("http://127.0.0.1:") {
+                                 let rest = &raw_output[start..];
+                                 if let Some(end) = rest.find(&['/', ' '][..]) {
+                                     let url = &rest[..end];
+                                     println!("[SIDECAR READY] Scraped Legacy URL: {}", url);
+                                     let _ = app_clone.emit("cli-ready", CliReadyEvent {
+                                         url: url.to_string(),
+                                         token: token_clone.clone(),
+                                         workspace: workspace_clone.clone(),
+                                     });
+                                 }
+                             }
+                         }
                     }
-
-                    let _ = app_clone.emit("cli-output", line);
+                    CommandEvent::Stderr(line_bytes) => {
+                        let line = String::from_utf8_lossy(&line_bytes).to_string();
+                        eprint!("[SIDECAR ERROR] {}", line);
+                    }
+                    CommandEvent::Terminated(payload) => {
+                        println!("[SIDECAR] Terminated: {:?}", payload);
+                        break;
+                    }
+                    _ => {}
                 }
             }
         });
-
+        
         Ok(Self {
-            stdin,
-            child,
+            child: child_arc,
             running,
         })
     }
 
-    pub fn send(&self, message: &str) -> Result<(), String> {
-        let mut stdin = self.stdin.lock().unwrap();
-        writeln!(stdin, "{}", message).map_err(|e| format!("Failed to send: {}", e))
-    }
-
     pub fn stop(&self) {
+        println!("[CLI BRIDGE] Stopping sidecar...");
         *self.running.lock().unwrap() = false;
-    }
-
-    fn read_web_remote_token() -> Result<String, String> {
-        // Read from ~/.terminai/web-remote-auth.json
-        let home = std::env::var("HOME").unwrap_or_else(|_| "/tmp".to_string());
-        let auth_path = format!("{}/.terminai/web-remote-auth.json", home);
-
-        let content = std::fs::read_to_string(&auth_path)
-            .map_err(|e| format!("Failed to read auth file: {}", e))?;
-
-        // Parse JSON to extract token
-        // Format: {"token": "xxx", "tokenHash": "yyy"}
-        if let Some(start) = content.find("\"token\":") {
-            let rest = &content[start + 9..];
-            if let Some(end) = rest.find('"') {
-                let after_quote = &rest[1..];
-                if let Some(close) = after_quote.find('"') {
-                    return Ok(after_quote[..close].to_string());
-                }
-            }
+        if let Some(child) = self.child.lock().unwrap().take() {
+            let _ = child.kill();
         }
-
-        Err("Token not found in auth file".to_string())
     }
 
     // Keep the old spawn for backward compatibility
