@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "TerminaI",
-  "version": "0.1.0",
-  "identifier": "ai.termai.desktop",
+  "version": "0.21.0",
+  "identifier": "ai.terminai.desktop",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -28,13 +28,17 @@
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": ["deb", "appimage", "msi"],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "resources": ["resources/**/*"],
+    "externalBin": ["bin/terminai-cli"],
+    "shortDescription": "AI-powered terminal assistant with voice and agentic capabilities",
+    "longDescription": "TerminaI is a powerful AI assistant that runs in your terminal, featuring voice interaction, agentic task execution, and seamless integration with your development workflow."
   }
 }

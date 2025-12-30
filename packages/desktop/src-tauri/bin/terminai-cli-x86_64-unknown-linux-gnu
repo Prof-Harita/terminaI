@@ -1,0 +1,8 @@
+#!/bin/sh
+# Development Shim for TerminaI CLI Sidecar
+# Redirects execution to the local node project
+basedir=$(dirname "$0")
+# Adjust path to point to the repo root's CLI package
+# src-tauri/bin -> src-tauri -> desktop -> packages -> repo root -> packages -> cli -> dist -> index.js
+# This is robust for dev env
+exec node "/home/profharita/Code/terminaI/packages/cli/dist/index.js" "$@"
