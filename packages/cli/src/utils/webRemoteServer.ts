@@ -86,7 +86,9 @@ export async function ensureWebRemoteAuth(
 }
 
 export async function startWebRemoteServer(
-  options: WebRemoteServerOptions,
+  options: WebRemoteServerOptions & {
+    outputFormat?: 'text' | 'json' | 'stream-json';
+  },
 ): Promise<{ server: Server; port: number; url: string }> {
   if (options.allowedOrigins.length > 0) {
     process.env['TERMINAI_WEB_REMOTE_ALLOWED_ORIGINS'] =
@@ -97,8 +99,13 @@ export async function startWebRemoteServer(
 
   const authResult = await ensureWebRemoteAuth(options);
 
-  // Show warning if token only exists as hashed state
-  if (authResult.tokenSource === 'existing' && !authResult.token) {
+  // Show warning if token only exists as hashed state (only in text mode)
+  if (
+    authResult.tokenSource === 'existing' &&
+    !authResult.token &&
+    options.outputFormat !== 'json' &&
+    options.outputFormat !== 'stream-json'
+  ) {
     process.stderr.write(
       '\n⚠️  Token not available (stored hashed). Use --web-remote-rotate-token to generate a new token.\n',
     );
@@ -112,13 +119,28 @@ export async function startWebRemoteServer(
   updateCoderAgentCardUrl(actualPort, options.host);
 
   // Build the user-facing URL using the token from authResult
-  // NOTE: Token in URL is intentional for QR code sharing.
-  // For production use, rotate tokens and use HTTPS.
   const token = authResult.token;
   const url = `http://${options.host}:${actualPort}/ui${
     token ? `?token=${encodeURIComponent(token)}` : ''
   }`;
 
+  // JSON Handshake for Sidecar Mode
+  if (
+    options.outputFormat === 'json' ||
+    options.outputFormat === 'stream-json'
+  ) {
+    const handshake = {
+      terminai_status: 'ready',
+      port: actualPort,
+      token: token,
+      url: url,
+    };
+    // Ensure we write a single line JSON blob to stdout
+    process.stdout.write(JSON.stringify(handshake) + '\n');
+    return { server, port: actualPort, url };
+  }
+
+  // Legacy Text Output
   // Render QR code if the dependency is available, otherwise fall back to text.
   type QRCodeModule = {
     generate: (text: string, opts?: { small?: boolean }) => void;
