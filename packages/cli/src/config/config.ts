@@ -882,6 +882,7 @@ export async function loadCliConfig(
     workspaceDir: cwd,
     question,
     approvalMode,
+    overrides,
   });
 }
 

@@ -24,40 +24,40 @@ entire parity goal (same settings → same behavior) is **not yet achieved**.
 
 ## Requirement Traceability Matrix
 
-| Task                         | Requirement                 | File/Evidence                                          | Status      | Notes                                    |
-| ---------------------------- | --------------------------- | ------------------------------------------------------ | ----------- | ---------------------------------------- |
+| Task                         | Requirement                 | File/Evidence                                          | Status       | Notes                                    |
+| ---------------------------- | --------------------------- | ------------------------------------------------------ | ------------ | ---------------------------------------- |
 | **Phase 0: Pre-Flight**      |
-| 0.1                          | 10 golden snapshots exist   | `packages/cli/test/fixtures/settings-snapshots/*.json` | ⚠️ Partial  | 10 snapshots exist, but only 8 scenarios |
-| 0.1                          | Regeneration script exists  | `scripts/run-parity-snapshots.sh`                      | ✅ Complete |                                          |
-| 0.1                          | Snapshot comparison test    | —                                                      | ❌ Missing  | No automated test comparing snapshots    |
-| 0.2                          | Dependency audit documented | —                                                      | ❌ Missing  | No documentation found                   |
-| 0.3                          | Upstream diff documented    | —                                                      | ❌ Missing  | No documentation found                   |
+| 0.1                          | 10 golden snapshots exist   | `packages/cli/test/fixtures/settings-snapshots/*.json` | ⚠️ Partial   | 10 snapshots exist, but only 8 scenarios |
+| 0.1                          | Regeneration script exists  | `scripts/run-parity-snapshots.sh`                      | ✅ Complete  |                                          |
+| 0.1                          | Snapshot comparison test    | —                                                      | ❌ Missing   | No automated test comparing snapshots    |
+| 0.2                          | Dependency audit documented | —                                                      | ❌ Missing   | No documentation found                   |
+| 0.3                          | Upstream diff documented    | —                                                      | ❌ Missing   | No documentation found                   |
 | **Phase 1: Foundation**      |
-| 1                            | Settings types module       | `packages/core/src/config/settings/types.ts`           | ✅ Complete | 175 lines                                |
-| 2                            | Settings schema module      | `packages/core/src/config/settings/schema.ts`          | ✅ Complete | 72KB                                     |
-| 3                            | Settings migration module   | `packages/core/src/config/settings/migrate.ts`         | ✅ Complete | 8KB                                      |
-| 4                            | Settings validation module  | `packages/core/src/config/settings/validate.ts`        | ✅ Complete | 332 lines                                |
-| 5                            | Settings trust module       | `packages/core/src/config/settings/trust.ts`           | ✅ Complete | 235 lines                                |
-| 6                            | Settings loader module      | `packages/core/src/config/settings/loader.ts`          | ⚠️ Partial  | **Returns empty stubs**                  |
-| 7                            | Barrel export               | `packages/core/src/index.ts:13-27`                     | ✅ Complete | All settings modules exported            |
+| 1                            | Settings types module       | `packages/core/src/config/settings/types.ts`           | ✅ Complete  | 175 lines                                |
+| 2                            | Settings schema module      | `packages/core/src/config/settings/schema.ts`          | ✅ Complete  | 72KB                                     |
+| 3                            | Settings migration module   | `packages/core/src/config/settings/migrate.ts`         | ✅ Complete  | 8KB                                      |
+| 4                            | Settings validation module  | `packages/core/src/config/settings/validate.ts`        | ✅ Complete  | 332 lines                                |
+| 5                            | Settings trust module       | `packages/core/src/config/settings/trust.ts`           | ✅ Complete  | 235 lines                                |
+| 6                            | Settings loader module      | `packages/core/src/config/settings/loader.ts`          | ✅ **FIXED** | Now reads actual files                   |
+| 7                            | Barrel export               | `packages/core/src/index.ts:13-27`                     | ✅ Complete  | All settings modules exported            |
 | **Phase 1.5: Guard Rails**   |
-| 1.8                          | CLI settings parity test    | —                                                      | ❌ Missing  | No parity.test.ts file                   |
-| 1.9                          | Core isolation test         | —                                                      | ❌ Missing  | No automated isolation check             |
+| 1.8                          | CLI settings parity test    | `packages/core/src/config/settings/parity.test.ts`     | ✅ **FIXED** | 6 tests now pass                         |
+| 1.9                          | Core isolation test         | —                                                      | ❌ Missing   | No automated isolation check             |
 | **Phase 2: Config Builder**  |
-| 8                            | Config builder module       | `packages/core/src/config/builder.ts`                  | ✅ Complete | 233 lines                                |
-| 9                            | Policy engine extraction    | `packages/core/src/policy/config.ts`                   | ✅ Complete | Already extracted                        |
+| 8                            | Config builder module       | `packages/core/src/config/builder.ts`                  | ✅ Complete  | 233 lines                                |
+| 9                            | Policy engine extraction    | `packages/core/src/policy/config.ts`                   | ✅ Complete  | Already extracted                        |
 | **Phase 3: CLI Integration** |
-| 10                           | CLI uses shared loader      | `packages/cli/src/config/settings.ts:67-78`            | ✅ Complete | Uses SettingsLoader                      |
-| 11                           | CLI tests pass              | —                                                      | ⚠️ Partial  | 58 failures                              |
+| 10                           | CLI uses shared loader      | `packages/cli/src/config/settings.ts:67-78`            | ✅ Complete  | Uses SettingsLoader                      |
+| 11                           | CLI tests pass              | —                                                      | ⚠️ Partial   | 58 failures                              |
 | **Phase 3.5: A2A Canary**    |
-| 11.5                         | Feature flag A2A settings   | —                                                      | ❌ Missing  | USE_UNIFIED_SETTINGS not found           |
+| 11.5                         | Feature flag A2A settings   | —                                                      | ❌ Missing   | USE_UNIFIED_SETTINGS not found           |
 | **Phase 4: A2A Integration** |
-| 12                           | A2A settings.ts replaced    | `packages/a2a-server/src/config/settings.ts`           | ✅ Complete | 35 lines thin wrapper                    |
-| 13                           | A2A loadConfig updated      | `packages/a2a-server/src/config/config.ts`             | ✅ Complete | Uses LoadedSettings                      |
-| 14                           | A2A tests pass              | —                                                      | ⚠️ Partial  | 6 failures                               |
+| 12                           | A2A settings.ts replaced    | `packages/a2a-server/src/config/settings.ts`           | ✅ Complete  | 35 lines thin wrapper                    |
+| 13                           | A2A loadConfig updated      | `packages/a2a-server/src/config/config.ts`             | ✅ Complete  | Uses LoadedSettings                      |
+| 14                           | A2A tests pass              | —                                                      | ⚠️ Partial   | 6 failures                               |
 | **Phase 5: Verification**    |
-| 15                           | Parity snapshot tests       | —                                                      | ❌ Missing  | No parity tests exist                    |
-| 16                           | Manual E2E verification     | —                                                      | ❌ Missing  | No evidence of verification              |
+| 15                           | Parity snapshot tests       | —                                                      | ❌ Missing   | No parity tests exist                    |
+| 16                           | Manual E2E verification     | —                                                      | ❌ Missing   | No evidence of verification              |
 
 ### Summary by Phase
 
