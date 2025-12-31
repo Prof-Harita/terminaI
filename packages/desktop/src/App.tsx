@@ -5,30 +5,34 @@
  */
 
 import { useRef, useState, useEffect, useCallback } from 'react'
-import { invoke } from '@tauri-apps/api/core'
-import { listen } from '@tauri-apps/api/event'
 import { useCliProcess } from './hooks/useCliProcess'
 import { useSettingsStore } from './stores/settingsStore'
 import { useExecutionStore } from './stores/executionStore'
 import { useVoiceStore } from './stores/voiceStore'
 // TriPaneLayout removed - using direct flex layout
 import { ChatView } from './components/ChatView'
-import { LeftSidebar } from './components/LeftSidebar'
+import { SidePanel } from './components/SidePanel'
+import { ActivityBar, ActivityView } from './components/ActivityBar'
 import { EngineRoomPane } from './components/EngineRoomPane'
 import { ResizableHandle } from './components/ResizableHandle'
 import { ThemeProvider } from './components/ThemeProvider'
 import { CommandPalette } from './components/CommandPalette'
-import { SettingsPanel } from './components/SettingsPanel'
 import { AuthScreen } from './components/AuthScreen'
 import { ContextPopover } from './components/ContextPopover'
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
 import { Button } from './components/ui/button'
-import { Sun, Moon, Menu, Settings, Mic, MicOff } from 'lucide-react'
+import { Sun, Moon, Settings, Mic, MicOff } from 'lucide-react'
 import { cn } from './lib/utils'
 import { TerminaILogo } from './components/TerminaILogo'
 import { KeyboardCheatSheet } from './components/KeyboardCheatSheet'
 
+import { useSidecar } from './hooks/useSidecar';
+import { ConnectivityIndicator } from './components/ConnectivityIndicator';
+
 function App() {
+  // Use V2 Sidecar Hook (handles connection lifecycle)
+  useSidecar();
+
   const {
     messages,
     isConnected,
@@ -36,6 +40,8 @@ function App() {
     activeTerminalSession,
     sendMessage,
     respondToConfirmation,
+    sendToolInput,
+    stop,
   } = useCliProcess({
     onComplete: () => {
       setTimeout(() => chatInputRef.current?.focus(), 0);
@@ -52,14 +58,19 @@ function App() {
   const setVoiceEnabled = useSettingsStore((s) => s.setVoiceEnabled)
   const voiceState = useVoiceStore((s) => s.state)
 
-  const [showAuth, setShowAuth] = useState(true)
-  const [isBootstrapping, setIsBootstrapping] = useState(true)
-  const [bootstrapError, setBootstrapError] = useState<string | null>(null)
-  const isBootstrappingRef = useRef(true)
+  // Auth/Bootstrap State managed by useSidecarStore now, but legacy AuthScreen checks settingsStore.
+  // If agentToken is present, showAuth becomes false.
+  // We can derive showAuth locally or keep it simple.
+  const [showAuth, setShowAuth] = useState(!agentToken); 
+  
+  useEffect(() => {
+    if (agentToken) setShowAuth(false);
+  }, [agentToken]);
+
   const [isPaletteOpen, setIsPaletteOpen] = useState(false)
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [isSettingsOpen] = useState(false)
   const [isCheatSheetOpen, setIsCheatSheetOpen] = useState(false)
-  const [showLeftSidebar, setShowLeftSidebar] = useState(true)
+  const [activeActivity, setActiveActivity] = useState<ActivityView | null>('history')
   const [leftWidth, setLeftWidth] = useState(280)
   const [rightWidth, setRightWidth] = useState(600)
   const chatInputRef = useRef<HTMLTextAreaElement>(null)
@@ -88,63 +99,6 @@ function App() {
     }
   }, [resolvedTheme])
 
-  // Auto-spawn CLI backend on app start
-  useEffect(() => {
-    let unlisten: (() => void) | undefined;
-
-    const bootstrap = async () => {
-      try {
-        // Listen for CLI ready event
-        unlisten = await listen('cli-ready', (event: any) => {
-          const { url, token, workspace: cliWorkspace } = event.payload
-          useSettingsStore.getState().setAgentUrl(url)
-          useSettingsStore.getState().setAgentToken(token)
-          useSettingsStore.getState().setAgentWorkspacePath(cliWorkspace)
-
-          setShowAuth(false)
-          setIsBootstrapping(false)
-          isBootstrappingRef.current = false
-        })
-
-        // Get current working directory for workspace
-        const workspace = await invoke<string>('get_current_dir').catch(
-          () => '/tmp',
-        );
-
-        // Spawn CLI backend
-        await invoke('spawn_cli_backend', { workspace });
-
-        // Timeout fallback - if CLI doesn't emit ready in 10s, show auth screen
-        setTimeout(() => {
-          if (isBootstrappingRef.current) {
-            setIsBootstrapping(false)
-            isBootstrappingRef.current = false
-            setBootstrapError(
-              'CLI backend did not respond. Please check the logs.',
-            );
-          }
-        }, 10000);
-      } catch (error) {
-        console.error('Failed to spawn CLI backend:', error);
-        setIsBootstrapping(false);
-        setBootstrapError(
-          error instanceof Error ? error.message : 'Unknown error',
-        );
-      }
-    };
-
-    // Only bootstrap if we don't have a token already
-    if (!agentToken) {
-      bootstrap();
-    } else {
-      setIsBootstrapping(false);
-      setShowAuth(false);
-    }
-
-    return () => {
-      unlisten?.();
-    };
-  }, [agentToken]);
 
   // Task 70: Notification Sound for Confirmations
   useEffect(() => {
@@ -175,7 +129,7 @@ function App() {
 
   useKeyboardShortcuts({
     onOpenPalette: () => setIsPaletteOpen(true),
-    onOpenSettings: () => setIsSettingsOpen(true),
+    onOpenSettings: () => setActiveActivity('preference'),
     onFocusChat: () => chatInputRef.current?.focus(),
     onNewConversation: clearChat,
     onShowCheatSheet: () => setIsCheatSheetOpen(true),
@@ -197,8 +151,8 @@ function App() {
         respondToConfirmation(pendingConfirmationId, false);
         setPendingConfirmationId(null);
         setTimeout(() => chatInputRef.current?.focus(), 0);
-      } else if (isSettingsOpen) {
-        setIsSettingsOpen(false);
+      } else if (activeActivity && activeActivity !== 'history') {
+        setActiveActivity('history'); // Go back to history instead of null? Or null? Old behavior was null but history is default.
         setTimeout(() => chatInputRef.current?.focus(), 0);
       } else if (isPaletteOpen) {
         setIsPaletteOpen(false);
@@ -232,7 +186,7 @@ function App() {
       const action = command.action.replace('frontend:', '');
       switch (action) {
         case 'settings':
-          setIsSettingsOpen(true);
+          setActiveActivity('preference');
           break;
         case 'palette':
           setIsPaletteOpen(true);
@@ -257,8 +211,8 @@ function App() {
     return (
       <AuthScreen
         onAuthenticated={() => setShowAuth(false)}
-        isBootstrapping={isBootstrapping}
-        bootstrapError={bootstrapError}
+        isBootstrapping={false} // Managed by sidecar status internally? Or just false.
+        bootstrapError={null}
       />
     )
   }
@@ -269,42 +223,8 @@ function App() {
         {/* Header */}
         <header className="h-12 border-b border-border bg-card flex items-center justify-between px-4 flex-shrink-0">
           <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowLeftSidebar(!showLeftSidebar)}
-              className="h-8 w-8 lg:hidden"
-            >
-              <Menu className="h-4 w-4" />
-            </Button>
             <TerminaILogo size="small" />
-            {/* Connection Status Indicator */}
-            <div className="flex items-center gap-1.5 text-xs ml-4">
-              <div
-                className={`w-2 h-2 rounded-full ${
-                  isBootstrapping
-                    ? 'bg-yellow-500 animate-pulse'
-                    : isConnected
-                      ? 'bg-green-500'
-                      : 'bg-red-500'
-                }`}
-                style={{
-                  boxShadow: isBootstrapping
-                    ? '0 0 6px rgba(234, 179, 8, 0.6)'
-                    : isConnected
-                      ? '0 0 6px rgba(34, 197, 94, 0.6)'
-                      : '0 0 6px rgba(239, 68, 68, 0.6)'
-                }}
-              />
-              <span className="text-muted-foreground hidden sm:inline">
-                {isBootstrapping ? 'Connecting...' : isConnected ? 'Connected' : 'Disconnected'}
-              </span>
-              {isConnected && useSettingsStore.getState().relayClientCount > 0 && (
-                <span className="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-500 font-bold ml-1 animate-in fade-in zoom-in duration-300">
-                  {useSettingsStore.getState().relayClientCount} Clients
-                </span>
-              )}
-            </div>
+            <ConnectivityIndicator />
             {/* Model Dropdown */}
             <select
               value={provider}
@@ -351,8 +271,9 @@ function App() {
                     stream.getTracks().forEach(track => track.stop()); // Release immediately
                     setVoiceEnabled(true);
                   } catch (err) {
+                    console.error('Microphone permission error:', err);
                     useVoiceStore.getState().setError(
-                      'Microphone access denied. Please allow microphone access in your browser/system settings.'
+                      `Microphone access denied: ${err instanceof Error ? err.message : String(err)}`
                     );
                   }
                 } else {
@@ -373,7 +294,7 @@ function App() {
             <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-8 w-8">
               {resolvedTheme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => setIsSettingsOpen(true)} className="h-8 w-8">
+            <Button variant="ghost" size="icon" onClick={() => setActiveActivity('preference')} className="h-8 w-8">
               <Settings className="h-4 w-4" />
             </Button>
           </div>
@@ -381,14 +302,17 @@ function App() {
 
         {/* Three-pane layout */}
         <div className="flex-1 flex overflow-hidden">
-          {/* Left Sidebar - hidden on mobile by default */}
-          {showLeftSidebar && (
+          {/* Activity Bar */}
+          <ActivityBar activeView={activeActivity} onViewChange={setActiveActivity} />
+
+          {/* Side Panel */}
+          {activeActivity && (
             <>
               <div
                 className="border-r border-border bg-sidebar overflow-hidden flex-shrink-0"
                 style={{ width: `${leftWidth}px` }}
               >
-                <LeftSidebar onCommandSelect={sendMessage} />
+                <SidePanel activeView={activeActivity} sendMessage={sendMessage} />
               </div>
 
               {/* Left Resizer */}
@@ -412,6 +336,7 @@ function App() {
                 setPendingConfirmationRequiresPin(requiresPin ?? false);
                 setPendingConfirmationPinReady(pinReady ?? false);
               }}
+              onStop={stop}
             />
           </div>
 
@@ -426,6 +351,7 @@ function App() {
             <EngineRoomPane
               terminalSessionId={activeTerminalSession}
               onCloseTerminal={() => {}}
+              sendToolInput={sendToolInput}
             />
           </div>
         </div>
@@ -443,14 +369,7 @@ function App() {
             setTimeout(() => chatInputRef.current?.focus(), 0)
           }}
         />
-        <SettingsPanel
-          isOpen={isSettingsOpen}
-          onClose={() => {
-            setIsSettingsOpen(false)
-            setTimeout(() => chatInputRef.current?.focus(), 0)
-          }}
-          sendMessage={sendMessage}
-        />
+
         <KeyboardCheatSheet
           isOpen={isCheatSheetOpen}
           onClose={() => {
