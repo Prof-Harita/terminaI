@@ -5,9 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { homedir } from 'node:os';
 import * as dotenv from 'dotenv';
 
 import type { TelemetryTarget } from '@terminai/core';
@@ -18,12 +16,12 @@ import {
   FileDiscoveryService,
   ApprovalMode,
   loadServerHierarchicalMemory,
-  GEMINI_DIR,
   DEFAULT_GEMINI_EMBEDDING_MODEL,
   DEFAULT_GEMINI_MODEL,
   type ExtensionLoader,
   startupProfiler,
   PREVIEW_GEMINI_MODEL,
+  findEnvFile,
 } from '@terminai/core';
 
 import { logger } from '../utils/logger.js';
@@ -46,14 +44,15 @@ export async function loadConfig(
       ? PREVIEW_GEMINI_MODEL
       : DEFAULT_GEMINI_MODEL,
     embeddingModel: DEFAULT_GEMINI_EMBEDDING_MODEL,
-    sandbox: undefined, // Sandbox might not be relevant for a server-side agent
-    targetDir: workspaceDir, // Or a specific directory the agent operates on
+    sandbox: undefined,
+    targetDir: workspaceDir,
     debugMode: process.env['DEBUG'] === 'true' || false,
-    question: '', // Not used in server mode directly like CLI
+    question: '',
 
-    coreTools: settings.coreTools || undefined,
-    excludeTools: settings.excludeTools || undefined,
-    showMemoryUsage: settings.showMemoryUsage || false,
+    // CRITICAL FIX: V2 nested paths (not V1 flat paths)
+    coreTools: settings.tools?.core || undefined,
+    excludeTools: settings.tools?.exclude || undefined,
+    showMemoryUsage: settings.ui?.showMemoryUsage || false,
     approvalMode:
       process.env['GEMINI_YOLO_MODE'] === 'true'
         ? ApprovalMode.YOLO
@@ -68,18 +67,22 @@ export async function loadConfig(
         settings.telemetry?.otlpEndpoint,
       logPrompts: settings.telemetry?.logPrompts,
     },
-    // Git-aware file filtering settings
+    // CRITICAL FIX: V2 nested paths for fileFiltering
     fileFiltering: {
-      respectGitIgnore: settings.fileFiltering?.respectGitIgnore,
+      respectGitIgnore: settings.context?.fileFiltering?.respectGitIgnore,
+      respectGeminiIgnore: settings.context?.fileFiltering?.respectGeminiIgnore,
       enableRecursiveFileSearch:
-        settings.fileFiltering?.enableRecursiveFileSearch,
+        settings.context?.fileFiltering?.enableRecursiveFileSearch,
+      disableFuzzySearch: settings.context?.fileFiltering?.disableFuzzySearch,
     },
     ideMode: false,
-    folderTrust: settings.folderTrust === true,
+    // CRITICAL FIX: V2 nested path for folderTrust
+    folderTrust: settings.security?.folderTrust?.enabled === true,
     extensionLoader,
+    // CRITICAL FIX: V2 nested path for checkpointing
     checkpointing: process.env['CHECKPOINTING']
       ? process.env['CHECKPOINTING'] === 'true'
-      : settings.checkpointing?.enabled,
+      : settings.general?.checkpointing?.enabled,
     previewFeatures: settings.general?.previewFeatures,
     interactive: true,
     webRemoteRelayUrl: process.env['WEB_REMOTE_RELAY_URL'],
@@ -88,14 +91,15 @@ export async function loadConfig(
   const fileService = new FileDiscoveryService(workspaceDir);
   const { memoryContent, fileCount } = await loadServerHierarchicalMemory(
     workspaceDir,
-    [], // Align with CLI: empty includeDirectories
-    configParams.debugMode ?? false, // Align with CLI: use debugMode from config
+    [],
+    configParams.debugMode ?? false,
     fileService,
     extensionLoader,
-    settings.folderTrust === true,
-    'tree', // Align with CLI: explicit importFormat
-    undefined, // Align with CLI: use core defaults for filtering
-    200, // Align with CLI: explicit maxDirs
+    // CRITICAL FIX: V2 nested path for folderTrust
+    settings.security?.folderTrust?.enabled === true,
+    'tree',
+    undefined,
+    200,
   );
   configParams.userMemory = memoryContent;
   configParams.geminiMdFileCount = fileCount;
@@ -160,39 +164,14 @@ export function setTargetDir(agentSettings: AgentSettings | undefined): string {
   }
 }
 
+/**
+ * Loads environment variables from .env file.
+ * Uses Core's findEnvFile for parity with CLI.
+ */
 export function loadEnvironment(startDir?: string): void {
   const envFilePath = findEnvFile(startDir || process.cwd());
   if (envFilePath) {
-    // G-2 FIX: Removed override: true
+    // G-2 FIX: No override:true for CLI parity
     dotenv.config({ path: envFilePath });
-  }
-}
-
-function findEnvFile(startDir: string): string | null {
-  let currentDir = path.resolve(startDir);
-  while (true) {
-    // prefer gemini-specific .env under GEMINI_DIR
-    const geminiEnvPath = path.join(currentDir, GEMINI_DIR, '.env');
-    if (fs.existsSync(geminiEnvPath)) {
-      return geminiEnvPath;
-    }
-    const envPath = path.join(currentDir, '.env');
-    if (fs.existsSync(envPath)) {
-      return envPath;
-    }
-    const parentDir = path.dirname(currentDir);
-    if (parentDir === currentDir || !parentDir) {
-      // check .env under home as fallback, again preferring gemini-specific .env
-      const homeGeminiEnvPath = path.join(process.cwd(), GEMINI_DIR, '.env');
-      if (fs.existsSync(homeGeminiEnvPath)) {
-        return homeGeminiEnvPath;
-      }
-      const homeEnvPath = path.join(homedir(), '.env');
-      if (fs.existsSync(homeEnvPath)) {
-        return homeEnvPath;
-      }
-      return null;
-    }
-    currentDir = parentDir;
   }
 }

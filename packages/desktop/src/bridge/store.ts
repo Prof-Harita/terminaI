@@ -114,8 +114,10 @@ export const useBridgeStore = create<BridgeStore>()(
     {
       name: 'bridge-store',
       partialize: (state) => ({
-        // Only persist cliInstanceId for reconnection detection
+        // Persist both for reconnection detection
         cliInstanceId: state.cliInstanceId,
+        // IMPORTANT FIX: Persist conversation ID so page refresh doesn't lose context
+        currentConversationId: state.currentConversationId,
       }),
     },
   ),

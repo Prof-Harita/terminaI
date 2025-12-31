@@ -310,6 +310,23 @@ export function useCliProcess(options?: { onComplete?: () => void }) {
     void checkConnection();
   }, [checkConnection]);
 
+  // IMPORTANT FIX: Track pending message text for history recording after STREAM_STARTED
+  const pendingHistoryTextRef = useRef<string | null>(null);
+
+  // IMPORTANT FIX: Record pending history when taskId becomes available
+  useEffect(() => {
+    if (currentTaskId && pendingHistoryTextRef.current) {
+      const text = pendingHistoryTextRef.current;
+      pendingHistoryTextRef.current = null; // Clear to prevent duplicate recording
+      useHistoryStore.getState().addSession({
+        id: currentTaskId,
+        title: text.length > 30 ? text.slice(0, 30) + '...' : text,
+        lastMessage: text,
+        timestamp: Date.now(),
+      });
+    }
+  }, [currentTaskId]);
+
   const sendMessage = useCallback(
     async (text: string) => {
       const baseUrl = normalizeBaseUrl(agentUrl);
@@ -340,8 +357,8 @@ export function useCliProcess(options?: { onComplete?: () => void }) {
       };
       setMessages((prev) => [...prev, userMessage]);
 
-      // History - BM-2 FIX: Only record session after we have a real taskId
-      // Don't use 'default' since it pollutes history with anonymous sessions
+      // IMPORTANT FIX: For first message, store text and record history after STREAM_STARTED
+      // This ensures we capture the real taskId instead of using 'default'
       if (currentTaskId) {
         useHistoryStore.getState().addSession({
           id: currentTaskId,
@@ -349,6 +366,9 @@ export function useCliProcess(options?: { onComplete?: () => void }) {
           lastMessage: text,
           timestamp: Date.now(),
         });
+      } else {
+        // First message - store for recording after stream starts
+        pendingHistoryTextRef.current = text;
       }
 
       useExecutionStore.getState().clearEvents();

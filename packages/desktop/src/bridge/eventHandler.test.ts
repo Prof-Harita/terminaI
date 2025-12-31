@@ -124,7 +124,8 @@ describe('handleSseEvent', () => {
       expect(mockOnText).toHaveBeenCalledWith('Hello world');
     });
 
-    it('calls onComplete for state-change events', () => {
+    // BM-3 FIX: Only terminal state-change events call onComplete
+    it('calls onComplete for terminal state-change events', () => {
       const state: BridgeState = {
         status: 'streaming',
         taskId: 't1',
@@ -132,10 +133,24 @@ describe('handleSseEvent', () => {
         eventSeq: 2,
       };
       handleSseEvent(
-        { result: { kind: 'state-change' } },
+        { result: { kind: 'state-change', status: { state: 'completed' } } },
         createOptions(state),
       );
       expect(mockOnComplete).toHaveBeenCalled();
+    });
+
+    it('does NOT call onComplete for non-terminal state-change events', () => {
+      const state: BridgeState = {
+        status: 'streaming',
+        taskId: 't1',
+        contextId: 'c1',
+        eventSeq: 2,
+      };
+      handleSseEvent(
+        { result: { kind: 'state-change', status: { state: 'working' } } },
+        createOptions(state),
+      );
+      expect(mockOnComplete).not.toHaveBeenCalled();
     });
   });
 
