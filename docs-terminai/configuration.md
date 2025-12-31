@@ -34,6 +34,34 @@ Environment variables:
 Legacy compatibility: legacy Gemini-prefixed environment variables are aliased
 to their Terminai-prefixed equivalents (Terminai values win when both are set).
 
+### Settings loading architecture (CLI-Desktop parity)
+
+As of commit `a7d891fd` (2024-12-31), TerminaI uses a **unified settings
+infrastructure** (`@terminai/core/config/settings`) shared between:
+
+- CLI (`packages/cli`)
+- A2A Server (`packages/a2a-server`)
+- Desktop (uses A2A backend)
+
+**Key components:**
+
+- `SettingsLoader` - Reads settings from 4 scopes (system, systemDefaults, user,
+  workspace)
+- Automatic V1→V2 migration for backward compatibility
+- Trust evaluation (workspace settings only applied if folder is trusted)
+- Deep merge with configurable strategies for arrays/objects
+
+**Settings precedence (lowest to highest):**
+
+1. System defaults (`/etc/gemini-cli/system-defaults.json`)
+2. User settings (`~/.terminai/settings.json`)
+3. Workspace settings (`.terminai/settings.json`) - if trusted
+4. System overrides (`/etc/gemini-cli/settings.json`)
+
+See
+[cli_desktop_parity_architecture.md](file:///home/profharita/Code/terminaI/local/cli_desktop_parity_architecture.md)
+for implementation details.
+
 ## Web Remote (A2A) token
 
 When you start the agent with `--web-remote`, the CLI prints (or stores) a token
@@ -46,6 +74,6 @@ used by clients.
 ## Desktop app settings
 
 Desktop stores its own UI settings locally (agent URL/token, workspace path,
-voice toggle/volume). These settings do not replace the agent’s
+voice toggle/volume). These settings do not replace the agent's
 `~/.terminai/settings.json` (legacy `~/.gemini/settings.json` may still be
 read).
