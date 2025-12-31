@@ -5,9 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { homedir } from 'node:os';
 import * as dotenv from 'dotenv';
 
 import type { TelemetryTarget } from '@terminai/core';
@@ -18,12 +16,12 @@ import {
   FileDiscoveryService,
   ApprovalMode,
   loadServerHierarchicalMemory,
-  GEMINI_DIR,
   DEFAULT_GEMINI_EMBEDDING_MODEL,
   DEFAULT_GEMINI_MODEL,
   type ExtensionLoader,
   startupProfiler,
   PREVIEW_GEMINI_MODEL,
+  findEnvFile,
 } from '@terminai/core';
 
 import { logger } from '../utils/logger.js';
@@ -168,34 +166,5 @@ export function loadEnvironment(startDir?: string): void {
   const envFilePath = findEnvFile(startDir || process.cwd());
   if (envFilePath) {
     dotenv.config({ path: envFilePath, override: true });
-  }
-}
-
-function findEnvFile(startDir: string): string | null {
-  let currentDir = path.resolve(startDir);
-  while (true) {
-    // prefer gemini-specific .env under GEMINI_DIR
-    const geminiEnvPath = path.join(currentDir, GEMINI_DIR, '.env');
-    if (fs.existsSync(geminiEnvPath)) {
-      return geminiEnvPath;
-    }
-    const envPath = path.join(currentDir, '.env');
-    if (fs.existsSync(envPath)) {
-      return envPath;
-    }
-    const parentDir = path.dirname(currentDir);
-    if (parentDir === currentDir || !parentDir) {
-      // check .env under home as fallback, again preferring gemini-specific .env
-      const homeGeminiEnvPath = path.join(process.cwd(), GEMINI_DIR, '.env');
-      if (fs.existsSync(homeGeminiEnvPath)) {
-        return homeGeminiEnvPath;
-      }
-      const homeEnvPath = path.join(homedir(), '.env');
-      if (fs.existsSync(homeEnvPath)) {
-        return homeEnvPath;
-      }
-      return null;
-    }
-    currentDir = parentDir;
   }
 }
