@@ -195,17 +195,17 @@ export async function createApp() {
     // Load the server configuration once on startup.
     const workspaceRoot = setTargetDir(undefined);
     loadEnvironment();
-    const settings = loadSettings(workspaceRoot);
+    const loadedSettings = loadSettings(workspaceRoot);
     const envAllowedOrigins = process.env['GEMINI_WEB_REMOTE_ALLOWED_ORIGINS'];
     const allowedOrigins = envAllowedOrigins
       ? envAllowedOrigins
           .split(',')
           .map((origin) => origin.trim())
           .filter(Boolean)
-      : (settings.webRemote?.allowedOrigins ?? []);
+      : [];
     const extensions = loadExtensions(workspaceRoot);
     const config = await loadConfig(
-      settings,
+      loadedSettings,
       new SimpleExtensionLoader(extensions),
       'a2a-server',
     );

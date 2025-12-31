@@ -15,6 +15,7 @@ import { hooksCommand } from '../commands/hooks.js';
 import { voiceCommand } from '../commands/voice.js';
 import {
   Config,
+  ConfigBuilder,
   setGeminiMdFilename as setServerGeminiMdFilename,
   getCurrentGeminiMdFilename,
   ApprovalMode,
@@ -41,6 +42,7 @@ import {
   type ProviderConfig,
   type OpenAICompatibleConfig,
   type OutputFormat,
+  type ConfigParameters,
 } from '@terminai/core';
 import type { Settings } from './settings.js';
 
@@ -667,7 +669,7 @@ export async function loadCliConfig(
   try {
     telemetrySettings = await resolveTelemetrySettings({
       env: process.env as unknown as Record<string, string | undefined>,
-      settings: settings.telemetry,
+      settings: settings.telemetry as any,
     });
   } catch (err) {
     if (err instanceof FatalConfigError) {
@@ -816,135 +818,70 @@ export async function loadCliConfig(
     providerConfig = { provider: LlmProviderId.ANTHROPIC };
   }
 
-  return new Config({
-    sessionId,
+  const builder = new ConfigBuilder(sessionId);
+
+  const overrides: Partial<ConfigParameters> = {
     embeddingModel: DEFAULT_GEMINI_EMBEDDING_MODEL,
     sandbox: sandboxConfig,
-    targetDir: cwd,
     includeDirectories,
     loadMemoryFromIncludeDirectories:
       settings.context?.loadMemoryFromIncludeDirectories || false,
-    debugMode,
-    question,
     previewMode: argv.preview ?? false,
-    previewFeatures: settings.general?.previewFeatures,
-
-    coreTools: settings.tools?.core || undefined,
-    allowedTools: allowedTools.length > 0 ? allowedTools : undefined,
-    policyEngineConfig,
-    excludeTools,
-    toolDiscoveryCommand: settings.tools?.discoveryCommand,
-    toolCallCommand: settings.tools?.callCommand,
-    mcpServerCommand: settings.mcp?.serverCommand,
-    mcpServers: settings.mcpServers,
-    allowedMcpServers: argv.allowedMcpServerNames ?? settings.mcp?.allowed,
-    blockedMcpServers: argv.allowedMcpServerNames
-      ? [] // explicitly allowed servers overrides everything
-      : settings.mcp?.excluded,
     userMemory: memoryContent,
     geminiMdFileCount: fileCount,
     geminiMdFilePaths: filePaths,
-    approvalMode,
-    disableYoloMode: settings.security?.disableYoloMode,
-    brain: {
-      authority: settings.brain?.authority,
-      policyAuthority: policyBrainAuthority,
-    },
-    audit: {
-      redactUiTypedText: settings.audit?.redactUiTypedText,
-      retentionDays: settings.audit?.retentionDays,
-      exportFormat: settings.audit?.export?.format,
-      exportRedaction: settings.audit?.export?.redaction,
-    },
-    recipes: {
-      paths: settings.recipes?.paths,
-      communityPaths: settings.recipes?.communityPaths,
-      allowCommunity: settings.recipes?.allowCommunity,
-      confirmCommunityOnFirstLoad:
-        settings.recipes?.confirmCommunityOnFirstLoad,
-      trustedCommunityRecipes: settings.recipes?.trustedCommunityRecipes,
-    },
-    showMemoryUsage: settings.ui?.showMemoryUsage || false,
     accessibility: {
       ...settings.ui?.accessibility,
       screenReader,
     },
     telemetry: telemetrySettings,
-    usageStatisticsEnabled: settings.privacy?.usageStatisticsEnabled ?? true,
-    fileFiltering,
-    checkpointing: settings.general?.checkpointing?.enabled,
-    proxy:
-      process.env['HTTPS_PROXY'] ||
-      process.env['https_proxy'] ||
-      process.env['HTTP_PROXY'] ||
-      process.env['http_proxy'],
-    cwd,
-    fileDiscoveryService: fileService,
-    bugCommand: settings.advanced?.bugCommand,
-    model: resolvedModel,
-    maxSessionTurns: settings.model?.maxSessionTurns ?? -1,
+    model: resolvedModel, // Use the CLI-resolved model (respects --model)
     experimentalZedIntegration: argv.experimentalAcp || false,
     listExtensions: argv.listExtensions || false,
     listSessions: argv.listSessions || false,
     deleteSession: argv.deleteSession,
     enabledExtensions: argv.extensions,
     extensionLoader: extensionManager,
-    enableExtensionReloading: settings.experimental?.extensionReloading,
-    enableAgents: settings.experimental?.enableAgents,
-    experimentalJitContext: settings.experimental?.jitContext,
-    noBrowser: !!process.env['NO_BROWSER'],
-    summarizeToolOutput: settings.model?.summarizeToolOutput,
     ideMode,
-    compressionThreshold: settings.model?.compressionThreshold,
-    folderTrust,
     interactive,
     trustedFolder,
-    useRipgrep: settings.tools?.useRipgrep,
-    enableInteractiveShell:
-      settings.tools?.shell?.enableInteractiveShell ?? true,
+    folderTrust,
+    fileFiltering,
+    policyEngineConfig,
+    enableMessageBusIntegration,
+    brain: {
+      authority: policyBrainAuthority,
+    },
     shellToolInactivityTimeout: settings.tools?.shell?.inactivityTimeout,
-    skipNextSpeakerCheck: settings.model?.skipNextSpeakerCheck,
-    enablePromptCompletion: settings.general?.enablePromptCompletion ?? false,
-    truncateToolOutputThreshold: settings.tools?.truncateToolOutputThreshold,
-    truncateToolOutputLines: settings.tools?.truncateToolOutputLines,
-    enableToolOutputTruncation: settings.tools?.enableToolOutputTruncation,
+    shellExecutionConfig: {},
     repl: {
-      sandboxTier: settings.tools?.repl?.sandboxTier as
-        | ReplSandboxTier
-        | undefined,
+      sandboxTier: settings.tools?.repl?.sandboxTier as ReplSandboxTier,
       timeoutSeconds: settings.tools?.repl?.timeoutSeconds,
       dockerImage: replDockerImage,
     },
-    guiAutomation: {
-      minReviewLevel: settings.tools?.guiAutomation?.minReviewLevel,
-      clickMinReviewLevel: settings.tools?.guiAutomation?.clickMinReviewLevel,
-      typeMinReviewLevel: settings.tools?.guiAutomation?.typeMinReviewLevel,
-      redactTypedTextByDefault:
-        settings.tools?.guiAutomation?.redactTypedTextByDefault,
-      snapshotMaxDepth: settings.tools?.guiAutomation?.snapshotMaxDepth,
-      snapshotMaxNodes: settings.tools?.guiAutomation?.snapshotMaxNodes,
-      maxActionsPerMinute: settings.tools?.guiAutomation?.maxActionsPerMinute,
-    },
-    eventEmitter: appEvents,
+    eventEmitter: appEvents as any,
     useSmartEdit: argv.useSmartEdit ?? settings.useSmartEdit,
     useWriteTodos: argv.useWriteTodos ?? settings.useWriteTodos,
     output: {
       format: (argv.outputFormat ?? settings.output?.format) as OutputFormat,
     },
-    providerConfig,
-    enableMessageBusIntegration,
-    codebaseInvestigatorSettings:
-      settings.experimental?.codebaseInvestigatorSettings,
-    introspectionAgentSettings:
-      settings.experimental?.introspectionAgentSettings,
     fakeResponses: argv.fakeResponses,
     recordResponses: argv.recordResponses,
-    retryFetchErrors: settings.general?.retryFetchErrors ?? false,
     ptyInfo: ptyInfo?.name,
-    modelConfigServiceConfig: settings.modelConfigs,
-    // TODO: loading of hooks based on workspace trust
-    enableHooks: settings.tools?.enableHooks ?? false,
-    hooks: settings.hooks || {},
+    modelConfigServiceConfig: settings.modelConfigs as any,
+  };
+
+  if (argv.allowedMcpServerNames) {
+    overrides.allowedMcpServers = argv.allowedMcpServerNames;
+    overrides.blockedMcpServers = [];
+  }
+
+  overrides.excludedTools = excludeTools;
+
+  return builder.build({
+    workspaceDir: cwd,
+    question,
+    approvalMode,
   });
 }
 

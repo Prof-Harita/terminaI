@@ -94,7 +94,7 @@ export class ExtensionManager extends ExtensionLoader {
     );
     this.settings = options.settings;
     this.telemetryConfig = new Config({
-      telemetry: options.settings.telemetry,
+      telemetry: options.settings.telemetry as any,
       interactive: false,
       sessionId: randomUUID(),
       targetDir: options.workspaceDir,

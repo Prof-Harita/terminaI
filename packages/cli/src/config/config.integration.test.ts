@@ -20,7 +20,7 @@ import * as path from 'node:path';
 import { tmpdir } from 'node:os';
 import type { ConfigParameters } from '@terminai/core';
 import { Config, DEFAULT_FILE_FILTERING_OPTIONS } from '@terminai/core';
-import type { Settings } from './settingsSchema.js';
+// import type { Settings } from './settingsSchema.js';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
@@ -229,7 +229,7 @@ describe('Configuration Integration Tests', () => {
       const originalArgv = process.argv;
       try {
         process.argv = argv;
-        const parsedArgs = await parseArguments({} as Settings);
+        const parsedArgs = await parseArguments({} as any);
         expect(parsedArgs.approvalMode).toBe(expected.approvalMode);
         expect(parsedArgs.prompt).toBe(expected.prompt);
         expect(parsedArgs.yolo).toBe(expected.yolo);
@@ -252,7 +252,7 @@ describe('Configuration Integration Tests', () => {
       const originalArgv = process.argv;
       try {
         process.argv = argv;
-        await expect(parseArguments({} as Settings)).rejects.toThrow();
+        await expect(parseArguments({} as any)).rejects.toThrow();
       } finally {
         process.argv = originalArgv;
       }

@@ -21,6 +21,20 @@ export type LoadableSettingScope =
   | SettingScope.System
   | SettingScope.SystemDefaults;
 
+/**
+ * Checks if a scope is a loadable setting scope.
+ */
+export function isLoadableSettingScope(
+  scope: string,
+): scope is LoadableSettingScope {
+  return (
+    scope === SettingScope.User ||
+    scope === SettingScope.Workspace ||
+    scope === SettingScope.System ||
+    scope === SettingScope.SystemDefaults
+  );
+}
+
 export interface SettingsError {
   message: string;
   path: string;

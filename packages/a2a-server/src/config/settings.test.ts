@@ -27,22 +27,14 @@ vi.mock('node:os', async (importOriginal) => {
   };
 });
 
-vi.mock('@terminai/core', () => ({
-  GEMINI_DIR: '.gemini',
-  debugLogger: {
-    error: vi.fn(),
-  },
-  getErrorMessage: (error: unknown) => String(error),
-}));
-
 describe('loadSettings', () => {
   const mockHomeDir = path.join(os.tmpdir(), `gemini-home-${mocks.suffix}`);
   const mockWorkspaceDir = path.join(
     os.tmpdir(),
     `gemini-workspace-${mocks.suffix}`,
   );
-  const mockGeminiHomeDir = path.join(mockHomeDir, '.gemini');
-  const mockGeminiWorkspaceDir = path.join(mockWorkspaceDir, '.gemini');
+  const mockGeminiHomeDir = path.join(mockHomeDir, '.terminai');
+  const mockGeminiWorkspaceDir = path.join(mockWorkspaceDir, '.terminai');
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -90,7 +82,7 @@ describe('loadSettings', () => {
     fs.writeFileSync(USER_SETTINGS_PATH, JSON.stringify(settings));
 
     const result = loadSettings(mockWorkspaceDir);
-    expect(result.general?.previewFeatures).toBe(true);
+    expect(result.merged.general?.previewFeatures).toBe(true);
   });
 
   it('should load nested previewFeatures from workspace settings', () => {
@@ -106,7 +98,7 @@ describe('loadSettings', () => {
     fs.writeFileSync(workspaceSettingsPath, JSON.stringify(settings));
 
     const result = loadSettings(mockWorkspaceDir);
-    expect(result.general?.previewFeatures).toBe(true);
+    expect(result.merged.general?.previewFeatures).toBe(true);
   });
 
   it('should prioritize workspace settings over user settings', () => {
@@ -129,7 +121,7 @@ describe('loadSettings', () => {
     fs.writeFileSync(workspaceSettingsPath, JSON.stringify(workspaceSettings));
 
     const result = loadSettings(mockWorkspaceDir);
-    expect(result.general?.previewFeatures).toBe(true);
+    expect(result.merged.general?.previewFeatures).toBe(true);
   });
 
   it('should handle missing previewFeatures', () => {
@@ -139,46 +131,60 @@ describe('loadSettings', () => {
     fs.writeFileSync(USER_SETTINGS_PATH, JSON.stringify(settings));
 
     const result = loadSettings(mockWorkspaceDir);
-    expect(result.general?.previewFeatures).toBeUndefined();
+    expect(result.merged.general?.previewFeatures).toBeUndefined();
   });
 
   it('should load other top-level settings correctly', () => {
     const settings = {
-      showMemoryUsage: true,
-      coreTools: ['tool1', 'tool2'],
+      ui: {
+        showMemoryUsage: true,
+      },
+      tools: {
+        core: ['tool1', 'tool2'],
+      },
       mcpServers: {
         server1: {
           command: 'cmd',
           args: ['arg'],
         },
       },
-      fileFiltering: {
-        respectGitIgnore: true,
+      context: {
+        fileFiltering: {
+          respectGitIgnore: true,
+        },
       },
     };
     fs.writeFileSync(USER_SETTINGS_PATH, JSON.stringify(settings));
 
     const result = loadSettings(mockWorkspaceDir);
-    expect(result.showMemoryUsage).toBe(true);
-    expect(result.coreTools).toEqual(['tool1', 'tool2']);
-    expect(result.mcpServers).toHaveProperty('server1');
-    expect(result.fileFiltering?.respectGitIgnore).toBe(true);
+    expect(result.merged.ui?.showMemoryUsage).toBe(true);
+    expect(result.merged.tools?.core).toEqual(['tool1', 'tool2']);
+    expect(result.merged.mcpServers).toHaveProperty('server1');
+    expect(result.merged.context?.fileFiltering?.respectGitIgnore).toBe(true);
   });
 
-  it('should overwrite top-level settings from workspace (shallow merge)', () => {
+  it('should merge workspace settings properly', () => {
     const userSettings = {
-      showMemoryUsage: false,
-      fileFiltering: {
-        respectGitIgnore: true,
-        enableRecursiveFileSearch: true,
+      ui: {
+        showMemoryUsage: false,
+      },
+      context: {
+        fileFiltering: {
+          respectGitIgnore: true,
+          enableRecursiveFileSearch: true,
+        },
       },
     };
     fs.writeFileSync(USER_SETTINGS_PATH, JSON.stringify(userSettings));
 
     const workspaceSettings = {
-      showMemoryUsage: true,
-      fileFiltering: {
-        respectGitIgnore: false,
+      ui: {
+        showMemoryUsage: true,
+      },
+      context: {
+        fileFiltering: {
+          respectGitIgnore: false,
+        },
       },
     };
     const workspaceSettingsPath = path.join(
@@ -188,11 +194,13 @@ describe('loadSettings', () => {
     fs.writeFileSync(workspaceSettingsPath, JSON.stringify(workspaceSettings));
 
     const result = loadSettings(mockWorkspaceDir);
-    // Primitive value overwritten
-    expect(result.showMemoryUsage).toBe(true);
-
-    // Object value completely replaced (shallow merge behavior)
-    expect(result.fileFiltering?.respectGitIgnore).toBe(false);
-    expect(result.fileFiltering?.enableRecursiveFileSearch).toBeUndefined();
+    // Workspace overrides user
+    expect(result.merged.ui?.showMemoryUsage).toBe(true);
+    // Deep merge should preserve values not overridden
+    expect(result.merged.context?.fileFiltering?.respectGitIgnore).toBe(false);
+    // Core's loader uses deep merge, so this should be preserved
+    expect(
+      result.merged.context?.fileFiltering?.enableRecursiveFileSearch,
+    ).toBe(true);
   });
 });

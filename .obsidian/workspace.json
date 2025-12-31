@@ -1,0 +1,209 @@
+{
+  "main": {
+    "id": "cf7c1daa2a2af76f",
+    "type": "split",
+    "children": [
+      {
+        "id": "78792f7b1afe9692",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "7da86b6b1b832f11",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "tasks.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "tasks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "95be470150e6cd38",
+    "type": "split",
+    "children": [
+      {
+        "id": "ad6d08deb22cc4fd",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1291650a3c43d162",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "777a77de61f4ed2e",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "f3c85be5300a8242",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "a6a4109701045f30",
+    "type": "split",
+    "children": [
+      {
+        "id": "7674e34c0d7b114e",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "c20f7065433c879e",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "tasks.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for tasks"
+            }
+          },
+          {
+            "id": "8f31c6ea41d14612",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "tasks.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from tasks"
+            }
+          },
+          {
+            "id": "14a4836367819d2f",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "ef68df208b0fd333",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "eea31c7a86e0b1d9",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "tasks.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of tasks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "7da86b6b1b832f11",
+  "lastOpenFiles": [
+    "packages/core/src/config/settings/parity.test.ts",
+    "packages/a2a-server/coverage/coverage-summary.json",
+    "packages/a2a-server/coverage/cobertura-coverage.xml",
+    "packages/a2a-server/coverage/lcov-report/src/utils/testing_utils.ts.html",
+    "packages/a2a-server/coverage/lcov-report/src/utils/logger.ts.html",
+    "packages/a2a-server/coverage/lcov-report/src/utils/index.html",
+    "packages/a2a-server/coverage/lcov-report/src/utils/executor_utils.ts.html",
+    "packages/a2a-server/coverage/lcov-report/src/utils/envAliases.ts.html",
+    "packages/a2a-server/coverage/lcov-report/src/persistence/remoteAuthStore.ts.html",
+    "packages/a2a-server/coverage/lcov-report/src/persistence/index.html",
+    "packages/a2a-server/coverage/lcov-report/src/persistence/gcs.ts.html",
+    "packages/a2a-server/coverage/lcov-report/sort-arrow-sprite.png",
+    "packages/a2a-server/coverage/lcov-report/favicon.png",
+    "packages/a2a-server/coverage/sort-arrow-sprite.png",
+    "packages/a2a-server/coverage/favicon.png",
+    "packages/core/coverage/lcov-report/sort-arrow-sprite.png",
+    "packages/core/coverage/lcov-report/favicon.png",
+    "packages/core/coverage/sort-arrow-sprite.png",
+    "packages/core/coverage/favicon.png",
+    "tasks.md"
+  ]
+}

@@ -363,6 +363,7 @@ export interface ConfigParameters {
   disableYoloMode?: boolean;
   modelConfigServiceConfig?: ModelConfigServiceConfig;
   enableHooks?: boolean;
+  excludedTools?: string[];
   experiments?: Experiments;
   hooks?:
     | {

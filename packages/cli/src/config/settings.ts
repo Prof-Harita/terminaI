@@ -6,6 +6,8 @@
  */
 
 import * as path from 'node:path';
+import * as fs from 'node:fs';
+import * as dotenv from 'dotenv';
 import {
   debugLogger,
   SettingsLoader,
@@ -21,6 +23,11 @@ import {
   type SessionRetentionSettings,
   type AccessibilitySettings,
   type DnsResolutionOrder,
+  getSystemSettingsPath,
+  getSystemDefaultsPath,
+  migrateSettingsToV2,
+  needsMigration,
+  findEnvFile,
 } from '@terminai/core';
 import { DefaultLight } from '../ui/themes/default-light.js';
 import { DefaultDark } from '../ui/themes/default.js';
@@ -36,7 +43,13 @@ export type {
   DnsResolutionOrder,
 };
 
-export { LoadedSettings };
+export {
+  LoadedSettings,
+  getSystemSettingsPath,
+  getSystemDefaultsPath,
+  migrateSettingsToV2,
+  needsMigration,
+};
 
 export type MemoryImportFormat = NonNullable<
   Settings['context']
@@ -63,6 +76,13 @@ export function loadSettings(
     },
   });
   return loader.load();
+}
+
+export function loadEnvironment(settings: Settings): void {
+  const envFile = findEnvFile(process.cwd());
+  if (envFile && fs.existsSync(envFile)) {
+    dotenv.config({ path: envFile });
+  }
 }
 
 export function migrateDeprecatedSettings(

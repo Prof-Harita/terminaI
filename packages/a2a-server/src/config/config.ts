@@ -27,17 +27,20 @@ import {
 } from '@terminai/core';
 
 import { logger } from '../utils/logger.js';
-import type { Settings } from './settings.js';
+import type { LoadedSettings } from './settings.js';
 import { type AgentSettings, CoderAgentEvent } from '../types.js';
 
 export async function loadConfig(
-  settings: Settings,
+  loadedSettings: LoadedSettings,
   extensionLoader: ExtensionLoader,
   taskId: string,
   targetDirOverride?: string,
 ): Promise<Config> {
   const workspaceDir = targetDirOverride || process.cwd();
   const adcFilePath = process.env['GOOGLE_APPLICATION_CREDENTIALS'];
+
+  // Access merged settings
+  const settings = loadedSettings.merged;
 
   const configParams: ConfigParameters = {
     sessionId: taskId,
@@ -50,9 +53,9 @@ export async function loadConfig(
     debugMode: process.env['DEBUG'] === 'true' || false,
     question: '', // Not used in server mode directly like CLI
 
-    coreTools: settings.coreTools || undefined,
-    excludeTools: settings.excludeTools || undefined,
-    showMemoryUsage: settings.showMemoryUsage || false,
+    coreTools: settings.tools?.core || undefined,
+    excludeTools: settings.tools?.exclude || undefined,
+    showMemoryUsage: settings.ui?.showMemoryUsage || false,
     approvalMode:
       process.env['GEMINI_YOLO_MODE'] === 'true'
         ? ApprovalMode.YOLO
@@ -69,16 +72,18 @@ export async function loadConfig(
     },
     // Git-aware file filtering settings
     fileFiltering: {
-      respectGitIgnore: settings.fileFiltering?.respectGitIgnore,
+      respectGitIgnore: settings.context?.fileFiltering?.respectGitIgnore,
+      respectGeminiIgnore: settings.context?.fileFiltering?.respectGeminiIgnore,
       enableRecursiveFileSearch:
-        settings.fileFiltering?.enableRecursiveFileSearch,
+        settings.context?.fileFiltering?.enableRecursiveFileSearch,
+      disableFuzzySearch: settings.context?.fileFiltering?.disableFuzzySearch,
     },
     ideMode: false,
-    folderTrust: settings.folderTrust === true,
+    folderTrust: settings.security?.folderTrust?.enabled === true,
     extensionLoader,
     checkpointing: process.env['CHECKPOINTING']
       ? process.env['CHECKPOINTING'] === 'true'
-      : settings.checkpointing?.enabled,
+      : settings.general?.checkpointing?.enabled,
     previewFeatures: settings.general?.previewFeatures,
     interactive: true,
     webRemoteRelayUrl: process.env['WEB_REMOTE_RELAY_URL'],
@@ -91,7 +96,7 @@ export async function loadConfig(
     configParams.debugMode ?? false, // Align with CLI: use debugMode from config
     fileService,
     extensionLoader,
-    settings.folderTrust === true,
+    settings.security?.folderTrust?.enabled === true,
     'tree', // Align with CLI: explicit importFormat
     undefined, // Align with CLI: use core defaults for filtering
     200, // Align with CLI: explicit maxDirs

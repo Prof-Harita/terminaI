@@ -25,7 +25,13 @@ export * from './config/settings/migrate.js';
 export * from './config/settings/validate.js';
 export * from './config/settings/trust.js';
 export * from './config/settings/loader.js';
-export * from './config/builder.js';
+export {
+  ConfigBuilder,
+  getSystemSettingsPath,
+  getSystemDefaultsPath,
+  findEnvFile,
+  setUpCloudShellEnvironment,
+} from './config/builder.js';
 export * from './output/types.js';
 export * from './output/json-formatter.js';
 export * from './output/stream-json-formatter.js';

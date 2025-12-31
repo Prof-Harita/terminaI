@@ -18,8 +18,15 @@ import {
   type ILoadedSettings,
 } from './types.js';
 import { getMergeStrategyForPath, setNestedProperty } from './utils.js';
-import { migrateSettingsToV1 } from './migrate.js';
+import {
+  migrateSettingsToV1,
+  migrateSettingsToV2,
+  needsMigration,
+} from './migrate.js';
 import { updateSettingsFilePreservingFormat } from './comment-json.js';
+import { isWorkspaceTrusted } from './trust.js';
+import { Storage } from '../storage.js';
+import stripJsonComments from 'strip-json-comments';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
@@ -32,6 +39,8 @@ export function mergeSettings(
   user: Settings,
   workspace: Settings,
   isTrusted: boolean,
+  isSession: boolean = false,
+  session: Settings = {},
 ): Settings {
   const safeWorkspace = isTrusted ? workspace : ({} as Settings);
 
@@ -40,6 +49,7 @@ export function mergeSettings(
   // 2. User Settings
   // 3. Workspace Settings
   // 4. System Settings (overrides)
+  // 5. Session Settings (if any)
   return customDeepMerge(
     getMergeStrategyForPath,
     {},
@@ -47,6 +57,7 @@ export function mergeSettings(
     user as MergeableObject,
     safeWorkspace as MergeableObject,
     system as MergeableObject,
+    isSession ? (session as MergeableObject) : {},
   ) as Settings;
 }
 
@@ -102,6 +113,148 @@ export class LoadedSettings implements ILoadedSettings {
     setNestedProperty(settingsFile.originalSettings, key, value);
     this._merged = this.computeMergedSettings();
     saveSettings(settingsFile);
+  }
+}
+
+export interface SettingsLoaderOptions {
+  workspaceDir?: string;
+  themeMappings?: Record<string, string>;
+}
+
+/**
+ * Reads and parses a settings JSON file with comment support.
+ * Returns empty settings if file doesn't exist or has errors.
+ */
+function readSettingsFile(
+  filePath: string,
+  themeMappings?: Record<string, string>,
+): SettingsFile {
+  const emptyFile: SettingsFile = {
+    path: filePath,
+    settings: {},
+    originalSettings: {},
+  };
+
+  if (!fs.existsSync(filePath)) {
+    return emptyFile;
+  }
+
+  try {
+    const rawJson = fs.readFileSync(filePath, 'utf-8');
+    const parsed = JSON.parse(stripJsonComments(rawJson)) as Record<
+      string,
+      unknown
+    >;
+
+    // Apply V1→V2 migration if needed
+    let settings = parsed;
+    const migrated = migrateSettingsToV2(parsed);
+    if (migrated) {
+      settings = migrated;
+    }
+
+    // Apply theme mappings if provided
+    if (themeMappings && settings['ui'] && typeof settings['ui'] === 'object') {
+      const ui = settings['ui'] as Record<string, unknown>;
+      if (ui['theme'] && typeof ui['theme'] === 'string') {
+        const mappedTheme = themeMappings[ui['theme']];
+        if (mappedTheme) {
+          ui['theme'] = mappedTheme;
+        }
+      }
+    }
+
+    return {
+      path: filePath,
+      settings: settings as Settings,
+      originalSettings: parsed as Settings,
+      rawJson,
+    };
+  } catch (error) {
+    coreEvents.emitFeedback(
+      'warning',
+      `Error reading settings from ${filePath}: ${error instanceof Error ? error.message : String(error)}`,
+      error,
+    );
+    return emptyFile;
+  }
+}
+
+/**
+ * Loads settings from various sources.
+ *
+ * Settings are loaded from 4 scopes with the following precedence:
+ * 1. System Defaults (lowest priority)
+ * 2. User Settings (~/.terminai/settings.json)
+ * 3. Workspace Settings (<workspace>/.terminai/settings.json)
+ * 4. System Settings (/etc/gemini-cli/settings.json, highest priority)
+ *
+ * Workspace settings are only applied if the workspace is trusted.
+ */
+export class SettingsLoader {
+  constructor(public readonly options: SettingsLoaderOptions = {}) {}
+
+  load(): LoadedSettings {
+    const workspaceDir = this.options.workspaceDir || process.cwd();
+    const themeMappings = this.options.themeMappings;
+
+    // Load settings from all scopes
+    const systemSettingsPath = Storage.getSystemSettingsPath();
+    const systemDefaultsPath = path.join(
+      path.dirname(systemSettingsPath),
+      'system-defaults.json',
+    );
+    const userSettingsPath = Storage.getGlobalSettingsPath();
+    const storage = new Storage(workspaceDir);
+    const workspaceSettingsPath = storage.getWorkspaceSettingsPath();
+
+    const system = readSettingsFile(systemSettingsPath, themeMappings);
+    const systemDefaults = readSettingsFile(systemDefaultsPath, themeMappings);
+    const user = readSettingsFile(userSettingsPath, themeMappings);
+    const workspace = readSettingsFile(workspaceSettingsPath, themeMappings);
+
+    // Determine trust - for core loader, we default to trusted
+    // Full trust evaluation requires the merged system+user settings
+    const preliminaryMerged = mergeSettings(
+      system.settings,
+      systemDefaults.settings,
+      user.settings,
+      {},
+      true, // pretend trusted for preliminary merge
+    );
+
+    const trustResult = isWorkspaceTrusted(preliminaryMerged);
+    const isTrusted = trustResult.isTrusted ?? true;
+
+    // Track which scopes had V1→V2 migration applied
+    const migratedScopes = new Set<SettingScope>();
+    if (
+      system.rawJson &&
+      needsMigration(JSON.parse(stripJsonComments(system.rawJson)))
+    ) {
+      migratedScopes.add(SettingScope.System);
+    }
+    if (
+      user.rawJson &&
+      needsMigration(JSON.parse(stripJsonComments(user.rawJson)))
+    ) {
+      migratedScopes.add(SettingScope.User);
+    }
+    if (
+      workspace.rawJson &&
+      needsMigration(JSON.parse(stripJsonComments(workspace.rawJson)))
+    ) {
+      migratedScopes.add(SettingScope.Workspace);
+    }
+
+    return new LoadedSettings(
+      system,
+      systemDefaults,
+      user,
+      workspace,
+      isTrusted,
+      migratedScopes,
+    );
   }
 }
 

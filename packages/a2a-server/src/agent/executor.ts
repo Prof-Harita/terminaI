@@ -91,10 +91,10 @@ export class CoderAgentExecutor implements AgentExecutor {
   ): Promise<Config> {
     const workspaceRoot = setTargetDir(agentSettings);
     loadEnvironment(workspaceRoot);
-    const settings = loadSettings(workspaceRoot);
+    const loadedSettings = loadSettings(workspaceRoot);
     const extensions = loadExtensions(workspaceRoot);
     return loadConfig(
-      settings,
+      loadedSettings,
       new SimpleExtensionLoader(extensions),
       taskId,
       workspaceRoot,
