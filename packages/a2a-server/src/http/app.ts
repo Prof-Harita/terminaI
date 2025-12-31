@@ -196,7 +196,10 @@ export async function createApp() {
     const workspaceRoot = setTargetDir(undefined);
     loadEnvironment();
     const loadedSettings = loadSettings(workspaceRoot);
-    const envAllowedOrigins = process.env['GEMINI_WEB_REMOTE_ALLOWED_ORIGINS'];
+    // G-7 FIX: Support both TERMINAI_* and GEMINI_* env var names
+    const envAllowedOrigins =
+      process.env['TERMINAI_WEB_REMOTE_ALLOWED_ORIGINS'] ??
+      process.env['GEMINI_WEB_REMOTE_ALLOWED_ORIGINS'];
     const allowedOrigins = envAllowedOrigins
       ? envAllowedOrigins
           .split(',')

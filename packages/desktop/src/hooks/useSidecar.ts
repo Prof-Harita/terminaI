@@ -44,9 +44,8 @@ export function useSidecar() {
         });
 
         // Get current working directory for workspace
-        const workspace = await invoke<string>('get_current_dir').catch(
-          () => '/tmp',
-        );
+        // G-5 FIX: Don't silently fallback to /tmp - throw error instead
+        const workspace = await invoke<string>('get_current_dir');
         addLog(`Workspace resolved: ${workspace}`);
 
         // Spawn CLI backend

@@ -175,8 +175,15 @@ impl CliBridge {
         }
     }
 
-    // Keep the old spawn for backward compatibility
+    // G-6 FIX: Deprecate legacy spawn method that hardcoded /tmp
+    // Now uses home directory as a safer fallback
+    #[deprecated(since = "0.21.0", note = "Use spawn_web_remote with explicit workspace")]
     pub fn spawn(app: AppHandle) -> Result<Self, String> {
-        Self::spawn_web_remote(app, "/tmp".to_string())
+        // Use home directory instead of /tmp as a safer fallback
+        let home = std::env::var("HOME")
+            .or_else(|_| std::env::var("USERPROFILE"))
+            .unwrap_or_else(|_| "/tmp".to_string());
+        eprintln!("[CLI BRIDGE] Warning: spawn() is deprecated. Use spawn_web_remote with explicit workspace.");
+        Self::spawn_web_remote(app, home)
     }
 }
