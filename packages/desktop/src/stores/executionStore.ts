@@ -19,6 +19,13 @@ interface ExecutionState {
   contextUsed: number;
   contextLimit: number;
   contextFiles: ContextFile[];
+  /**
+   * @deprecated Use `useBridgeStore().getCurrentTaskId()` instead.
+   * This field is synced from BridgeStore for legacy compatibility.
+   * The authoritative source of truth for task IDs is now the BridgeStore.
+   * This field will be removed in a future version.
+   */
+  activeTaskId: string | null;
 
   addToolEvent: (event: ToolEvent) => void;
   updateToolEvent: (id: string, updates: Partial<ToolEvent>) => void;
@@ -28,6 +35,11 @@ interface ExecutionState {
   setContextUsage: (used: number, limit: number) => void;
   setContextFiles: (files: ContextFile[]) => void;
   clearEvents: () => void;
+  /**
+   * @deprecated This is called by useCliProcess to sync from BridgeStore.
+   * Do not call directly. Use BridgeStore for task ID management.
+   */
+  setActiveTaskId: (id: string | null) => void;
 }
 
 export const useExecutionStore = create<ExecutionState>((set) => ({
@@ -35,8 +47,9 @@ export const useExecutionStore = create<ExecutionState>((set) => ({
   currentToolStatus: null,
   isWaitingForInput: false,
   contextUsed: 0,
-  contextLimit: 1000000, // Default 1M tokens
+  contextLimit: 1000000,
   contextFiles: [],
+  activeTaskId: null,
 
   addToolEvent: (event) =>
     set((state) => ({
@@ -53,7 +66,9 @@ export const useExecutionStore = create<ExecutionState>((set) => ({
   appendTerminalOutput: (id, text) =>
     set((state) => ({
       toolEvents: state.toolEvents.map((e) =>
-        e.id === id ? { ...e, terminalOutput: e.terminalOutput + text } : e,
+        e.id === id
+          ? { ...e, terminalOutput: (e.terminalOutput + text).slice(-100000) } // 100KB max
+          : e,
       ),
     })),
 
@@ -72,5 +87,8 @@ export const useExecutionStore = create<ExecutionState>((set) => ({
       currentToolStatus: null,
       isWaitingForInput: false,
       contextFiles: [],
+      activeTaskId: null,
     }),
+
+  setActiveTaskId: (activeTaskId) => set({ activeTaskId }),
 }));

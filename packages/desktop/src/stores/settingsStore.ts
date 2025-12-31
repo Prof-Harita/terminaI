@@ -7,7 +7,8 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { invoke } from '@tauri-apps/api/core';
+import { postToAgent } from '../utils/agentClient';
+import { readSseStream } from '../utils/sse';
 
 interface SettingsState {
   // Account
@@ -69,15 +70,56 @@ interface SettingsState {
   relayClientCount: number;
   setRelayClientCount: (count: number) => void;
 
+  // General
+  previewFeatures: boolean;
+  setPreviewFeatures: (enabled: boolean) => void;
+
+  // Editor / Terminal
+  preferredEditor: string;
+  setPreferredEditor: (editor: string) => void;
+  outputFormat: 'text' | 'json';
+  setOutputFormat: (format: 'text' | 'json') => void;
+
   // Actions
   signOut: () => void;
 }
 
 // Helper to sync settings to CLI
-const syncToCli = (setting: string, value: string | boolean) => {
-  invoke('send_to_cli', { message: `/config set ${setting} ${value}` }).catch(
-    (err) => console.warn('Settings sync failed:', err),
-  );
+// Helper to sync settings to CLI via Agent API
+const syncToCli = async (setting: string, value: string | boolean | number) => {
+  const state = useSettingsStore.getState();
+  const { agentUrl, agentToken, agentWorkspacePath } = state;
+
+  if (!agentUrl || !agentToken) return;
+
+  const text = `/config set ${setting} ${value}`;
+  const body = {
+    jsonrpc: '2.0',
+    id: 'sync-' + Date.now(),
+    method: 'message/stream',
+    params: {
+      message: {
+        kind: 'message',
+        role: 'user',
+        parts: [{ kind: 'text', text }],
+        messageId: crypto.randomUUID(),
+      },
+      metadata: {
+        coderAgent: {
+          kind: 'agent-settings',
+          workspacePath: agentWorkspacePath || '/tmp',
+        },
+      },
+    },
+  };
+
+  try {
+    const stream = await postToAgent(agentUrl, agentToken, body);
+    // Consume stream to ensure processing
+    await readSseStream(stream, () => {});
+  } catch (err) {
+    console.warn('Settings sync failed:', err);
+  }
 };
 
 export const useSettingsStore = create<SettingsState>()(
@@ -101,6 +143,12 @@ export const useSettingsStore = create<SettingsState>()(
       setApprovalMode: (approvalMode) => {
         set({ approvalMode });
         syncToCli('yolo', approvalMode === 'yolo');
+
+        // Sync modes for policy engine
+        let modes: string[] = [];
+        if (approvalMode === 'safe') modes = ['safe'];
+        if (approvalMode === 'yolo') modes = ['yolo'];
+        syncToCli('security.modes', JSON.stringify(modes));
       },
       previewMode: false,
       setPreviewMode: (previewMode) => {
@@ -172,6 +220,25 @@ export const useSettingsStore = create<SettingsState>()(
 
       relayClientCount: 0,
       setRelayClientCount: (relayClientCount) => set({ relayClientCount }),
+
+      // General
+      previewFeatures: false,
+      setPreviewFeatures: (previewFeatures) => {
+        set({ previewFeatures });
+        syncToCli('general.previewFeatures', previewFeatures);
+      },
+
+      // Editor / Terminal
+      preferredEditor: '',
+      setPreferredEditor: (preferredEditor) => {
+        set({ preferredEditor });
+        syncToCli('general.preferredEditor', preferredEditor);
+      },
+      outputFormat: 'text',
+      setOutputFormat: (outputFormat) => {
+        set({ outputFormat });
+        syncToCli('output.format', outputFormat);
+      },
 
       // Actions
       signOut: () => set({ email: '' }),

@@ -40,32 +40,36 @@ export async function readSseStream(
   const decoder = new TextDecoder();
   let buffer = '';
 
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) {
-      break;
-    }
-    buffer += decoder.decode(value, { stream: true });
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) {
+        break;
+      }
+      buffer += decoder.decode(value, { stream: true });
 
-    for (const chunk of splitSseChunks(buffer)) {
+      for (const chunk of splitSseChunks(buffer)) {
+        const messages = parseSseDataLines(chunk);
+        for (const msg of messages) {
+          onMessage(msg);
+        }
+      }
+
+      const lastSeparator = buffer.lastIndexOf('\n\n');
+      if (lastSeparator !== -1) {
+        buffer = buffer.slice(lastSeparator + 2);
+      }
+    }
+
+    // Flush any remaining complete chunk.
+    const leftoverChunks = buffer.split('\n\n').filter(Boolean);
+    for (const chunk of leftoverChunks) {
       const messages = parseSseDataLines(chunk);
       for (const msg of messages) {
         onMessage(msg);
       }
     }
-
-    const lastSeparator = buffer.lastIndexOf('\n\n');
-    if (lastSeparator !== -1) {
-      buffer = buffer.slice(lastSeparator + 2);
-    }
-  }
-
-  // Flush any remaining complete chunk.
-  const leftoverChunks = buffer.split('\n\n').filter(Boolean);
-  for (const chunk of leftoverChunks) {
-    const messages = parseSseDataLines(chunk);
-    for (const msg of messages) {
-      onMessage(msg);
-    }
+  } finally {
+    reader.releaseLock();
   }
 }

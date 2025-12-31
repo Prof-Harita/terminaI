@@ -1,25 +1,30 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Terminal, CheckCircle2, XCircle, Loader2 } from "lucide-react"
+import { Terminal, CheckCircle2, XCircle, Loader2, Send } from "lucide-react"
 import { cn } from "../lib/utils"
 import { useExecutionStore } from "../stores/executionStore"
 import type { ToolEvent } from "../types/cli"
+import { Button } from "./ui/button"
+import { Input } from "./ui/input"
 
 const BLOCKING_PROMPT_REGEX = /^.*(password|\[y\/n\]|confirm|enter value|sudo).*:/i
 
 interface EngineRoomPaneProps {
   terminalSessionId: string | null
   onCloseTerminal: () => void
+  sendToolInput?: (callId: string, input: string) => Promise<void>
 }
 
-export function EngineRoomPane(_props: EngineRoomPaneProps) {
+export function EngineRoomPane({ sendToolInput }: EngineRoomPaneProps) {
   const { toolEvents, isWaitingForInput } = useExecutionStore()
   const [isFlashing, setIsFlashing] = useState(false)
+  const [inputValue, setInputValue] = useState("")
   const scrollRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const lastAlertTime = useRef(0)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     audioRef.current = new Audio("/notification.mp3")
@@ -54,6 +59,8 @@ export function EngineRoomPane(_props: EngineRoomPaneProps) {
       triggerFlashAndSound()
       lastAlertTime.current = now
     }
+    // Focus input when waiting
+    setTimeout(() => inputRef.current?.focus(), 100)
   }, [isWaitingForInput])
 
   const triggerFlashAndSound = () => {
@@ -67,6 +74,21 @@ export function EngineRoomPane(_props: EngineRoomPaneProps) {
     }
   }
 
+  const handleSendInput = async (e?: React.FormEvent) => {
+    e?.preventDefault()
+    if (!inputValue || !sendToolInput) return
+
+    // Find active tool
+    // We look for the most recent tool that is running or awaiting input
+    // The events are likely in chronological order but let's be safe and check reverse
+    const activeTool = [...toolEvents].reverse().find(e => e.status === 'running' || e.status === 'awaiting_input')
+
+    if (activeTool) {
+      await sendToolInput(activeTool.id, inputValue + '\n')
+      setInputValue("")
+    }
+  }
+
   return (
     <div
       ref={containerRef}
@@ -76,7 +98,7 @@ export function EngineRoomPane(_props: EngineRoomPaneProps) {
       )}
     >
       {/* Header */}
-      <div className="h-12 border-b border-border flex items-center px-4 bg-card">
+      <div className="h-12 border-b border-border flex items-center px-4 bg-card flex-shrink-0">
         <div className="flex items-center gap-2">
           <Terminal className="h-4 w-4" />
           <span className="text-base font-medium">Execution Log</span>
@@ -95,6 +117,28 @@ export function EngineRoomPane(_props: EngineRoomPaneProps) {
           ))
         )}
       </div>
+
+      {/* Input area - Only shown when waiting for input */}
+      {isWaitingForInput && (
+        <div className="p-4 border-t border-border bg-card animate-in slide-in-from-bottom duration-300">
+            <form onSubmit={handleSendInput} className="flex gap-2">
+                <Input
+                    ref={inputRef}
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    placeholder="Enter input for command..."
+                    className="flex-1"
+                    autoComplete="off"
+                />
+                <Button type="submit" size="icon">
+                    <Send className="h-4 w-4" />
+                </Button>
+            </form>
+            <p className="text-[10px] text-muted-foreground mt-1 ml-1">
+                Command is waiting for input (e.g. password, confirmation)
+            </p>
+        </div>
+      )}
     </div>
   )
 }

@@ -8,90 +8,28 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Message } from '../types/cli';
 import { readSseStream } from '../utils/sse';
-import { hmacSha256Hex, sha256Hex } from '../utils/webCrypto';
+
 import { useSettingsStore } from '../stores/settingsStore';
 import { useVoiceStore } from '../stores/voiceStore';
 import { useTts } from './useTts';
 import { useExecutionStore } from '../stores/executionStore';
 import { useHistoryStore } from '../stores/historyStore';
 import { deriveSpokenReply } from '../utils/spokenReply';
+import { postToAgent } from '../utils/agentClient';
+
+// Phase 4 Imports
+import { useBridgeStore } from '../bridge/store';
+import { BridgeActions } from '../bridge/types';
+import { handleSseEvent, type JsonRpcResponse } from '../bridge/eventHandler';
+import { TabLock } from '../bridge/tabLock';
 
 const BLOCKING_PROMPT_REGEX =
   /^.*(password|\[y\/n\]|confirm|enter value|sudo).*:/i;
-
-type JsonRpcResponse = {
-  jsonrpc?: string;
-  id?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  result?: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  error?: any;
-};
-
-const CODER_KIND = {
-  TEXT_CONTENT: 'text-content',
-  TOOL_CALL_CONFIRMATION: 'tool-call-confirmation',
-  TOOL_CALL_UPDATE: 'tool-call-update',
-} as const;
 
 function normalizeBaseUrl(input: string): string {
   const trimmed = input.trim();
   if (!trimmed) return '';
   return trimmed.endsWith('/') ? trimmed.slice(0, -1) : trimmed;
-}
-
-async function postToAgent(
-  baseUrl: string,
-  token: string,
-  body: Record<string, unknown>,
-  abortSignal: AbortSignal,
-): Promise<ReadableStream<Uint8Array>> {
-  const bodyString = JSON.stringify(body);
-  const signedHeaders = await buildSignedHeaders({
-    token,
-    method: 'POST',
-    pathWithQuery: '/',
-    bodyString,
-  });
-
-  const res = await fetch(`${baseUrl}/`, {
-    method: 'POST',
-    headers: {
-      ...signedHeaders,
-      'Content-Type': 'application/json',
-      Accept: 'text/event-stream',
-    },
-    body: bodyString,
-    signal: abortSignal,
-  });
-
-  if (!res.ok || !res.body) {
-    throw new Error(`Agent request failed: ${res.status} ${res.statusText}`);
-  }
-
-  return res.body;
-}
-
-async function buildSignedHeaders(input: {
-  token: string;
-  method: string;
-  pathWithQuery: string;
-  bodyString: string;
-}) {
-  const nonce = crypto.randomUUID();
-  const bodyHash = await sha256Hex(input.bodyString);
-  const payload = [
-    input.method.toUpperCase(),
-    input.pathWithQuery,
-    bodyHash,
-    nonce,
-  ].join('\n');
-  const signature = await hmacSha256Hex(input.token, payload);
-  return {
-    Authorization: `Bearer ${input.token}`,
-    'X-Gemini-Nonce': nonce,
-    'X-Gemini-Signature': signature,
-  };
 }
 
 /**
@@ -108,7 +46,7 @@ async function buildSignedHeaders(input: {
 export function useCliProcess(options?: { onComplete?: () => void }) {
   const agentUrl = useSettingsStore((s) => s.agentUrl);
   const agentToken = useSettingsStore((s) => s.agentToken);
-  const agentWorkspacePath = useSettingsStore((s) => s.agentWorkspacePath);
+
   const voiceEnabled = useSettingsStore((s) => s.voiceEnabled);
   const voiceVolume = useSettingsStore((s) => s.voiceVolume);
 
@@ -116,24 +54,58 @@ export function useCliProcess(options?: { onComplete?: () => void }) {
   const startSpeaking = useVoiceStore((s) => s.startSpeaking);
   const stopSpeaking = useVoiceStore((s) => s.stopSpeaking);
 
+  // Bridge Store
+  const bridgeState = useBridgeStore((s) => s.state);
+  const dispatch = useBridgeStore((s) => s.dispatch);
+  const isConnected = useBridgeStore((s) => s.isConnected());
+  const isProcessing = useBridgeStore((s) => s.isProcessing());
+  const currentTaskId = useBridgeStore((s) => s.getCurrentTaskId());
+
+  // Tab Lock
+  const tabLockRef = useRef<TabLock | null>(null);
+  useEffect(() => {
+    tabLockRef.current = new TabLock();
+
+    // Release lock on page unload to prevent stale locks
+    const handleUnload = () => {
+      tabLockRef.current?.release();
+    };
+    window.addEventListener('beforeunload', handleUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleUnload);
+      tabLockRef.current?.release();
+    };
+  }, []);
+
   const {
     addToolEvent,
     updateToolEvent,
     appendTerminalOutput,
     setToolStatus,
     setWaitingForInput,
+    setActiveTaskId, // Now from ExecutionStore
   } = useExecutionStore();
 
   const [messages, setMessages] = useState<Message[]>([]);
-  const [isConnected, setIsConnected] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [activeTerminalSession] = useState<string | null>(null);
 
-  const activeTaskIdRef = useRef<string | null>(null);
+  // We no longer use activeTaskId/pendingConfirmationTaskId from ExecutionStore for logic
+  // But we might need to sync activeTaskId to ExecutionStore for UI components that rely on it?
+  // Ideally, UI should migrate to BridgeStore, but for backward compat, we can sync.
+
+  useEffect(() => {
+    if (currentTaskId) {
+      setActiveTaskId(currentTaskId);
+    }
+  }, [currentTaskId, setActiveTaskId]);
+
   const activeStreamAbortRef = useRef<AbortController | null>(null);
   const currentAssistantTextRef = useRef<string>('');
   const lastSpokenAssistantTextRef = useRef<string>('');
   const lastSpokenConfirmationCallIdRef = useRef<string | null>(null);
+  const messageQueueRef = useRef<string[]>([]);
+
+  // Queue processing moved to after sendMessage definition to avoid hoisting issues
 
   const { speak, stop } = useTts({
     onEnd: () => stopSpeaking(),
@@ -145,22 +117,7 @@ export function useCliProcess(options?: { onComplete?: () => void }) {
     }
   }, [voiceState, stop]);
 
-  const setAssistantPendingConfirmation = useCallback(
-    (pending: Message['pendingConfirmation'] | undefined) => {
-      setMessages((prev) => {
-        const last = prev[prev.length - 1];
-        if (!last || last.role !== 'assistant') {
-          return prev;
-        }
-        return [
-          ...prev.slice(0, -1),
-          { ...last, pendingConfirmation: pending },
-        ];
-      });
-    },
-    [],
-  );
-
+  // Helper to update last assistant message
   const appendToAssistant = useCallback((text: string) => {
     setMessages((prev) => {
       const last = prev[prev.length - 1];
@@ -194,222 +151,185 @@ export function useCliProcess(options?: { onComplete?: () => void }) {
     ]);
   }, []);
 
-  const handleJsonRpc = useCallback(
-    (event: JsonRpcResponse) => {
-      if (event.error) {
-        appendToAssistant(
-          `\n[Agent error] ${event.error?.message ?? JSON.stringify(event.error)}\n`,
-        );
-        return;
-      }
-      const result = event.result;
-      if (!result) {
-        return;
-      }
+  // --- Bridge Handlers ---
 
-      if (result.kind === 'task' && typeof result.id === 'string') {
-        activeTaskIdRef.current = result.id;
-        return;
-      }
+  const handleBridgeText = useCallback(
+    (text: string) => {
+      appendToAssistant(text);
+    },
+    [appendToAssistant],
+  );
 
-      if (result.kind !== 'status-update') {
-        return;
-      }
+  const handleBridgeToolUpdate = useCallback(
+    (result: any) => {
+      // Logic lifted from old handleJsonRpc for tool-call-update
+      setToolStatus('Agent is executing tools...');
+      const parts = result.status?.message?.parts ?? [];
+      for (const part of parts) {
+        if (part?.kind === 'data' && part.data) {
+          const toolData = part.data;
+          const callId =
+            toolData?.request?.callId ??
+            toolData?.callId ??
+            crypto.randomUUID();
 
-      const coderKind = result.metadata?.coderAgent?.kind;
+          const existingEvent = useExecutionStore
+            .getState()
+            .toolEvents.find((e) => e.id === callId);
 
-      if (coderKind === CODER_KIND.TEXT_CONTENT) {
-        const parts = result.status?.message?.parts ?? [];
-        for (const part of parts) {
-          if (part?.kind === 'text' && typeof part.text === 'string') {
-            appendToAssistant(part.text);
-          }
-        }
-      }
-
-      if (coderKind === CODER_KIND.TOOL_CALL_CONFIRMATION) {
-        const part = result.status?.message?.parts?.find(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (p: any) => p?.kind === 'data' && p.data,
-        );
-        const toolData = part?.data ?? {};
-        const callId = toolData?.request?.callId ?? '';
-        const toolName = toolData?.request?.name ?? toolData?.tool?.name ?? '';
-        const args = toolData?.request?.args ?? {};
-        const confirmationDetails = toolData?.confirmationDetails ?? {};
-        const prompt =
-          confirmationDetails?.prompt ??
-          confirmationDetails?.command ??
-          `Allow running tool "${toolName}"?`;
-        const requiresPin = confirmationDetails?.requiresPin === true;
-        const pinLength =
-          typeof confirmationDetails?.pinLength === 'number'
-            ? confirmationDetails.pinLength
-            : undefined;
-        const commandPreview =
-          toolName && args
-            ? `${toolName} ${JSON.stringify(args, null, 2)}`
-            : toolName;
-
-        setAssistantPendingConfirmation(
-          callId
-            ? {
-                id: String(callId),
-                description: String(prompt),
-                command: String(commandPreview),
-                riskLevel: 'moderate',
-                requiresPin,
-                pinLength,
-              }
-            : undefined,
-        );
-
-        if (
-          voiceEnabled &&
-          callId &&
-          lastSpokenConfirmationCallIdRef.current !== String(callId)
-        ) {
-          lastSpokenConfirmationCallIdRef.current = String(callId);
-          const spoken = deriveSpokenReply(String(prompt), 30);
-          if (spoken) {
-            const signal = startSpeaking();
-            void speak(spoken, {
-              signal,
-              volume: Math.max(0, Math.min(1, voiceVolume / 100)),
+          if (toolData.request && !existingEvent) {
+            addToolEvent({
+              id: callId,
+              toolName: toolData.request.name,
+              inputArguments: toolData.request.args ?? {},
+              status: 'running',
+              terminalOutput: '',
+              startedAt: Date.now(),
             });
           }
-        }
-      }
 
-      // Handle tool execution output (routed to Engine Room instead of chat)
-      if (coderKind === CODER_KIND.TOOL_CALL_UPDATE) {
-        setToolStatus('Agent is executing tools...');
-        const parts = result.status?.message?.parts ?? [];
-        for (const part of parts) {
-          if (part?.kind === 'data' && part.data) {
-            const toolData = part.data;
-            const callId =
-              toolData?.request?.callId ??
-              toolData?.callId ??
-              crypto.randomUUID();
-
-            // If it's a new tool call, add it
-            if (toolData.request) {
-              addToolEvent({
-                id: callId,
-                toolName: toolData.request.name,
-                inputArguments: toolData.request.args ?? {},
-                status: 'running',
-                terminalOutput: '',
-                startedAt: Date.now(),
-              });
-            }
-
-            // Handle output
-            const output = toolData?.output ?? toolData?.result;
-            if (typeof output === 'string') {
+          const output = toolData?.output ?? toolData?.result;
+          if (typeof output === 'string') {
+            if (existingEvent || toolData.request) {
               appendTerminalOutput(callId, output);
-
-              // Detect blocking prompts for Flash Alert
-              if (BLOCKING_PROMPT_REGEX.test(output)) {
-                setWaitingForInput(true);
-              }
             }
-
-            // Handle completion
-            if (
-              toolData.status === 'completed' ||
-              toolData.status === 'failed'
-            ) {
-              updateToolEvent(callId, {
-                status: toolData.status,
-                completedAt: Date.now(),
-              });
+            if (BLOCKING_PROMPT_REGEX.test(output)) {
+              setWaitingForInput(true);
             }
           }
-        }
-      }
 
-      if (result.final === true) {
-        setIsProcessing(false);
-        setToolStatus(null);
-        setWaitingForInput(false);
-        activeStreamAbortRef.current = null;
-
-        // Return focus to chat input
-        options?.onComplete?.();
-
-        if (voiceEnabled) {
-          const assistantText = currentAssistantTextRef.current;
-          const spoken = deriveSpokenReply(assistantText, 30);
-          if (spoken && spoken !== lastSpokenAssistantTextRef.current) {
-            lastSpokenAssistantTextRef.current = spoken;
-            const signal = startSpeaking();
-            void speak(spoken, {
-              signal,
-              volume: Math.max(0, Math.min(1, voiceVolume / 100)),
+          if (
+            ['completed', 'failed', 'success', 'error', 'cancelled'].includes(
+              toolData.status,
+            )
+          ) {
+            updateToolEvent(callId, {
+              status: ['success', 'completed'].includes(toolData.status)
+                ? 'completed'
+                : 'failed',
+              completedAt: Date.now(),
             });
           }
         }
       }
     },
     [
-      appendToAssistant,
-      setAssistantPendingConfirmation,
-      speak,
-      startSpeaking,
-      voiceEnabled,
-      voiceVolume,
+      addToolEvent,
+      appendTerminalOutput,
+      setToolStatus,
+      setWaitingForInput,
+      updateToolEvent,
     ],
   );
+
+  // Handle Voice for Confirmations (Sync with Bridge State)
+  useEffect(() => {
+    if (bridgeState.status === 'awaiting_confirmation' && voiceEnabled) {
+      const { callId, toolName } = bridgeState;
+      if (lastSpokenConfirmationCallIdRef.current !== callId) {
+        lastSpokenConfirmationCallIdRef.current = callId;
+        const prompt = `Allow running tool "${toolName}"?`;
+        const spoken = deriveSpokenReply(prompt, 30);
+        if (spoken) {
+          const signal = startSpeaking();
+          void speak(spoken, {
+            signal,
+            volume: Math.max(0, Math.min(1, voiceVolume / 100)),
+          });
+        }
+      }
+    }
+  }, [bridgeState, voiceEnabled, voiceVolume, speak, startSpeaking]);
+
+  // Handle Voice for Completion (Sync with Bridge State)
+  useEffect(() => {
+    // Detect transition to connected (idle) from processing
+    // But we need to know if we just finished a turn.
+    // The bridge doesn't explicitly have "JustFinished", but "connected" means idle.
+    // We can use a ref to track if we were processing.
+  }, []); // TODO: Add sophisticated completion voice logic if strict parity needed.
+  // For now, onComplete callback in handleSseEvent handles this?
+  // handleSseEvent calls options.onComplete.
+
+  const onBridgeComplete = useCallback(() => {
+    setToolStatus(null);
+    setWaitingForInput(false);
+    options?.onComplete?.();
+
+    if (voiceEnabled) {
+      const assistantText = currentAssistantTextRef.current;
+      const spoken = deriveSpokenReply(assistantText, 30);
+      if (spoken && spoken !== lastSpokenAssistantTextRef.current) {
+        lastSpokenAssistantTextRef.current = spoken;
+        const signal = startSpeaking();
+        void speak(spoken, {
+          signal,
+          volume: Math.max(0, Math.min(1, voiceVolume / 100)),
+        });
+      }
+    }
+  }, [
+    options,
+    setToolStatus,
+    setWaitingForInput,
+    voiceEnabled,
+    startSpeaking,
+    speak,
+    voiceVolume,
+  ]);
+
+  // --- Actions ---
 
   const checkConnection = useCallback(async () => {
     const baseUrl = normalizeBaseUrl(agentUrl);
     if (!baseUrl) {
-      setIsConnected(false);
+      dispatch(BridgeActions.disconnected('No Base URL'));
       return;
     }
     try {
-      const health = await fetch(`${baseUrl}/healthz`, { method: 'GET' });
-      if (!health.ok) {
-        setIsConnected(false);
-        return;
+      if (bridgeState.status === 'disconnected') {
+        dispatch(BridgeActions.connect());
       }
-      if (!agentToken.trim()) {
-        setIsConnected(true);
-        return;
-      }
-      const whoami = await fetch(`${baseUrl}/whoami`, {
+      const health = await fetch(`${baseUrl}/healthz`, {
         method: 'GET',
-        headers: { Authorization: `Bearer ${agentToken.trim()}` },
+        signal: AbortSignal.timeout(500),
       });
-      setIsConnected(whoami.ok);
-    } catch {
-      setIsConnected(false);
+      if (health.ok) {
+        dispatch(BridgeActions.connected());
+      } else {
+        dispatch(BridgeActions.disconnected('Health check failed'));
+      }
+    } catch (e) {
+      dispatch(BridgeActions.disconnected(String(e)));
     }
-  }, [agentToken, agentUrl]);
+  }, [agentUrl, bridgeState.status, dispatch]);
 
   useEffect(() => {
     void checkConnection();
   }, [checkConnection]);
 
-  /**
-   * Send a message to the agent via A2A protocol.
-   * Establishes WebSocket-like streaming connection for real-time responses.
-   * @param text - The message text to send
-   */
   const sendMessage = useCallback(
     async (text: string) => {
       const baseUrl = normalizeBaseUrl(agentUrl);
-      const token = agentToken.trim();
+      const token = agentToken?.trim();
+
       if (!baseUrl || !token) {
-        setIsConnected(false);
+        dispatch(BridgeActions.disconnected('Missing config'));
         appendToAssistant(
           '\n[Not connected] Set Agent URL + Token in Settings.\n',
         );
         return;
       }
 
+      if (isProcessing) {
+        messageQueueRef.current.push(text);
+        return;
+      }
+
+      // 1. Dispatch SEND_MESSAGE
+      dispatch(BridgeActions.sendMessage(text));
+
+      // 2. Update UI State (Messages)
       const userMessage: Message = {
         id: crypto.randomUUID(),
         role: 'user',
@@ -417,26 +337,24 @@ export function useCliProcess(options?: { onComplete?: () => void }) {
         events: [],
       };
       setMessages((prev) => [...prev, userMessage]);
-      setIsProcessing(true);
 
-      // Update history
-      const currentTaskId = activeTaskIdRef.current || 'default';
+      // History
+      const tid = currentTaskId || 'default';
       useHistoryStore.getState().addSession({
-        id: currentTaskId,
+        id: tid,
         title: text.length > 30 ? text.slice(0, 30) + '...' : text,
         lastMessage: text,
         timestamp: Date.now(),
       });
 
-      useExecutionStore.getState().clearEvents(); // Clear tool events for new task
+      useExecutionStore.getState().clearEvents();
       startAssistantMessage();
-      setAssistantPendingConfirmation(undefined);
 
+      // 3. Setup Stream
       activeStreamAbortRef.current?.abort();
       const abortController = new AbortController();
       activeStreamAbortRef.current = abortController;
 
-      const taskId = activeTaskIdRef.current ?? undefined;
       const messageId = crypto.randomUUID();
       const body = {
         jsonrpc: '2.0',
@@ -449,13 +367,7 @@ export function useCliProcess(options?: { onComplete?: () => void }) {
             parts: [{ kind: 'text', text }],
             messageId,
           },
-          metadata: {
-            coderAgent: {
-              kind: 'agent-settings',
-              workspacePath: agentWorkspacePath || '/tmp',
-            },
-          },
-          ...(taskId ? { taskId } : {}),
+          ...(currentTaskId ? { taskId: currentTaskId } : {}),
         },
       };
 
@@ -466,54 +378,71 @@ export function useCliProcess(options?: { onComplete?: () => void }) {
           body,
           abortController.signal,
         );
+
         await readSseStream(stream, (msg) => {
+          if (!tabLockRef.current?.isLocked()) {
+            // If not locked, maybe warn? Or just process anyway since we initiated?
+            // For this refactor, we assume the initiator IS the leader.
+          }
           try {
             const parsed = JSON.parse(msg.data) as JsonRpcResponse;
-            handleJsonRpc(parsed);
-          } catch {
-            // ignore
+            handleSseEvent(parsed, {
+              dispatch,
+              getState: () => useBridgeStore.getState().state,
+              onText: handleBridgeText,
+              onToolUpdate: handleBridgeToolUpdate,
+              onComplete: onBridgeComplete,
+            });
+          } catch (e) {
+            console.error('[Bridge] JSON parse error', e);
           }
         });
       } catch (error) {
-        setIsProcessing(false);
-        appendToAssistant(
-          `\n[Agent request failed] ${error instanceof Error ? error.message : 'Unknown error'}\n`,
-        );
+        const msg = error instanceof Error ? error.message : 'Unknown error';
+        dispatch(BridgeActions.error(msg));
+        appendToAssistant(`\n[Agent request failed] ${msg}\n`);
       }
     },
     [
-      agentToken,
       agentUrl,
-      agentWorkspacePath,
-      appendToAssistant,
-      handleJsonRpc,
-      setAssistantPendingConfirmation,
+      agentToken,
+      isProcessing,
+      dispatch,
+      currentTaskId,
       startAssistantMessage,
+      handleBridgeText,
+      handleBridgeToolUpdate,
+      onBridgeComplete,
     ],
   );
 
-  /**
-   * Respond to a tool call confirmation from the agent.
-   * Sends approval/rejection with optional PIN for high-risk operations.
-   * @param callId - The tool call ID
-   * @param approved - Whether to approve the action
-   * @param pin - Optional PIN for secured confirmations
-   */
   const respondToConfirmation = useCallback(
     async (callId: string, approved: boolean, pin?: string) => {
       const baseUrl = normalizeBaseUrl(agentUrl);
-      const token = agentToken.trim();
-      const taskId = activeTaskIdRef.current;
-      if (!baseUrl || !token || !taskId) {
-        setAssistantPendingConfirmation(undefined);
+      const token = agentToken?.trim();
+
+      // Get confirmation identity from Store (Token aware!)
+      const identity = useBridgeStore.getState().getConfirmationIdentity();
+
+      if (!baseUrl || !token || !identity) {
+        console.error('[Bridge] Cannot respond: missing config or identity');
         return;
       }
 
-      setAssistantPendingConfirmation(undefined);
-      setIsProcessing(true);
-      startAssistantMessage();
+      // Verify callId matches
+      if (identity.callId !== callId) {
+        console.warn(
+          `[Bridge] CallId mismatch in response. Store: ${identity.callId}, UI: ${callId}`,
+        );
+        // Proceed with Store's ID? Or fail? Fail safe.
+        return;
+      }
 
-      activeStreamAbortRef.current?.abort();
+      dispatch(BridgeActions.confirmationSent());
+
+      startAssistantMessage(); // Optional: Start new bubble for response?
+
+      activeStreamAbortRef.current?.abort(); // Abort previous stream (usual A2A pattern)
       const abortController = new AbortController();
       activeStreamAbortRef.current = abortController;
 
@@ -529,21 +458,19 @@ export function useCliProcess(options?: { onComplete?: () => void }) {
               {
                 kind: 'data',
                 data: {
-                  callId,
+                  callId: identity.callId, // Use AUTHORITATIVE ID
                   outcome: approved ? 'proceed_once' : 'cancel',
                   ...(pin ? { pin } : {}),
+                  // Phase 0: Include token if present
+                  ...(identity.confirmationToken
+                    ? { confirmationToken: identity.confirmationToken }
+                    : {}),
                 },
               },
             ],
             messageId: crypto.randomUUID(),
           },
-          metadata: {
-            coderAgent: {
-              kind: 'agent-settings',
-              workspacePath: agentWorkspacePath || '/tmp',
-            },
-          },
-          taskId,
+          taskId: identity.taskId, // Use AUTHORITATIVE Task ID
         },
       };
 
@@ -557,41 +484,101 @@ export function useCliProcess(options?: { onComplete?: () => void }) {
         await readSseStream(stream, (msg) => {
           try {
             const parsed = JSON.parse(msg.data) as JsonRpcResponse;
-            handleJsonRpc(parsed);
-          } catch {
-            // ignore
+            handleSseEvent(parsed, {
+              dispatch,
+              getState: () => useBridgeStore.getState().state,
+              onText: handleBridgeText,
+              onToolUpdate: handleBridgeToolUpdate,
+              onComplete: onBridgeComplete,
+            });
+          } catch (e) {
+            console.error('[Bridge] Confirmation SSE Parse Error', e);
           }
         });
       } catch (error) {
-        setIsProcessing(false);
-        appendToAssistant(
-          `\n[Agent request failed] ${error instanceof Error ? error.message : 'Unknown error'}\n`,
-        );
+        const msg = error instanceof Error ? error.message : 'Unknown error';
+        dispatch(BridgeActions.error(msg));
+        appendToAssistant(`\n[Agent request failed] ${msg}\n`);
       }
     },
     [
-      agentToken,
       agentUrl,
-      agentWorkspacePath,
-      appendToAssistant,
-      handleJsonRpc,
-      setAssistantPendingConfirmation,
+      agentToken,
+      dispatch,
       startAssistantMessage,
+      handleBridgeText,
+      handleBridgeToolUpdate,
+      onBridgeComplete,
     ],
   );
 
-  const closeTerminal = useCallback(async () => {
-    // Desktop terminal sessions are currently only supported for local PTYs.
-    // When using A2A (local or remote), we keep this as a no-op for now.
-  }, []);
+  // Queue processing - moved here
+  useEffect(() => {
+    if (!isProcessing && messageQueueRef.current.length > 0) {
+      const nextMessage = messageQueueRef.current.shift();
+      if (nextMessage) {
+        setTimeout(() => sendMessage(nextMessage), 0);
+      }
+    }
+  }, [isProcessing, sendMessage]);
+
+  const sendToolInput = useCallback(
+    async (callId: string, input: string) => {
+      const baseUrl = normalizeBaseUrl(agentUrl);
+      const token = agentToken?.trim();
+      const tid = currentTaskId;
+
+      if (!baseUrl || !token || !tid) return;
+
+      const body = {
+        jsonrpc: '2.0',
+        id: '1',
+        method: 'message/stream',
+        params: {
+          message: {
+            kind: 'message',
+            role: 'user',
+            parts: [
+              {
+                kind: 'data',
+                data: { callId, input },
+              },
+            ],
+            messageId: crypto.randomUUID(),
+          },
+          taskId: tid,
+        },
+      };
+
+      try {
+        await postToAgent(baseUrl, token, body);
+      } catch (e) {
+        console.error('Failed to send tool input', e);
+      }
+    },
+    [agentUrl, agentToken, currentTaskId],
+  );
+
+  const stopAgent = useCallback(() => {
+    if (activeStreamAbortRef.current) {
+      activeStreamAbortRef.current.abort();
+      activeStreamAbortRef.current = null;
+    }
+    messageQueueRef.current = [];
+    // Dispatch STREAM_ENDED to reset to connected state (not DISCONNECTED which breaks connection)
+    // This allows the user to continue sending messages without re-establishing connection
+    dispatch(BridgeActions.streamEnded());
+  }, [dispatch]);
 
   return {
     messages,
     isConnected,
     isProcessing,
-    activeTerminalSession,
+    activeTerminalSession: null,
     sendMessage,
     respondToConfirmation,
-    closeTerminal,
+    sendToolInput,
+    closeTerminal: () => {},
+    stop: stopAgent,
   };
 }

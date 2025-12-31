@@ -10,6 +10,7 @@ import { useSettingsStore } from '../stores/settingsStore'
 import { Loader2, Send, Paperclip, Mic, X, ChevronDown, ChevronRight, Copy, Check, RotateCcw, Edit2 } from "lucide-react"
 import { useVoiceStore } from '../stores/voiceStore'
 import { Waveform } from './Waveform'
+import { ConfirmationCard } from './ConfirmationCard'
 
 interface ChatViewProps {
   messages: Message[]
@@ -21,28 +22,10 @@ interface ChatViewProps {
   inputRef?: RefObject<HTMLTextAreaElement | null>
   onPendingConfirmation?: (id: string | null, requiresPin?: boolean, pinReady?: boolean) => void
   voiceEnabled?: boolean
+  onStop?: () => void
 }
 
-function ToolResult({ content }: { content: string }) {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const isLong = content.length > 500;
-  const displayContent = isLong && !isExpanded ? content.slice(0, 500) + '...' : content;
-
-  return (
-    <div>
-      <div className="font-mono whitespace-pre-wrap opacity-80">{displayContent}</div>
-      {isLong && (
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="text-primary hover:underline mt-1 font-semibold block"
-        >
-          {isExpanded ? 'Show less' : 'Show full output'}
-        </button>
-      )}
-    </div>
-  );
-}
-
+// ... ToolResult component ...
 
 export function ChatView({
   messages,
@@ -50,10 +33,17 @@ export function ChatView({
   isProcessing,
   currentToolStatus,
   sendMessage,
+  respondToConfirmation,
   inputRef,
   onPendingConfirmation,
   voiceEnabled,
+  onStop,
 }: ChatViewProps) {
+  // ... existing hooks ...
+
+ // ... inside return ...
+ // ... Microhone Issue block ...
+
   const voiceState = useVoiceStore((s) => s.state);
   const voiceError = useVoiceStore((s) => s.error);
   const [input, setInput] = useState(() => {
@@ -99,6 +89,7 @@ export function ChatView({
           {
             id: 'welcome',
             role: 'assistant' as const,
+            pendingConfirmation: undefined,
             content:
               "Hello! I'm your terminal agent assistant. I can help you execute commands, manage files, and automate your workflows.\n\nTry one of these to get started:",
             events: [],
@@ -220,7 +211,7 @@ export function ChatView({
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {voiceEnabled && voiceError && (
+      {voiceError && (
         <div className="mx-4 mt-4 p-3 bg-red-500/10 border border-red-500/30 rounded-md flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
           <div className="text-red-500 mt-0.5">!</div>
           <div className="flex-1">
@@ -233,13 +224,16 @@ export function ChatView({
               Dismiss
             </button>
           </div>
-          <a 
-            href="#" 
-            onClick={(e) => { e.preventDefault(); sendMessage('/help voice'); }}
-            className="text-[10px] bg-red-500/20 hover:bg-red-500/30 text-red-500 px-2 py-1 rounded"
-          >
-            Fix Instructions
-          </a>
+            <button 
+              onClick={(e) => { 
+                e.preventDefault(); 
+                // Send a specific, safe prompt that encourages checking external docs instead of internal code.
+                sendMessage("I am getting a 'Microphone Access Denied' error on Linux. Please search the web or documentation for 'Tauri 2 Linux microphone permissions WebKitGTK'. Do NOT analyze the local codebase as this is a platform issue, not a code issue.");
+              }}
+              className="text-[10px] bg-red-500/20 hover:bg-red-500/30 text-red-500 px-2 py-1 rounded"
+            >
+              Fix Instructions
+            </button>
         </div>
       )}
       {/* Chat messages */}
@@ -328,29 +322,25 @@ export function ChatView({
                         />
                       )
                     }
-                    // Commented out due to type error - event.text not in CliEvent type
-                    // if (event.type === 'text' && event.text !== message.content) {
-                    //    return <div key={eventIdx} className="text-sm opacity-80">{event.text}</div>
-                    // }
                     return null
                   })}
                 </div>
               )}
 
-              {/* Commented out due to type error - examplePrompts not in Message type */}
-              {/* {message.examplePrompts && (
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {message.examplePrompts.map((prompt: string, i: number) => (
-                    <button
-                      key={i}
-                      onClick={() => sendMessage(prompt)}
-                      className="px-3 py-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary rounded-full transition-colors"
-                    >
-                      {prompt}
-                    </button>
-                  ))}
+              {/* Render Pending Confirmation Card */}
+              {message.pendingConfirmation && (
+                <div className="mt-4 max-w-md">
+                  <ConfirmationCard 
+                    confirmation={message.pendingConfirmation}
+                    onRespond={(approved, pin) => {
+                      if (message.pendingConfirmation?.id) {
+                        respondToConfirmation(message.pendingConfirmation.id, approved, pin);
+                      }
+                    }}
+                  />
                 </div>
-              )} */}
+              )}
+
               <div className={cn("text-xs mt-1.5", message.role === "user" ? "opacity-70" : "text-muted-foreground")}>
                 {new Date(timestamp).toLocaleTimeString()}
               </div>
@@ -379,7 +369,13 @@ export function ChatView({
               variant="ghost"
               size="sm"
               className="text-red-500 hover:text-red-600 hover:bg-red-500/10"
-              onClick={() => sendMessage('/stop')}
+              onClick={() => {
+                 if (onStop) {
+                   onStop();
+                 } else {
+                   sendMessage('/stop');
+                 }
+              }}
             >
               Stop
             </Button>
@@ -390,96 +386,18 @@ export function ChatView({
       {/* Input area */}
       <div 
         className={cn(
-          "border-t border-border p-4 bg-card transition-colors",
+          "p-4 bg-transparent transition-colors",
           isDragging ? "bg-accent/20" : ""
         )}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        <div className="flex flex-col gap-2">
-          {/* Task 38: Attachment Preview Chips */}
-          {attachments.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-1">
-              {attachments.map((file, i) => (
-                <span key={i} className="pl-2 pr-1 py-1 flex items-center gap-1 bg-muted border border-border rounded-md text-xs">
-                  <span className="max-w-[150px] truncate text-xs">{file.name}</span>
-                  <button
-                    onClick={() => setAttachments(prev => prev.filter((_, idx) => idx !== i))}
-                    className="ml-1 rounded-full p-0.5 hover:bg-muted-foreground/30 transition-colors"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </span>
-              ))}
-            </div>
-          )}
-
-          <div className="flex gap-2 items-end">
-            <div className="flex-1 relative">
-              <input
-                type="file"
-                multiple
-                className="hidden"
-                ref={fileInputRef}
-                onChange={(e) => {
-                  if (e.target.files) {
-                    setAttachments(prev => [...prev, ...Array.from(e.target.files!)]);
-                  }
-                }}
-              />
-              <textarea
-              ref={actualInputRef}
-              value={input}
-              onChange={(e) => {
-                const newValue = e.target.value;
-                setInput(newValue);
-                
-                // Task 36: Detect @ for file autocomplete
-                const parts = newValue.split(' ');
-                const lastPart = parts[parts.length - 1];
-                
-                if (lastPart.startsWith('@')) {
-                  setShowFileSuggestions(true);
-                  setFileQuery(lastPart.slice(1));
-                } else {
-                  setShowFileSuggestions(false);
-                }
-
-                // Reset history navigation on manual edit
-                if (historyIndex >= 0) {
-                  setHistoryIndex(-1);
-                }
-              }}
-              onKeyDown={handleKeyDown}
-              placeholder={isProcessing ? "Agent is thinking..." : "Ask anything, @ for context"}
-              rows={3}
-              disabled={isProcessing}
-              className={cn(
-                "w-full px-4 py-2.5 pr-10 bg-input border rounded-md focus:outline-none focus:ring-2 focus:ring-ring text-base resize-none min-h-[84px] max-h-48",
-                isProcessing
-                  ? "opacity-60 cursor-not-allowed border-amber-500/40 bg-amber-500/5"
-                  : "border-border"
-              )}
-              style={{ height: "84px" }}
-              onInput={(e) => {
-                const target = e.target as HTMLTextAreaElement
-                target.style.height = "84px"
-                target.style.height = `${Math.min(target.scrollHeight, 192)}px`
-              }}
-            />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute right-1 bottom-1 h-8 w-8 text-muted-foreground hover:text-foreground"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <Paperclip className="h-4 w-4" />
-            </Button>
-
-            {/* Task 36: File Suggestions Popover */}
-            {showFileSuggestions && filteredFiles.length > 0 && (
-              <div className="absolute bottom-full left-0 mb-2 w-64 bg-card border border-border rounded-md shadow-xl overflow-hidden z-10">
+        <div className="flex flex-col border border-border/60 rounded-xl bg-background/50 shadow-sm focus-within:ring-1 focus-within:ring-primary/30 focus-within:border-primary/50 transition-all overflow-hidden relative">
+          
+          {/* File suggestions popover positioned relative to container */}
+          {showFileSuggestions && filteredFiles.length > 0 && (
+              <div className="absolute bottom-full left-0 mb-2 w-64 bg-popover border border-border rounded-md shadow-xl overflow-hidden z-50">
                 <div className="p-2 border-b border-border bg-muted/50 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
                   Files in workspace
                 </div>
@@ -501,41 +419,159 @@ export function ChatView({
                   ))}
                 </div>
               </div>
-            )}
+          )}
+
+          {/* Attachment Chips */}
+          {attachments.length > 0 && (
+            <div className="flex flex-wrap gap-2 px-3 pt-3">
+              {attachments.map((file, i) => (
+                <span key={i} className="pl-2 pr-1 py-1 flex items-center gap-1 bg-muted/50 border border-border/50 rounded-md text-xs animate-in fade-in zoom-in-95">
+                  <span className="max-w-[150px] truncate text-xs">{file.name}</span>
+                  <button
+                    onClick={() => setAttachments(prev => prev.filter((_, idx) => idx !== i))}
+                    className="ml-1 rounded-full p-0.5 hover:bg-muted-foreground/30 transition-colors"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
+              ))}
             </div>
-          </div>
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-col items-center gap-1">
-              <Waveform active={!!(voiceEnabled && voiceState === 'LISTENING')} />
-              <Button 
-                size="icon" 
-                className={cn(
-                  "h-[42px] w-[42px] flex-shrink-0 transition-all duration-300",
-                  voiceEnabled ? "bg-red-500 hover:bg-red-600 shadow-[0_0_15px_rgba(239,68,68,0.4)]" : "bg-muted"
-                )} 
-                disabled={!voiceEnabled}
-                title={voiceEnabled ? "Voice mode active (Space to talk)" : "Voice mode disabled"}
+          )}
+
+          <input
+            type="file"
+            multiple
+            className="hidden"
+            ref={fileInputRef}
+            onChange={(e) => {
+              if (e.target.files) {
+                setAttachments(prev => [...prev, ...Array.from(e.target.files!)]);
+              }
+            }}
+          />
+
+          <textarea
+            ref={actualInputRef}
+            value={input}
+            onChange={(e) => {
+              const newValue = e.target.value;
+              setInput(newValue);
+              
+              const parts = newValue.split(' ');
+              const lastPart = parts[parts.length - 1];
+              
+              if (lastPart.startsWith('@')) {
+                setShowFileSuggestions(true);
+                setFileQuery(lastPart.slice(1));
+              } else {
+                setShowFileSuggestions(false);
+              }
+
+              if (historyIndex >= 0) {
+                setHistoryIndex(-1);
+              }
+            }}
+            onKeyDown={handleKeyDown}
+            placeholder={isProcessing ? "Agent is thinking..." : "Ask anything, @ for context"}
+            rows={1}
+            disabled={isProcessing}
+            className={cn(
+              "w-full px-4 py-3 bg-transparent border-0 focus:ring-0 resize-none min-h-[52px] max-h-48 text-base placeholder:text-muted-foreground/40",
+              isProcessing && "cursor-not-allowed opacity-60"
+            )}
+            style={{ height: "auto" }}
+            onInput={(e) => {
+              const target = e.target as HTMLTextAreaElement
+              target.style.height = "auto"
+              target.style.height = `${Math.min(target.scrollHeight, 192)}px`
+            }}
+          />
+
+          {/* Toolbar */}
+          <div className="flex items-center justify-between px-2 pb-2 pl-3">
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-foreground transition-colors hover:bg-muted/50 rounded-full"
+                onClick={() => fileInputRef.current?.click()}
+                title="Attach files"
               >
-                <Mic className={cn("h-4 w-4", voiceEnabled ? "text-white" : "text-muted-foreground")} />
+                <Paperclip className="h-4 w-4" />
               </Button>
             </div>
-            <Button onClick={handleSendMessage} size="icon" className="h-[42px] w-[42px] flex-shrink-0" disabled={isProcessing || (!input.trim() && attachments.length === 0)}>
-              <Send className="h-4 w-4" />
-            </Button>
+            
+            <div className="flex items-center gap-2">
+              <div className="flex flex-col items-end">
+                <Waveform active={!!(voiceEnabled && voiceState === 'LISTENING')} />
+              </div>
+              
+              {voiceEnabled && (
+                <Button 
+                  size="icon" 
+                  variant="ghost"
+                  className={cn(
+                    "h-8 w-8 transition-all duration-200 rounded-full",
+                    voiceState === 'LISTENING' 
+                      ? "bg-red-500/10 text-red-500 hover:bg-red-500/20" 
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  )} 
+                  onClick={() => {
+                   const { state, startListening, stopListening } = useVoiceStore.getState();
+                   if (state === 'LISTENING') stopListening(); else startListening();
+                  }}
+                  title={voiceState === 'LISTENING' ? "Click to stop listening" : "Click to speak"}
+                >
+                  <Mic className={cn("h-4 w-4", voiceState === 'LISTENING' && "animate-pulse")} />
+                </Button>
+              )}
+
+              <Button 
+                onClick={handleSendMessage} 
+                size="icon" 
+                className={cn(
+                  "h-8 w-8 rounded-full transition-all shadow-sm", 
+                  !input.trim() && attachments.length === 0 
+                    ? "bg-muted text-muted-foreground hover:bg-muted" 
+                    : "bg-primary text-primary-foreground hover:bg-primary/90"
+                )}
+                disabled={isProcessing || (!input.trim() && attachments.length === 0)}
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
-        <div className="text-xs text-muted-foreground mt-2 flex items-center gap-2">
-          <button 
-            className="hover:text-foreground transition-colors cursor-pointer"
-            onClick={() => sendMessage('/model')}
-          >
-            /model
-          </button>
-          <span className="opacity-50">•</span>
-          <span>{isConnected ? 'Connected' : 'Disconnected'}</span>
+
+        <div className="text-[10px] text-muted-foreground mt-2 flex items-center justify-between px-1 opacity-70">
+          <div className="flex items-center gap-2">
+            <button 
+              className="hover:text-foreground transition-colors cursor-pointer font-medium"
+              onClick={() => sendMessage('/model')}
+            >
+              /model
+            </button>
+            <span>•</span>
+            <span className={cn(isConnected ? "text-green-500/80" : "text-amber-500/80")}>
+              {isConnected ? 'Connected' : 'Disconnected'}
+            </span>
+          </div>
+          <div className="text-[9px]">
+            Return to send, Shift+Return for new line
+          </div>
         </div>
       </div>
     </div>
+  )
+}
+
+
+function ToolResult({ content }: { content: string }) {
+  if (!content) return null;
+  return (
+    <pre className="whitespace-pre-wrap break-all font-mono text-xs">
+      {content}
+    </pre>
   )
 }
 
