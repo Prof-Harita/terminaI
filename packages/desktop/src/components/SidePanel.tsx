@@ -8,6 +8,7 @@ import { LibraryView } from './views/LibraryView'
 import { PreferenceView } from './views/PreferenceView'
 import { AccountView } from './views/AccountView'
 import { TerminalView } from './views/TerminalView'
+import { useBridgeStore } from '../bridge/store'
 
 interface SidePanelProps {
   activeView: ActivityView | null
@@ -15,13 +16,21 @@ interface SidePanelProps {
 }
 
 export function SidePanel({ activeView, sendMessage }: SidePanelProps) {
+  // BM-2 FIX: Wire session restore
+  const setCurrentConversationId = useBridgeStore((s) => s.setCurrentConversationId);
+  
+  const handleSessionRestore = (sessionId: string) => {
+    // Set the conversation ID so subsequent messages continue this conversation
+    setCurrentConversationId(sessionId);
+    console.log('[Session] Restored conversation:', sessionId);
+  };
   
   if (!activeView) return null
 
   const renderContent = () => {
     switch (activeView) {
       case 'history':
-        return <HistoryView onSelectSession={(id) => console.log('[TODO] Session restore:', id)} />
+        return <HistoryView onSelectSession={handleSessionRestore} />
       
       case 'assistant':
         return <AssistantView />

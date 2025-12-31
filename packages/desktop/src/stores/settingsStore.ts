@@ -84,13 +84,19 @@ interface SettingsState {
   signOut: () => void;
 }
 
-// Helper to sync settings to CLI
 // Helper to sync settings to CLI via Agent API
-const syncToCli = async (setting: string, value: string | boolean | number) => {
+// BM-7 FIX: Add acknowledgment - return success/failure and log results
+const syncToCli = async (
+  setting: string,
+  value: string | boolean | number,
+): Promise<boolean> => {
   const state = useSettingsStore.getState();
   const { agentUrl, agentToken, agentWorkspacePath } = state;
 
-  if (!agentUrl || !agentToken) return;
+  if (!agentUrl || !agentToken) {
+    console.warn('[Settings Sync] No agent connection configured');
+    return false;
+  }
 
   const text = `/config set ${setting} ${value}`;
   const body = {
@@ -116,9 +122,33 @@ const syncToCli = async (setting: string, value: string | boolean | number) => {
   try {
     const stream = await postToAgent(agentUrl, agentToken, body);
     // Consume stream to ensure processing
-    await readSseStream(stream, () => {});
+    let responseReceived = false;
+    await readSseStream(stream, (msg) => {
+      responseReceived = true;
+      // Check for error in response
+      try {
+        const data = JSON.parse(msg.data);
+        if (data.error) {
+          console.error(
+            '[Settings Sync] Error from agent:',
+            data.error.message,
+          );
+        }
+      } catch {
+        // Ignore parse errors - non-JSON responses are OK
+      }
+    });
+
+    if (responseReceived) {
+      console.log(`[Settings Sync] ✓ ${setting} = ${value}`);
+      return true;
+    } else {
+      console.warn(`[Settings Sync] No response for ${setting}`);
+      return false;
+    }
   } catch (err) {
-    console.warn('Settings sync failed:', err);
+    console.error('[Settings Sync] Failed:', setting, err);
+    return false;
   }
 };
 

@@ -1,11 +1,18 @@
 import React from 'react';
 import { useSidecarStore } from '../stores/sidecarStore';
 import { useSettingsStore } from '../stores/settingsStore';
+import { useBridgeStore } from '../bridge/store';
 import { Button } from './ui/button';
 
 export const ConnectivityIndicator: React.FC = () => {
   const bootStatus = useSidecarStore((s) => s.bootStatus);
-  const isConnected = useSettingsStore((s) => !!s.agentToken); // Can also check sidecarStore.bootStatus === 'ready'
+  const hasToken = useSettingsStore((s) => !!s.agentToken);
+  // BM-4 FIX: Use real bridge connection status, not just token presence
+  const bridgeConnected = useBridgeStore((s) => s.isConnected());
+  const sidecarReady = bootStatus === 'ready';
+  
+  // True connectivity requires: token exists AND (bridge connected OR sidecar ready)
+  const isConnected = hasToken && (bridgeConnected || sidecarReady);
   const isBooting = bootStatus === 'booting';
   const isError = bootStatus === 'error';
   const relayClientCount = useSettingsStore((s) => s.relayClientCount);

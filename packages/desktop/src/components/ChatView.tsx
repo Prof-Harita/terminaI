@@ -242,20 +242,23 @@ export function ChatView({
           <div className="flex justify-start mb-4">
             <div className="max-w-[85%] rounded-lg px-4 py-4 bg-amber-500/10 border border-amber-500/30">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-lg">🔑</span>
-                <span className="font-semibold text-amber-500">API Key Required</span>
+                <span className="text-lg">🔌</span>
+                {/* BM-5 FIX: Correct copy - this is about agent connection, not Gemini API key */}
+                <span className="font-semibold text-amber-500">Agent Connection Required</span>
               </div>
               <p className="text-sm text-muted-foreground mb-3">
-                To get started, you need a Gemini API key.
+                Connect to an agent backend to start chatting. Configure the agent URL and token in Settings.
               </p>
-              <a
-                href="https://aistudio.google.com/app/apikey"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm hover:opacity-90"
+              <button
+                onClick={() => {
+                  // Navigate to settings - this would typically use a router
+                  // For now, dispatch an event or use a callback
+                  window.dispatchEvent(new CustomEvent('open-settings'));
+                }}
+                className="inline-block px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm hover:opacity-90 cursor-pointer"
               >
-                Get API Key →
-              </a>
+                Open Settings →
+              </button>
             </div>
           </div>
         )}
