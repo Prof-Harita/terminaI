@@ -10,6 +10,22 @@ export * from './config/config.js';
 export * from './config/brainAuthority.js';
 export * from './config/defaultModelConfigs.js';
 export * from './config/models.js';
+export * from './config/settings/types.js';
+export * from './config/settings/schema-types.js';
+export {
+  getSettingsSchema,
+  SETTINGS_SCHEMA_DEFINITIONS,
+  type SettingsSchemaType,
+  type SettingsJsonSchemaDefinition,
+  type InferSettings,
+} from './config/settings/schema.js';
+export * from './config/settings/constants.js';
+export * from './config/settings/utils.js';
+export * from './config/settings/migrate.js';
+export * from './config/settings/validate.js';
+export * from './config/settings/trust.js';
+export * from './config/settings/loader.js';
+export * from './config/builder.js';
 export * from './output/types.js';
 export * from './output/json-formatter.js';
 export * from './output/stream-json-formatter.js';
@@ -60,6 +76,8 @@ export * from './core/apiKeyCredentialStorage.js';
 
 // Export utilities
 export * from './utils/paths.js';
+export * from './utils/deepMerge.js';
+export * from './utils/envVarResolver.js';
 export * from './utils/envAliases.js';
 export * from './utils/schemaValidator.js';
 export * from './utils/errors.js';

@@ -3,7 +3,7 @@
 {
   "allowedMcpServers": [],
   "blockedMcpServers": [],
-  "sessionId": "d570ecf3-8f9f-4f7c-9449-668f7d7beeae",
+  "sessionId": "4d6c466e-5b80-42a6-81c0-785265ea3f59",
   "fileSystemService": {},
   "modelConfigService": {
     "config": {
@@ -278,7 +278,7 @@
       "disabledForSession": false
     },
     "compressionService": {},
-    "lastPromptId": "d570ecf3-8f9f-4f7c-9449-668f7d7beeae",
+    "lastPromptId": "4d6c466e-5b80-42a6-81c0-785265ea3f59",
     "currentSequenceModel": null,
     "forceFullIdeContext": true,
     "hasFailedCompressionAttempt": false
@@ -361,15 +361,15 @@
     "stopCompletedCount": 0,
     "isStarting": false,
     "extensionEnablementManager": {
-      "configFilePath": "/tmp/tmp.93QFmu25yW/.terminai/extensions/extension-enablement.json",
-      "configDir": "/tmp/tmp.93QFmu25yW/.terminai/extensions",
+      "configFilePath": "/tmp/tmp.jXw791kwhW/.terminai/extensions/extension-enablement.json",
+      "configDir": "/tmp/tmp.jXw791kwhW/.terminai/extensions",
       "enabledExtensionNamesOverride": []
     },
     "settings": {},
     "telemetryConfig": {
       "allowedMcpServers": [],
       "blockedMcpServers": [],
-      "sessionId": "ba2c9336-b2ff-4ab2-8abf-140b328768be",
+      "sessionId": "9b073cfa-5b91-4a94-a4f6-c1e4f053ef03",
       "fileSystemService": {},
       "modelConfigService": {
         "runtimeAliases": {}
@@ -414,7 +414,7 @@
           "disabledForSession": false
         },
         "compressionService": {},
-        "lastPromptId": "ba2c9336-b2ff-4ab2-8abf-140b328768be",
+        "lastPromptId": "9b073cfa-5b91-4a94-a4f6-c1e4f053ef03",
         "currentSequenceModel": null,
         "forceFullIdeContext": true,
         "hasFailedCompressionAttempt": false
@@ -561,7 +561,7 @@
         "maxActionsPerMinute": 60
       },
       "auditLedger": {
-        "filePath": "/tmp/tmp.93QFmu25yW/.terminai/logs/audit/ba2c9336-b2ff-4ab2-8abf-140b328768be.jsonl",
+        "filePath": "/tmp/tmp.jXw791kwhW/.terminai/logs/audit/9b073cfa-5b91-4a94-a4f6-c1e4f053ef03.jsonl",
         "redactionOptions": {
           "redactUiTypedText": true
         },
@@ -807,7 +807,7 @@
     "maxActionsPerMinute": null
   },
   "auditLedger": {
-    "filePath": "/tmp/tmp.93QFmu25yW/.terminai/logs/audit/d570ecf3-8f9f-4f7c-9449-668f7d7beeae.jsonl",
+    "filePath": "/tmp/tmp.jXw791kwhW/.terminai/logs/audit/4d6c466e-5b80-42a6-81c0-785265ea3f59.jsonl",
     "redactionOptions": {
       "redactUiTypedText": true
     },

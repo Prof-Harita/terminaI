@@ -476,9 +476,19 @@ export async function main() {
     loadConfigHandle?.end();
 
     if (argv.dumpConfig) {
-      // Use a custom stringifier to avoid circular references if any, though Config should be serializable.
-      // We only care about the properties, not the methods.
-      writeToStdout(JSON.stringify(config, null, 2) + '\n');
+      const getCircularReplacer = () => {
+        const seen = new WeakSet();
+        return (_key: string, value: any) => {
+          if (typeof value === 'object' && value !== null) {
+            if (seen.has(value)) {
+              return;
+            }
+            seen.add(value);
+          }
+          return value;
+        };
+      };
+      writeToStdout(JSON.stringify(config, getCircularReplacer(), 2) + '\n');
       await runExitCleanup();
       process.exit(ExitCodes.SUCCESS);
     }

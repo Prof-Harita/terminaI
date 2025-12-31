@@ -99,6 +99,13 @@ import {
   getGuiAutomationConfig,
   type GuiAutomationConfig,
 } from '../gui/config.js';
+import type {
+  AccessibilitySettings,
+  BugCommandSettings,
+  SummarizeToolOutputSettings,
+  CodebaseInvestigatorSettings,
+  IntrospectionAgentSettings,
+} from './settings/types.js';
 
 // Re-export OAuth config type
 export type { MCPOAuthConfig, AnyToolInvocation };
@@ -139,19 +146,6 @@ import {
 } from '../audit/ledger.js';
 import type { AuditExportRedaction } from '../audit/export.js';
 
-export interface AccessibilitySettings {
-  disableLoadingPhrases?: boolean;
-  screenReader?: boolean;
-}
-
-export interface BugCommandSettings {
-  urlTemplate: string;
-}
-
-export interface SummarizeToolOutputSettings {
-  tokenBudget?: number;
-}
-
 export interface TelemetrySettings {
   enabled?: boolean;
   target?: TelemetryTarget;
@@ -165,18 +159,6 @@ export interface TelemetrySettings {
 
 export interface OutputSettings {
   format?: OutputFormat;
-}
-
-export interface CodebaseInvestigatorSettings {
-  enabled?: boolean;
-  maxNumTurns?: number;
-  maxTimeMinutes?: number;
-  thinkingBudget?: number;
-  model?: string;
-}
-
-export interface IntrospectionAgentSettings {
-  enabled?: boolean;
 }
 
 /**
