@@ -16,7 +16,7 @@ TerminaI across its three main modalities:
 ### 2.1. The "Brain" (GeminiClient)
 
 - **Location:**
-  [`packages/core/src/core/client.ts`](file:///home/profharita/Code/terminaI/packages/core/src/core/client.ts)
+  [`packages/core/src/core/client.ts`](../packages/core/src/core/client.ts)
 - **Role:** Manages the LLM interaction loop.
 - **Key Components:**
   - **Context Management:** Maintains chat history (`HistoryItem[]`) and injects
@@ -29,9 +29,9 @@ TerminaI across its three main modalities:
 ### 2.2. Configuration & Settings
 
 - **Loader:**
-  [`packages/cli/src/config/settings.ts`](file:///home/profharita/Code/terminaI/packages/cli/src/config/settings.ts)
+  [`packages/cli/src/config/settings.ts`](../packages/cli/src/config/settings.ts)
 - **State:**
-  [`packages/core/src/config/config.ts`](file:///home/profharita/Code/terminaI/packages/core/src/config/config.ts)
+  [`packages/core/src/config/config.ts`](../packages/core/src/config/config.ts)
 - **Hierarchy:** System Defaults → User → Workspace → System Overrides
 - **Merge Strategy:** Recursive deep merge with path-aware rules.
 
@@ -227,7 +227,7 @@ The CLI runs an Express server exposing the agent over HTTP.
 
 ### 5.1. Communication Bridge
 
-[`packages/desktop/src/hooks/useCliProcess.ts`](file:///home/profharita/Code/terminaI/packages/desktop/src/hooks/useCliProcess.ts)
+[`packages/desktop/src/hooks/useCliProcess.ts`](../packages/desktop/src/hooks/useCliProcess.ts)
 
 **Request Flow:**
 
@@ -329,7 +329,8 @@ flowchart LR
     N --> O[Audit Log]
 
 ```
-```
+
+````
 
 **Key Implementation Details**:
 - **Brain Authority**: The model can INCREASE caution (escalate A→B or B→C) but NEVER reduce the minimum review level
@@ -373,7 +374,7 @@ sequenceDiagram
     participant CLI
     participant Browser
     participant Google
-    
+
     CLI->>CLI: Check cached token
     CLI->>CLI: Token expired?
     CLI->>Browser: Open OAuth URL
@@ -384,11 +385,14 @@ sequenceDiagram
     Google->>CLI: Access + Refresh tokens
     CLI->>CLI: Cache refresh token
     CLI->>CLI: Use access token for API
-```
+````
 
 **Key Files**:
-- Token cache: `~/.config/gcloud/application_default_credentials.json` or `~/.terminai/auth/{authType}.json`  
-- OAuth client: [`packages/core/src/core/auth/oauth.ts`](file:///home/profharita/Code/terminaI/packages/core/src/core/auth/oauth.ts)
+
+- Token cache: `~/.config/gcloud/application_default_credentials.json` or
+  `~/.terminai/auth/{authType}.json`
+- OAuth client:
+  [`packages/core/src/core/auth/oauth.ts`](../packages/core/src/core/auth/oauth.ts)
 
 ### 9.3. Re-Authentication Triggers
 
@@ -410,7 +414,8 @@ TerminaI loads settings from multiple sources, merged in this order:
 3. **Workspace Settings** (`.terminai/settings.json` in project root)
 4. **System Overrides** (enforced by admin, cannot be user-overridden)
 
-**Merge Strategy**: Recursive deep merge. Arrays are replaced (not concatenated). Workspace overrides user, user overrides defaults.
+**Merge Strategy**: Recursive deep merge. Arrays are replaced (not
+concatenated). Workspace overrides user, user overrides defaults.
 
 ### 10.2. Critical Settings Reference
 
@@ -419,14 +424,14 @@ TerminaI loads settings from multiple sources, merged in this order:
 ```json
 {
   "security": {
-    "approvalPin": "123456",           // 6-digit PIN for Level C actions
-    "approvalMode": "safe",              // "safe" | "prompt" | "yolo"
-    "disableYoloMode": false,            // Permanently disable YOLO
-    "enablePermanentToolApproval": false,// Show "Allow forever" checkbox
+    "approvalPin": "123456", // 6-digit PIN for Level C actions
+    "approvalMode": "safe", // "safe" | "prompt" | "yolo"
+    "disableYoloMode": false, // Permanently disable YOLO
+    "enablePermanentToolApproval": false, // Show "Allow forever" checkbox
     "auth": {
       "selectedType": "LOGIN_WITH_GOOGLE", // Current auth method
-      "enforcedType": "API_KEY",           // Required auth (auto-triggers reauth)
-      "useExternal": false                 // Use external OAuth flow
+      "enforcedType": "API_KEY", // Required auth (auto-triggers reauth)
+      "useExternal": false // Use external OAuth flow
     }
   }
 }
@@ -437,23 +442,23 @@ TerminaI loads settings from multiple sources, merged in this order:
 ```json
 {
   "voice": {
-    "enabled": true,                     // Enable push-to-talk
+    "enabled": true, // Enable push-to-talk
     "pushToTalk": {
-      "key": "space"                     // "space" | "ctrl+space"
+      "key": "space" // "space" | "ctrl+space"
     },
     "stt": {
-      "provider": "auto",                // "auto" | "whispercpp" | "none"
+      "provider": "auto", // "auto" | "whispercpp" | "none"
       "whispercpp": {
-        "binaryPath": "/custom/path",    // Override whisper.cpp binary
-        "modelPath": "/custom/model",    // Override model file
-        "device": "default"               // Microphone device
+        "binaryPath": "/custom/path", // Override whisper.cpp binary
+        "modelPath": "/custom/model", // Override model file
+        "device": "default" // Microphone device
       }
     },
     "tts": {
-      "provider": "auto"                 // "auto" | "none"
+      "provider": "auto" // "auto" | "none"
     },
     "spokenReply": {
-      "maxWords": 30                     // Words limit for TTS responses
+      "maxWords": 30 // Words limit for TTS responses
     }
   }
 }
@@ -464,13 +469,13 @@ TerminaI loads settings from multiple sources, merged in this order:
 ```json
 {
   "model": {
-    "name": "gemini-2.5-pro",            // Model alias or full name
-    "maxSessionTurns": -1,               // -1 = unlimited
-    "compressionThreshold": 0.5,         // Trigger context compression at 50%
-    "skipNextSpeakerCheck": true,        // Performance optimization
+    "name": "gemini-2.5-pro", // Model alias or full name
+    "maxSessionTurns": -1, // -1 = unlimited
+    "compressionThreshold": 0.5, // Trigger context compression at 50%
+    "skipNextSpeakerCheck": true, // Performance optimization
     "summarizeToolOutput": {
       "run_shell_command": {
-        "tokenBudget": 2000              // Max tokens for shell output
+        "tokenBudget": 2000 // Max tokens for shell output
       }
     }
   }
@@ -482,14 +487,14 @@ TerminaI loads settings from multiple sources, merged in this order:
 ```json
 {
   "ui": {
-    "theme": "nord",                     // Color theme name
+    "theme": "nord", // Color theme name
     "hideFooter": false,
     "showLineNumbers": true,
     "useFullWidth": true,
-    "useAlternateBuffer": false,         // Preserve shell history
-    "incrementalRendering": true,        // Reduce flickering (requires altBuffer)
+    "useAlternateBuffer": false, // Preserve shell history
+    "incrementalRendering": true, // Reduce flickering (requires altBuffer)
     "accessibility": {
-      "screenReader": false,             // Plain-text mode
+      "screenReader": false, // Plain-text mode
       "disableLoadingPhrases": false
     }
   }
@@ -498,15 +503,15 @@ TerminaI loads settings from multiple sources, merged in this order:
 
 ### 10.3. Settings Effects Matrix
 
-| Setting | Requires Restart | Immediate Effect | Notes |
-|---------|------------------|------------------|-------|
-| `security.approvalMode` | No | Next tool call | Affects confirmation UI |
-| `voice.enabled` | No | Next PTT press | Can toggle mid-session |
-| `model.name` | No | Next LLM call | Model config reloaded |
-| `llm.provider` | **Yes** | — | Changes provider backend |
-| `tools.sandbox` | **Yes** | — | Subprocess relaunch required |
-| `ui.theme` | No | Immediate | Re-renders UI |
-| `mcpServers` | **Yes** | — | Server connections rebuilt |
+| Setting                 | Requires Restart | Immediate Effect | Notes                        |
+| ----------------------- | ---------------- | ---------------- | ---------------------------- |
+| `security.approvalMode` | No               | Next tool call   | Affects confirmation UI      |
+| `voice.enabled`         | No               | Next PTT press   | Can toggle mid-session       |
+| `model.name`            | No               | Next LLM call    | Model config reloaded        |
+| `llm.provider`          | **Yes**          | —                | Changes provider backend     |
+| `tools.sandbox`         | **Yes**          | —                | Subprocess relaunch required |
+| `ui.theme`              | No               | Immediate        | Re-renders UI                |
+| `mcpServers`            | **Yes**          | —                | Server connections rebuilt   |
 
 ---
 
@@ -530,13 +535,15 @@ After onboarding, users see a full-featured TUI with:
 
 - **Top banner**: App name + context indicator
 - **Context summary**: Loaded terminaI.md files + active MCP servers
-- **Chat area**: Scrollable conversation history with clear user/agent separation
+- **Chat area**: Scrollable conversation history with clear user/agent
+  separation
 - **Tool execution indicators**: Icons (🔧) + execution status (✓/⚠️)
 - **Confirmation modals**: Inline approval dialogs for Level B/C actions
 - **Footer**: CWD, sandbox status, model name, context usage percentage
 - **Input prompt**: Bottom-locked input area with cursor
 
 **Visual conventions**:
+
 - User messages aligned left, plain text
 - Agent responses use rich markdown (bold, code blocks, lists)
 - Tool calls shown as compact one-liners with expand option
@@ -553,6 +560,7 @@ Agent responses follow these formatting rules:
 - **Links**: Not supported in CLI, file paths shown as text
 
 Confirmation dialogs provide:
+
 - **Clear action summary** (what will change)
 - **Risk assessment** (safety level, scope)
 - **Action buttons** (Approve / Reject / Explain)
@@ -562,6 +570,7 @@ Confirmation dialogs provide:
 Voice mode transforms thedeveloper experience through hands-free interaction:
 
 **Key behaviors**:
+
 1. **Push-to-Talk**: Hold SPACE (or Ctrl+Space) to record
 2. **Visual feedback**: Recording indicator + waveform
 3. **Barge-in support**: Press PTT while agent speaks → immediate interruption
@@ -569,6 +578,7 @@ Voice mode transforms thedeveloper experience through hands-free interaction:
 5. **Audio ducking**: Agent lowers volume when user starts talking
 
 **State transitions visible to user**:
+
 - IDLE: "🎤 Press SPACE to talk"
 - LISTENING: "🔴 Recording..." (waveform)
 - PROCESSING: "✓ Got it: [transcribed text]"
@@ -581,27 +591,32 @@ Voice mode transforms thedeveloper experience through hands-free interaction:
 Users can manage settings through three methods:
 
 **Method 1: Direct file edit**
+
 ```bash
 vim ~/.terminai/settings.json
 # Restart only if setting requires it (see effects matrix)
 ```
 
 **Method 2: Agent assistance**
+
 ```
 User: Change my approval mode to YOLO
 Agent: I'll update settings.json... [shows confirmation modal]
 ```
 
 **Method 3: CLI flags (session-only)**
+
 ```bash
 terminai --voice --approval-mode safe
 ```
 
-**Settings discovery**: Ask the agent "What settings can I configure?" for a full explanation.
+**Settings discovery**: Ask the agent "What settings can I configure?" for a
+full explanation.
 
 ### 11.5. Exit Flows
 
 **Normal exit** (Ctrl+C or /exit):
+
 1. Flush logs to `~/.terminai/sessions/`
 2. Close MCP connections
 3. Stop web-remote server (if running)
@@ -609,6 +624,7 @@ terminai --voice --approval-mode safe
 5. Exit cleanly (code 0)
 
 **Crash exit**:
+
 1. Write stack trace to crash log
 2. Emergency MCP shutdown (5s timeout)
 3. Suggest `/bug` command
@@ -625,6 +641,7 @@ The Tauri-based Desktop app offers:
 - **System integration**: Native notifications, tray icon, global hotkeys
 
 **Voice advantages**:
+
 - Visual waveform visualization
 - TTS volume slider
 - One-click voice toggle (no keyboard required)
@@ -633,6 +650,7 @@ The Tauri-based Desktop app offers:
 ### 11.7. Common Workflows
 
 #### Code Review Workflow
+
 ```
 User → "Review my changes"
   Agent → views `git diff` (auto)
@@ -647,6 +665,7 @@ User → "Yes"
 ```
 
 #### Voice Debugging Workflow
+
 ```
 [PTT] "Server crashes on startup"
   Agent (spoken): "Checking logs..."
@@ -663,6 +682,7 @@ User → approves
 ```
 
 #### Remote Access Workflow
+
 ```
 # Home machine
 terminai --web-remote
@@ -678,16 +698,19 @@ Enter relay URL + token
 ### 11.8. Error States & Recovery
 
 **Network timeout (Desktop ↔ CLI)**:
+
 - UI shows "Connection Lost" modal
 - Retry button attempts reconnection
 - Graceful degradation (queues messages if possible)
 
 **Auth expiration**:
+
 - Agent detects expired token
 - Auto-triggers OAuth re-authentication
 - Resumes operation after token refresh
 
 **Rate limit**:
+
 - Agent shows countdown timer
 - Auto-retries after backoff period
 - User can cancel and try later
@@ -696,16 +719,20 @@ Enter relay URL + token
 
 ## 12. Outstanding Questions
 
-1. **Outgoing A2A**: `RemoteAgentInvocation` is TODO – Agent cannot call other agents yet
-2. **Replay Protection**: Currently disabled in `app.ts` due to body-parser conflicts  
-3. **Offline Behavior**: Desktop behavior when CLI is unreachable needs clarification
+1. **Outgoing A2A**: `RemoteAgentInvocation` is TODO – Agent cannot call other
+   agents yet
+2. **Replay Protection**: Currently disabled in `app.ts` due to body-parser
+   conflicts
+3. **Offline Behavior**: Desktop behavior when CLI is unreachable needs
+   clarification
 4. **Session Resume**: Full history restoration mechanics not yet documented
 
 ---
 
 ## 13. Deep-Dive UX: Settings Menu Hierarchy (L2/L3/L4)
 
-This section provides an exhaustive breakdown of every configurable option in TerminaI, organized by menu level for easy navigation.
+This section provides an exhaustive breakdown of every configurable option in
+TerminaI, organized by menu level for easy navigation.
 
 ### 13.1. Settings File Location
 
@@ -716,31 +743,31 @@ This section provides an exhaustive breakdown of every configurable option in Te
 
 ### 13.2. Top-Level Categories (L1)
 
-| L1 Category | Purpose | Restart Required |
-|-------------|---------|------------------|
-| `llm` | LLM provider configuration | Yes |
-| `mcpServers` | MCP server definitions | Yes |
-| `general` | App behavior, checkpointing | Varies |
-| `output` | CLI output format | No |
-| `ui` | Themes, layout, accessibility | Varies |
-| `voice` | STT/TTS, push-to-talk | No |
-| `ide` | IDE integration mode | Yes |
-| `privacy` | Usage statistics | Yes |
-| `telemetry` | OTLP/logging config | Yes |
-| `model` | Model selection, tokens | No |
-| `brain` | Brain authority mode | Yes |
-| `modelConfigs` | Model aliases and overrides | No |
-| `context` | File filtering, memory | Varies |
-| `tools` | Shell, sandbox, tool policies | Yes |
-| `mcp` | MCP server allowlist | Yes |
-| `security` | Auth, approval, PIN | Yes |
-| `audit` | Audit log retention/export | Yes |
-| `recipes` | Automation recipes | Yes |
-| `advanced` | Power user tweaks | Yes |
-| `experimental` | Beta features | Yes |
-| `logs` | Session log retention | No |
-| `extensions` | Extension management | Yes |
-| `hooks` | Lifecycle hooks | No |
+| L1 Category    | Purpose                       | Restart Required |
+| -------------- | ----------------------------- | ---------------- |
+| `llm`          | LLM provider configuration    | Yes              |
+| `mcpServers`   | MCP server definitions        | Yes              |
+| `general`      | App behavior, checkpointing   | Varies           |
+| `output`       | CLI output format             | No               |
+| `ui`           | Themes, layout, accessibility | Varies           |
+| `voice`        | STT/TTS, push-to-talk         | No               |
+| `ide`          | IDE integration mode          | Yes              |
+| `privacy`      | Usage statistics              | Yes              |
+| `telemetry`    | OTLP/logging config           | Yes              |
+| `model`        | Model selection, tokens       | No               |
+| `brain`        | Brain authority mode          | Yes              |
+| `modelConfigs` | Model aliases and overrides   | No               |
+| `context`      | File filtering, memory        | Varies           |
+| `tools`        | Shell, sandbox, tool policies | Yes              |
+| `mcp`          | MCP server allowlist          | Yes              |
+| `security`     | Auth, approval, PIN           | Yes              |
+| `audit`        | Audit log retention/export    | Yes              |
+| `recipes`      | Automation recipes            | Yes              |
+| `advanced`     | Power user tweaks             | Yes              |
+| `experimental` | Beta features                 | Yes              |
+| `logs`         | Session log retention         | No               |
+| `extensions`   | Extension management          | Yes              |
+| `hooks`        | Lifecycle hooks               | No               |
 
 ---
 
@@ -874,11 +901,11 @@ security
 
 The critical `security.approvalMode` (set via CLI flag or settings) controls:
 
-| Mode | Level A | Level B | Level C |
-|------|---------|---------|---------|
-| `"safe"` | Auto-run | Click confirm | PIN required |
-| `"prompt"` | Click confirm | Click confirm | PIN required |
-| `"yolo"` | Auto-run | Auto-run | **PIN required** (always) |
+| Mode       | Level A       | Level B       | Level C                   |
+| ---------- | ------------- | ------------- | ------------------------- |
+| `"safe"`   | Auto-run      | Click confirm | PIN required              |
+| `"prompt"` | Click confirm | Click confirm | PIN required              |
+| `"yolo"`   | Auto-run      | Auto-run      | **PIN required** (always) |
 
 ---
 
@@ -1070,13 +1097,14 @@ recipes
 
 ### 13.18. Brain Authority Modes
 
-The `brain.authority` setting controls how much the AI can influence approval levels:
+The `brain.authority` setting controls how much the AI can influence approval
+levels:
 
-| Mode | Description |
-|------|-------------|
-| `"advisory"` | Brain suggestions are ignored by enforcement |
+| Mode              | Description                                       |
+| ----------------- | ------------------------------------------------- |
+| `"advisory"`      | Brain suggestions are ignored by enforcement      |
 | `"escalate-only"` | Brain can raise A→B or B→C, never lower (default) |
-| `"governing"` | Brain decisions are respected (dangerous) |
+| `"governing"`     | Brain decisions are respected (dangerous)         |
 
 ---
 
@@ -1116,10 +1144,7 @@ The `brain.authority` setting controls how much the AI can influence approval le
   },
   "tools": {
     "sandbox": true,
-    "allowed": [
-      "run_shell_command(git)",
-      "run_shell_command(npm test)"
-    ]
+    "allowed": ["run_shell_command(git)", "run_shell_command(npm test)"]
   },
   "brain": {
     "authority": "escalate-only"

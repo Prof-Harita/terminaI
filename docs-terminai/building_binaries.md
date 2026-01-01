@@ -410,5 +410,5 @@ jobs:
 
 - [Node.js SEA Documentation](https://nodejs.org/api/single-executable-applications.html)
 - [Tauri v2 Distribution Guide](https://v2.tauri.app/distribute/)
-- [Postject (SEA Injector)](https://github.com/nicolo-ribaudo/postject)
+- [Postject (SEA Injector)](https://github.com/nodejs/postject)
 - [Tauri Updater Plugin](https://v2.tauri.app/plugin/updater/)

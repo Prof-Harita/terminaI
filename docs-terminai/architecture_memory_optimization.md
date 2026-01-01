@@ -31,34 +31,34 @@ Migrate from **JSON Array** to **JSONL (JSON Lines)**:
 
 ### Primary Target
 
-| File                                                                                | Change     | Reason                                                  |
-| ----------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------- |
-| [logger.ts](file:///home/profharita/Code/terminaI/packages/core/src/core/logger.ts) | **MODIFY** | Core fix: replace `_updateLogFile` with `fs.appendFile` |
+| File                                             | Change     | Reason                                                  |
+| ------------------------------------------------ | ---------- | ------------------------------------------------------- |
+| [logger.ts](../packages/core/src/core/logger.ts) | **MODIFY** | Core fix: replace `_updateLogFile` with `fs.appendFile` |
 
 ### Direct Consumers (Update Tests Only)
 
-| File                                                                                          | Change     | Reason                              |
-| --------------------------------------------------------------------------------------------- | ---------- | ----------------------------------- |
-| [logger.test.ts](file:///home/profharita/Code/terminaI/packages/core/src/core/logger.test.ts) | **MODIFY** | Update tests to expect JSONL format |
+| File                                                       | Change     | Reason                              |
+| ---------------------------------------------------------- | ---------- | ----------------------------------- |
+| [logger.test.ts](../packages/core/src/core/logger.test.ts) | **MODIFY** | Update tests to expect JSONL format |
 
 ### Interface Consumers (No Code Changes Required)
 
-| File                                                                                                                 | Uses                               | Status           |
-| -------------------------------------------------------------------------------------------------------------------- | ---------------------------------- | ---------------- |
-| [useLogger.ts](file:///home/profharita/Code/terminaI/packages/cli/src/ui/hooks/useLogger.ts)                         | `new Logger()`                     | ✅ No change     |
-| [slashCommandProcessor.ts](file:///home/profharita/Code/terminaI/packages/cli/src/ui/hooks/slashCommandProcessor.ts) | `new Logger()`                     | ✅ No change     |
-| [useInputHistoryStore.ts](file:///home/profharita/Code/terminaI/packages/cli/src/ui/hooks/useInputHistoryStore.ts)   | `logger.getPreviousUserMessages()` | ✅ No change     |
-| [AppContainer.tsx](file:///home/profharita/Code/terminaI/packages/cli/src/ui/AppContainer.tsx)                       | `logger` (via hook)                | ✅ No change     |
-| [thinkingOrchestrator.ts](file:///home/profharita/Code/terminaI/packages/core/src/brain/thinkingOrchestrator.ts)     | `logger.logEventFull()`            | ✅ Already JSONL |
-| [sessionEvaluator.ts](file:///home/profharita/Code/terminaI/packages/core/src/evaluation/sessionEvaluator.ts)        | `TerminaILogEvent` type            | ✅ No change     |
+| File                                                                              | Uses                               | Status           |
+| --------------------------------------------------------------------------------- | ---------------------------------- | ---------------- |
+| [useLogger.ts](../packages/cli/src/ui/hooks/useLogger.ts)                         | `new Logger()`                     | ✅ No change     |
+| [slashCommandProcessor.ts](../packages/cli/src/ui/hooks/slashCommandProcessor.ts) | `new Logger()`                     | ✅ No change     |
+| [useInputHistoryStore.ts](../packages/cli/src/ui/hooks/useInputHistoryStore.ts)   | `logger.getPreviousUserMessages()` | ✅ No change     |
+| [AppContainer.tsx](../packages/cli/src/ui/AppContainer.tsx)                       | `logger` (via hook)                | ✅ No change     |
+| [thinkingOrchestrator.ts](../packages/core/src/brain/thinkingOrchestrator.ts)     | `logger.logEventFull()`            | ✅ Already JSONL |
+| [sessionEvaluator.ts](../packages/core/src/evaluation/sessionEvaluator.ts)        | `TerminaILogEvent` type            | ✅ No change     |
 
 ### Independent Systems (Not Affected)
 
-| File                                                                                                                | Status                                 |
-| ------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| [chatRecordingService.ts](file:///home/profharita/Code/terminaI/packages/core/src/services/chatRecordingService.ts) | Uses own JSON files, not Logger        |
-| `packages/evolution-lab/*`                                                                                          | Zero Logger dependencies               |
-| `packages/a2a-server/*`                                                                                             | Uses separate `logger.ts` (pino-based) |
+| File                                                                             | Status                                 |
+| -------------------------------------------------------------------------------- | -------------------------------------- |
+| [chatRecordingService.ts](../packages/core/src/services/chatRecordingService.ts) | Uses own JSON files, not Logger        |
+| `packages/evolution-lab/*`                                                       | Zero Logger dependencies               |
+| `packages/a2a-server/*`                                                          | Uses separate `logger.ts` (pino-based) |
 
 ## Logger Methods Analysis
 

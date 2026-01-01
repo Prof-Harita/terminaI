@@ -58,9 +58,8 @@ infrastructure** (`@terminai/core/config/settings`) shared between:
 3. Workspace settings (`.terminai/settings.json`) - if trusted
 4. System overrides (`/etc/gemini-cli/settings.json`)
 
-See
-[cli_desktop_parity_architecture.md](file:///home/profharita/Code/terminaI/local/cli_desktop_parity_architecture.md)
-for implementation details.
+See the inline documentation in `packages/core/src/config/settings/` for
+implementation details.
 
 ## Web Remote (A2A) token
 
