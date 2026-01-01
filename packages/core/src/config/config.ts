@@ -133,7 +133,10 @@ import { debugLogger } from '../utils/debugLogger.js';
 import { startupProfiler } from '../telemetry/startupProfiler.js';
 
 import { ApprovalMode } from '../policy/types.js';
-import type { Provenance } from '../safety/approval-ladder/types.js';
+import type {
+  Provenance,
+  SecurityProfile,
+} from '../safety/approval-ladder/types.js';
 import {
   DEFAULT_BRAIN_AUTHORITY,
   type BrainAuthority,
@@ -375,8 +378,11 @@ export interface ConfigParameters {
   previewFeatures?: boolean;
   enableAgents?: boolean;
   experimentalJitContext?: boolean;
+  security_profile?: SecurityProfile;
   security?: {
     approvalPin?: string;
+    trustedDomains?: string[];
+    criticalPaths?: string[];
   };
   brain?: {
     authority?: BrainAuthority;
@@ -547,6 +553,9 @@ export class Config {
   private contextManager?: ContextManager;
   private terminalBackground: string | undefined = undefined;
   private readonly approvalPin: string;
+  private readonly securityProfile: SecurityProfile;
+  private readonly trustedDomains: string[];
+  private readonly criticalPaths: string[];
   private readonly providerConfig: ProviderConfig;
   private readonly logsRetentionDays: number;
   private readonly replToolConfig: ReplToolConfig;
@@ -715,6 +724,27 @@ export class Config {
     this.hooks = params.hooks;
     this.experiments = params.experiments;
     this.approvalPin = params.security?.approvalPin ?? '000000';
+    this.securityProfile = params.security_profile ?? 'balanced';
+    this.trustedDomains = params.security?.trustedDomains ?? [
+      'google.com',
+      'googleapis.com',
+      'github.com',
+      'githubusercontent.com',
+      'npmjs.org',
+      'npmjs.com',
+      'pypi.org',
+      'python.org',
+    ];
+    this.criticalPaths = params.security?.criticalPaths ?? [
+      '/',
+      '/etc',
+      '/usr',
+      '/bin',
+      '/sbin',
+      '~/.ssh',
+      '~/.aws',
+      '~/.gnupg',
+    ];
     const policyBrainAuthority = params.brain?.policyAuthority;
     this.brainAuthority = resolveEffectiveBrainAuthority(
       params.brain?.authority ?? DEFAULT_BRAIN_AUTHORITY,
@@ -1315,6 +1345,18 @@ export class Config {
     return this.approvalPin;
   }
 
+  getSecurityProfile(): SecurityProfile {
+    return this.securityProfile;
+  }
+
+  getTrustedDomains(): string[] {
+    return this.trustedDomains;
+  }
+
+  getCriticalPaths(): string[] {
+    return this.criticalPaths;
+  }
+
   getBrainAuthority(): BrainAuthority {
     return this.brainAuthority;
   }
@@ -1857,19 +1899,19 @@ export class Config {
     registerCoreTool(ReplTool, this);
 
     // Register GUI Automation Tools
-    registerCoreTool(UiSnapshotTool, this.messageBus);
-    registerCoreTool(UiClickTool, this.messageBus);
-    registerCoreTool(UiDescribeTool, this.messageBus);
-    registerCoreTool(UiHealthTool, this.messageBus);
-    registerCoreTool(UiTypeTool, this.messageBus);
-    registerCoreTool(UiQueryTool, this.messageBus);
-    registerCoreTool(UiCapabilitiesTool, this.messageBus);
-    registerCoreTool(UiKeyTool, this.messageBus);
-    registerCoreTool(UiScrollTool, this.messageBus);
-    registerCoreTool(UiFocusTool, this.messageBus);
-    registerCoreTool(UiWaitTool, this.messageBus);
-    registerCoreTool(UiAssertTool, this.messageBus);
-    registerCoreTool(UiClickXyTool, this.messageBus);
+    registerCoreTool(UiSnapshotTool, this);
+    registerCoreTool(UiClickTool, this);
+    registerCoreTool(UiDescribeTool, this);
+    registerCoreTool(UiHealthTool, this);
+    registerCoreTool(UiTypeTool, this);
+    registerCoreTool(UiQueryTool, this);
+    registerCoreTool(UiCapabilitiesTool, this);
+    registerCoreTool(UiKeyTool, this);
+    registerCoreTool(UiScrollTool, this);
+    registerCoreTool(UiFocusTool, this);
+    registerCoreTool(UiWaitTool, this);
+    registerCoreTool(UiAssertTool, this);
+    registerCoreTool(UiClickXyTool, this);
 
     // Register Subagents as Tools
     // Register DelegateToAgentTool if agents are enabled

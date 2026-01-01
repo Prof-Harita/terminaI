@@ -20,6 +20,9 @@ describe('ShellToolInvocation provenance', () => {
       getTargetDir: () => '/workspace',
       getApprovalPin: () => '123456',
       getBrainAuthority: () => 'escalate-only',
+      getSecurityProfile: () => 'balanced',
+      getTrustedDomains: () => [],
+      getCriticalPaths: () => [],
     };
     const invocation = new ShellToolInvocation(
       mockConfig as unknown as Config,

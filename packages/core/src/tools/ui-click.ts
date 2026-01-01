@@ -18,6 +18,7 @@ import type { MessageBus } from '../confirmation-bus/message-bus.js';
 import { UI_CLICK_TOOL_NAME } from './tool-names.js';
 import { buildUiConfirmationDetails, formatUiResult } from './ui-tool-utils.js';
 import { DesktopAutomationService } from '../gui/service/DesktopAutomationService.js';
+import type { Config } from '../config/config.js';
 
 class UiClickToolInvocation extends BaseToolInvocation<
   UiClickArgs,
@@ -25,6 +26,7 @@ class UiClickToolInvocation extends BaseToolInvocation<
 > {
   constructor(
     params: UiClickArgs,
+    private readonly config: Config,
     messageBus?: MessageBus,
     toolName?: string,
     toolDisplayName?: string,
@@ -47,6 +49,7 @@ class UiClickToolInvocation extends BaseToolInvocation<
       onConfirm: async (outcome) => {
         await this.publishPolicyUpdate(outcome);
       },
+      config: this.config,
     });
   }
 
@@ -58,7 +61,7 @@ class UiClickToolInvocation extends BaseToolInvocation<
 }
 
 export class UiClickTool extends UiToolBase<UiClickArgs> {
-  constructor(messageBus?: MessageBus) {
+  constructor(config: Config, messageBus?: MessageBus) {
     super(
       UI_CLICK_TOOL_NAME,
       'UI Click',
@@ -77,6 +80,7 @@ export class UiClickTool extends UiToolBase<UiClickArgs> {
       },
       true,
       false,
+      config,
       messageBus,
     );
   }
@@ -95,6 +99,7 @@ export class UiClickTool extends UiToolBase<UiClickArgs> {
   ): ToolInvocation<UiClickArgs, ToolResult> {
     return new UiClickToolInvocation(
       params,
+      this.config,
       messageBus,
       toolName,
       toolDisplayName,

@@ -169,7 +169,7 @@ export class ShellToolInvocation extends BaseToolInvocation<
         invocationProvenance.length > 0 ? invocationProvenance : undefined,
     });
 
-    const reviewResult = computeMinimumReviewLevel(actionProfile);
+    const reviewResult = computeMinimumReviewLevel(actionProfile, this.config);
     let effectiveReview: DeterministicReviewResult = {
       ...reviewResult,
       reasons: [...reviewResult.reasons],

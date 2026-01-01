@@ -28,6 +28,36 @@ export type OperationClass =
   | 'unknown';
 
 /**
+ * Outcome classification: can this action be reversed?
+ */
+export type Outcome = 'reversible' | 'soft-irreversible' | 'irreversible';
+
+/**
+ * Intention classification: who initiated this action?
+ */
+export type Intention = 'explicit' | 'task-derived' | 'autonomous';
+
+/**
+ * Domain classification: where is this action targeted?
+ */
+export type Domain =
+  | 'workspace'
+  | 'localhost'
+  | 'trusted'
+  | 'untrusted'
+  | 'system';
+
+/**
+ * User-configurable security profiles
+ */
+export type SecurityProfile = 'strict' | 'balanced' | 'minimal';
+
+/**
+ * Resulting approval requirement for an action.
+ */
+export type RiskScore = 'pass' | 'log' | 'confirm' | 'pin';
+
+/**
  * Source/origin of a tool call for trust assessment.
  */
 export type Provenance =
@@ -63,6 +93,9 @@ export interface ActionProfile {
 
   /** Whether the action has unbounded scope signals (/, ~, wildcards with deletes) */
   hasUnboundedScopeSignals: boolean;
+
+  /** Network targets (domains/IPs) accessed by this action */
+  networkTargets?: string[];
 
   /** Confidence in the parsing/analysis (low triggers automatic escalation) */
   parseConfidence: 'high' | 'medium' | 'low';

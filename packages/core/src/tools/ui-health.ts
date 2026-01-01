@@ -12,6 +12,7 @@ import type { MessageBus } from '../confirmation-bus/message-bus.js';
 import { UI_HEALTH_TOOL_NAME } from './tool-names.js';
 import { formatUiResult } from './ui-tool-utils.js';
 import { DesktopAutomationService } from '../gui/service/DesktopAutomationService.js';
+import type { Config } from '../config/config.js';
 
 type UiHealthArgs = Record<string, never>;
 
@@ -78,7 +79,7 @@ class UiHealthToolInvocation extends BaseToolInvocation<
 }
 
 export class UiHealthTool extends UiToolBase<UiHealthArgs> {
-  constructor(messageBus?: MessageBus) {
+  constructor(config: Config, messageBus?: MessageBus) {
     super(
       UI_HEALTH_TOOL_NAME,
       'UI Health',
@@ -90,6 +91,7 @@ export class UiHealthTool extends UiToolBase<UiHealthArgs> {
       },
       true,
       false,
+      config,
       messageBus,
     );
   }

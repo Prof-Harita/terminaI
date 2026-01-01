@@ -18,6 +18,7 @@ import type { MessageBus } from '../confirmation-bus/message-bus.js';
 import { UI_CLICK_XY_TOOL_NAME } from './tool-names.js';
 import { buildUiConfirmationDetails, formatUiResult } from './ui-tool-utils.js';
 import { DesktopAutomationService } from '../gui/service/DesktopAutomationService.js';
+import type { Config } from '../config/config.js';
 
 class UiClickXyToolInvocation extends BaseToolInvocation<
   UiClickXyArgs,
@@ -25,6 +26,7 @@ class UiClickXyToolInvocation extends BaseToolInvocation<
 > {
   constructor(
     params: UiClickXyArgs,
+    private readonly config: Config,
     messageBus?: MessageBus,
     toolName?: string,
     toolDisplayName?: string,
@@ -47,6 +49,7 @@ class UiClickXyToolInvocation extends BaseToolInvocation<
       onConfirm: async (outcome) => {
         await this.publishPolicyUpdate(outcome);
       },
+      config: this.config,
     });
   }
 
@@ -58,7 +61,7 @@ class UiClickXyToolInvocation extends BaseToolInvocation<
 }
 
 export class UiClickXyTool extends UiToolBase<UiClickXyArgs> {
-  constructor(messageBus?: MessageBus) {
+  constructor(config: Config, messageBus?: MessageBus) {
     super(
       UI_CLICK_XY_TOOL_NAME,
       'UI Click XY',
@@ -78,6 +81,7 @@ export class UiClickXyTool extends UiToolBase<UiClickXyArgs> {
       },
       true,
       false,
+      config,
       messageBus,
     );
   }
@@ -96,6 +100,7 @@ export class UiClickXyTool extends UiToolBase<UiClickXyArgs> {
   ): ToolInvocation<UiClickXyArgs, ToolResult> {
     return new UiClickXyToolInvocation(
       params,
+      this.config,
       messageBus,
       toolName,
       toolDisplayName,

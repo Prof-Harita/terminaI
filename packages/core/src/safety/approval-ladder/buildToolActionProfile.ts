@@ -18,6 +18,7 @@ import {
   FILE_OPS_TOOL_NAME,
   PROCESS_MANAGER_TOOL_NAME,
   WEB_FETCH_TOOL_NAME,
+  WEB_SEARCH_TOOL_NAME,
   REPL_TOOL_NAME,
   UI_ASSERT_TOOL_NAME,
   UI_CAPABILITIES_TOOL_NAME,
@@ -150,6 +151,7 @@ export function buildToolActionProfile({
   let hasUnboundedScopeSignals = false;
   let rawSummary = toolName;
   let touchedPaths: string[] = [];
+  const networkTargets: string[] = [];
 
   switch (toolName) {
     case EDIT_TOOL_NAME:
@@ -245,7 +247,18 @@ export function buildToolActionProfile({
     }
     case WEB_FETCH_TOOL_NAME: {
       operations.add('network');
+      const url = typeof args['url'] === 'string' ? args['url'] : '';
+      if (url) {
+        // Simple extraction of target
+        networkTargets.push(url);
+      }
       rawSummary = `${toolName} ${args['url'] ?? ''}`.trim();
+      break;
+    }
+    case WEB_SEARCH_TOOL_NAME: {
+      operations.add('network');
+      networkTargets.push('google.com'); // Default to google for search tool
+      rawSummary = `${toolName} ${args['query'] ?? ''}`.trim();
       break;
     }
     case REPL_TOOL_NAME: {
@@ -295,6 +308,7 @@ export function buildToolActionProfile({
     outsideWorkspace,
     usesPrivilege: false,
     hasUnboundedScopeSignals,
+    networkTargets,
     parseConfidence,
     provenance: normalizeProvenance(provenance),
     rawSummary,

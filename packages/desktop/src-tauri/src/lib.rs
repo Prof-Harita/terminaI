@@ -60,7 +60,11 @@ fn greet(name: &str) -> String {
 
 #[tauri::command]
 fn start_cli(app: tauri::AppHandle, state: State<AppState>) -> Result<(), String> {
-    let bridge = CliBridge::spawn(app)?;
+    // Use home directory as default workspace instead of deprecated spawn()
+    let home = std::env::var("HOME")
+        .or_else(|_| std::env::var("USERPROFILE"))
+        .unwrap_or_else(|_| "/tmp".to_string());
+    let bridge = CliBridge::spawn_web_remote(app, home)?;
     *state.cli.lock().unwrap() = Some(bridge);
     Ok(())
 }

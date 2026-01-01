@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import type {
   MCPServerConfig,
   BugCommandSettings,
@@ -102,6 +109,166 @@ export const SETTINGS_SCHEMA = {
         requiresRestart: true,
         default: false,
         showInDialog: true,
+      },
+    },
+  },
+
+  security_profile: {
+    type: 'enum',
+    label: 'Security Profile',
+    category: 'Security',
+    requiresRestart: false,
+    default: 'balanced',
+    options: [
+      { value: 'strict', label: 'Strict' },
+      { value: 'balanced', label: 'Balanced' },
+      { value: 'minimal', label: 'Minimal' },
+    ],
+    description: 'Controls the level of security approval required.',
+    showInDialog: true,
+  },
+
+  security: {
+    type: 'object',
+    label: 'Security',
+    category: 'Security',
+    requiresRestart: false,
+    default: {},
+    description: 'Detailed security settings.',
+    showInDialog: false,
+    properties: {
+      approvalPin: {
+        type: 'string',
+        label: 'Approval PIN',
+        category: 'Security',
+        requiresRestart: false,
+        default: '000000',
+        description: '6-digit PIN for high-risk actions.',
+        showInDialog: true,
+      },
+      trustedDomains: {
+        type: 'array',
+        label: 'Trusted Domains',
+        category: 'Security',
+        requiresRestart: false,
+        default: [
+          'google.com',
+          'googleapis.com',
+          'github.com',
+          'githubusercontent.com',
+          'npmjs.org',
+          'npmjs.com',
+          'pypi.org',
+          'python.org',
+        ],
+        items: { type: 'string' },
+        description: 'List of trusted domains for network operations.',
+      },
+      criticalPaths: {
+        type: 'array',
+        label: 'Critical Paths',
+        category: 'Security',
+        requiresRestart: false,
+        default: [
+          '/',
+          '/etc',
+          '/usr',
+          '/bin',
+          '/sbin',
+          '~/.ssh',
+          '~/.aws',
+          '~/.gnupg',
+        ],
+        items: { type: 'string' },
+        description:
+          'List of critical file system paths that always require PIN.',
+      },
+      disableYoloMode: {
+        type: 'boolean',
+        label: 'Disable YOLO Mode',
+        category: 'Security',
+        requiresRestart: true,
+        default: false,
+        description: 'Disable YOLO mode, even if enabled by a flag.',
+        showInDialog: true,
+      },
+      enablePermanentToolApproval: {
+        type: 'boolean',
+        label: 'Allow Permanent Tool Approval',
+        category: 'Security',
+        requiresRestart: false,
+        default: false,
+        description:
+          'Enable the "Allow for all future sessions" option in tool confirmation dialogs.',
+        showInDialog: true,
+      },
+      blockGitExtensions: {
+        type: 'boolean',
+        label: 'Blocks extensions from Git',
+        category: 'Security',
+        requiresRestart: true,
+        default: false,
+        description: 'Blocks installing and loading extensions from Git.',
+        showInDialog: true,
+      },
+      folderTrust: {
+        type: 'object',
+        label: 'Folder Trust',
+        category: 'Security',
+        requiresRestart: false,
+        default: {},
+        description: 'Settings for folder trust.',
+        showInDialog: false,
+        properties: {
+          enabled: {
+            type: 'boolean',
+            label: 'Folder Trust',
+            category: 'Security',
+            requiresRestart: true,
+            default: false,
+            description: 'Setting to track whether Folder trust is enabled.',
+            showInDialog: true,
+          },
+        },
+      },
+      auth: {
+        type: 'object',
+        label: 'Authentication',
+        category: 'Security',
+        requiresRestart: true,
+        default: {},
+        description: 'Authentication settings.',
+        showInDialog: false,
+        properties: {
+          selectedType: {
+            type: 'string',
+            label: 'Selected Auth Type',
+            category: 'Security',
+            requiresRestart: true,
+            default: undefined as AuthType | undefined,
+            description: 'The currently selected authentication type.',
+            showInDialog: false,
+          },
+          enforcedType: {
+            type: 'string',
+            label: 'Enforced Auth Type',
+            category: 'Advanced',
+            requiresRestart: true,
+            default: undefined as AuthType | undefined,
+            description:
+              'The required auth type. If this does not match the selected auth type, the user will be prompted to re-authenticate.',
+            showInDialog: false,
+          },
+          useExternal: {
+            type: 'boolean',
+            label: 'Use External Auth',
+            category: 'Security',
+            requiresRestart: true,
+            default: undefined as boolean | undefined,
+            description: 'Whether to use an external authentication flow.',
+            showInDialog: false,
+          },
+        },
       },
     },
   },
@@ -1103,104 +1270,6 @@ export const SETTINGS_SCHEMA = {
     default: true,
     description: 'Enable the write_todos tool.',
     showInDialog: false,
-  },
-  security: {
-    type: 'object',
-    label: 'Security',
-    category: 'Security',
-    requiresRestart: true,
-    default: {},
-    description: 'Security-related settings.',
-    showInDialog: false,
-    properties: {
-      disableYoloMode: {
-        type: 'boolean',
-        label: 'Disable YOLO Mode',
-        category: 'Security',
-        requiresRestart: true,
-        default: false,
-        description: 'Disable YOLO mode, even if enabled by a flag.',
-        showInDialog: true,
-      },
-      enablePermanentToolApproval: {
-        type: 'boolean',
-        label: 'Allow Permanent Tool Approval',
-        category: 'Security',
-        requiresRestart: false,
-        default: false,
-        description:
-          'Enable the "Allow for all future sessions" option in tool confirmation dialogs.',
-        showInDialog: true,
-      },
-      blockGitExtensions: {
-        type: 'boolean',
-        label: 'Blocks extensions from Git',
-        category: 'Security',
-        requiresRestart: true,
-        default: false,
-        description: 'Blocks installing and loading extensions from Git.',
-        showInDialog: true,
-      },
-      folderTrust: {
-        type: 'object',
-        label: 'Folder Trust',
-        category: 'Security',
-        requiresRestart: false,
-        default: {},
-        description: 'Settings for folder trust.',
-        showInDialog: false,
-        properties: {
-          enabled: {
-            type: 'boolean',
-            label: 'Folder Trust',
-            category: 'Security',
-            requiresRestart: true,
-            default: false,
-            description: 'Setting to track whether Folder trust is enabled.',
-            showInDialog: true,
-          },
-        },
-      },
-      auth: {
-        type: 'object',
-        label: 'Authentication',
-        category: 'Security',
-        requiresRestart: true,
-        default: {},
-        description: 'Authentication settings.',
-        showInDialog: false,
-        properties: {
-          selectedType: {
-            type: 'string',
-            label: 'Selected Auth Type',
-            category: 'Security',
-            requiresRestart: true,
-            default: undefined as AuthType | undefined,
-            description: 'The currently selected authentication type.',
-            showInDialog: false,
-          },
-          enforcedType: {
-            type: 'string',
-            label: 'Enforced Auth Type',
-            category: 'Advanced',
-            requiresRestart: true,
-            default: undefined as AuthType | undefined,
-            description:
-              'The required auth type. If this does not match the selected auth type, the user will be prompted to re-authenticate.',
-            showInDialog: false,
-          },
-          useExternal: {
-            type: 'boolean',
-            label: 'Use External Auth',
-            category: 'Security',
-            requiresRestart: true,
-            default: undefined as boolean | undefined,
-            description: 'Whether to use an external authentication flow.',
-            showInDialog: false,
-          },
-        },
-      },
-    },
   },
 
   audit: {
@@ -2401,7 +2470,7 @@ export type InferSettings<T> = {
         ? D extends boolean
           ? boolean
           : D
-        : any;
+        : any; // eslint-disable-line @typescript-eslint/no-explicit-any
 };
 
 export type Settings = InferSettings<SettingsSchemaType>;

@@ -18,6 +18,7 @@ import type { MessageBus } from '../confirmation-bus/message-bus.js';
 import { UI_FOCUS_TOOL_NAME } from './tool-names.js';
 import { buildUiConfirmationDetails, formatUiResult } from './ui-tool-utils.js';
 import { DesktopAutomationService } from '../gui/service/DesktopAutomationService.js';
+import type { Config } from '../config/config.js';
 
 class UiFocusToolInvocation extends BaseToolInvocation<
   UiFocusArgs,
@@ -25,6 +26,7 @@ class UiFocusToolInvocation extends BaseToolInvocation<
 > {
   constructor(
     params: UiFocusArgs,
+    private readonly config: Config,
     messageBus?: MessageBus,
     toolName?: string,
     toolDisplayName?: string,
@@ -47,6 +49,7 @@ class UiFocusToolInvocation extends BaseToolInvocation<
       onConfirm: async (outcome) => {
         await this.publishPolicyUpdate(outcome);
       },
+      config: this.config,
     });
   }
 
@@ -58,7 +61,7 @@ class UiFocusToolInvocation extends BaseToolInvocation<
 }
 
 export class UiFocusTool extends UiToolBase<UiFocusArgs> {
-  constructor(messageBus?: MessageBus) {
+  constructor(config: Config, messageBus?: MessageBus) {
     super(
       UI_FOCUS_TOOL_NAME,
       'UI Focus',
@@ -74,6 +77,7 @@ export class UiFocusTool extends UiToolBase<UiFocusArgs> {
       },
       true,
       false,
+      config,
       messageBus,
     );
   }
@@ -92,6 +96,7 @@ export class UiFocusTool extends UiToolBase<UiFocusArgs> {
   ): ToolInvocation<UiFocusArgs, ToolResult> {
     return new UiFocusToolInvocation(
       params,
+      this.config,
       messageBus,
       toolName,
       toolDisplayName,

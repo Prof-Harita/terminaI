@@ -14,6 +14,7 @@ import type { MessageBus } from '../confirmation-bus/message-bus.js';
 import { UI_SNAPSHOT_TOOL_NAME } from './tool-names.js';
 import { formatUiResult } from './ui-tool-utils.js';
 import { DesktopAutomationService } from '../gui/service/DesktopAutomationService.js';
+import type { Config } from '../config/config.js';
 
 class UiSnapshotToolInvocation extends BaseToolInvocation<
   UiSnapshotArgs,
@@ -46,7 +47,7 @@ class UiSnapshotToolInvocation extends BaseToolInvocation<
 }
 
 export class UiSnapshotTool extends UiToolBase<UiSnapshotArgs> {
-  constructor(messageBus?: MessageBus) {
+  constructor(config: Config, messageBus?: MessageBus) {
     super(
       UI_SNAPSHOT_TOOL_NAME,
       'UI Snapshot',
@@ -77,6 +78,7 @@ export class UiSnapshotTool extends UiToolBase<UiSnapshotArgs> {
       },
       true,
       false,
+      config,
       messageBus,
     );
   }

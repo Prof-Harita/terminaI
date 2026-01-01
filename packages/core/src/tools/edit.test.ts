@@ -112,6 +112,10 @@ describe('EditTool', () => {
       setGeminiMdFileCount: vi.fn(),
       getToolRegistry: () => ({}) as any, // Minimal mock for ToolRegistry
       isInteractive: () => false,
+      getSecurityProfile: vi.fn(() => 'balanced'),
+      getApprovalPin: vi.fn(() => undefined),
+      getTrustedDomains: vi.fn(() => []),
+      getCriticalPaths: vi.fn(() => []),
     } as unknown as Config;
 
     // Reset mocks before each test

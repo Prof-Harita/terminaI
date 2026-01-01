@@ -18,6 +18,7 @@ import type { MessageBus } from '../confirmation-bus/message-bus.js';
 import { UI_SCROLL_TOOL_NAME } from './tool-names.js';
 import { buildUiConfirmationDetails, formatUiResult } from './ui-tool-utils.js';
 import { DesktopAutomationService } from '../gui/service/DesktopAutomationService.js';
+import type { Config } from '../config/config.js';
 
 class UiScrollToolInvocation extends BaseToolInvocation<
   UiScrollArgs,
@@ -25,6 +26,7 @@ class UiScrollToolInvocation extends BaseToolInvocation<
 > {
   constructor(
     params: UiScrollArgs,
+    private readonly config: Config,
     messageBus?: MessageBus,
     toolName?: string,
     toolDisplayName?: string,
@@ -47,6 +49,7 @@ class UiScrollToolInvocation extends BaseToolInvocation<
       onConfirm: async (outcome) => {
         await this.publishPolicyUpdate(outcome);
       },
+      config: this.config,
     });
   }
 
@@ -58,7 +61,7 @@ class UiScrollToolInvocation extends BaseToolInvocation<
 }
 
 export class UiScrollTool extends UiToolBase<UiScrollArgs> {
-  constructor(messageBus?: MessageBus) {
+  constructor(config: Config, messageBus?: MessageBus) {
     super(
       UI_SCROLL_TOOL_NAME,
       'UI Scroll',
@@ -75,6 +78,7 @@ export class UiScrollTool extends UiToolBase<UiScrollArgs> {
       },
       true,
       false,
+      config,
       messageBus,
     );
   }
@@ -93,6 +97,7 @@ export class UiScrollTool extends UiToolBase<UiScrollArgs> {
   ): ToolInvocation<UiScrollArgs, ToolResult> {
     return new UiScrollToolInvocation(
       params,
+      this.config,
       messageBus,
       toolName,
       toolDisplayName,

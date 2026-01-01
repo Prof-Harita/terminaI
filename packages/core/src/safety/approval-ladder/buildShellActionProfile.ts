@@ -285,6 +285,38 @@ export function buildShellActionProfile(args: {
   // Determine usesPrivilege
   const usesPrivilege = operations.includes('privileged');
 
+  // Step 7: Extract network targets
+  const networkTargets: string[] = [];
+  if (operations.includes('network')) {
+    // Simple extraction for common tools
+    const parts = normalized.split(/\s+/);
+    if (roots.includes('curl') || roots.includes('wget')) {
+      const url = parts.find(
+        (p) => p.includes('://') || p.match(/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/),
+      );
+      if (url) networkTargets.push(url);
+    } else if (roots.includes('ssh')) {
+      // ssh user@host
+      const target = parts.find(
+        (p) => p.includes('@') || (p !== 'ssh' && !p.startsWith('-')),
+      );
+      if (target) networkTargets.push(target);
+    } else if (roots.includes('git')) {
+      // git clone <url>
+      // git push <remote> ...
+      const url = parts.find((p) => p.includes('://') || p.includes('git@'));
+      if (url) networkTargets.push(url);
+    } else if (
+      roots.includes('npm') ||
+      roots.includes('yarn') ||
+      roots.includes('pnpm')
+    ) {
+      networkTargets.push('npmjs.org');
+    } else if (roots.includes('pip')) {
+      networkTargets.push('pypi.org');
+    }
+  }
+
   return {
     toolName: 'ShellTool',
     operations,
@@ -293,6 +325,7 @@ export function buildShellActionProfile(args: {
     outsideWorkspace,
     usesPrivilege,
     hasUnboundedScopeSignals,
+    networkTargets,
     parseConfidence,
     provenance,
     rawSummary: command,

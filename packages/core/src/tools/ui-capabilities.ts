@@ -12,6 +12,7 @@ import type { MessageBus } from '../confirmation-bus/message-bus.js';
 import { UI_CAPABILITIES_TOOL_NAME } from './tool-names.js';
 import { formatUiResult } from './ui-tool-utils.js';
 import { DesktopAutomationService } from '../gui/service/DesktopAutomationService.js';
+import type { Config } from '../config/config.js';
 
 type UiCapabilitiesArgs = Record<string, never>;
 
@@ -47,7 +48,7 @@ class UiCapabilitiesToolInvocation extends BaseToolInvocation<
 }
 
 export class UiCapabilitiesTool extends UiToolBase<UiCapabilitiesArgs> {
-  constructor(messageBus?: MessageBus) {
+  constructor(config: Config, messageBus?: MessageBus) {
     super(
       UI_CAPABILITIES_TOOL_NAME,
       'UI Capabilities',
@@ -59,6 +60,7 @@ export class UiCapabilitiesTool extends UiToolBase<UiCapabilitiesArgs> {
       },
       true,
       false,
+      config,
       messageBus,
     );
   }

@@ -103,6 +103,10 @@ const mockConfigInternal = {
       discoverTools: vi.fn(),
     }) as unknown as ToolRegistry,
   isInteractive: () => false,
+  getSecurityProfile: vi.fn(() => 'balanced'),
+  getApprovalPin: vi.fn(() => undefined),
+  getTrustedDomains: vi.fn(() => []),
+  getCriticalPaths: vi.fn(() => []),
 };
 const mockConfig = mockConfigInternal as unknown as Config;
 

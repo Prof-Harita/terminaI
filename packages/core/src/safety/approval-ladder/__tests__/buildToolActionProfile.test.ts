@@ -20,6 +20,11 @@ import {
 describe('buildToolActionProfile', () => {
   const mockConfig = {
     getTargetDir: () => '/workspace',
+    getSecurityProfile: () => 'balanced',
+    getApprovalPin: () => undefined,
+    getTrustedDomains: () => [],
+    getCriticalPaths: () => [],
+    getWorkspaceContext: () => ({ isPathWithinWorkspace: () => true }),
   } as unknown as Config;
 
   it('classifies edit tool calls as write operations with touched paths', () => {
@@ -43,7 +48,7 @@ describe('buildToolActionProfile', () => {
 
     expect(profile.operations).toContain('delete');
     expect(profile.hasUnboundedScopeSignals).toBe(true);
-    const review = computeMinimumReviewLevel(profile);
+    const review = computeMinimumReviewLevel(profile, mockConfig);
     expect(review.level).toBe('C');
   });
 
@@ -65,7 +70,7 @@ describe('buildToolActionProfile', () => {
     });
 
     expect(profile.operations).toContain('ui');
-    const review = computeMinimumReviewLevel(profile);
+    const review = computeMinimumReviewLevel(profile, mockConfig);
     expect(review.level).toBe('B');
   });
 
@@ -82,7 +87,7 @@ describe('buildToolActionProfile', () => {
     expect(profile.operations).toContain('process');
     expect(profile.operations).toContain('unknown');
     expect(profile.parseConfidence).toBe('low');
-    const review = computeMinimumReviewLevel(profile);
+    const review = computeMinimumReviewLevel(profile, mockConfig);
     expect(review.level).toBe('C');
   });
 });

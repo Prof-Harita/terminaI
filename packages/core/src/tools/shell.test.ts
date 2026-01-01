@@ -94,6 +94,10 @@ describe('ShellTool', () => {
       isInteractive: vi.fn().mockReturnValue(true),
       getShellToolInactivityTimeout: vi.fn().mockReturnValue(300000),
       getPreviewMode: vi.fn().mockReturnValue(false),
+      getTrustedDomains: vi.fn().mockReturnValue([]),
+      getCriticalPaths: vi.fn().mockReturnValue([]),
+      getSecurityProfile: vi.fn().mockReturnValue('balanced'),
+      getApprovalPin: vi.fn().mockReturnValue('000000'),
     } as unknown as Config;
 
     shellTool = new ShellTool(mockConfig);

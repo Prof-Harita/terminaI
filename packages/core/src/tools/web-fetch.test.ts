@@ -143,6 +143,14 @@ describe('WebFetchTool', () => {
         })),
       },
       isInteractive: () => false,
+      getSecurityProfile: vi.fn().mockReturnValue('balanced'),
+      getApprovalPin: vi.fn().mockReturnValue(undefined),
+      getTrustedDomains: vi.fn().mockReturnValue([]),
+      getCriticalPaths: vi.fn().mockReturnValue([]),
+      getWorkspaceContext: vi
+        .fn()
+        .mockReturnValue({ isPathWithinWorkspace: () => true }),
+      getTargetDir: vi.fn().mockReturnValue('/workspace'),
     } as unknown as Config;
   });
 

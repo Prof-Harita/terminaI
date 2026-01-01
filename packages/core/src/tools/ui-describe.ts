@@ -15,6 +15,7 @@ import { UI_DESCRIBE_TOOL_NAME } from './tool-names.js';
 import { formatUiResult } from './ui-tool-utils.js';
 import { DesktopAutomationService } from '../gui/service/DesktopAutomationService.js';
 import type { ElementNode } from '../gui/protocol/types.js';
+import type { Config } from '../config/config.js';
 
 class UiDescribeToolInvocation extends BaseToolInvocation<
   UiDescribeArgs,
@@ -147,7 +148,7 @@ function buildSuggestedSelectors(element: ElementNode): string[] {
 }
 
 export class UiDescribeTool extends UiToolBase<UiDescribeArgs> {
-  constructor(messageBus?: MessageBus) {
+  constructor(config: Config, messageBus?: MessageBus) {
     super(
       UI_DESCRIBE_TOOL_NAME,
       'UI Describe',
@@ -165,6 +166,7 @@ export class UiDescribeTool extends UiToolBase<UiDescribeArgs> {
       },
       true,
       false,
+      config,
       messageBus,
     );
   }

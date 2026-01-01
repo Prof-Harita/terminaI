@@ -14,6 +14,7 @@ import type { MessageBus } from '../confirmation-bus/message-bus.js';
 import { UI_QUERY_TOOL_NAME } from './tool-names.js';
 import { formatUiResult } from './ui-tool-utils.js';
 import { DesktopAutomationService } from '../gui/service/DesktopAutomationService.js';
+import type { Config } from '../config/config.js';
 
 class UiQueryToolInvocation extends BaseToolInvocation<
   UiQueryArgs,
@@ -40,7 +41,7 @@ class UiQueryToolInvocation extends BaseToolInvocation<
 }
 
 export class UiQueryTool extends UiToolBase<UiQueryArgs> {
-  constructor(messageBus?: MessageBus) {
+  constructor(config: Config, messageBus?: MessageBus) {
     super(
       UI_QUERY_TOOL_NAME,
       'UI Query',
@@ -57,6 +58,7 @@ export class UiQueryTool extends UiToolBase<UiQueryArgs> {
       },
       true,
       false,
+      config,
       messageBus,
     );
   }

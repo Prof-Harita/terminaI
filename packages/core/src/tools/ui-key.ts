@@ -18,10 +18,12 @@ import type { MessageBus } from '../confirmation-bus/message-bus.js';
 import { UI_KEY_TOOL_NAME } from './tool-names.js';
 import { buildUiConfirmationDetails, formatUiResult } from './ui-tool-utils.js';
 import { DesktopAutomationService } from '../gui/service/DesktopAutomationService.js';
+import type { Config } from '../config/config.js';
 
 class UiKeyToolInvocation extends BaseToolInvocation<UiKeyArgs, ToolResult> {
   constructor(
     params: UiKeyArgs,
+    private readonly config: Config,
     messageBus?: MessageBus,
     toolName?: string,
     toolDisplayName?: string,
@@ -44,6 +46,7 @@ class UiKeyToolInvocation extends BaseToolInvocation<UiKeyArgs, ToolResult> {
       onConfirm: async (outcome) => {
         await this.publishPolicyUpdate(outcome);
       },
+      config: this.config,
     });
   }
 
@@ -55,7 +58,7 @@ class UiKeyToolInvocation extends BaseToolInvocation<UiKeyArgs, ToolResult> {
 }
 
 export class UiKeyTool extends UiToolBase<UiKeyArgs> {
-  constructor(messageBus?: MessageBus) {
+  constructor(config: Config, messageBus?: MessageBus) {
     super(
       UI_KEY_TOOL_NAME,
       'UI Key',
@@ -75,6 +78,7 @@ export class UiKeyTool extends UiToolBase<UiKeyArgs> {
       },
       true,
       false,
+      config,
       messageBus,
     );
   }
@@ -93,6 +97,7 @@ export class UiKeyTool extends UiToolBase<UiKeyArgs> {
   ): ToolInvocation<UiKeyArgs, ToolResult> {
     return new UiKeyToolInvocation(
       params,
+      this.config,
       messageBus,
       toolName,
       toolDisplayName,

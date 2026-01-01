@@ -13,6 +13,8 @@ import {
   resetGuiAutomationConfig,
 } from '../../gui/config.js';
 
+import type { Config } from '../../config/config.js';
+
 describe('UI tool utils', () => {
   afterEach(() => {
     resetGuiAutomationConfig();
@@ -21,10 +23,18 @@ describe('UI tool utils', () => {
   it('applies configured review floors for UI tools', () => {
     configureGuiAutomation({ clickMinReviewLevel: 'C' });
 
+    const mockConfig = {
+      securityProfile: 'balanced',
+      approvalPin: undefined,
+      trustedDomains: [],
+      criticalPaths: [],
+    } as unknown as Config;
+
     const details = buildUiConfirmationDetails({
       toolName: UI_CLICK_TOOL_NAME,
       description: 'Click target',
       onConfirm: async () => {},
+      config: mockConfig,
     });
 
     expect(details).not.toBe(false);

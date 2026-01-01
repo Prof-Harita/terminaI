@@ -14,6 +14,7 @@ import type { MessageBus } from '../confirmation-bus/message-bus.js';
 import { UI_WAIT_TOOL_NAME } from './tool-names.js';
 import { formatUiResult } from './ui-tool-utils.js';
 import { DesktopAutomationService } from '../gui/service/DesktopAutomationService.js';
+import type { Config } from '../config/config.js';
 
 class UiWaitToolInvocation extends BaseToolInvocation<UiWaitArgs, ToolResult> {
   constructor(
@@ -37,7 +38,7 @@ class UiWaitToolInvocation extends BaseToolInvocation<UiWaitArgs, ToolResult> {
 }
 
 export class UiWaitTool extends UiToolBase<UiWaitArgs> {
-  constructor(messageBus?: MessageBus) {
+  constructor(config: Config, messageBus?: MessageBus) {
     super(
       UI_WAIT_TOOL_NAME,
       'UI Wait',
@@ -57,6 +58,7 @@ export class UiWaitTool extends UiToolBase<UiWaitArgs> {
       },
       true,
       false,
+      config,
       messageBus,
     );
   }

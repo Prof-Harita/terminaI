@@ -118,6 +118,10 @@ describe('SmartEditTool', () => {
       getToolRegistry: () => ({}) as any,
       isInteractive: () => false,
       getExperiments: () => {},
+      getSecurityProfile: vi.fn(() => 'balanced'),
+      getApprovalPin: vi.fn(() => undefined),
+      getTrustedDomains: vi.fn(() => []),
+      getCriticalPaths: vi.fn(() => []),
     } as unknown as Config;
 
     (mockConfig.getApprovalMode as Mock).mockClear();

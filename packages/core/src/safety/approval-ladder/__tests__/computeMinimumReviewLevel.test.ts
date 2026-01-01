@@ -8,8 +8,18 @@
 import { describe, it, expect } from 'vitest';
 import { computeMinimumReviewLevel } from '../computeMinimumReviewLevel.js';
 import type { ActionProfile } from '../types.js';
+import type { Config } from '../../../config/config.js';
 
 describe('computeMinimumReviewLevel', () => {
+  const mockConfig = {
+    getSecurityProfile: () => 'balanced',
+    getApprovalPin: () => undefined,
+    getTrustedDomains: () => [],
+    getCriticalPaths: () => [],
+    getWorkspaceContext: () => ({ isPathWithinWorkspace: () => true }),
+    getTargetDir: () => '/workspace',
+  } as unknown as Config;
+
   // Helper to create base profile
   const createProfile = (overrides: Partial<ActionProfile>): ActionProfile => ({
     toolName: 'test_tool',
@@ -31,7 +41,7 @@ describe('computeMinimumReviewLevel', () => {
         operations: ['read'],
         outsideWorkspace: false,
       });
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
       expect(result.level).toBe('A');
       expect(result.requiresClick).toBe(false);
       expect(result.requiresPin).toBe(false);
@@ -47,7 +57,7 @@ describe('computeMinimumReviewLevel', () => {
         outsideWorkspace: false,
         rawSummary: 'git commit -am "message"',
       });
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
       expect(result.level).toBe('A');
       expect(result.requiresClick).toBe(false);
       expect(result.requiresPin).toBe(false);
@@ -62,7 +72,7 @@ describe('computeMinimumReviewLevel', () => {
         rawSummary: 'npm install lodash',
         provenance: ['model_suggestion'],
       });
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
       expect(result.level).toBe('B');
       expect(result.requiresClick).toBe(true);
       expect(result.requiresPin).toBe(false);
@@ -74,7 +84,7 @@ describe('computeMinimumReviewLevel', () => {
         provenance: ['workspace_file'],
         rawSummary: 'curl from script',
       });
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
       expect(result.level).toBe('B');
       expect(result.requiresClick).toBe(true);
       expect(result.requiresPin).toBe(false);
@@ -85,7 +95,7 @@ describe('computeMinimumReviewLevel', () => {
         operations: ['ui'],
         rawSummary: 'ui.click #button',
       });
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
       expect(result.level).toBe('B');
       expect(result.requiresClick).toBe(true);
       expect(result.requiresPin).toBe(false);
@@ -99,7 +109,7 @@ describe('computeMinimumReviewLevel', () => {
         hasUnboundedScopeSignals: false,
         outsideWorkspace: false,
       });
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
       expect(result.level).toBe('B');
       expect(result.requiresClick).toBe(true);
       expect(result.requiresPin).toBe(false);
@@ -112,7 +122,7 @@ describe('computeMinimumReviewLevel', () => {
         roots: ['sudo'],
         outsideWorkspace: false,
       });
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
       expect(result.level).toBe('B');
       expect(result.requiresClick).toBe(true);
       expect(result.requiresPin).toBe(false);
@@ -124,7 +134,7 @@ describe('computeMinimumReviewLevel', () => {
         operations: ['write'],
         outsideWorkspace: true,
       });
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
       expect(result.level).toBe('C');
       expect(result.requiresClick).toBe(true);
       expect(result.requiresPin).toBe(true);
@@ -141,7 +151,7 @@ describe('computeMinimumReviewLevel', () => {
         hasUnboundedScopeSignals: true,
         touchedPaths: ['~'],
       });
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
       expect(result.level).toBe('C');
       expect(result.requiresClick).toBe(true);
       expect(result.requiresPin).toBe(true);
@@ -156,7 +166,7 @@ describe('computeMinimumReviewLevel', () => {
         hasUnboundedScopeSignals: true,
         touchedPaths: ['/'],
       });
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
       expect(result.level).toBe('C');
       expect(result.requiresClick).toBe(true);
       expect(result.requiresPin).toBe(true);
@@ -168,7 +178,7 @@ describe('computeMinimumReviewLevel', () => {
         roots: ['sudo'],
         outsideWorkspace: true,
       });
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
       expect(result.level).toBe('C');
       expect(result.requiresClick).toBe(true);
       expect(result.requiresPin).toBe(true);
@@ -182,7 +192,7 @@ describe('computeMinimumReviewLevel', () => {
         operations: ['device', 'write'],
         roots: ['dd'],
       });
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
       expect(result.level).toBe('C');
       expect(result.requiresClick).toBe(true);
       expect(result.requiresPin).toBe(true);
@@ -196,7 +206,7 @@ describe('computeMinimumReviewLevel', () => {
         operations: ['unknown'],
         parseConfidence: 'low',
       });
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
       expect(result.level).toBe('C');
       expect(result.requiresClick).toBe(true);
       expect(result.requiresPin).toBe(true);
@@ -211,7 +221,7 @@ describe('computeMinimumReviewLevel', () => {
         hasUnboundedScopeSignals: false,
         outsideWorkspace: true,
       });
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
       expect(result.level).toBe('C');
       expect(result.requiresClick).toBe(true);
       expect(result.requiresPin).toBe(true);
@@ -229,7 +239,7 @@ describe('computeMinimumReviewLevel', () => {
         provenance: ['web_remote_user'],
         outsideWorkspace: false,
       });
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
       expect(result.level).toBe('C');
       expect(result.requiresClick).toBe(true);
       expect(result.requiresPin).toBe(true);
@@ -243,7 +253,7 @@ describe('computeMinimumReviewLevel', () => {
         operations: ['read'],
         provenance: ['web_remote_user'],
       });
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
       expect(result.level).toBe('A');
       expect(result.requiresClick).toBe(false);
       expect(result.requiresPin).toBe(false);
@@ -254,7 +264,7 @@ describe('computeMinimumReviewLevel', () => {
         operations: ['network'],
         provenance: ['web_content'],
       });
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
       expect(result.level).toBe('B');
       expect(result.requiresClick).toBe(true);
       expect(result.requiresPin).toBe(false);
@@ -272,7 +282,7 @@ describe('computeMinimumReviewLevel', () => {
         outsideWorkspace: true,
         provenance: ['web_remote_user'],
       });
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
       // Should be C immediately due to unbounded scope
       expect(result.level).toBe('C');
       expect(result.requiresClick).toBe(true);

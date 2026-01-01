@@ -710,7 +710,7 @@ class ProcessManagerToolInvocation extends BaseToolInvocation<
       config: this.config,
       provenance: this.getProvenance(),
     });
-    const reviewResult = computeMinimumReviewLevel(actionProfile);
+    const reviewResult = computeMinimumReviewLevel(actionProfile, this.config);
     if (reviewResult.level === 'A') {
       return false;
     }

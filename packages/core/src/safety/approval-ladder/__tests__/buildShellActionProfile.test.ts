@@ -8,8 +8,18 @@
 import { describe, it, expect } from 'vitest';
 import { buildShellActionProfile } from '../buildShellActionProfile.js';
 import { computeMinimumReviewLevel } from '../computeMinimumReviewLevel.js';
+import type { Config } from '../../../config/config.js';
 
 describe('buildShellActionProfile', () => {
+  const mockConfig = {
+    getSecurityProfile: () => 'balanced',
+    getApprovalPin: () => undefined,
+    getTrustedDomains: () => [],
+    getCriticalPaths: () => [],
+    getWorkspaceContext: () => ({ isPathWithinWorkspace: () => true }),
+    getTargetDir: () => '/workspace',
+  } as unknown as Config;
+
   const workspaces = ['/home/user/project'];
   const cwd = '/home/user/project';
 
@@ -26,7 +36,7 @@ describe('buildShellActionProfile', () => {
       expect(profile.outsideWorkspace).toBe(false);
 
       // Verify it results in Level A
-      const review = computeMinimumReviewLevel(profile);
+      const review = computeMinimumReviewLevel(profile, mockConfig);
       expect(review.level).toBe('A');
     });
 
@@ -42,7 +52,7 @@ describe('buildShellActionProfile', () => {
       expect(profile.outsideWorkspace).toBe(true);
 
       // Verify it results in Level C
-      const review = computeMinimumReviewLevel(profile);
+      const review = computeMinimumReviewLevel(profile, mockConfig);
       expect(review.level).toBe('C');
     });
 
@@ -58,7 +68,7 @@ describe('buildShellActionProfile', () => {
       expect(profile.outsideWorkspace).toBe(true);
 
       // Verify it results in Level C
-      const review = computeMinimumReviewLevel(profile);
+      const review = computeMinimumReviewLevel(profile, mockConfig);
       expect(review.level).toBe('C');
     });
 
@@ -103,7 +113,7 @@ describe('buildShellActionProfile', () => {
       expect(profile.operations).toContain('device');
 
       // Verify it results in Level C
-      const review = computeMinimumReviewLevel(profile);
+      const review = computeMinimumReviewLevel(profile, mockConfig);
       expect(review.level).toBe('C');
     });
   });
@@ -162,7 +172,7 @@ describe('buildShellActionProfile', () => {
       expect(profile.parseConfidence).toBe('low');
 
       // Verify low confidence results in Level C
-      const review = computeMinimumReviewLevel(profile);
+      const review = computeMinimumReviewLevel(profile, mockConfig);
       expect(review.level).toBe('C');
     });
   });

@@ -8,8 +8,21 @@
 import { describe, it, expect } from 'vitest';
 import { buildShellActionProfile } from '../../safety/approval-ladder/buildShellActionProfile.js';
 import { computeMinimumReviewLevel } from '../../safety/approval-ladder/computeMinimumReviewLevel.js';
+import type { Config } from '../../config/config.js';
 
 describe('PIN Verification Logic', () => {
+  const mockConfig = {
+    getSecurityProfile: () => 'balanced',
+    getApprovalPin: () => undefined,
+    getTrustedDomains: () => [],
+    getCriticalPaths: () => [],
+    getWorkspaceContext: () => ({
+      isPathWithinWorkspace: () => true,
+      targetDir: '/workspace',
+    }),
+    getTargetDir: () => '/workspace',
+  } as unknown as Config;
+
   const mockWorkspace = '/workspace';
   const mockCwd = mockWorkspace;
 
@@ -21,7 +34,7 @@ describe('PIN Verification Logic', () => {
         workspaces: [mockWorkspace],
       });
 
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
 
       expect(result.level).toBe('C');
       expect(result.requiresPin).toBe(true);
@@ -38,7 +51,7 @@ describe('PIN Verification Logic', () => {
         workspaces: [mockWorkspace],
       });
 
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
 
       expect(result.level).toBe('C');
       expect(result.requiresPin).toBe(true);
@@ -55,7 +68,7 @@ describe('PIN Verification Logic', () => {
         workspaces: [mockWorkspace],
       });
 
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
 
       // This should be Level C because it's privileged delete outside workspace
       expect(result.level).toBe('C');
@@ -69,7 +82,7 @@ describe('PIN Verification Logic', () => {
         workspaces: [mockWorkspace],
       });
 
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
 
       expect(result.level).toBe('C');
       expect(result.requiresPin).toBe(true);
@@ -88,7 +101,7 @@ describe('PIN Verification Logic', () => {
         workspaces: [mockWorkspace],
       });
 
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
 
       expect(result.level).toBe('A');
       expect(result.requiresPin).toBe(false);
@@ -102,7 +115,7 @@ describe('PIN Verification Logic', () => {
         workspaces: [mockWorkspace],
       });
 
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
 
       expect(result.level).toBe('B');
       expect(result.requiresPin).toBe(false);
@@ -117,7 +130,7 @@ describe('PIN Verification Logic', () => {
         provenance: ['model_suggestion'],
       });
 
-      const result = computeMinimumReviewLevel(profile);
+      const result = computeMinimumReviewLevel(profile, mockConfig);
 
       // Level B: write + network inside workspace
       expect(result.level).toBe('B');

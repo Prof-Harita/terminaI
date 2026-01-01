@@ -16,6 +16,7 @@ import type {
 import { computeMinimumReviewLevel } from '../safety/approval-ladder/computeMinimumReviewLevel.js';
 import { getGuiAutomationConfig } from '../gui/config.js';
 import { UI_CLICK_TOOL_NAME, UI_TYPE_TOOL_NAME } from './tool-names.js';
+import type { Config } from '../config/config.js';
 
 type UiConfirmationArgs = {
   toolName: string;
@@ -23,6 +24,7 @@ type UiConfirmationArgs = {
   provenance?: Provenance[];
   title?: string;
   onConfirm: ToolExecuteConfirmationDetails['onConfirm'];
+  config: Config;
 };
 
 function normalizeProvenance(provenance?: Provenance[]): Provenance[] {
@@ -74,6 +76,7 @@ export function buildUiConfirmationDetails({
   provenance,
   title,
   onConfirm,
+  config,
 }: UiConfirmationArgs): ToolExecuteConfirmationDetails | false {
   const normalizedProvenance = normalizeProvenance(provenance);
   const actionProfile: ActionProfile = {
@@ -88,7 +91,7 @@ export function buildUiConfirmationDetails({
     provenance: normalizedProvenance,
     rawSummary: description,
   };
-  const reviewResult = computeMinimumReviewLevel(actionProfile);
+  const reviewResult = computeMinimumReviewLevel(actionProfile, config);
   const reasons = [...reviewResult.reasons];
   const enforcedLevel = enforceReviewFloor(
     reviewResult.level,

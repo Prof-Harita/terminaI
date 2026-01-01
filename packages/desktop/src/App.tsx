@@ -1,30 +1,33 @@
 /**
  * @license
- * Copyright 2025 TerminaI Authors
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useRef, useState, useEffect, useCallback } from 'react'
-import { useCliProcess } from './hooks/useCliProcess'
-import { useSettingsStore } from './stores/settingsStore'
-import { useExecutionStore } from './stores/executionStore'
-import { useVoiceStore } from './stores/voiceStore'
+import { useRef, useState, useEffect, useCallback } from 'react';
+import { useCliProcess } from './hooks/useCliProcess';
+import { useSettingsStore } from './stores/settingsStore';
+import { useSidecarStore } from './stores/sidecarStore';
+import { useExecutionStore } from './stores/executionStore';
+import { useVoiceStore } from './stores/voiceStore';
 // TriPaneLayout removed - using direct flex layout
-import { ChatView } from './components/ChatView'
-import { SidePanel } from './components/SidePanel'
-import { ActivityBar, ActivityView } from './components/ActivityBar'
-import { EngineRoomPane } from './components/EngineRoomPane'
-import { ResizableHandle } from './components/ResizableHandle'
-import { ThemeProvider } from './components/ThemeProvider'
-import { CommandPalette } from './components/CommandPalette'
-import { AuthScreen } from './components/AuthScreen'
-import { ContextPopover } from './components/ContextPopover'
-import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
-import { Button } from './components/ui/button'
-import { Sun, Moon, Settings, Mic, MicOff } from 'lucide-react'
-import { cn } from './lib/utils'
-import { TerminaILogo } from './components/TerminaILogo'
-import { KeyboardCheatSheet } from './components/KeyboardCheatSheet'
+import { ChatView } from './components/ChatView';
+import { SidePanel } from './components/SidePanel';
+import type { ActivityView } from './components/ActivityBar';
+import { ActivityBar } from './components/ActivityBar';
+import { EngineRoomPane } from './components/EngineRoomPane';
+import { ResizableHandle } from './components/ResizableHandle';
+import { ThemeProvider } from './components/ThemeProvider';
+import { CommandPalette } from './components/CommandPalette';
+import { AuthScreen } from './components/AuthScreen';
+import { ContextPopover } from './components/ContextPopover';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+import { Button } from './components/ui/button';
+import { Sun, Moon, Settings, Mic, MicOff } from 'lucide-react';
+import { cn } from './lib/utils';
+import { TerminaILogo } from './components/TerminaILogo';
+import { KeyboardCheatSheet } from './components/KeyboardCheatSheet';
 
 import { useSidecar } from './hooks/useSidecar';
 import { ConnectivityIndicator } from './components/ConnectivityIndicator';
@@ -46,34 +49,41 @@ function App() {
     onComplete: () => {
       setTimeout(() => chatInputRef.current?.focus(), 0);
     },
-  })
+  });
 
-  const { currentToolStatus, contextUsed, contextLimit, contextFiles } = useExecutionStore()
-  const agentToken = useSettingsStore((s) => s.agentToken)
-  const theme = useSettingsStore((s) => s.theme)
-  const setTheme = useSettingsStore((s) => s.setTheme)
-  const provider = useSettingsStore((s) => s.provider)
-  const setProvider = useSettingsStore((s) => s.setProvider)
-  const voiceEnabled = useSettingsStore((s) => s.voiceEnabled)
-  const setVoiceEnabled = useSettingsStore((s) => s.setVoiceEnabled)
-  const voiceState = useVoiceStore((s) => s.state)
+  const { currentToolStatus, contextUsed, contextLimit, contextFiles } =
+    useExecutionStore();
+  const agentToken = useSettingsStore((s) => s.agentToken);
+  const theme = useSettingsStore((s) => s.theme);
+  const setTheme = useSettingsStore((s) => s.setTheme);
+  const provider = useSettingsStore((s) => s.provider);
+  const setProvider = useSettingsStore((s) => s.setProvider);
+  const voiceEnabled = useSettingsStore((s) => s.voiceEnabled);
+  const setVoiceEnabled = useSettingsStore((s) => s.setVoiceEnabled);
+  const voiceState = useVoiceStore((s) => s.state);
+
+  // Get sidecar status for AuthScreen
+  const bootStatus = useSidecarStore((s) => s.bootStatus);
+  const sidecarError = useSidecarStore((s) => s.error);
 
   // Auth/Bootstrap State managed by useSidecarStore now, but legacy AuthScreen checks settingsStore.
   // If agentToken is present, showAuth becomes false.
   // We can derive showAuth locally or keep it simple.
-  const [showAuth, setShowAuth] = useState(!agentToken); 
-  
+  const [showAuth, setShowAuth] = useState(!agentToken);
+
   useEffect(() => {
     if (agentToken) setShowAuth(false);
   }, [agentToken]);
 
-  const [isPaletteOpen, setIsPaletteOpen] = useState(false)
-  const [isSettingsOpen] = useState(false)
-  const [isCheatSheetOpen, setIsCheatSheetOpen] = useState(false)
-  const [activeActivity, setActiveActivity] = useState<ActivityView | null>('history')
-  const [leftWidth, setLeftWidth] = useState(280)
-  const [rightWidth, setRightWidth] = useState(600)
-  const chatInputRef = useRef<HTMLTextAreaElement>(null)
+  const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+  const [isSettingsOpen] = useState(false);
+  const [isCheatSheetOpen, setIsCheatSheetOpen] = useState(false);
+  const [activeActivity, setActiveActivity] = useState<ActivityView | null>(
+    'history',
+  );
+  const [leftWidth, setLeftWidth] = useState(280);
+  const [rightWidth, setRightWidth] = useState(600);
+  const chatInputRef = useRef<HTMLTextAreaElement>(null);
   const [pendingConfirmationId, setPendingConfirmationId] = useState<
     string | null
   >(null);
@@ -87,32 +97,36 @@ function App() {
       ? window.matchMedia('(prefers-color-scheme: dark)').matches
         ? 'dark'
         : 'light'
-      : theme
+      : theme;
 
   // Keep legacy behavior for any code still relying on the dark class.
   useEffect(() => {
-    const root = document.documentElement
+    const root = document.documentElement;
     if (resolvedTheme === 'dark') {
-      root.classList.add('dark')
+      root.classList.add('dark');
     } else {
-      root.classList.remove('dark')
+      root.classList.remove('dark');
     }
-  }, [resolvedTheme])
-
+  }, [resolvedTheme]);
 
   // Task 70: Notification Sound for Confirmations
   useEffect(() => {
-    if (pendingConfirmationId && useSettingsStore.getState().notificationSound) {
+    if (
+      pendingConfirmationId &&
+      useSettingsStore.getState().notificationSound
+    ) {
       const audio = new Audio('/notification.mp3');
       audio.volume = 0.5;
-      audio.play().catch(e => console.warn('Could not play notification sound:', e));
+      audio
+        .play()
+        .catch((e) => console.warn('Could not play notification sound:', e));
     }
   }, [pendingConfirmationId]);
 
   const clearChat = useCallback(() => {
-    sendMessage('/clear')
-    setTimeout(() => chatInputRef.current?.focus(), 100)
-  }, [sendMessage])
+    sendMessage('/clear');
+    setTimeout(() => chatInputRef.current?.focus(), 100);
+  }, [sendMessage]);
 
   // Auto-focus chat input when window regains focus
   useEffect(() => {
@@ -162,7 +176,7 @@ function App() {
         setTimeout(() => chatInputRef.current?.focus(), 0);
       }
     },
-  })
+  });
 
   // Track pending confirmation for keyboard shortcuts
   useEffect(() => {
@@ -174,14 +188,14 @@ function App() {
   }, [messages]);
 
   const handleLeftResize = (deltaX: number) => {
-    setLeftWidth((prev) => Math.max(250, Math.min(500, prev + deltaX)))
-  }
+    setLeftWidth((prev) => Math.max(250, Math.min(500, prev + deltaX)));
+  };
 
   const handleRightResize = (deltaX: number) => {
-    setRightWidth((prev) => Math.max(250, Math.min(600, prev - deltaX)))
-  }
+    setRightWidth((prev) => Math.max(250, Math.min(600, prev - deltaX)));
+  };
 
-  const handleCommandSelect = (command: any) => {
+  const handleCommandSelect = (command: { action: string }) => {
     if (command.action.startsWith('frontend:')) {
       const action = command.action.replace('frontend:', '');
       switch (action) {
@@ -197,6 +211,8 @@ function App() {
         case 'shortcuts':
           setIsCheatSheetOpen(true);
           break;
+        default:
+          break;
       }
     } else {
       sendMessage(command.action);
@@ -204,17 +220,17 @@ function App() {
   };
 
   const toggleTheme = () => {
-    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
-  }
+    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
+  };
 
   if (showAuth && !agentToken) {
     return (
       <AuthScreen
         onAuthenticated={() => setShowAuth(false)}
-        isBootstrapping={false} // Managed by sidecar status internally? Or just false.
-        bootstrapError={null}
+        isBootstrapping={bootStatus === 'booting'}
+        bootstrapError={sidecarError}
       />
-    )
+    );
   }
 
   return (
@@ -228,7 +244,9 @@ function App() {
             {/* Model Dropdown */}
             <select
               value={provider}
-              onChange={(e) => setProvider(e.target.value as 'gemini' | 'ollama')}
+              onChange={(e) =>
+                setProvider(e.target.value as 'gemini' | 'ollama')
+              }
               className="bg-transparent border border-border rounded px-2 py-1 text-xs text-foreground cursor-pointer hover:bg-muted/50 transition-colors"
             >
               <option value="gemini">Gemini</option>
@@ -253,7 +271,9 @@ function App() {
                           ? 'bg-yellow-500'
                           : 'bg-green-500'
                     }`}
-                    style={{ width: `${Math.min(100, (contextUsed / contextLimit) * 100)}%` }}
+                    style={{
+                      width: `${Math.min(100, (contextUsed / contextLimit) * 100)}%`,
+                    }}
                   />
                 </div>
               </div>
@@ -267,34 +287,66 @@ function App() {
                 if (!voiceEnabled) {
                   // Check permission first
                   try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    stream.getTracks().forEach(track => track.stop()); // Release immediately
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                      audio: true,
+                    });
+                    stream.getTracks().forEach((track) => track.stop()); // Release immediately
                     setVoiceEnabled(true);
                   } catch (err) {
                     console.error('Microphone permission error:', err);
-                    useVoiceStore.getState().setError(
-                      `Microphone access denied: ${err instanceof Error ? err.message : String(err)}`
-                    );
+                    useVoiceStore
+                      .getState()
+                      .setError(
+                        `Microphone access denied: ${err instanceof Error ? err.message : String(err)}`,
+                      );
                   }
                 } else {
                   setVoiceEnabled(false);
                 }
               }}
               className={cn(
-                "h-8 w-8 transition-all duration-300",
-                voiceEnabled && voiceState === 'LISTENING' && "bg-red-500/10 text-red-500 animate-pulse border border-red-500/50",
-                voiceEnabled && voiceState === 'PROCESSING' && "bg-blue-500/10 text-blue-500",
-                voiceEnabled && voiceState === 'SPEAKING' && "bg-green-500/10 text-green-500",
-                !voiceEnabled && "opacity-50"
+                'h-8 w-8 transition-all duration-300',
+                voiceEnabled &&
+                  voiceState === 'LISTENING' &&
+                  'bg-red-500/10 text-red-500 animate-pulse border border-red-500/50',
+                voiceEnabled &&
+                  voiceState === 'PROCESSING' &&
+                  'bg-blue-500/10 text-blue-500',
+                voiceEnabled &&
+                  voiceState === 'SPEAKING' &&
+                  'bg-green-500/10 text-green-500',
+                !voiceEnabled && 'opacity-50',
               )}
-              title={voiceEnabled ? `Voice mode active (${voiceState})` : 'Enable voice mode'}
+              title={
+                voiceEnabled
+                  ? `Voice mode active (${voiceState})`
+                  : 'Enable voice mode'
+              }
             >
-              {voiceEnabled ? <Mic className="h-4 w-4" /> : <MicOff className="h-4 w-4" />}
+              {voiceEnabled ? (
+                <Mic className="h-4 w-4" />
+              ) : (
+                <MicOff className="h-4 w-4" />
+              )}
             </Button>
-            <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-8 w-8">
-              {resolvedTheme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="h-8 w-8"
+            >
+              {resolvedTheme === 'dark' ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              )}
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => setActiveActivity('preference')} className="h-8 w-8">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setActiveActivity('preference')}
+              className="h-8 w-8"
+            >
               <Settings className="h-4 w-4" />
             </Button>
           </div>
@@ -303,7 +355,10 @@ function App() {
         {/* Three-pane layout */}
         <div className="flex-1 flex overflow-hidden">
           {/* Activity Bar */}
-          <ActivityBar activeView={activeActivity} onViewChange={setActiveActivity} />
+          <ActivityBar
+            activeView={activeActivity}
+            onViewChange={setActiveActivity}
+          />
 
           {/* Side Panel */}
           {activeActivity && (
@@ -312,7 +367,10 @@ function App() {
                 className="border-r border-border bg-sidebar overflow-hidden flex-shrink-0"
                 style={{ width: `${leftWidth}px` }}
               >
-                <SidePanel activeView={activeActivity} sendMessage={sendMessage} />
+                <SidePanel
+                  activeView={activeActivity}
+                  sendMessage={sendMessage}
+                />
               </div>
 
               {/* Left Resizer */}
@@ -360,27 +418,26 @@ function App() {
         <CommandPalette
           isOpen={isPaletteOpen}
           onClose={() => {
-            setIsPaletteOpen(false)
-            setTimeout(() => chatInputRef.current?.focus(), 0)
+            setIsPaletteOpen(false);
+            setTimeout(() => chatInputRef.current?.focus(), 0);
           }}
           onSelect={(cmd) => {
             handleCommandSelect(cmd);
-            setIsPaletteOpen(false)
-            setTimeout(() => chatInputRef.current?.focus(), 0)
+            setIsPaletteOpen(false);
+            setTimeout(() => chatInputRef.current?.focus(), 0);
           }}
         />
 
         <KeyboardCheatSheet
           isOpen={isCheatSheetOpen}
           onClose={() => {
-            setIsCheatSheetOpen(false)
-            setTimeout(() => chatInputRef.current?.focus(), 0)
+            setIsCheatSheetOpen(false);
+            setTimeout(() => chatInputRef.current?.focus(), 0);
           }}
         />
       </div>
     </ThemeProvider>
-  )
+  );
 }
 
-export default App
-
+export default App;

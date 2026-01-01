@@ -14,6 +14,7 @@ import type { MessageBus } from '../confirmation-bus/message-bus.js';
 import { UI_ASSERT_TOOL_NAME } from './tool-names.js';
 import { formatUiResult } from './ui-tool-utils.js';
 import { DesktopAutomationService } from '../gui/service/DesktopAutomationService.js';
+import type { Config } from '../config/config.js';
 
 class UiAssertToolInvocation extends BaseToolInvocation<
   UiAssertArgs,
@@ -40,7 +41,7 @@ class UiAssertToolInvocation extends BaseToolInvocation<
 }
 
 export class UiAssertTool extends UiToolBase<UiAssertArgs> {
-  constructor(messageBus?: MessageBus) {
+  constructor(config: Config, messageBus?: MessageBus) {
     super(
       UI_ASSERT_TOOL_NAME,
       'UI Assert',
@@ -60,6 +61,7 @@ export class UiAssertTool extends UiToolBase<UiAssertArgs> {
       },
       true,
       false,
+      config,
       messageBus,
     );
   }
