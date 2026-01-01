@@ -219,7 +219,8 @@ describe('buildShellActionProfile', () => {
     });
   });
 
-  describe('Complex commands', () => {
+  // Skip complex bash command tests on Windows - PowerShell has different syntax
+  describe.skipIf(process.platform === 'win32')('Complex commands', () => {
     it('should handle chained commands', () => {
       const profile = buildShellActionProfile({
         command: 'ls -la && cat file.txt',

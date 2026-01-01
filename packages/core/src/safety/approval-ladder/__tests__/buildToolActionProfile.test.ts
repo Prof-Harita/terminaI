@@ -6,6 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import * as path from 'node:path';
 import { buildToolActionProfile } from '../buildToolActionProfile.js';
 import { computeMinimumReviewLevel } from '../computeMinimumReviewLevel.js';
 import type { Config } from '../../../config/config.js';
@@ -17,9 +18,13 @@ import {
   WEB_FETCH_TOOL_NAME,
 } from '../../../tools/tool-names.js';
 
+// Use platform-specific workspace path for cross-platform compatibility
+const WORKSPACE_PATH =
+  process.platform === 'win32' ? 'D:\\workspace' : '/workspace';
+
 describe('buildToolActionProfile', () => {
   const mockConfig = {
-    getTargetDir: () => '/workspace',
+    getTargetDir: () => WORKSPACE_PATH,
     getSecurityProfile: () => 'balanced',
     getApprovalPin: () => undefined,
     getTrustedDomains: () => [],
@@ -35,14 +40,17 @@ describe('buildToolActionProfile', () => {
     });
 
     expect(profile.operations).toContain('write');
-    expect(profile.touchedPaths).toEqual(['/workspace/src/file.txt']);
+    // Use path.join for cross-platform path comparison
+    expect(profile.touchedPaths).toEqual([
+      path.join(WORKSPACE_PATH, 'src', 'file.txt'),
+    ]);
     expect(profile.outsideWorkspace).toBe(false);
   });
 
   it('flags recursive delete of workspace root as unbounded', () => {
     const profile = buildToolActionProfile({
       toolName: FILE_OPS_TOOL_NAME,
-      args: { operation: 'delete', path: '/workspace', recursive: true },
+      args: { operation: 'delete', path: WORKSPACE_PATH, recursive: true },
       config: mockConfig,
     });
 

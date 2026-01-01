@@ -8,6 +8,7 @@
 import type { DesktopDriver } from './types.js';
 import { LinuxAtspiDriver } from './linuxAtspiDriver.js';
 import { WindowsUiaDriver } from './windowsUiaDriver.js';
+import { NoOpDriver } from './noOpDriver.js';
 
 import * as os from 'node:os';
 
@@ -23,9 +24,13 @@ export function getDesktopDriver(): DesktopDriver {
   } else if (platform === 'win32') {
     instance = new WindowsUiaDriver();
   } else {
-    throw new Error(
-      `GUI Automation: Platform ${platform} is not supported. Only 'linux' and 'win32' are supported.`,
+    // Return NoOpDriver for unsupported platforms (e.g., macOS)
+    // This prevents CLI crashes while logging appropriate warnings
+    console.warn(
+      `[GUI Automation] Platform '${platform}' is not fully supported. ` +
+        `GUI features will be disabled.`,
     );
+    instance = new NoOpDriver();
   }
 
   return instance;
