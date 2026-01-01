@@ -1,0 +1,5 @@
+{
+  "tools": {
+    "allowed": ["ls", "cat"]
+  }
+}

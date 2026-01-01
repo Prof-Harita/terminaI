@@ -1,0 +1,13 @@
+{
+  "tools": {
+    "shell": {
+      "enableInteractiveShell": false,
+      "inactivityTimeout": 300
+    }
+  },
+  "ui": {
+    "accessibility": {
+      "screenReader": true
+    }
+  }
+}

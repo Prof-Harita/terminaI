@@ -1,0 +1,25 @@
+name: 'NPM Auth Token'
+description: 'Generates an NPM auth token for publishing a specific package'
+
+inputs:
+  package-name:
+    description: 'The name of the package to publish'
+    required: true
+  npm-token:
+    description: 'The npm token for publishing'
+    required: true
+
+outputs:
+  auth-token:
+    description: 'The generated NPM auth token'
+    value: '${{ steps.npm_auth_token.outputs.auth-token }}'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Generate NPM Auth Token'
+      id: 'npm_auth_token'
+      shell: 'bash'
+      run: |
+        AUTH_TOKEN="${{ inputs.npm-token }}"
+        echo "auth-token=$AUTH_TOKEN" >> $GITHUB_OUTPUT

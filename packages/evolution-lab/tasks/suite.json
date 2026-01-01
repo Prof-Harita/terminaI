@@ -1,0 +1,35 @@
+[
+  {
+    "id": "network-blocked",
+    "description": "External network access is blocked inside the sandbox",
+    "command": "bash",
+    "args": [
+      "-c",
+      "curl -I --max-time 3 https://example.com >/tmp/netcheck.log 2>&1"
+    ],
+    "expect": "nonzero",
+    "maxStdout": 4000
+  },
+  {
+    "id": "workspace-writable",
+    "description": "Workspace volume is mounted and writable",
+    "command": "bash",
+    "args": [
+      "-c",
+      "echo suite-ok > /workspace/suite.txt && test -f /workspace/suite.txt"
+    ],
+    "expect": "zero"
+  },
+  {
+    "id": "output-bounded",
+    "description": "Harness truncates excessive stdout",
+    "command": "bash",
+    "args": [
+      "-c",
+      "python3 - <<'PY'\nimport sys\nsys.stdout.write('X'*120000)\nPY"
+    ],
+    "expect": "zero",
+    "maxStdout": 70000,
+    "expectTruncated": true
+  }
+]

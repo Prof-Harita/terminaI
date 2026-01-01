@@ -1,0 +1,43 @@
+<svg width="1200" height="400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400">
+  <!-- Definitions -->
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#111111;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Font -->
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;800&amp;display=swap');
+      
+      .text-base {
+        font-family: 'JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+        font-size: 140px;
+        font-weight: 500;
+        fill: #FFFFFF;
+      }
+      
+      .text-cursor {
+        font-family: 'JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+        font-size: 142px; /* Slightly larger to feel dominant */
+        font-weight: 800;
+        fill: #E2231A;
+        animation: blink 1s step-end infinite;
+      }
+
+      @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+      }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="url(#bgGrad)" rx="12" ry="12"/>
+
+  <!-- Content -->
+  <text x="50%" y="55%" text-anchor="middle" dominant-baseline="middle">
+    <tspan class="text-base">termina</tspan><tspan class="text-cursor">I</tspan>
+  </text>
+</svg>

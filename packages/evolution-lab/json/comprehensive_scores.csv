@@ -1,0 +1,1063 @@
+ID,Bucket,Question,Complexity,Popularity
+APP_ISSUES_001,Application Issues,"I installed GIMP from the software store. When I try to save my image to my USB stick, the stick doe",Beginner,3
+APP_ISSUES_002,Application Issues,"I downloaded the BalenaEtcher AppImage. I made it executable, but when I double-click it, absolutely",Intermediate,3
+APP_ISSUES_003,Application Issues,I'm using VLC installed via Flatpak on Fedora. I can't seem to open video files that are stored on m,Beginner,4
+APP_ISSUES_004,Application Issues,Why does Firefox take like 10 seconds to open on a cold boot? It's really annoying compared to Windo,Beginner,4
+APP_ISSUES_005,Application Issues,I'm trying to install a .deb file I downloaded for a printer driver. `dpkg -i` says 'dependency prob,Intermediate,4
+APP_ISSUES_006,Application Issues,"I switched my system theme to Dark Mode, but my Flatpak apps (like Calculator) are still white and l",Intermediate,3
+APP_ISSUES_007,Application Issues,Discord won't open. It just shows a grey box saying 'Update Available' but the deb file on the websi,Beginner,4
+APP_ISSUES_008,Application Issues,"I can't update anything. The App Center says 'Unable to update snap-store: cannot refresh ""snap-stor",Beginner,4
+APP_ISSUES_009,Application Issues,"I enabled Proton for a Windows game on Steam, but when I click Play, it says 'Launching' then immedi",Intermediate,3
+APP_ISSUES_010,Application Issues,I tried to run `apt update` but I get an error: 'The following signatures couldn't be verified becau,Intermediate,4
+APP_ISSUES_011,Application Issues,I can't share my screen on Zoom. The button works but the other person just sees a black screen. I'm,Intermediate,4
+APP_ISSUES_012,Application Issues,"I use the Krita AppImage. It works great, but I hate navigating to my Downloads folder to run it. Ho",Beginner,2
+APP_ISSUES_013,Application Issues,I tried `sudo add-apt-repository ppa:some/ppa` on Debian but it says 'command not found'.,Intermediate,4
+APP_ISSUES_014,Application Issues,My root partition is full! I checked usage and `/var/lib/snapd` is taking up huge amounts of space. ,Intermediate,4
+APP_ISSUES_015,Application Issues,I installed Ubuntu but my resolution is stuck at 800x600 and games are slow. I have an RTX 3060.,Intermediate,4
+APP_ISSUES_016,Application Issues,"I installed VS Code from Flathub. I'm trying to open a terminal inside VS Code to run `npm install`,",Beginner,3
+APP_ISSUES_017,Application Issues,"Every time I open my 'Videos' folder, the file manager (Nemo) crashes and closes immediately.",Intermediate,3
+APP_ISSUES_018,Application Issues,I tried to `pip install requests` but I get 'EnvironmentError: Externally-managed-environment'. What,Intermediate,4
+APP_ISSUES_019,Application Issues,I messed up my Wine settings trying to install Photoshop. How do I completely reset Wine to default?,Advanced,2
+APP_ISSUES_020,Application Issues,Watching YouTube in Chrome uses 80% CPU and makes my laptop hot. It runs fine on Windows.,Intermediate,4
+APP_ISSUES_101,Application Issues,I'm trying to install software but I keep getting 'Could not get lock /var/lib/dpkg/lock-frontend'. ,Beginner,4
+APP_ISSUES_102,Application Issues,Trying to update with `yay` and it fails every time on 'libfoo'. Error: 'One or more PGP signatures ,Intermediate,3
+APP_ISSUES_103,Application Issues,"I have a bunch of custom fonts installed in my home folder `.fonts`, but LibreOffice Flatpak can't s",Intermediate,3
+APP_ISSUES_104,Application Issues,I love AppImages but I hate that they look like a generic gear icon in my dock. How do I fix the ugl,Beginner,3
+APP_ISSUES_105,Application Issues,I tried to save a PDF to my `/tmp` folder from Firefox and it failed. It says 'Permission denied'. I,Beginner,3
+APP_ISSUES_201,Application Issues,Everyone keeps mentioning Flatseal to fix permissions. How do I actually install it on Ubuntu?,Beginner,3
+APP_ISSUES_202,Application Issues,I downloaded a Linux ISO but I want to make sure it's not corrupted before I burn it. How do I check,Intermediate,3
+APP_ISSUES_203,Application Issues,I want to remove the Firefox Snap and install the classic .deb version. What is the correct way to d,Intermediate,3
+APP_ISSUES_204,Application Issues,I downloaded a file ending in .AppImage. How do I run it? Double clicking does nothing.,Beginner,4
+APP_ISSUES_301,Application Issues,I want to install Spotify. Should I use the Snap version that comes with Ubuntu or set up Flatpak? W,Intermediate,4
+APP_ISSUES_302,Application Issues,"On Arch, I see `steam` and `steam-native-runtime`. Which one should I be using for the least amount ",Intermediate,3
+APP_ISSUES_303,Application Issues,"I want to install Kdenlive. The version in `apt` seems old. Should I use Snap, Flatpak, or AppImage?",Beginner,3
+APP_ISSUES_401,Application Issues,"I uninstalled a bunch of apps, but I think they left a lot of unused libraries behind. What's the co",Beginner,3
+APP_ISSUES_402,Application Issues,Is there a single command to update all my Flatpaks at once without opening the software center?,Beginner,3
+APP_ISSUES_403,Application Issues,I have an AppImage I use daily. I'm tired of typing the full path `./Downloads/app-v1.2.3.AppImage`.,Intermediate,3
+APP_ISSUES_404,Application Issues,I noticed `/var/lib/snapd/cache` is huge. Is there a safe way to clean up old snap download data?,Intermediate,3
+APP_ISSUES_405,Application Issues,My web browser is completely frozen and won't close when I click X. How do I force kill it without r,Beginner,4
+APP_ISSUES_406,Application Issues,I want my Debian server to install security updates automatically so I don't have to remember.,Intermediate,3
+APP_ISSUES_407,Application Issues,How do I check if my game is actually using my Nvidia GPU and not the integrated graphics?,Intermediate,4
+APP_ISSUES_408,Application Issues,I uninstalled a bunch of Flatpak games. Do they leave unused runtimes (like older GL drivers) behind,Intermediate,2
+APP_ISSUES_409,Application Issues,I need a newer kernel for my wifi card but I want to stay on Debian Stable. How do I get it?,Advanced,3
+APP_ISSUES_410,Application Issues,The boot menu (Grub) sits there for 10 seconds every time I turn on my PC. How do I make it faster?,Intermediate,3
+APP_ISSUES_411,Application Issues,I'm trying to run an older proprietary app and it says 'error while loading shared libraries: libssl,Advanced,2
+APP_ISSUES_412,Application Issues,I'm getting 'dlopen(): error loading libfuse.so.2: AppImages require FUSE to run'. I already install,Intermediate,3
+APP_ISSUES_413,Application Issues,I haven't used this laptop in a year. I ran `apt update` and everything is 404 Not Found. Is my inte,Intermediate,3
+APP_ISSUES_414,Application Issues,"I copied a file from my friend's USB drive to my desktop, but I can't edit it. It says 'Read-only'.",Beginner,3
+APP_ISSUES_415,Application Issues,"I installed apps with `flatpak install`, and they run from the terminal, but they aren't showing up ",Intermediate,3
+APP_ISSUES_416,Application Issues,"I type my password, the screen goes black, and then it brings me right back to the login screen. I c",Advanced,4
+APP_ISSUES_417,Application Issues,I plugged in my HDMI monitor but the sound is still coming from my laptop speakers. It doesn't switc,Beginner,4
+APP_ISSUES_418,Application Issues,"I set Chrome as default in Chrome's settings, but when I click links in email, Firefox still opens.",Beginner,3
+APP_ISSUES_419,Application Issues,"Every time I switch from Windows to Linux, my clock is wrong by exactly 5 hours.",Intermediate,4
+APP_ISSUES_420,Application Issues,I can't run or refresh any snaps. I get 'cannot communicate with server: Post ... dial unix /run/sna,Intermediate,3
+APP_ISSUES_501,Application Issues,"I installed Discord from the Software Center (Flatpak), but it can't access my Downloads folder to s",Intermediate,4
+APP_ISSUES_502,Application Issues,I'm worried about my privacy. Does the Firefox Snap send data back to Canonical or Ubuntu? How do I ,Beginner,3
+APP_ISSUES_503,Application Issues,"I downloaded the Bitwarden AppImage. It runs, but I don't want it storing my vault password in plain",Intermediate,2
+APP_ISSUES_504,Application Issues,I keep getting a GPG error about 'NO_PUBKEY' when I try to update my apps. I think I added a repo fo,Advanced,3
+APP_ISSUES_505,Application Issues,I don't trust this Flatpak to access my internet. How do I completely block network access for just ,Intermediate,2
+APP_ISSUES_506,Application Issues,Chromium takes forever to open the first time I click it after turning on my computer. Is it broken?,Beginner,4
+APP_ISSUES_507,Application Issues,My Krita AppImage looks weird; the mouse cursor is huge and the theme doesn't match my Mint dark mod,Intermediate,3
+APP_ISSUES_508,Application Issues,"Every time I open Chrome, it asks me to 'Enter password to unlock your login keyring'. How do I stop",Intermediate,4
+APP_ISSUES_601,Application Issues,"My Firefox Sync is acting up. I signed in, but my bookmarks from my Windows PC aren't showing up on ",Beginner,3
+APP_ISSUES_602,Application Issues,"I'm using the Nextcloud AppImage. Every time I reboot, I have to log in again. It's not saving my ac",Intermediate,3
+APP_ISSUES_603,Application Issues,"I set up Syncthing via Flatpak to sync my photos to my phone, but it says 'Permission Denied' when I",Intermediate,2
+APP_ISSUES_701,Application Issues,"I can't share my screen on Teams. The option is there, but when I click it, the viewers just see a b",Intermediate,3
+APP_ISSUES_702,Application Issues,Slack (Snap) doesn't show the red badge count on the icon in the dock when I get new messages. I kee,Beginner,3
+APP_ISSUES_703,Application Issues,Zoom crashes instantly when I try to enable the Virtual Background feature. I installed it from Flat,Intermediate,3
+APP_ISSUES_704,Application Issues,"I installed VS Code via Flatpak. When I open the terminal inside VS Code, I can't use `dnf` or `gcc`",Intermediate,3
+APP_ISSUES_801,Application Issues,"I'm trying to play a Windows game on Steam. It launches, I hear sound, but the screen is just black.",Intermediate,4
+APP_ISSUES_802,Application Issues,"Spotify can't play my 'Local Files'. I pointed it to my Music folder, but the songs are greyed out.",Beginner,3
+APP_ISSUES_803,Application Issues,VLC looks tiny on my 4K monitor. The interface text is unreadable. How do I scale just this app up?,Advanced,3
+APP_ISSUES_804,Application Issues,Rhythmbox won't play MP3 files. It asks for a plugin but fails to install it.,Beginner,3
+APP_ISSUES_805,Application Issues,I installed Lutris (Flatpak) to run my GOG games. I can't find where the games are installed on my h,Intermediate,3
+APP_ISSUES_901,Application Issues,"I installed Waydroid to run Android apps, but the session stops immediately. Logs say 'binder node n",Advanced,2
+APP_ISSUES_902,Application Issues,I'm trying to run an old Windows XP app with Wine. It says 'Bad EXE format'. I think I need a 32-bit,Intermediate,2
+APP_ISSUES_903,Application Issues,"I downloaded Blender as a tar.xz file and extracted it. It works if I click the executable, but it's",Intermediate,3
+APP_ISSUES_904,Application Issues,The latest update broke my specialized accounting software. How do I downgrade a specific package (e,Advanced,2
+APP_ISSUES_905,Application Issues,"I added a PPA for a beta version of GIMP, but now my system updates are blocked because the PPA does",Advanced,3
+AUTO_SCRIPT_001,Automation & Scripting,"My backup script works fine when I run it manually, but when cron runs it, it fails with 'command no",Intermediate,4
+AUTO_SCRIPT_002,Automation & Scripting,"I'm trying to run a script I just wrote, but I keep getting 'Permission denied', even though I am th",Intermediate,4
+AUTO_SCRIPT_003,Automation & Scripting,How do I redirect both stdout and stderr to a log file in a crontab entry? My current log is empty d,Intermediate,3
+AUTO_SCRIPT_004,Automation & Scripting,"I created a simple systemd service, but it fails with '203/EXEC'. What does this mean?",Intermediate,2
+AUTO_SCRIPT_005,Automation & Scripting,"I'm using variables in a heredoc within my script, but they are expanding prematurely on the local m",Advanced,2
+AUTO_SCRIPT_101,Automation & Scripting,I am losing my mind. I put a script in `/etc/cron.daily` but it never runs. The permissions are 755.,Intermediate,4
+AUTO_SCRIPT_102,Automation & Scripting,Why does my systemd timer trigger the service immediately on boot even though I scheduled it for 2 A,Advanced,2
+AUTO_SCRIPT_103,Automation & Scripting,"My script utilizes `set -e` to stop on errors, but it's exiting even when a grep command simply fail",Intermediate,2
+AUTO_SCRIPT_104,Automation & Scripting,"I'm using `inotifywait` to watch a directory recursively, but it fails with 'No space left on device",Advanced,2
+AUTO_SCRIPT_105,Automation & Scripting,"I have a loop processing files with spaces in their names, and my script is breaking them into multi",Intermediate,3
+AUTO_SCRIPT_201,Automation & Scripting,How do I set up a systemd service that runs as my own user without sudo?,Intermediate,3
+AUTO_SCRIPT_202,Automation & Scripting,How can I ensure only one instance of my script runs at a time? I want to avoid race conditions if t,Advanced,3
+AUTO_SCRIPT_203,Automation & Scripting,How do I create a script that automatically backs up a folder to a remote server using rsync over SS,Intermediate,3
+AUTO_SCRIPT_204,Automation & Scripting,How do I ensure my temporary files are deleted even if the user presses Ctrl+C while the script is r,Intermediate,2
+AUTO_SCRIPT_205,Automation & Scripting,How do I pass secrets (like API keys) to a systemd service securely without hardcoding them in the u,Advanced,2
+AUTO_SCRIPT_301,Automation & Scripting,I need to run a backup every 10 minutes. Should I use Cron or Systemd Timers? What's the trade-off?,Intermediate,3
+AUTO_SCRIPT_302,Automation & Scripting,I have a complex script parsing CSV logs. Should I stick with Bash/Awk or move to Python?,Advanced,2
+AUTO_SCRIPT_303,Automation & Scripting,My laptop isn't always on. Should I use standard cron or anacron for daily maintenance scripts?,Intermediate,3
+AUTO_SCRIPT_304,Automation & Scripting,What is the difference between `source script.sh` and `./script.sh`?,Intermediate,3
+AUTO_SCRIPT_305,Automation & Scripting,I keep seeing `[[ ]]` vs `[ ]` in scripts. Which one should I use for automation scripts?,Advanced,3
+AUTO_SCRIPT_401,Automation & Scripting,I have thousands of images to convert using ImageMagick. A simple loop is taking forever. How can I ,Advanced,2
+AUTO_SCRIPT_402,Automation & Scripting,"I need to check if a website is down from a script, but I want to avoid downloading the whole page c",Intermediate,3
+AUTO_SCRIPT_403,Automation & Scripting,"I need to perform a search and replace on a configuration file string, but the string contains slash",Advanced,3
+AUTO_SCRIPT_404,Automation & Scripting,How can I automate a command that requires an interactive 'Yes/No' confirmation?,Intermediate,3
+AUTO_SCRIPT_405,Automation & Scripting,I have to run the same command on 10 different servers. SSHing into each one is tedious.,Advanced,3
+AUTO_SCRIPT_501,Automation & Scripting,I'm writing a bash script to rotate sensitive application logs. Standard `rm` isn't secure enough fo,Intermediate,3
+AUTO_SCRIPT_502,Automation & Scripting,I have a backup script running via cron that needs to scp files to a remote server. I don't want to ,Intermediate,3
+AUTO_SCRIPT_503,Automation & Scripting,My automation script requires an API key. I know hardcoding it is bad. How do I pass this variable s,Advanced,3
+AUTO_SCRIPT_504,Automation & Scripting,I'm automating an offsite backup to a cloud bucket using `rclone`. I want to encrypt the tarball *be,Advanced,2
+AUTO_SCRIPT_505,Automation & Scripting,I suspect someone modified my maintenance script. How can I set up an automated check (maybe a cron ,Intermediate,1
+AUTO_SCRIPT_601,Automation & Scripting,"I have a laptop and a desktop. I wrote a script to rsync my 'Projects' folder between them, but if I",Intermediate,3
+AUTO_SCRIPT_602,Automation & Scripting,I use Syncthing across 3 devices. Sometimes conflicts generate `.sync-conflict` files. I want a cron,Advanced,3
+AUTO_SCRIPT_603,Automation & Scripting,"I manage my dotfiles with git. I want a script that runs on login, pulls the latest changes from Git",Advanced,3
+AUTO_SCRIPT_701,Automation & Scripting,I need to monitor a specific internal API endpoint (`https://api.internal/health`). If it doesn't re,Intermediate,2
+AUTO_SCRIPT_702,Automation & Scripting,I need a nightly backup script for a Postgres database running in Docker. It needs to keep the last ,Advanced,3
+AUTO_SCRIPT_801,Automation & Scripting,I have a folder where I dump all my wallpapers. I want a script that automatically converts any PNGs,Intermediate,3
+AUTO_SCRIPT_802,Automation & Scripting,"I'm running a Minecraft server. I want it to automatically restart if it crashes, but I also want it",Advanced,3
+AUTO_SCRIPT_901,Automation & Scripting,I have a script that processes thousands of small text files in a loop. It's eating up 100% CPU and ,Advanced,2
+AUTO_SCRIPT_902,Automation & Scripting,I'm iterating over files in a directory using `for f in $(ls *.mp4)`. It breaks whenever a filename ,Intermediate,3
+AUTO_SCRIPT_903,Automation & Scripting,"I have a cron job that runs every minute. Sometimes the script takes longer than a minute to finish,",Advanced,2
+COMM_EMAIL_001,Communication & Email,Thunderbird won't connect to my Gmail. It keeps saying 'Authentication Failed' but my password is de,Beginner,4
+COMM_EMAIL_002,Communication & Email,"I can't share my screen in Zoom on Fedora. The button is there but when I click it, people just see ",Intermediate,3
+COMM_EMAIL_003,Communication & Email,The Teams app I downloaded a year ago stopped working. It just says 'Preview ended'. How do I use Te,Beginner,3
+COMM_EMAIL_004,Communication & Email,Discord audio is crackling like crazy whenever I join a voice channel. It's fine in other apps.,Intermediate,3
+COMM_EMAIL_005,Communication & Email,"I tried to add my Outlook account to Thunderbird, but it keeps asking for a password over and over a",Beginner,3
+COMM_EMAIL_006,Communication & Email,I need to connect to my work Exchange server. Thunderbird needs paid plugins. Does Evolution handle ,Intermediate,3
+COMM_EMAIL_007,Communication & Email,"I installed Proton Mail Bridge, but Thunderbird can't find the server `127.0.0.1`.",Advanced,2
+COMM_EMAIL_008,Communication & Email,Slack links aren't opening in my default browser. They don't do anything when clicked.,Beginner,3
+COMM_EMAIL_009,Communication & Email,All my emails disappeared from my phone after I opened Thunderbird on my laptop! Help!,Beginner,2
+COMM_EMAIL_010,Communication & Email,Signal Desktop keeps asking me to re-link my device every time I restart the computer.,Intermediate,3
+COMM_EMAIL_011,Communication & Email,My webcam works in Cheese but Skype says 'No device found'.,Beginner,3
+COMM_EMAIL_012,Communication & Email,I have thousands of emails. Thunderbird is super slow and freezes when I search.,Intermediate,3
+COMM_EMAIL_013,Communication & Email,Zoom keeps crashing whenever I try to use a virtual background.,Intermediate,3
+COMM_EMAIL_014,Communication & Email,KMail won't send emails. Akonadi server keeps printing errors about MySQL.,Advanced,2
+COMM_EMAIL_015,Communication & Email,"When I share a tab in Google Meet on Firefox, the audio from the tab doesn't play for others.",Intermediate,3
+COMM_EMAIL_016,Communication & Email,How do I make Thunderbird look less ugly? It looks like Windows 95.,Beginner,3
+COMM_EMAIL_017,Communication & Email,Telegram notifications aren't using my system theme. They look like custom bubbles.,Intermediate,2
+COMM_EMAIL_018,Communication & Email,I need to deploy Thunderbird to 50 users with pre-configured settings. Where is the `user.js`?,Advanced,2
+COMM_EMAIL_019,Communication & Email,"Webex says 'Browser not supported' on Firefox, but I really don't want to install Chrome.",Intermediate,3
+COMM_EMAIL_020,Communication & Email,How do I add a signature with a logo in Thunderbird? Text works but I can't paste images.,Beginner,3
+COMM_EMAIL_021,Communication & Email,Zoom keeps adjusting my microphone volume automatically and it's annoying my colleagues.,Intermediate,3
+COMM_EMAIL_022,Communication & Email,Mailspring keeps asking for a 'Password Safe' unlock on boot. It's annoying.,Intermediate,2
+COMM_EMAIL_023,Communication & Email,I can receive emails but I cannot send them. SMTP times out.,Intermediate,4
+COMM_EMAIL_024,Communication & Email,I'm trying to stream a game on Discord but there is no audio for the viewers.,Intermediate,3
+COMM_EMAIL_025,Communication & Email,How do I backup my Thunderbird emails and settings before I wipe my computer?,Beginner,3
+COMM_EMAIL_026,Communication & Email,Jitsi Meet camera quality is terrible on Firefox compared to Chrome.,Beginner,3
+COMM_EMAIL_027,Communication & Email,"Geary is nice but it won't load old emails, only the recent ones.",Beginner,2
+COMM_EMAIL_028,Communication & Email,I want to encrypt my emails with PGP. How do I set this up in Thunderbird?,Advanced,3
+COMM_EMAIL_029,Communication & Email,Mattermost desktop app screen sharing is showing a black screen on Ubuntu.,Intermediate,3
+COMM_EMAIL_030,Communication & Email,How do I spell check in the Tuta desktop app? It's not flagging my typos.,Beginner,2
+COMM_EMAIL_031,Communication & Email,I accidentally marked a whole folder as read. Can I undo this?,Beginner,3
+COMM_EMAIL_032,Communication & Email,I don't want to install the Skype app. Can I make calls from the browser on Linux?,Beginner,3
+COMM_EMAIL_033,Communication & Email,I need to view my Google Calendar inside Thunderbird. The built-in calendar is empty.,Intermediate,3
+COMM_EMAIL_034,Communication & Email,"Element is asking to verify this session, but I lost my other device. Can I read my old encrypted me",Intermediate,3
+COMM_EMAIL_035,Communication & Email,I need to check why my email server is rejecting connections. How do I test SMTP from the terminal m,Advanced,2
+COMM_EMAIL_036,Communication & Email,How do I stop Thunderbird from threading my emails? I hate the conversation view.,Beginner,3
+COMM_EMAIL_037,Communication & Email,I can't annotate on shared screens in Zoom. The option is missing.,Intermediate,3
+COMM_EMAIL_038,Communication & Email,My work requires a specific font for emails (Calibri). It's not in the list.,Intermediate,3
+COMM_EMAIL_039,Communication & Email,Discord is stuck on 'Update Failed - Retrying in X seconds'. I can't open it.,Intermediate,3
+COMM_EMAIL_040,Communication & Email,How do I create a new folder for my receipts? Right clicking 'Inbox' doesn't show 'New Folder'.,Beginner,3
+COMM_EMAIL_041,Communication & Email,I installed BlueMail but it won't download attachments to my Downloads folder.,Beginner,2
+COMM_EMAIL_042,Communication & Email,I want to move the Thunderbird cache off my SSD to my HDD to save write cycles.,Intermediate,2
+COMM_EMAIL_043,Communication & Email,Teams PWA notification sounds are way too loud and there's no volume slider in the app.,Intermediate,2
+COMM_EMAIL_044,Communication & Email,Thunderbird is blocking remote content in emails. How do I turn this off permanently?,Beginner,3
+COMM_EMAIL_045,Communication & Email,I need to run Zoom in a firejail sandbox. Which profile should I use?,Advanced,1
+COMM_EMAIL_046,Communication & Email,I want to export all my emails to PDF files for legal archiving.,Intermediate,2
+COMM_EMAIL_047,Communication & Email,Slack uses too much RAM. Is there a lighter alternative?,Beginner,3
+COMM_EMAIL_048,Communication & Email,How do I change the spell check language? It's underlining everything in red.,Beginner,3
+COMM_EMAIL_049,Communication & Email,Calls on Jami are dropping constantly. I thought P2P was supposed to be robust?,Intermediate,2
+COMM_EMAIL_050,Communication & Email,I have duplicate emails everywhere. Is there a tool to clean this up?,Intermediate,3
+COMM_EMAIL_051,Communication & Email,My Push-to-Talk key doesn't work when I'm playing a game (Discord not in focus).,Intermediate,3
+COMM_EMAIL_052,Communication & Email,The text in Thunderbird is too small to read on my 4K monitor.,Beginner,3
+COMM_EMAIL_053,Communication & Email,How do I record a meeting in Zoom on Linux? The button is greyed out.,Beginner,3
+COMM_EMAIL_054,Communication & Email,I need to delay sending emails by 1 minute in case I make a mistake. Outlook had this.,Intermediate,3
+COMM_EMAIL_055,Communication & Email,Telegram downloads all images and fills up my disk. How do I stop it?,Beginner,3
+COMM_EMAIL_056,Communication & Email,"Thunderbird keeps asking for the master password every time I send an email, not just at startup.",Advanced,3
+COMM_EMAIL_057,Communication & Email,Signal Desktop text is huge. CTRL minus doesn't shrink it.,Intermediate,3
+COMM_EMAIL_058,Communication & Email,Evolution shows 'Source not available' when I click on my Contacts.,Intermediate,3
+COMM_EMAIL_059,Communication & Email,"When I reply to an email, my signature is at the very bottom below the quoted text. I want it at the",Beginner,3
+COMM_EMAIL_060,Communication & Email,I installed Zoom from AUR and it won't open. Terminal says something about 'libQt5Core'.,Intermediate,3
+COMM_EMAIL_101,Communication & Email,Why is Linux support for Zoom so bad? I can't share audio when I share my screen!,Intermediate,4
+COMM_EMAIL_102,Communication & Email,Thunderbird keeps downloading thousands of old emails and filling up my hard drive! Stop it!,Beginner,3
+COMM_EMAIL_103,Communication & Email,"I'm using Teams in Chrome because there's no app, but I don't get notifications when the browser is ",Intermediate,3
+COMM_EMAIL_104,Communication & Email,"I can't send emails! Receiving works fine, but sending gives an SMTP timeout error.",Beginner,4
+COMM_EMAIL_105,Communication & Email,"Discord keeps updating and refusing to open until I install the update, but the repo hasn't updated ",Intermediate,3
+COMM_EMAIL_106,Communication & Email,Signal Desktop is showing 'Disconnected' constantly even though my internet is fine.,Beginner,2
+COMM_EMAIL_107,Communication & Email,I can't open attachments! It says '/tmp/... permission denied' whenever I try to open a PDF.,Advanced,3
+COMM_EMAIL_201,Communication & Email,How do I create an email signature with my company logo in Thunderbird?,Intermediate,3
+COMM_EMAIL_202,Communication & Email,How do I sync my Google Calendar with the Ubuntu calendar app without installing anything extra?,Beginner,4
+COMM_EMAIL_203,Communication & Email,How do I use a virtual background in Zoom on Linux? The option is greyed out.,Intermediate,3
+COMM_EMAIL_204,Communication & Email,I want to backup all my Thunderbird emails and settings to a USB drive. Which file do I copy?,Intermediate,4
+COMM_EMAIL_205,Communication & Email,How do I host a video call without making my friends install anything? Skype is too annoying.,Beginner,3
+COMM_EMAIL_301,Communication & Email,Is Thunderbird better than Evolution? I just want something simple that looks like Outlook.,Beginner,3
+COMM_EMAIL_302,Communication & Email,Which video app works best on Wayland? Zoom or Teams?,Intermediate,3
+COMM_EMAIL_303,Communication & Email,I tried Geary and it's too simple. I tried Thunderbird and it's too complex. Is there a middle groun,Beginner,2
+COMM_EMAIL_304,Communication & Email,I want to try a terminal email client. Should I use Mutt or Alpine?,Advanced,2
+COMM_EMAIL_401,Communication & Email,How can I make Thunderbird sort emails from my boss into a specific folder automatically?,Intermediate,3
+COMM_EMAIL_402,Communication & Email,How do I make Discord start minimized to the tray when I turn on my computer?,Intermediate,3
+COMM_EMAIL_403,Communication & Email,I want to tag emails with 'ToDo' using just a keyboard shortcut.,Advanced,2
+COMM_EMAIL_404,Communication & Email,I want to silence Slack notifications automatically after 6 PM. Is there a schedule setting?,Intermediate,2
+COMM_EMAIL_405,Communication & Email,I have 5 different email accounts. It's annoying to check 5 different Inboxes. Can I merge them?,Intermediate,3
+COMM_EMAIL_406,Communication & Email,How do I make a shortcut on my desktop that opens Gmail directly in its own window?,Beginner,3
+COMM_EMAIL_407,Communication & Email,Is there a global hotkey to mute my microphone in Zoom so I don't have to find the window?,Intermediate,2
+COMM_EMAIL_408,Communication & Email,How do I auto-archive emails older than 90 days?,Intermediate,2
+COMM_EMAIL_409,Communication & Email,I want to delay sending emails by 60 seconds in case I made a mistake.,Advanced,2
+COMM_EMAIL_410,Communication & Email,Telegram saves every image I view to my download folder. How do I stop it?,Beginner,3
+COMM_EMAIL_501,Communication & Email,"I'm trying to send an encrypted email to my lawyer, but the 'Encrypt' button is grayed out in Thunde",Intermediate,3
+COMM_EMAIL_502,Communication & Email,How do I stop email senders from knowing I opened their emails? I heard about tracking pixels.,Beginner,3
+COMM_EMAIL_503,Communication & Email,ProtonMail Bridge won't connect after I updated Fedora. It says 'Vault is locked' or something simil,Advanced,2
+COMM_EMAIL_504,Communication & Email,Signal Desktop is asking for a passphrase every time I open it on Debian. It's annoying.,Intermediate,3
+COMM_EMAIL_505,Communication & Email,Is my video call actually encrypted? I see a green shield icon but I'm on public Wi-Fi.,Beginner,3
+COMM_EMAIL_506,Communication & Email,I keep getting 'The certificate is not trusted because the issuer certificate is unknown' for my wor,Intermediate,3
+COMM_EMAIL_507,Communication & Email,How do I turn off all data collection in Discord? I don't like them reading my messages.,Beginner,3
+COMM_EMAIL_508,Communication & Email,I have a .p12 certificate file for signing emails. How do I import this into Evolution?,Advanced,2
+COMM_EMAIL_509,Communication & Email,Is there a way to password protect Thunderbird so no one can read my emails if I leave my laptop ope,Intermediate,3
+COMM_EMAIL_510,Communication & Email,"I want to use Secret Chats in Telegram on my desktop, but I can't find the option.",Intermediate,3
+COMM_EMAIL_511,Communication & Email,Thunderbird keeps asking for my GPG passphrase every time I send an email. How do I make it remember,Intermediate,2
+COMM_EMAIL_512,Communication & Email,My bank says my connection isn't secure when I try to log into webmail. I'm using a VPN.,Beginner,3
+COMM_EMAIL_513,Communication & Email,I switched to Betterbird for better privacy. How do I ensure HTML emails are sanitized?,Intermediate,2
+COMM_EMAIL_514,Communication & Email,I want to route only my email traffic through Tor. Is that possible in Thunderbird?,Advanced,2
+COMM_EMAIL_515,Communication & Email,Can my boss see my private DMs on Slack? I'm using the app on my personal Fedora laptop.,Beginner,3
+COMM_EMAIL_516,Communication & Email,"I linked my Google account in Settings, but now I'm worried. What exactly does Ubuntu access?",Intermediate,3
+COMM_EMAIL_517,Communication & Email,I got an email that says it's from 'Support' but the address looks weird. How do I see the real send,Beginner,4
+COMM_EMAIL_518,Communication & Email,I'm hosting a Jitsi call. How do I make sure random people don't bomb the meeting?,Intermediate,3
+COMM_EMAIL_519,Communication & Email,I generated a revocation certificate for my OpenPGP key. Where should I store it?,Advanced,2
+COMM_EMAIL_520,Communication & Email,I lost my Security Key for Element and now I can't read my old encrypted messages. Can I recover the,Intermediate,2
+COMM_EMAIL_521,Communication & Email,How do I clear my saved passwords for Gmail in Firefox? I want to type it in every time for safety.,Beginner,3
+COMM_EMAIL_522,Communication & Email,"I want to digitally sign my emails so people know it's really me, but I don't want to encrypt them. ",Intermediate,2
+COMM_EMAIL_523,Communication & Email,Wire says 'Connection not secure' on Debian. I installed it from the repo.,Intermediate,2
+COMM_EMAIL_524,Communication & Email,I keep getting spam. Does Thunderbird have a junk filter I need to turn on?,Beginner,4
+COMM_EMAIL_525,Communication & Email,How do I configure Evolution to use OAuth2 for Office 365? It keeps asking for a password and failin,Advanced,3
+COMM_EMAIL_601,Communication & Email,"I read an email on my phone, but it still shows as unread on Thunderbird on my laptop. Why doesn't i",Intermediate,3
+COMM_EMAIL_602,Communication & Email,How do I sync my Google Contacts to Thunderbird? I hate having two address books.,Intermediate,4
+COMM_EMAIL_603,Communication & Email,"I get notifications on my phone for Discord, but not on my PC. I want them on both.",Beginner,3
+COMM_EMAIL_604,Communication & Email,I want to backup my iCloud calendar to my Linux machine using terminal. What tool should I use?,Advanced,2
+COMM_EMAIL_605,Communication & Email,My open tabs aren't showing up on my laptop from my phone. I'm signed into Firefox on both.,Intermediate,3
+COMM_EMAIL_606,Communication & Email,"I deleted an email on my iPhone, but it's still in Thunderbird on my PC. Why?",Beginner,3
+COMM_EMAIL_607,Communication & Email,"Signal Desktop says 'Link device', but I already linked it before. Do I have to do it again?",Intermediate,3
+COMM_EMAIL_608,Communication & Email,I'm trying to sync my Nextcloud calendar with Evolution. It asks for a URL.,Advanced,3
+COMM_EMAIL_609,Communication & Email,I use a shared 'Family' calendar on Google. How do I see that specific calendar in Thunderbird?,Intermediate,3
+COMM_EMAIL_610,Communication & Email,Telegram on Arch isn't showing the messages I just sent from my phone.,Beginner,3
+COMM_EMAIL_611,Communication & Email,I want to reply to SMS from my Ubuntu desktop. I installed KDE Connect but the devices don't see eac,Intermediate,3
+COMM_EMAIL_612,Communication & Email,I'm using Outlook as a web app (PWA) on Fedora. Notifications don't come through when the window is ,Intermediate,2
+COMM_EMAIL_613,Communication & Email,I have a huge local archive of emails in Thunderbird. How do I sync this to my laptop without using ,Advanced,2
+COMM_EMAIL_614,Communication & Email,WhatsApp Web keeps disconnecting saying 'Phone not connected'. My phone is right there.,Beginner,3
+COMM_EMAIL_615,Communication & Email,Mailspring isn't showing the same Sent items as my phone.,Intermediate,2
+COMM_EMAIL_616,Communication & Email,"My friend says my mic sounds robotic on Discord, but it's fine on my phone.",Intermediate,3
+COMM_EMAIL_617,Communication & Email,I changed my Gmail password. How do I update it in Thunderbird? It just keeps giving login errors.,Beginner,4
+COMM_EMAIL_618,Communication & Email,I have two computers. Can I put my Thunderbird profile on Dropbox to sync them?,Advanced,3
+COMM_EMAIL_619,Communication & Email,Element says 'Encrypted messages usually aren't readable on this device' when I scroll up.,Intermediate,3
+COMM_EMAIL_620,Communication & Email,I use Yahoo Mail in the browser. I have to login every single time I restart the computer.,Beginner,3
+COMM_EMAIL_621,Communication & Email,GNOME Calendar is Read-Only for my Google Calendar events. I can't edit them.,Intermediate,3
+COMM_EMAIL_622,Communication & Email,I want to export all my Thunderbird contacts to my Android phone manually.,Advanced,3
+COMM_EMAIL_623,Communication & Email,Slack keeps signing me out every time I reboot Arch.,Intermediate,3
+COMM_EMAIL_624,Communication & Email,"I scheduled a meeting in Zoom on the web, but it's not showing in the Zoom app on Mint.",Beginner,3
+COMM_EMAIL_625,Communication & Email,Thunderbird is downloading thousands of old emails and filling up my disk. How do I stop it?,Intermediate,3
+COMM_EMAIL_701,Communication & Email,I can't join my company Teams meeting. It just says 'Browser not supported' when I use Firefox.,Intermediate,4
+COMM_EMAIL_702,Communication & Email,My boss can't see my screen when I share on Zoom. It's just black. I'm on Fedora.,Intermediate,4
+COMM_EMAIL_703,Communication & Email,I need to set an 'Out of Office' reply for my work email (Exchange). I can't find it in Thunderbird.,Intermediate,3
+COMM_EMAIL_704,Communication & Email,My company uses MFA (Multi-Factor Authentication) and Evolution keeps failing to login to Office 365,Advanced,3
+COMM_EMAIL_705,Communication & Email,Screen sharing in Slack is totally broken on Arch. I just updated.,Intermediate,3
+COMM_EMAIL_706,Communication & Email,How do I add my HTML signature for work? I have the file.,Beginner,3
+COMM_EMAIL_707,Communication & Email,Google Meet background blur isn't working. The option is missing.,Intermediate,3
+COMM_EMAIL_708,Communication & Email,I need to view the Global Address List (GAL) from my company's Exchange server in Thunderbird.,Intermediate,2
+COMM_EMAIL_709,Communication & Email,My Bluetooth headset mic works in settings but not in Zoom calls.,Intermediate,3
+COMM_EMAIL_710,Communication & Email,I'm trying to use DavMail to connect Thunderbird to my strict corporate O365. It's not authenticatin,Advanced,2
+COMM_EMAIL_801,Communication & Email,I can't install Discord. I downloaded the .deb file but double clicking does nothing.,Beginner,4
+COMM_EMAIL_802,Communication & Email,I want to change the ugly font in Thunderbird's folder list. It's too small.,Intermediate,3
+COMM_EMAIL_803,Communication & Email,My webcam is upside down in Skype! It works fine in other apps.,Intermediate,3
+COMM_EMAIL_804,Communication & Email,I downloaded Viber AppImage but it won't open when I click it.,Beginner,2
+COMM_EMAIL_805,Communication & Email,"Discord keeps updating and refusing to open until I install the update, but the Arch repo hasn't upd",Intermediate,3
+COMM_EMAIL_806,Communication & Email,How do I make Telegram use the dark mode that matches my Ubuntu system theme?,Beginner,3
+COMM_EMAIL_807,Communication & Email,I want to send a large video file (100MB) to my grandma. Thunderbird says it's too big.,Intermediate,4
+COMM_EMAIL_808,Communication & Email,Discord audio crackles when I'm playing a game at the same time.,Intermediate,3
+COMM_EMAIL_809,Communication & Email,How do I add a picture to my contact? I want to see faces when people email me.,Beginner,3
+COMM_EMAIL_810,Communication & Email,Signal won't start. It just shows a white screen and crashes.,Intermediate,3
+COMM_EMAIL_901,Communication & Email,I want to feel like a hacker and use email in the terminal. I installed Mutt but I have no idea how ,Advanced,2
+COMM_EMAIL_902,Communication & Email,I have an old Outlook .pst file from my Windows days. How do I open it in Thunderbird?,Intermediate,3
+COMM_EMAIL_903,Communication & Email,I was told to join an IRC channel for support. I installed HexChat but it keeps saying 'SASL authent,Intermediate,2
+COMM_EMAIL_904,Communication & Email,I'm blind and use the Orca screen reader. Thunderbird is reading every single column header before t,Advanced,1
+COMM_EMAIL_905,Communication & Email,"I want to stream a movie on Discord to my friends, but the audio from the movie player isn't capturi",Intermediate,3
+COMM_EMAIL_906,Communication & Email,I'm using a YubiKey for GPG. Thunderbird doesn't see it for signing emails.,Intermediate,2
+COMM_EMAIL_907,Communication & Email,I'm trying to use Gov.uk Verify / ID.me but the webcam verification fails in Firefox.,Beginner,2
+COMM_EMAIL_908,Communication & Email,I have two different email providers with the same email address (migration). How do I check both in,Advanced,2
+COMM_EMAIL_909,Communication & Email,I want to bridge my Telegram into Element so I only use one app. Is that hard?,Intermediate,2
+COMM_EMAIL_910,Communication & Email,My emails are showing the wrong time (3 hours off). The system clock is correct.,Intermediate,3
+DEV_DEVOPS_001,Development & DevOps,"I just installed Docker on Ubuntu 24.04. Every time I run `docker ps`, I get 'permission denied whil",Beginner,4
+DEV_DEVOPS_002,Development & DevOps,"I'm trying to push to a private GitHub repo over HTTPS, but I keep getting `Support for password aut",Intermediate,4
+DEV_DEVOPS_003,Development & DevOps,"I installed Postgres 16 on my Debian server. I can connect locally, but when I try to connect from m",Intermediate,3
+DEV_DEVOPS_004,Development & DevOps,I have an SSH key pair generated. I copied the public key to the server using `ssh-copy-id`. However,Intermediate,4
+DEV_DEVOPS_005,Development & DevOps,I tried to run `pip install requests` but got an 'externally-managed-environment' error. I just want,Beginner,4
+DEV_DEVOPS_101,Development & DevOps,I'm running `docker compose up -d`. The container starts but exits immediately with code 0. `docker ,Advanced,4
+DEV_DEVOPS_102,Development & DevOps,"I accidentally committed a large 500MB tar file to my repo. I removed it in the next commit, but `.g",Intermediate,3
+DEV_DEVOPS_103,Development & DevOps,"I keep getting EACCES errors when installing global npm packages. I tried `sudo npm install`, but no",Intermediate,4
+DEV_DEVOPS_104,Development & DevOps,I need to git pull from a private repo *inside* a remote server I'm SSH'd into. I don't want to copy,Advanced,3
+DEV_DEVOPS_105,Development & DevOps,I lost the MySQL root password on my dev machine. I can't login. How do I reset it without reinstall,Intermediate,3
+DEV_DEVOPS_201,Development & DevOps,How do I create a simple Dockerfile for a Python script? I just want to run `main.py` which uses `pa,Beginner,4
+DEV_DEVOPS_202,Development & DevOps,How do I set up VS Code to edit files directly on my remote Linux server over SSH without using VNC?,Intermediate,4
+DEV_DEVOPS_203,Development & DevOps,I have a python script `/opt/scripts/monitor.py`. How do I make it run automatically on boot using s,Intermediate,3
+DEV_DEVOPS_204,Development & DevOps,How do I ignore the `node_modules` folder in Git? I already committed it by mistake.,Beginner,4
+DEV_DEVOPS_205,Development & DevOps,"I'm setting up a web server. How do I configure UFW to allow SSH, HTTP, and HTTPS but block everythi",Intermediate,4
+DEV_DEVOPS_301,Development & DevOps,I'm on Fedora 40. Should I use Podman or install Docker CE? What's the practical difference for a de,Advanced,3
+DEV_DEVOPS_302,Development & DevOps,I'm hosting a simple static site and a reverse proxy for a Node app. Should I use Nginx or Apache?,Intermediate,3
+DEV_DEVOPS_303,Development & DevOps,I need to store a lot of JSON data but also relational data. Should I use MongoDB or PostgreSQL?,Advanced,2
+DEV_DEVOPS_304,Development & DevOps,I see everyone using Zsh and Oh My Zsh. Is it worth switching from Bash?,Beginner,3
+DEV_DEVOPS_305,Development & DevOps,Should I use `conda` or `venv` + `pip` for general Python development?,Intermediate,4
+DEV_DEVOPS_401,Development & DevOps,I manage 10 different servers. I'm tired of typing `ssh user@ip -i ~/.ssh/key` every time. How can I,Intermediate,4
+DEV_DEVOPS_402,Development & DevOps,My disk is filling up with old Docker images and stopped containers. Is there a command to clean eve,Intermediate,3
+DEV_DEVOPS_403,Development & DevOps,"I want to run my linter automatically before I commit. If the linter fails, the commit should stop.",Advanced,3
+DEV_DEVOPS_404,Development & DevOps,"I have a script that fails sometimes, but I don't know why. How can I make bash print every command ",Intermediate,3
+DEV_DEVOPS_405,Development & DevOps,How do I schedule a daily backup of my `/var/www` folder to a tar file at 3 AM?,Intermediate,3
+DEV_DEVOPS_501,Development & DevOps,"I'm trying to SSH into my dev server, but it keeps rejecting my key with 'Permissions 0644 for 'id_r",Intermediate,4
+DEV_DEVOPS_502,Development & DevOps,How do I sign my Git commits with GPG automatically? I have generated a key but `git log --show-sign,Intermediate,3
+DEV_DEVOPS_503,Development & DevOps,I accidentally committed a `.env` file with API keys to a public repo. I removed the file and pushed,Advanced,3
+DEV_DEVOPS_504,Development & DevOps,"I enabled UFW on my production server, and now my Docker containers can't communicate with the outsi",Advanced,3
+DEV_DEVOPS_505,Development & DevOps,I'm setting up a local Postgres instance for development. I want to force SSL connections only for a,Intermediate,2
+DEV_DEVOPS_506,Development & DevOps,I want to disable password authentication entirely on my VPS and only allow SSH keys. Which config f,Intermediate,3
+DEV_DEVOPS_507,Development & DevOps,"I'm using Docker Secrets in a swarm mode setup, but my app can't see the secret file at `/run/secret",Advanced,2
+DEV_DEVOPS_508,Development & DevOps,I'm setting up Nginx as a reverse proxy. How do I prevent it from revealing its version number in th,Intermediate,3
+DEV_DEVOPS_509,Development & DevOps,I need to generate a self-signed certificate for local dev that includes a Subject Alternative Name ,Advanced,2
+DEV_DEVOPS_510,Development & DevOps,I keep getting `EACCES: permission denied` when installing global npm packages. I don't want to use ,Intermediate,4
+DEV_DEVOPS_601,Development & DevOps,I use the same laptop for work and personal projects. I want to use my work email for repos in `~/wo,Advanced,2
+DEV_DEVOPS_602,Development & DevOps,I'm using Syncthing to sync my code folder between my desktop and laptop. It keeps syncing `node_mod,Intermediate,2
+DEV_DEVOPS_603,Development & DevOps,I have to SSH into a server that is only accessible via a bastion host. I'm tired of running two ssh,Intermediate,3
+DEV_DEVOPS_604,Development & DevOps,"I use VS Code Remote-SSH to develop on a headless Linux box. Every time the server restarts, the IP ",Advanced,3
+DEV_DEVOPS_605,Development & DevOps,I want to manage the Docker engine running on my Raspberry Pi from my laptop's Docker CLI. How do I ,Advanced,2
+DEV_DEVOPS_606,Development & DevOps,I need to dump a database from my production server and import it to my local dev environment in one,Intermediate,3
+DEV_DEVOPS_607,Development & DevOps,I'm setting up a new machine. I cloned my dotfiles repo to `~/dotfiles`. How do I use GNU Stow to sy,Advanced,3
+DEV_DEVOPS_608,Development & DevOps,I'm using Tailscale to access my dev server. I want to bind my development web server (running on po,Intermediate,2
+DEV_DEVOPS_609,Development & DevOps,I have a script that needs to run on both my Mac (zsh/BSD tools) and Linux (bash/GNU tools). `sed -i,Advanced,2
+DEV_DEVOPS_610,Development & DevOps,"I mounted a remote directory using `sshfs` to edit files locally. However, when I save, the file per",Intermediate,2
+DEV_DEVOPS_701,Development & DevOps,My GitLab CI runner (docker executor) fails to push the built image because it can't connect to the ,Advanced,2
+DEV_DEVOPS_702,Development & DevOps,I'm trying to debug a crashlooping pod in a restricted namespace. `kubectl logs` isn't helping becau,Intermediate,2
+DEV_DEVOPS_703,Development & DevOps,"We use `docker-compose.yml` for prod. For local dev, I need to expose different ports and mount the ",Intermediate,3
+DEV_DEVOPS_704,Development & DevOps,I'm trying to install a Python package with `pip` but I get 'error: externally-managed-environment'.,Intermediate,4
+DEV_DEVOPS_705,Development & DevOps,"I'm connected to the corporate VPN, but it routes ALL traffic through the office. I only want traffi",Advanced,3
+DEV_DEVOPS_706,Development & DevOps,My Redis container keeps getting OOM killed in production under load. I have plenty of RAM on the ho,Intermediate,2
+DEV_DEVOPS_707,Development & DevOps,I'm writing an Ansible playbook. I need to copy a config file only if the destination file doesn't e,Intermediate,3
+DEV_DEVOPS_708,Development & DevOps,My custom app logs to `/var/log/myapp/debug.log`. It filled up the disk yesterday. I added a logrota,Advanced,3
+DEV_DEVOPS_709,Development & DevOps,I'm getting `ENOSPC: System limit for number of file watchers reached` when running my React app's d,Intermediate,2
+DEV_DEVOPS_710,Development & DevOps,"I'm running Node Exporter on my server, but I don't want to open port 9100 to the public internet. P",Intermediate,3
+DEV_DEVOPS_801,Development & DevOps,"I'm running Pi-hole in Docker. It works, but the query log shows all requests coming from `172.17.0.",Intermediate,3
+DEV_DEVOPS_802,Development & DevOps,"I set up Jellyfin on Docker, but hardware acceleration (VAAPI) isn't working. The transcoder crashes",Intermediate,3
+DEV_DEVOPS_803,Development & DevOps,I'm using Traefik as my home lab reverse proxy. I want to expose a service but only to my LAN subnet,Advanced,2
+DEV_DEVOPS_804,Development & DevOps,I have a ZFS pool `tank` for my home server data. I want to verify the integrity of the data to chec,Intermediate,2
+DEV_DEVOPS_805,Development & DevOps,"I have a dynamic IP at home. I installed `ddclient` to update my Cloudflare DNS, but it's not updati",Intermediate,2
+DEV_DEVOPS_806,Development & DevOps,I'm running a Windows VM in KVM (virt-manager). The disk I/O is terrible. I'm using a qcow2 file. Ho,Intermediate,2
+DEV_DEVOPS_807,Development & DevOps,I use Restic to back up my home directory to Backblaze B2. I want to forget old snapshots: keep dail,Advanced,2
+DEV_DEVOPS_808,Development & DevOps,I'm switching from Nginx to Caddy for my home server because I heard SSL is automatic. How do I reve,Intermediate,2
+DEV_DEVOPS_809,Development & DevOps,I wrote a Python script `server_stats.py` that I want to run every 15 minutes. Should I use cron or ,Intermediate,3
+DEV_DEVOPS_810,Development & DevOps,"I'm running a self-hosted Gitea instance. I want to mirror a GitHub repo, but Gitea fails to clone i",Advanced,2
+DEV_DEVOPS_901,Development & DevOps,I have to maintain a legacy app that requires PHP 5.6. Ubuntu 22.04 only has PHP 8.1. How do I insta,Advanced,2
+DEV_DEVOPS_902,Development & DevOps,I'm doing some eBPF development and I need access to `/sys/kernel/debug`. It's empty. How do I enabl,Advanced,1
+DEV_DEVOPS_903,Development & DevOps,"I'm using Podman instead of Docker. When I run a container that tries to bind to port 80, it fails w",Advanced,2
+DEV_DEVOPS_904,Development & DevOps,I performed a `git reset --hard` and lost a commit that wasn't pushed. It's been 20 minutes. Is it g,Advanced,3
+DEV_DEVOPS_905,Development & DevOps,I'm trying to build a Docker image for `arm64` on my `amd64` machine using `docker buildx`. It fails,Advanced,3
+DEV_DEVOPS_906,Development & DevOps,I have a MySQL database with a corrupted MyISAM table. The service won't start. How do I fix the tab,Advanced,1
+DEV_DEVOPS_907,Development & DevOps,I'm on a minimal Alpine container debugging a connection. `curl` and `wget` are missing. How do I te,Advanced,3
+DEV_DEVOPS_908,Development & DevOps,I ran out of space on `/`. I added a new virtual disk `/dev/sdb`. How do I extend the root LVM volum,Advanced,2
+DEV_DEVOPS_909,Development & DevOps,I have a file named `-dash-prefix.txt` and I can't delete it. `rm -dash-prefix.txt` thinks it's a fl,Intermediate,3
+DEV_DEVOPS_910,Development & DevOps,I'm trying to console into a switch using a USB-to-Serial adapter. I added my user to the `dialout` ,Advanced,2
+ENT_MEDIA_001,Entertainment & Media,"Spotify won't open. I click the icon, it bounces for a second, then nothing happens. No error messag",Beginner,4
+ENT_MEDIA_002,Entertainment & Media,I can't play an MP4 file I downloaded. It says 'missing codec H.264'.,Beginner,4
+ENT_MEDIA_003,Entertainment & Media,Why is Netflix quality so bad? It looks like 720p even though I pay for 4K.,Intermediate,4
+ENT_MEDIA_004,Entertainment & Media,DaVinci Resolve won't launch. Terminal says something about 'libpango' or 'glib' errors.,Advanced,3
+ENT_MEDIA_005,Entertainment & Media,OBS only shows a black screen when I try to capture a window on Wayland.,Intermediate,3
+ENT_MEDIA_006,Entertainment & Media,VLC cannot play a DVD. It just spins and stops.,Beginner,3
+ENT_MEDIA_007,Entertainment & Media,YouTube makes my laptop fan spin like crazy. How do I turn on hardware decoding?,Intermediate,4
+ENT_MEDIA_008,Entertainment & Media,Most of my Windows games in Steam are grayed out and I can't install them.,Beginner,4
+ENT_MEDIA_009,Entertainment & Media,Spotify can't find my local MP3 files in the Music folder.,Beginner,3
+ENT_MEDIA_010,Entertainment & Media,Rendering video takes forever. How do I use my NVidia GPU for rendering?,Intermediate,3
+ENT_MEDIA_011,Entertainment & Media,"My Bluetooth headphones sound like a telephone call, very low quality.",Intermediate,4
+ENT_MEDIA_012,Entertainment & Media,Videos look 'torn' horizontally when there is fast movement on screen.,Beginner,4
+ENT_MEDIA_013,Entertainment & Media,MPV interface is tiny on my 4K monitor. How do I scale the on-screen controller?,Intermediate,3
+ENT_MEDIA_014,Entertainment & Media,Disney+ gives me Error 83 when I try to watch in Firefox.,Beginner,3
+ENT_MEDIA_015,Entertainment & Media,I can't record system audio (what I hear) in Audacity.,Intermediate,3
+ENT_MEDIA_016,Entertainment & Media,My PS5 controller connects via Bluetooth but Steam doesn't recognize it.,Intermediate,3
+ENT_MEDIA_017,Entertainment & Media,VLC is green screen when playing videos. Audio works fine.,Intermediate,3
+ENT_MEDIA_018,Entertainment & Media,Reaper warns about 'Realtime' permissions being denied.,Advanced,2
+ENT_MEDIA_019,Entertainment & Media,Jellyfin can't transcode video. The logs say 'Permission denied' on /dev/dri/renderD128.,Intermediate,2
+ENT_MEDIA_020,Entertainment & Media,I can't install Spotify. It's not in the Software Center.,Beginner,3
+ENT_MEDIA_021,Entertainment & Media,I ripped a DVD but the file is huge (4GB). How do I make it smaller for my phone?,Beginner,3
+ENT_MEDIA_022,Entertainment & Media,Kdenlive crashes every time I drag a clip to the timeline.,Intermediate,3
+ENT_MEDIA_023,Entertainment & Media,Games are stuttering badly. I think they are running on my Intel integrated graphics instead of my N,Intermediate,4
+ENT_MEDIA_024,Entertainment & Media,Twitch streams won't load in Chromium. It says 'Error #2000'.,Beginner,3
+ENT_MEDIA_025,Entertainment & Media,The volume is too low even at 100%.,Intermediate,4
+ENT_MEDIA_026,Entertainment & Media,Plex can't see my external hard drive with movies on it.,Intermediate,3
+ENT_MEDIA_027,Entertainment & Media,Darktable says 'No OpenCL found'. Is that important?,Beginner,2
+ENT_MEDIA_028,Entertainment & Media,How do I make MPV remember the playback position when I close it?,Intermediate,3
+ENT_MEDIA_029,Entertainment & Media,I can't see thumbnails for my video files in the file explorer (Nautilus).,Beginner,3
+ENT_MEDIA_030,Entertainment & Media,The ads on Spotify are annoying. Is there a way to block them on the desktop app?,Advanced,3
+ENT_MEDIA_031,Entertainment & Media,I can't access my plugins folder for OBS installed via Flatpak.,Intermediate,2
+ENT_MEDIA_032,Entertainment & Media,How do I bridge PulseAudio applications to JACK so I can hear YouTube while using Ardour?,Intermediate,2
+ENT_MEDIA_033,Entertainment & Media,I installed a font for Inkscape but it doesn't show up.,Beginner,3
+ENT_MEDIA_034,Entertainment & Media,VLC looks huge and ugly. It's not respecting my dark theme.,Intermediate,3
+ENT_MEDIA_035,Entertainment & Media,Steam download speeds are super slow compared to Windows.,Beginner,3
+ENT_MEDIA_036,Entertainment & Media,DaVinci Resolve Free version won't import my MP4 files from my Sony camera.,Advanced,3
+ENT_MEDIA_037,Entertainment & Media,Spotify fonts look terrible and jagged.,Intermediate,3
+ENT_MEDIA_038,Entertainment & Media,Calibre doesn't detect my Kindle when I plug it in.,Beginner,3
+ENT_MEDIA_039,Entertainment & Media,Rhythmbox doesn't show album art.,Beginner,3
+ENT_MEDIA_040,Entertainment & Media,Kazam works but the recorded video is stuck at a low framerate.,Intermediate,2
+ENT_MEDIA_041,Entertainment & Media,I want to apply a system-wide Equalizer to boost bass.,Advanced,3
+ENT_MEDIA_042,Entertainment & Media,Subtitles are too small in Celluloid player.,Beginner,3
+ENT_MEDIA_043,Entertainment & Media,Picard won't save tags to my FLAC files. Says 'Permission Denied'.,Beginner,2
+ENT_MEDIA_044,Entertainment & Media,IPTVnator works but buffering is terrible on high bitrate channels.,Intermediate,2
+ENT_MEDIA_045,Entertainment & Media,My TV sees the MiniDLNA server but the folders are empty.,Intermediate,2
+ENT_MEDIA_046,Entertainment & Media,League of Legends won't start after the latest Vanguard update.,Advanced,4
+ENT_MEDIA_047,Entertainment & Media,Shortwave radio app crashes on startup.,Beginner,2
+ENT_MEDIA_048,Entertainment & Media,gPodder fails to download episodes to my SD card.,Beginner,2
+ENT_MEDIA_049,Entertainment & Media,"Using Blender as a video editor, playback is choppy.",Intermediate,3
+ENT_MEDIA_050,Entertainment & Media,Discord screen share has no audio.,Intermediate,4
+ENT_MEDIA_051,Entertainment & Media,RetroArch doesn't save my game progress when I quit.,Intermediate,3
+ENT_MEDIA_052,Entertainment & Media,"DeVeDe fails to create ISO, says 'mkisofs not found'.",Advanced,2
+ENT_MEDIA_053,Entertainment & Media,I can't open HEIC photos from my iPhone.,Beginner,3
+ENT_MEDIA_054,Entertainment & Media,"Cozy audio book player keeps scanning my library on every startup, which takes forever.",Intermediate,2
+ENT_MEDIA_055,Entertainment & Media,Steam Overlay isn't working in games.,Intermediate,3
+ENT_MEDIA_056,Entertainment & Media,How do I cast my entire desktop to my Chromecast?,Intermediate,3
+ENT_MEDIA_057,Entertainment & Media,yt-dlp is downloading videos very slowly.,Intermediate,3
+ENT_MEDIA_058,Entertainment & Media,Aulon (SoundCloud client) won't log in.,Beginner,2
+ENT_MEDIA_059,Entertainment & Media,VLC subtitles appear as squares/boxes.,Beginner,2
+ENT_MEDIA_060,Entertainment & Media,How do I remove all metadata from a photo before uploading it?,Intermediate,3
+ENT_MEDIA_061,Entertainment & Media,Cheese says 'No device found' but `lsusb` shows my webcam.,Intermediate,3
+ENT_MEDIA_062,Entertainment & Media,The screensaver interrupts me while watching movies in Firefox.,Beginner,3
+ENT_MEDIA_063,Entertainment & Media,My MIDI keyboard is detected but makes no sound.,Advanced,2
+ENT_MEDIA_064,Entertainment & Media,I need to extract the audio from a video file as MP3.,Intermediate,3
+ENT_MEDIA_065,Entertainment & Media,My stream looks pixelated during fast motion.,Intermediate,3
+ENT_MEDIA_066,Entertainment & Media,How do I install MakeMKV on Debian? It's not in apt.,Advanced,2
+ENT_MEDIA_067,Entertainment & Media,Spotify keeps pausing when I get a notification.,Intermediate,3
+ENT_MEDIA_068,Entertainment & Media,How do I show FPS and CPU usage in games?,Intermediate,3
+ENT_MEDIA_069,Entertainment & Media,Shotcut has no audio on timeline playback.,Intermediate,2
+ENT_MEDIA_070,Entertainment & Media,My USB DAC supports 192kHz but Linux only plays 48kHz.,Advanced,2
+ENT_MEDIA_071,Entertainment & Media,Is there a Tidal app for Linux?,Beginner,3
+ENT_MEDIA_072,Entertainment & Media,How do I easily manage and install many fonts?,Beginner,3
+ENT_MEDIA_073,Entertainment & Media,Transmission says 'Port Closed'. Downloads are slow.,Beginner,3
+ENT_MEDIA_074,Entertainment & Media,Lollypop music player isn't fetching lyrics.,Intermediate,2
+ENT_MEDIA_075,Entertainment & Media,Amazon Prime Video says 'Browser not supported' or asks for Silverlight.,Beginner,3
+ENT_MEDIA_076,Entertainment & Media,I want to route my Spotify audio to Discord but not my game audio.,Intermediate,2
+ENT_MEDIA_077,Entertainment & Media,My Xbox 360 controller keeps blinking and won't connect.,Beginner,2
+ENT_MEDIA_078,Entertainment & Media,Subtitles are out of sync with the audio.,Intermediate,3
+ENT_MEDIA_079,Entertainment & Media,Flameshot doesn't launch when I press PrintScreen.,Beginner,3
+ENT_MEDIA_080,Entertainment & Media,Peek records a black rectangle on Wayland.,Beginner,2
+ENT_MEDIA_081,Entertainment & Media,SteamVR fails to initialize (Error 307).,Advanced,2
+ENT_MEDIA_082,Entertainment & Media,How do I remove a foreign audio track from an MKV file without re-encoding?,Intermediate,2
+ENT_MEDIA_083,Entertainment & Media,Audio crackles when my CPU load is high.,Intermediate,3
+ENT_MEDIA_084,Entertainment & Media,SDR++ cannot open my RTL-SDR dongle.,Intermediate,2
+ENT_MEDIA_085,Entertainment & Media,How do I set a video as my wallpaper in KDE?,Intermediate,2
+ENT_MEDIA_086,Entertainment & Media,Epic Games Store games won't launch in Heroic.,Intermediate,3
+ENT_MEDIA_087,Entertainment & Media,Variety wallpaper changer stops working after a while.,Beginner,2
+ENT_MEDIA_088,Entertainment & Media,Ardour cannot find my VST plugins.,Advanced,2
+ENT_MEDIA_089,Entertainment & Media,Twitch keeps buffering but my internet is fast.,Intermediate,4
+ENT_MEDIA_090,Entertainment & Media,OpenRGB requires root access to control my motherboard LEDs.,Intermediate,3
+ENT_MEDIA_091,Entertainment & Media,Olive video editor 0.1 is too buggy. How do I get 0.2?,Intermediate,1
+ENT_MEDIA_092,Entertainment & Media,My microphone is mono but records only to the left channel.,Beginner,2
+ENT_MEDIA_093,Entertainment & Media,KDE Connect can't find my phone on the same Wi-Fi.,Intermediate,3
+ENT_MEDIA_094,Entertainment & Media,Minecraft Java Edition crashes with Exit Code 1.,Beginner,3
+ENT_MEDIA_095,Entertainment & Media,Kodi interface is extremely laggy on my 4K TV.,Intermediate,3
+ENT_MEDIA_096,Entertainment & Media,Krita pressure sensitivity isn't working on my Wacom tablet.,Beginner,3
+ENT_MEDIA_097,Entertainment & Media,GIMP looks tiny on my HiDPI screen.,Intermediate,3
+ENT_MEDIA_098,Entertainment & Media,Kodi won't play Blu-ray ISOs with menus.,Intermediate,2
+ENT_MEDIA_099,Entertainment & Media,Radarr cannot import downloaded files. Says 'Access to path denied'.,Advanced,2
+ENT_MEDIA_100,Entertainment & Media,Does Spotify support high quality streaming on Linux?,Beginner,3
+FILE_ORG_001,File Organization,My USB drive is read-only. I can't delete or add files. It worked fine on Windows yesterday!,Beginner,4
+FILE_ORG_002,File Organization,"I copied some photos to my computer, but now I can't find where they went. Is there a default folder",Beginner,4
+FILE_ORG_003,File Organization,Why can't I create a new folder inside the 'usr' folder? The option is grayed out.,Beginner,4
+FILE_ORG_004,File Organization,I know I have a config file named .bashrc but I can't see it in my home folder.,Beginner,4
+FILE_ORG_005,File Organization,I deleted a huge video file from my USB stick but the free space didn't increase.,Beginner,4
+FILE_ORG_006,File Organization,How do I make a zip file of my photos to email them?,Beginner,4
+FILE_ORG_007,File Organization,Does Ubuntu have Google Drive built in? I don't want to install weird apps.,Beginner,4
+FILE_ORG_008,File Organization,I want to wipe my USB stick so I can use it on my TV. Which format should I choose?,Beginner,4
+FILE_ORG_009,File Organization,"Dolphin asks me every time if I want to Copy, Move, or Link when I drag a file. Can I just make it m",Beginner,3
+FILE_ORG_010,File Organization,What does 'Unmount' mean? Is it the same as Eject?,Beginner,4
+FILE_ORG_101,File Organization,This is driving me crazy! I reinstalled Linux and now I can't open my own documents on my secondary ,Intermediate,4
+FILE_ORG_102,File Organization,I can't run my game script from my USB drive. It keeps saying 'Permission denied' even after `chmod ,Intermediate,3
+FILE_ORG_103,File Organization,I tried to copy a folder and got 'Error splicing file: Input/output error'. Now the file is corrupt.,Intermediate,3
+FILE_ORG_104,File Organization,Why can't I name my file 'Report: Final.pdf'? It works on Mac!,Beginner,3
+FILE_ORG_105,File Organization,My 1TB drive only shows 916GB available. Where did the rest go?,Intermediate,3
+FILE_ORG_106,File Organization,"I deleted a folder that was a symlink, and now the original data is gone too! I thought links were j",Intermediate,2
+FILE_ORG_107,File Organization,How do I open a folder as Root in Nautilus? The right-click option is missing.,Beginner,3
+FILE_ORG_108,File Organization,I have two folders of photos that look identical. How can I be 100% sure they are the same before de,Intermediate,3
+FILE_ORG_109,File Organization,"I installed GIMP from the App Store, but it can't see the files on my external hard drive.",Intermediate,3
+FILE_ORG_110,File Organization,Thunar says 'Not authorized to perform operation' when I try to mount my internal HDD.,Intermediate,3
+FILE_ORG_201,File Organization,How do I change the owner of a folder and all the files inside it to me?,Intermediate,4
+FILE_ORG_202,File Organization,I want to set up Timeshift. Should I select RSYNC or BTRFS?,Beginner,3
+FILE_ORG_203,File Organization,How can I share a folder on my network so I can see it on my Windows PC?,Intermediate,4
+FILE_ORG_204,File Organization,How do I make my secondary hard drive mount automatically when I turn on the computer?,Advanced,4
+FILE_ORG_205,File Organization,I accidentally formatted my SD card! Can I get the photos back?,Intermediate,4
+FILE_ORG_206,File Organization,How do I create a shortcut to a folder in the terminal? Like a symlink?,Beginner,3
+FILE_ORG_207,File Organization,I want to mount my OneDrive as a folder. Is rclone good for this?,Intermediate,3
+FILE_ORG_208,File Organization,How do I find all files larger than 1GB in my home folder using the terminal?,Intermediate,3
+FILE_ORG_209,File Organization,How do I password protect my USB drive?,Intermediate,3
+FILE_ORG_210,File Organization,What's the best GUI tool to find duplicate photos? Fdupes is too hard to read.,Beginner,3
+FILE_ORG_301,File Organization,Should I use Btrfs or Ext4 for my new 2TB SSD? I keep hearing about Btrfs.,Intermediate,3
+FILE_ORG_302,File Organization,What is the difference between Timeshift and Deja Dup (Backups)? Do I need both?,Intermediate,3
+FILE_ORG_303,File Organization,Nextcloud vs Dropbox? I want to move away from Big Tech but I'm not a server admin.,Intermediate,3
+FILE_ORG_304,File Organization,Nautilus feels too simple. Is Nemo better?,Beginner,3
+FILE_ORG_305,File Organization,Is `rsync` safer than `cp` for moving large folders?,Intermediate,3
+FILE_ORG_306,File Organization,Should I use `locate` or `find`? `find` seems so slow.,Advanced,3
+FILE_ORG_307,File Organization,Fdupes vs rmlint? I have 500GB of messy backups.,Intermediate,2
+FILE_ORG_308,File Organization,Tar.gz vs Zip? Which one should I use for sending files to a Windows user?,Beginner,3
+FILE_ORG_309,File Organization,MBR vs GPT for my new 4TB external drive?,Intermediate,3
+FILE_ORG_310,File Organization,"Everyone says use Vim to edit config files, but I can't even exit it. Is Nano okay?",Beginner,4
+FILE_ORG_401,File Organization,How can I automatically delete files in my 'Downloads' folder that are older than 30 days?,Intermediate,3
+FILE_ORG_402,File Organization,"I have 100 photos named IMG_001.jpg, IMG_002.jpg... I want to change 'IMG' to 'Vacation'. Do I have ",Intermediate,3
+FILE_ORG_403,File Organization,Can I make a script to move all my .mp3 files to Music and .jpg to Pictures automatically?,Advanced,3
+FILE_ORG_404,File Organization,I want my backup script to run instantly as soon as I plug in my specific USB drive.,Advanced,3
+FILE_ORG_405,File Organization,How do I make rclone sync run every hour without keeping a terminal open?,Intermediate,3
+FILE_ORG_406,File Organization,I have 500 huge PNGs I need to convert to JPG to save space. Fast way?,Intermediate,3
+FILE_ORG_407,File Organization,I hate typing `sudo apt update && sudo apt upgrade` every time. Can I shorten it?,Beginner,4
+FILE_ORG_408,File Organization,Can I watch a folder and trigger a command whenever a new file is added?,Advanced,2
+FILE_ORG_409,File Organization,I want to empty the trash automatically on shutdown.,Intermediate,3
+FILE_ORG_410,File Organization,How do I copy the output of a command directly to my clipboard without selecting it with the mouse?,Intermediate,3
+FILE_ORG_501,File Organization,How can I password protect a specific folder in my Home directory? I share this laptop with my broth,Intermediate,4
+FILE_ORG_502,File Organization,"I copied some files from a USB stick to my desktop, but now they have a lock icon on them and I can'",Beginner,4
+FILE_ORG_503,File Organization,"I want to create a hidden, encrypted container file to store tax documents. I don't want to encrypt ",Advanced,3
+FILE_ORG_504,File Organization,"How do I securely delete a file so it can't be recovered? I tried moving to trash and emptying it, b",Intermediate,3
+FILE_ORG_505,File Organization,"My external drive (NTFS) mounts automatically, but I can't change the permissions of files on it. `c",Beginner,3
+FILE_ORG_506,File Organization,"I hid a folder by putting a dot in front of the name `.Private`, but now I can't find it myself! How",Beginner,3
+FILE_ORG_507,File Organization,I was messing with permissions to make a script run and did `chmod 777` on my whole home folder. Now,Intermediate,4
+FILE_ORG_508,File Organization,I have a text file with passwords. I want to encrypt it so only I can read it with a passphrase. I d,Intermediate,3
+FILE_ORG_509,File Organization,"I have a shared folder for a project group. I want User A to read/write, User B to only read, and th",Advanced,3
+FILE_ORG_510,File Organization,"Deja Dup keeps asking for an encryption password to restore my files, but I forgot it! Is there a ba",Intermediate,2
+FILE_ORG_511,File Organization,When I right click a folder I don't see an option to encrypt it. How do I turn on encryption for jus,Beginner,3
+FILE_ORG_512,File Organization,Every new file I create is readable by everyone on the system (644). I want new files to be private ,Intermediate,2
+FILE_ORG_513,File Organization,"I'm trying to let Firefox save a file to a custom folder `/data/downloads`, but it keeps saying perm",Advanced,2
+FILE_ORG_514,File Organization,I can't delete a file called `socket.lock`. It says permission denied. I am the admin user!,Beginner,2
+FILE_ORG_515,File Organization,"I'm using Restic for backups. I initialized a repo on my external drive, but now when I try to backu",Intermediate,2
+FILE_ORG_516,File Organization,How do I wipe all metadata (EXIF) from my photos before uploading them? I don't want people to know ,Beginner,2
+FILE_ORG_517,File Organization,I have a script `.sh` file. I double click it and it just opens in a text editor. I want it to run!,Intermediate,4
+FILE_ORG_518,File Organization,"I want to use native ext4 encryption (fscrypt) on a specific directory, but `tune2fs -O encrypt` fai",Advanced,2
+FILE_ORG_519,File Organization,I want a backup tool that is easy like Time Machine on Mac. Timeshift says it's for system files. Wh,Beginner,3
+FILE_ORG_520,File Organization,I cannot modify `/etc/resolv.conf`. Even `sudo rm` says 'Operation not permitted'. Is my drive corru,Intermediate,4
+FILE_ORG_521,File Organization,Nautilus keeps showing 'Recent Files' including some private documents I opened. How do I clear this,Beginner,3
+FILE_ORG_522,File Organization,"I set up a web server in my home folder `/home/me/www`, but Apache gives a 403 Forbidden. Permission",Intermediate,3
+FILE_ORG_523,File Organization,I'm trying to copy a 6GB movie file to my USB stick but it says 'File too large'. The stick has 16GB,Intermediate,4
+FILE_ORG_524,File Organization,"I'm using rsync to backup to an external drive, but the destination has root permissions and I get p",Advanced,3
+FILE_ORG_525,File Organization,"I ran BleachBit as root to clean space, and now my permissions on some temp folders are messed up an",Intermediate,3
+FILE_ORG_601,File Organization,I installed Syncthing on my laptop and phone. Both say 'Disconnected'. They are on the same Wi-Fi. F,Intermediate,3
+FILE_ORG_602,File Organization,I switched from Windows. Where is the Google Drive app? I need to sync my work docs.,Beginner,4
+FILE_ORG_603,File Organization,My Nextcloud client says 'Sync conflict' on a bunch of files. It created duplicate files named 'conf,Intermediate,3
+FILE_ORG_604,File Organization,"I mounted my OneDrive using `rclone mount`. It works, but it freezes my file manager when I try to o",Advanced,2
+FILE_ORG_605,File Organization,"I can send files FROM my phone TO my laptop via Bluetooth, but when I try to send FROM laptop TO pho",Beginner,3
+FILE_ORG_606,File Organization,"I love Warpinator for local transfers, but sometimes it just doesn't see my other computer on the LA",Intermediate,3
+FILE_ORG_607,File Organization,"I installed Dropbox from the .deb file. The icon appears in the tray, but it says 'Connecting...' fo",Intermediate,3
+FILE_ORG_608,File Organization,"KDE Connect (GSConnect) allows me to browse my phone files, but I can't write to the SD card, only i",Intermediate,3
+FILE_ORG_609,File Organization,MegaSync consumes huge CPU when it starts up. I have 500GB of files. Is it re-uploading everything?,Intermediate,2
+FILE_ORG_610,File Organization,"I set up an NFS share on my NAS. It mounts fine, but all files are owned by 'nobody:nogroup' and I c",Advanced,2
+FILE_ORG_611,File Organization,I plugged my iPhone into my Linux Mint laptop to copy photos. It asks 'Trust this computer' on the p,Beginner,4
+FILE_ORG_612,File Organization,Syncthing keeps stopping because 'Database is locked'. I have to restart the service to fix it.,Intermediate,2
+FILE_ORG_613,File Organization,"I shared a folder on Windows 11. I can see it in Ubuntu's Network folder, but when I double click, i",Intermediate,4
+FILE_ORG_614,File Organization,"I'm self-hosting Nextcloud. The desktop client works, but uploading large files (2GB+) fails with 'C",Advanced,3
+FILE_ORG_615,File Organization,"I access my email on both my phone and Linux laptop. If I delete an email on Linux, it stays on my p",Beginner,3
+FILE_ORG_701,File Organization,"I cloned a work repo, but the file permissions are all wrong (everything is executable). I try to ch",Intermediate,3
+FILE_ORG_702,File Organization,I mounted a host folder into a Docker container. The app inside the container writes files as 'root',Advanced,3
+FILE_ORG_703,File Organization,I saved a spreadsheet as .ods but my boss uses Excel and says the formatting is messy. Should I just,Beginner,4
+FILE_ORG_704,File Organization,"I need to zip a folder for a client, but I want to exclude the hidden .git folder and all the .DS_St",Intermediate,3
+FILE_ORG_705,File Organization,I have 5 separate PDF contracts I need to combine into one file to email. Do I need to buy software?,Intermediate,4
+FILE_ORG_706,File Organization,"I mount my work server via SSHFS. It works, but if the internet drops, my file manager freezes compl",Intermediate,2
+FILE_ORG_707,File Organization,We have a 4TB shared drive at the office full of duplicate marketing assets. I want to replace dupli,Advanced,3
+FILE_ORG_708,File Organization,"I need to access a Windows SMB share `\\server\files` via VPN. I am connected to VPN, but the file m",Intermediate,3
+FILE_ORG_709,File Organization,My colleague sent me a `.rar` file. Archive Manager says 'An error occurred loading the archive'.,Beginner,3
+FILE_ORG_710,File Organization,I have a Btrfs volume for project data. I want to create a snapshot before running a risky batch scr,Advanced,2
+FILE_ORG_801,File Organization,I bought a new SD card for my Steam Deck. How do I move my installed games from the internal drive t,Intermediate,3
+FILE_ORG_802,File Organization,I installed Plex Media Server. It can't see my movies in `/home/me/Videos`. I added the library but ,Beginner,3
+FILE_ORG_803,File Organization,"I have a secondary hard drive for data. Every time I reboot, I have to click it in the file manager ",Intermediate,3
+FILE_ORG_804,File Organization,I have two 1TB drives. I want to combine them into one big 2TB volume for my movies. I don't want RA,Advanced,3
+FILE_ORG_805,File Organization,I imported photos from my camera into Shotwell. Did it move the photos or just copy them? I don't wa,Beginner,3
+FILE_ORG_806,File Organization,I have a .mkv movie with 5 audio tracks. I want to remove the 4 foreign language tracks to save spac,Intermediate,2
+FILE_ORG_807,File Organization,"My USB drive says 'read only' suddenly. I used it on my TV to watch a movie, now Linux won't let me ",Beginner,3
+FILE_ORG_808,File Organization,My music collection is a mess of folders like 'Unknown Artist'. I want to automatically rename and m,Intermediate,3
+FILE_ORG_809,File Organization,"I want my 'Downloads' folder to actually be on my big secondary HDD, but I want to keep the shortcut",Intermediate,3
+FILE_ORG_810,File Organization,"I have duplicates of many songs. Some are MP3, some are FLAC. I want to keep FLAC and delete MP3s if",Intermediate,2
+FILE_ORG_901,File Organization,I accidentally formatted my partition table! `lsblk` shows the drive is empty. I haven't written any,Advanced,2
+FILE_ORG_902,File Organization,I have a file named `-dash-prefix.txt` and I can't remove it! `rm -dash-prefix.txt` thinks it's a co,Intermediate,3
+FILE_ORG_903,File Organization,"I extracted a zip bomb accidentally. Now I have 100,000 files in one folder and `rm *` says 'Argumen",Advanced,2
+FILE_ORG_904,File Organization,"I am out of inodes on my disk (`df -i` is 100%), but I have 50GB of space free! I can't create any n",Intermediate,2
+FILE_ORG_905,File Organization,I think my hard drive is failing. Some files give 'Input/output error' when reading. How do I check ,Intermediate,3
+FILE_ORG_906,File Organization,I `rm`'d a very important video file. It's not in trash. It was on my external ext4 drive. I haven't,Advanced,3
+FILE_ORG_907,File Organization,"I unzipped a file from a Windows machine in Japan, and all the filenames are weird garbage character",Intermediate,2
+FILE_ORG_908,File Organization,"I created a symlink loop (Folder A points to B, B points to A). `find` command goes on forever. How ",Intermediate,2
+FILE_ORG_909,File Organization,"I copied a 50GB virtual machine disk image (`.qcow2`) to a USB stick, but the USB stick is only 32GB",Advanced,3
+FILE_ORG_910,File Organization,I need to change the 'Modified Date' of a file to last year for... reasons. Is that possible?,Beginner,2
+LIFE_MGT_001,Life Management,"I connected my Google Account in Settings and my main calendar shows up, but my wife's shared calend",Beginner,4
+LIFE_MGT_002,Life Management,I just installed GnuCash but I have no idea how to start. Is there a wizard to set up my accounts fo,Beginner,3
+LIFE_MGT_003,Life Management,"The weather app keeps showing me the weather for New York, but I live in Chicago. How do I change th",Beginner,3
+LIFE_MGT_004,Life Management,I'm using Endeavour (GNOME To Do) but it's not syncing with my Google Tasks. I have my account set u,Intermediate,2
+LIFE_MGT_005,Life Management,"I installed Nextcloud but there is no icon in my system tray, so I can't tell if it's working or pau",Beginner,3
+LIFE_MGT_006,Life Management,"I tried to import my bank statement (CSV) into HomeBank, but the dates are all wrong. It's reading 0",Intermediate,3
+LIFE_MGT_007,Life Management,I want to switch from LastPass to KeePassXC. How do I get my passwords into the Linux app?,Beginner,3
+LIFE_MGT_008,Life Management,"I set up Joplin to sync with Dropbox, but it keeps saying 'fail to write to target'.",Intermediate,3
+LIFE_MGT_009,Life Management,My Google Calendar in Thunderbird is read-only. I can't add events.,Intermediate,3
+LIFE_MGT_010,Life Management,The weather applet in my panel just says 'Data not available'.,Beginner,3
+LIFE_MGT_011,Life Management,I want to enable online banking features in GnuCash for my Chase account. How do I set up AqBanking?,Advanced,3
+LIFE_MGT_012,Life Management,I'm using Insync for Google Drive. It keeps re-downloading files I already have on my disk.,Intermediate,2
+LIFE_MGT_013,Life Management,I can't find the 'Planner' app in the Ubuntu Software center.,Beginner,2
+LIFE_MGT_014,Life Management,"Evolution asks for my Google password constantly, even though I entered it.",Intermediate,3
+LIFE_MGT_015,Life Management,I forgot my Standard Notes passcode. How do I reset it?,Beginner,2
+LIFE_MGT_016,Life Management,KMyMoney crashes every time I try to update stock prices.,Intermediate,2
+LIFE_MGT_017,Life Management,I want to mount my OneDrive as a local drive so I can access files without downloading them all. How,Advanced,3
+LIFE_MGT_018,Life Management,"The date and time menu used to show the weather, but now it's gone.",Beginner,3
+LIFE_MGT_019,Life Management,"I can't read the text in Skrooge, it's ignoring my system dark mode and looks weird.",Beginner,2
+LIFE_MGT_020,Life Management,Morgen (AppImage) won't launch. It just does nothing when I double click it.,Advanced,2
+LIFE_MGT_021,Life Management,I want a calendar in my terminal. I installed Khal but it says 'No configuration file found'.,Intermediate,2
+LIFE_MGT_022,Life Management,Dropbox uses too much CPU on startup.,Intermediate,3
+LIFE_MGT_023,Life Management,How do I back up my GnuCash data? I don't see a 'Backup' button.,Beginner,3
+LIFE_MGT_024,Life Management,I installed Obsidian from the repo but I can't find where to turn on 'Sync'.,Beginner,2
+LIFE_MGT_025,Life Management,I installed the unofficial Todoist CLI but I get 'command not found' when I type `todoist`.,Intermediate,2
+LIFE_MGT_026,Life Management,I saw a screenshot of weather in the terminal. How do I get that?,Beginner,2
+LIFE_MGT_027,Life Management,Vdirsyncer fails with 'Google 403 Forbidden' during discovery.,Advanced,2
+LIFE_MGT_028,Life Management,I made a mistake in a transaction from three months ago. GnuCash won't let me edit it; it says it's ,Intermediate,2
+LIFE_MGT_029,Life Management,Nextcloud keeps creating 'Conflict' files whenever I edit a document on my laptop and phone.,Intermediate,3
+LIFE_MGT_030,Life Management,I can't sync Getting Things GNOME (GTG) with anything. Is it local only?,Beginner,2
+LIFE_MGT_101,Life Management,I keep getting a 'Credentials have expired' notification for Google every single day. I re-login and,Intermediate,4
+LIFE_MGT_102,Life Management,GnuCash refuses to open my file! It says 'File is locked by user X' but I am user X!,Intermediate,3
+LIFE_MGT_103,Life Management,Nextcloud is eating 100% of my CPU and not syncing anything.,Advanced,3
+LIFE_MGT_104,Life Management,GNOME Weather says 'Location services disabled' even though I turned the toggle ON in Settings.,Intermediate,3
+LIFE_MGT_105,Life Management,Bitwarden doesn't start with the system. I added it to Startup Applications but it doesn't open mini,Intermediate,3
+LIFE_MGT_106,Life Management,"Joplin's layout is broken, the icons are huge and text is tiny. I have a 4K screen.",Intermediate,3
+LIFE_MGT_107,Life Management,HomeBank keeps warning me about 'Unknown transaction' when I import my OFX file.,Intermediate,2
+LIFE_MGT_201,Life Management,How do I add a holiday calendar to Thunderbird?,Beginner,3
+LIFE_MGT_202,Life Management,How can I sync my Logseq graph between my Linux laptop and Android phone for free?,Intermediate,2
+LIFE_MGT_203,Life Management,I want to use a MariaDB SQL database for GnuCash instead of XML so multiple people can view it.,Advanced,2
+LIFE_MGT_301,Life Management,I find GnuCash way too complicated. Is there something simpler just to track expenses?,Beginner,3
+LIFE_MGT_302,Life Management,Should I use Thunderbird or Evolution for managing Exchange calendars?,Intermediate,3
+LIFE_MGT_401,Life Management,I want to automatically backup my Documents to Google Drive every night at 3 AM.,Advanced,4
+LIFE_MGT_402,Life Management,I use Taskwarrior. How do I make a report that only shows tasks due today or overdue?,Advanced,2
+LIFE_MGT_403,Life Management,I have a Python script to scrape my bank. How can I inject that data directly into GnuCash?,Advanced,2
+LIFE_MGT_404,Life Management,I want to see my agenda when I open a terminal.,Intermediate,2
+LIFE_MGT_405,Life Management,I want to use my YubiKey to unlock my KeePassXC database.,Advanced,2
+LIFE_MGT_406,Life Management,How do I make Syncthing start automatically in the background for my user?,Intermediate,3
+LIFE_MGT_407,Life Management,I want a weather widget on my desktop wallpaper. I heard Conky can do it?,Intermediate,3
+LIFE_MGT_408,Life Management,I want to automatically git commit and push my Obsidian vault every time I close the app.,Advanced,2
+LIFE_MGT_409,Life Management,Can I sync Taskwarrior to my phone?,Advanced,2
+LIFE_MGT_501,Life Management,I share my laptop with my roommate and I don't want them seeing my financial data in GnuCash. Is the,Beginner,3
+LIFE_MGT_502,Life Management,"I'm syncing my calendar and contacts to a Nextcloud provider, but I'm worried about the server admin",Intermediate,3
+LIFE_MGT_503,Life Management,I am using RedNotebook for my personal diary. I found the 'save' folder but the files are just plain,Beginner,2
+LIFE_MGT_504,Life Management,I'm storing my credit card pins and secure notes in KeepassXC. I want to ensure that even if my lapt,Advanced,3
+LIFE_MGT_505,Life Management,I use Thunderbird for email and calendar. I keep getting prompted for my 'Primary Password' every ti,Intermediate,3
+LIFE_MGT_506,Life Management,Does GNOME Calendar send my schedule to Google automatically? I see a 'Online Accounts' section but ,Beginner,3
+LIFE_MGT_507,Life Management,I set up Syncthing to sync my 'Documents/Financial' folder between my desktop and laptop. I see 'Glo,Intermediate,3
+LIFE_MGT_508,Life Management,I want to run HomeBank inside a sandbox so it can't access my other personal files. Is Flatpak enoug,Advanced,2
+LIFE_MGT_509,Life Management,I just installed Standard Notes appimage. It says 'End-to-End Encrypted'. Does that mean I don't nee,Beginner,2
+LIFE_MGT_510,Life Management,I'm connecting Evolution to my company's Exchange server (EWS). Does Evolution store the downloaded ,Intermediate,3
+LIFE_MGT_511,Life Management,"I'm using the Bitwarden AppImage. Every time I update my system, I worry the AppImage might be tampe",Beginner,3
+LIFE_MGT_512,Life Management,"I want to disable remote content in emails by default for privacy (tracking pixels), but allow it fo",Intermediate,3
+LIFE_MGT_513,Life Management,I self-host Nextcloud for my calendar. I want to use Fail2Ban to block people trying to brute force ,Advanced,2
+LIFE_MGT_514,Life Management,I installed ActivityWatch to track my screen time. Is it sending my browsing history to a cloud serv,Beginner,2
+LIFE_MGT_515,Life Management,I enabled the 'Browser Integration' in KeePassXC for Firefox. A warning says 'KeePassXC-Browser has ,Intermediate,2
+LIFE_MGT_516,Life Management,"I keep my financial documents in a Veracrypt container. When I mount it, I want it to automatically ",Advanced,2
+LIFE_MGT_517,Life Management,"I use Signal Desktop. I know messages are encrypted in transit, but where are they stored on my disk",Intermediate,2
+LIFE_MGT_518,Life Management,I am using Firefox to log into my bank. It keeps asking to 'Save Login'. I clicked 'Never' by mistak,Beginner,4
+LIFE_MGT_519,Life Management,I'm using QOwnNotes with Nextcloud. I want to encrypt my notes. QOwnNotes says it supports encryptio,Intermediate,2
+LIFE_MGT_520,Life Management,I put my tax returns in the Dropbox folder. I want to encrypt just that folder before it uploads. Is,Beginner,2
+LIFE_MGT_601,Life Management,"I added my Google account to 'Online Accounts'. Calendar works, but 'Tasks' are missing in GNOME Cal",Intermediate,3
+LIFE_MGT_602,Life Management,"I have an iCloud calendar. I can subscribe to it in Thunderbird, but it's read-only. How do I make i",Intermediate,3
+LIFE_MGT_603,Life Management,I use Syncthing to sync Obsidian notes between my phone and PC. I keep getting 'Sync Conflict' files,Advanced,3
+LIFE_MGT_604,Life Management,"I use Spotify on my phone and Linux Mint. The 'Connect' feature sees my Linux desktop, but when I cl",Beginner,3
+LIFE_MGT_605,Life Management,I want to mount my Nextcloud files as a local drive so I can open them directly in LibreOffice witho,Intermediate,3
+LIFE_MGT_606,Life Management,I'm using Joplin with filesystem sync to a mounted NAS drive. Sometimes the sync target is missing (,Advanced,2
+LIFE_MGT_607,Life Management,"KDE Connect finds my phone, but 'Browse Files' doesn't work. It just spins and times out. I'm using ",Intermediate,3
+LIFE_MGT_608,Life Management,"I have contacts in a .csv file from Outlook. I imported them into Evolution, but now they don't sync",Beginner,3
+LIFE_MGT_609,Life Management,I'm using the 'Provider for Google Calendar' add-on. It stopped syncing yesterday. It asks for login,Intermediate,3
+LIFE_MGT_610,Life Management,I'm trying to setup vdirsyncer to sync my Fastmail calendars to local files. I get 'Critical: 404 Cl,Advanced,2
+LIFE_MGT_611,Life Management,"I mounted Google Drive via Online Accounts. I tried to copy a 4GB movie file to it, but it failed ha",Beginner,3
+LIFE_MGT_612,Life Management,"I switched from LastPass to Bitwarden. I exported my CSV from LastPass and imported to Bitwarden, bu",Intermediate,3
+LIFE_MGT_613,Life Management,I use Mailnag to check for emails without keeping Thunderbird open. It works for Gmail but fails for,Advanced,2
+LIFE_MGT_614,Life Management,"I use Telegram to send photos to myself to get them from phone to PC. On Linux, the photos are saved",Beginner,3
+LIFE_MGT_615,Life Management,"I'm trying Morgen Calendar (Snap). It won't let me sign in to my Google account. The browser opens, ",Intermediate,2
+LIFE_MGT_616,Life Management,"I want to sync my `.config` folder between two Linux machines using Syncthing, but I want to exclude",Advanced,3
+LIFE_MGT_617,Life Management,"I installed 'onedriver' to access my Microsoft files. It mounts fine, but I can't create files. 'Rea",Intermediate,2
+LIFE_MGT_618,Life Management,"I'm trying to stream my browser to my friends on Discord, but there is no audio! They see the video ",Beginner,4
+LIFE_MGT_619,Life Management,I'm using Insync for Google Drive. It keeps re-downloading files that I haven't changed. My bandwidt,Intermediate,2
+LIFE_MGT_620,Life Management,I'm syncing contacts with a CardDAV server that uses self-signed certificates. Evolution refuses to ,Advanced,2
+LIFE_MGT_701,Life Management,"I'm trying to track my work hours in Calc. I enter '8:00 AM' and '5:00 PM', but when I subtract them",Beginner,3
+LIFE_MGT_702,Life Management,"I installed Project Hamster to track time. It works, but I want to export my monthly report to a PDF",Intermediate,2
+LIFE_MGT_703,Life Management,I am a freelancer. I setup GnuCash for invoicing. I modified the invoice report stylesheet to add my,Advanced,2
+LIFE_MGT_704,Life Management,I need to sign my work emails with an S/MIME certificate my company gave me (.p12 file). Thunderbird,Intermediate,2
+LIFE_MGT_705,Life Management,"Slack notifications don't make a sound. I see the banner, but I miss messages when I'm not looking. ",Beginner,4
+LIFE_MGT_706,Life Management,"I'm using Zoom for work. When I share my screen, my computer slows to a crawl. I have an NVIDIA card",Intermediate,4
+LIFE_MGT_707,Life Management,I'm collaborating on a doc in OnlyOffice connected to Nextcloud. The fonts are messed up; my colleag,Advanced,3
+LIFE_MGT_708,Life Management,"I'm using Super Productivity. It says it can sync with Jira. I put in my Jira URL and password, but ",Beginner,2
+LIFE_MGT_709,Life Management,I use Remmina to RDP into my work Windows machine. Copy-paste (clipboard sync) stops working randoml,Intermediate,3
+LIFE_MGT_710,Life Management,"I need to merge three PDF contracts and sign the last page. I used PDF Arranger to merge them, but h",Intermediate,3
+LIFE_MGT_711,Life Management,My work uses a custom 'Exchange Online' setup that requires MFA (Modern Auth). Thunderbird's automat,Advanced,3
+LIFE_MGT_712,Life Management,"I'm in an office with other Linux users. I want to send a file to my colleague using Warpinator, but",Beginner,3
+LIFE_MGT_713,Life Management,"I'm using Mattermost for team chat. Every time I click a link, it opens in a new Mattermost window i",Intermediate,3
+LIFE_MGT_714,Life Management,"I use Taskwarrior. I want to sync it with a Taskserver I set up on a VPS. I generated the certs, but",Advanced,1
+LIFE_MGT_715,Life Management,"My webcam works in Cheese, but Skype shows a black screen. I toggled the video button but nothing ha",Beginner,3
+LIFE_MGT_716,Life Management,I'm mind mapping with Freeplane. I want to link a node to a local file `/home/me/Docs/Contract.pdf`.,Intermediate,2
+LIFE_MGT_717,Life Management,I use Zotero for research. I want to store my PDF library on my NAS (mounted at `/mnt/nas`) but keep,Advanced,2
+LIFE_MGT_718,Life Management,I need to edit a screenshot for a manual. I want to add an arrow and text. GIMP seems like overkill ,Intermediate,3
+LIFE_MGT_719,Life Management,"I installed AnyDesk to help my mom. When I close the window, it stays in the tray. How do I fully qu",Beginner,3
+LIFE_MGT_720,Life Management,I saved my CV as a .docx file to send to a recruiter. They said the formatting is all over the place,Intermediate,4
+LIFE_MGT_801,Life Management,I installed Gourmet to store recipes. I found a recipe on a website and tried to 'Import from Webpag,Beginner,2
+LIFE_MGT_802,Life Management,"I'm building my family tree in Gramps. I added photos to people, but when I moved the .gramps file t",Intermediate,2
+LIFE_MGT_803,Life Management,"GNOME Weather says 'Location disabled'. I turned on Location Services in Settings, but it still does",Beginner,3
+LIFE_MGT_804,Life Management,"I have a Kindle Paperwhite. When I plug it in, Calibre sees it, but I can't transfer books. It says ",Intermediate,3
+LIFE_MGT_805,Life Management,I'm running Home Assistant in a Docker container. I can't discover my Philips Hue bridge. Network di,Advanced,2
+LIFE_MGT_806,Life Management,I'm trying to watch a workout DVD. VLC opens it but the menu buttons don't work when I click them. I,Beginner,2
+LIFE_MGT_807,Life Management,I'm cataloging my book collection in Tellico. I bought a cheap USB barcode scanner. It scans the ISB,Intermediate,1
+LIFE_MGT_808,Life Management,I wrote a python script to track my water intake and save it to a CSV. I want it to send a desktop n,Advanced,2
+LIFE_MGT_809,Life Management,I installed Kodi to watch movies from my external hard drive. The drive is mounted in `/media/me/Dri,Intermediate,3
+LIFE_MGT_810,Life Management,"I imported photos from my camera to Shotwell. I deleted a blurry photo in Shotwell, but the file is ",Beginner,2
+PROD_DOC_001,Productivity & Documents,I can't open my budget.xlsx. It says 'General Error' and there's a weird .~lock.budget.xlsx# file in,Beginner,3
+PROD_DOC_002,Productivity & Documents,I opened a Word doc from my boss but the fonts look wrong. It's supposed to be Times New Roman but l,Beginner,4
+PROD_DOC_003,Productivity & Documents,The PDF viewer that comes with Fedora won't let me type into this government form. I can click the b,Beginner,3
+PROD_DOC_004,Productivity & Documents,How do I make LibreOffice look more like Microsoft Office? I hate the old toolbar look.,Beginner,3
+PROD_DOC_005,Productivity & Documents,"When I save as .docx and send it to Windows users, the formatting of my images gets messed up. Shoul",Intermediate,4
+PROD_DOC_006,Productivity & Documents,I tried to edit a PDF in LibreOffice but it opened in Draw and every single line of text is a separa,Intermediate,3
+PROD_DOC_007,Productivity & Documents,My spell check isn't working in Calc. It marks everything as wrong or does nothing.,Beginner,4
+PROD_DOC_008,Productivity & Documents,Document Scanner (Simple Scan) sees my scanner but fails when I click scan. 'Failed to scan'.,Intermediate,3
+PROD_DOC_009,Productivity & Documents,LibreOffice is super slow to start up. It takes like 15 seconds to open a blank page.,Beginner,4
+PROD_DOC_010,Productivity & Documents,I need to annotate a PDF lecture slide with my Wacom tablet. What's the best app? Default viewer is ,Beginner,3
+PROD_DOC_011,Productivity & Documents,I'm trying to print a shipping label to my Brother printer but it prints mostly blank pages or gibbe,Beginner,4
+PROD_DOC_012,Productivity & Documents,I have a CSV file I need to use for a mail merge in Writer. How do I connect them?,Intermediate,3
+PROD_DOC_013,Productivity & Documents,"I have two PDF files, page1.pdf and page2.pdf. How do I combine them into one file quickly?",Intermediate,3
+PROD_DOC_014,Productivity & Documents,"In Excel, I used to drag the corner of a cell to fill a series of dates. In Calc it just copies the ",Beginner,3
+PROD_DOC_015,Productivity & Documents,I need to track changes like in Word. My editor asked for 'Track Changes' enabled.,Intermediate,3
+PROD_DOC_016,Productivity & Documents,I can't see thumbnails for my PDF files in the folder view. They are just generic icons.,Beginner,3
+PROD_DOC_017,Productivity & Documents,I'm trying to open an old .odb database file but getting a 'JRE Required' error.,Advanced,2
+PROD_DOC_018,Productivity & Documents,I downloaded a .ttf font file for a project. How do I actually install it so LibreOffice sees it?,Intermediate,3
+PROD_DOC_019,Productivity & Documents,I have a Kindle file (.azw3) that I want to read on my laptop. Document Viewer won't open it.,Beginner,2
+PROD_DOC_020,Productivity & Documents,My PowerPoint (pptx) video won't play in LibreOffice Impress. It just shows a black box.,Intermediate,3
+PROD_DOC_101,Productivity & Documents,Why does LibreOffice look so ugly and old? It doesn't match my dark theme at all.,Beginner,4
+PROD_DOC_102,Productivity & Documents,I am so done with this. My printer works fine on Windows but on Linux it says 'Processing - Not Conn,Intermediate,4
+PROD_DOC_103,Productivity & Documents,Why can't I rename my PDF file? It says 'Read-only file system'. I'm just trying to rename a receipt,Beginner,3
+PROD_DOC_104,Productivity & Documents,Calc keeps crashing every time I try to sort this large dataset (50k rows). It just freezes and clos,Intermediate,3
+PROD_DOC_105,Productivity & Documents,Okular is asking for a 'Wallet' password every time I open a signed PDF. I never set a wallet passwo,Beginner,2
+PROD_DOC_106,Productivity & Documents,Why does my Resume look perfect in Writer but when I export to PDF the margins are slightly cut off?,Intermediate,4
+PROD_DOC_107,Productivity & Documents,I opened a text file I made on Windows and every line has `^M` at the end. How do I get rid of this ,Beginner,3
+PROD_DOC_108,Productivity & Documents,"Writer keeps changing my words! I type 'teh' and it changes to 'the' which is fine, but it also chan",Intermediate,3
+PROD_DOC_109,Productivity & Documents,My scanner works as root (`sudo simple-scan`) but not as my regular user. This is so annoying.,Intermediate,3
+PROD_DOC_110,Productivity & Documents,I imported a CSV into Calc but all the dates turned into random numbers like 44562.,Intermediate,3
+PROD_DOC_201,Productivity & Documents,How do I extract just pages 5-10 from a large PDF file without paying for Adobe?,Intermediate,3
+PROD_DOC_202,Productivity & Documents,I need to add a watermark that says 'DRAFT' to every page of my document.,Intermediate,3
+PROD_DOC_203,Productivity & Documents,How can I convert a Markdown file to a Word doc? I wrote my notes in Obsidian but my boss needs a .d,Intermediate,2
+PROD_DOC_204,Productivity & Documents,How do I digitally sign a PDF in LibreOffice? I have a .p12 certificate file.,Advanced,2
+PROD_DOC_205,Productivity & Documents,Someone sent me a .7z file and I can't open it. The archive manager shows an error.,Beginner,3
+PROD_DOC_206,Productivity & Documents,I scanned a document as an image but I need to copy the text. How do I do OCR on Linux?,Intermediate,3
+PROD_DOC_207,Productivity & Documents,How do I create a Table of Contents that automatically updates when I add pages?,Intermediate,3
+PROD_DOC_301,Productivity & Documents,I'm moving from Windows. Is LibreOffice really the best option or is there something closer to MS Of,Beginner,4
+PROD_DOC_302,Productivity & Documents,"I need a serious PDF editor to rearrange pages, edit text, and redact info. Evince is too basic.",Intermediate,3
+PROD_DOC_303,Productivity & Documents,What's a good Notepad++ alternative? I just need something lighter than LibreOffice for editing conf,Beginner,3
+PROD_DOC_401,Productivity & Documents,I have 50 .odt files I need to convert to PDF. I don't want to open them one by one.,Advanced,3
+PROD_DOC_402,Productivity & Documents,How can I combine a folder of JPEGs into a single PDF file?,Intermediate,3
+PROD_DOC_403,Productivity & Documents,I want to backup my Documents folder to a zip file every Friday automatically.,Advanced,3
+PROD_DOC_501,Productivity & Documents,I have a Writer doc with sensitive info. How do I password protect it so no one else can open it?,Beginner,3
+PROD_DOC_502,Productivity & Documents,Is there a command line tool to remove a password from a PDF if I know the password? I don't want to,Intermediate,2
+PROD_DOC_503,Productivity & Documents,How do I stop LibreOffice from saving my name in the file properties? I want to share a doc anonymou,Beginner,3
+PROD_DOC_504,Productivity & Documents,I want to encrypt a whole folder of PDFs before emailing them. Can I use GPG for this?,Intermediate,2
+PROD_DOC_505,Productivity & Documents,How do I redact text in a PDF permanently? I drew a black box over it in a viewer but the text is st,Advanced,3
+PROD_DOC_506,Productivity & Documents,"I password protected a sheet in Calc, but now I can't edit any cells even with the password. What di",Intermediate,3
+PROD_DOC_507,Productivity & Documents,Evince keeps showing my recently opened documents in the overview. How do I clear this history for p,Beginner,3
+PROD_DOC_508,Productivity & Documents,Can I check if a DOCX file has any hidden macros before I open it in LibreOffice?,Intermediate,2
+PROD_DOC_509,Productivity & Documents,"I opened a PDF in LibreOffice Draw to sign it, but the fonts look weird. Is it safe to save it back ",Beginner,3
+PROD_DOC_510,Productivity & Documents,I keep getting a 'Document is locked for editing by Unknown User' error even though I'm the only one,Intermediate,3
+PROD_DOC_511,Productivity & Documents,I want to store my financial spreadsheets in a secure container. Is VeraCrypt overkill for a few ODS,Advanced,2
+PROD_DOC_512,Productivity & Documents,I see a 'Digitally Sign' option in Okular but it's greyed out. What package am I missing?,Intermediate,2
+PROD_DOC_513,Productivity & Documents,Can I see exactly what info is hidden in my PDF file before I upload it?,Beginner,2
+PROD_DOC_514,Productivity & Documents,Writer keeps asking to 'Update Links' when I open a document I downloaded. Is this a security risk?,Beginner,3
+PROD_DOC_515,Productivity & Documents,I accidentally overwrote a file. Does LibreOffice keep previous versions somewhere?,Intermediate,3
+PROD_DOC_516,Productivity & Documents,I need to set a PDF so it can be opened but NOT printed. How do I set these specific permissions?,Advanced,2
+PROD_DOC_517,Productivity & Documents,I downloaded a font that looks suspicious (it's an .exe file). How do I safely install fonts on Fedo,Intermediate,3
+PROD_DOC_518,Productivity & Documents,Is the built-in HSQLDB in LibreOffice Base secure for storing personal contact info?,Intermediate,2
+PROD_DOC_519,Productivity & Documents,I'm hosting my own document server. How do I ensure my docs aren't cached unencrypted on the server ,Advanced,2
+PROD_DOC_520,Productivity & Documents,"I scanned my passport to a PDF. If I use OCR on it, does the text data get sent to a cloud server?",Intermediate,2
+PROD_DOC_601,Productivity & Documents,"I was editing a file on my laptop, but when I opened it on my desktop, the changes weren't there. I ",Intermediate,3
+PROD_DOC_602,Productivity & Documents,"I saved a file to my Google Drive via the GNOME Online Accounts integration, but LibreOffice says 'R",Beginner,3
+PROD_DOC_603,Productivity & Documents,I'm using Syncthing to sync my 'Documents' folder between my phone and PC. LibreOffice keeps creatin,Advanced,3
+PROD_DOC_604,Productivity & Documents,The Dropbox icon is missing from my taskbar so I can't tell if my PDFs are synced.,Beginner,3
+PROD_DOC_605,Productivity & Documents,"I can open files from my NAS (SMB share), but saving takes forever or fails. It says 'General Error'",Intermediate,3
+PROD_DOC_606,Productivity & Documents,"I wrote a document on my desktop using 'Calibri', but on my laptop running Debian, the layout is bro",Intermediate,3
+PROD_DOC_607,Productivity & Documents,I made a presentation in Impress. Will it play correctly on my Android phone?,Beginner,3
+PROD_DOC_608,Productivity & Documents,Can I use Git to track changes in my .odt files? I see binary garbage when I look at the diff.,Advanced,2
+PROD_DOC_609,Productivity & Documents,I edit files on an NTFS partition shared with Windows. Sometimes Linux says 'Read-only file system' ,Intermediate,3
+PROD_DOC_610,Productivity & Documents,"When I email an ODT file to my boss, he says he can't open it. How do I fix this automatically?",Beginner,3
+PROD_DOC_611,Productivity & Documents,I mounted my work server with SSHFS to edit a PDF. It's incredibly slow to scroll through pages. Why,Advanced,2
+PROD_DOC_612,Productivity & Documents,I want to back up my 'Documents' folder to Google Drive automatically. Does Ubuntu have a built-in t,Intermediate,3
+PROD_DOC_613,Productivity & Documents,Can two people edit the same ODT file at the same time on a shared folder?,Intermediate,3
+PROD_DOC_614,Productivity & Documents,My printer is connected to my desktop. How do I print from my laptop running Debian on the same wifi,Intermediate,3
+PROD_DOC_615,Productivity & Documents,Dropbox created a 'Conflicted Copy' of my spreadsheet. How do I merge the two versions in LibreOffic,Intermediate,3
+PROD_DOC_616,Productivity & Documents,I RDP into my work Windows PC to use Excel. How do I copy text from Linux LibreOffice and paste it i,Intermediate,3
+PROD_DOC_617,Productivity & Documents,"I'm trying to send a PDF from my phone to my Fedora laptop via Bluetooth, but it fails immediately.",Beginner,3
+PROD_DOC_618,Productivity & Documents,"I mounted a WebDAV share in Files (Nautilus). I can see my PDFs, but search doesn't find any text in",Advanced,2
+PROD_DOC_619,Productivity & Documents,"I saved a document to a USB stick, pulled it out, and now the file is empty (0 bytes). Why?",Beginner,4
+PROD_DOC_620,Productivity & Documents,I share a spreadsheet with a colleague in London. The dates/times shift when I open it. Is this a bu,Intermediate,2
+PROD_DOC_701,Productivity & Documents,I opened a DOCX resume template and the text boxes are all over the place. How do I fix this?,Intermediate,3
+PROD_DOC_702,Productivity & Documents,I need to do a mail merge using a CSV file of client addresses. The wizard is confusing. Steps?,Advanced,3
+PROD_DOC_703,Productivity & Documents,"I have a fillable PDF form for HR, but I can't type in the boxes in Xournal++. It just wants to draw",Intermediate,3
+PROD_DOC_704,Productivity & Documents,"I'm trying to use VLOOKUP from an Excel file I was sent, but I keep getting #N/A or #VALUE errors.",Intermediate,3
+PROD_DOC_705,Productivity & Documents,I have to give a talk. How do I make Impress show my notes on the laptop screen but just the slides ,Beginner,3
+PROD_DOC_706,Productivity & Documents,I need to send a PDF that is 'Archivable' (PDF/A). Just clicking the PDF button doesn't seem to do i,Beginner,2
+PROD_DOC_707,Productivity & Documents,"My work has an Excel sheet with macros. When I enable macros in Calc, nothing happens or it crashes.",Intermediate,3
+PROD_DOC_708,Productivity & Documents,I scanned 10 pages of a contract into separate JPEGs. How do I combine them into one PDF easily?,Intermediate,3
+PROD_DOC_709,Productivity & Documents,I created a Pivot Table in Calc. How do I refresh it when I add new data rows? It doesn't update aut,Advanced,3
+PROD_DOC_710,Productivity & Documents,I made comments on a PDF using Okular. My coworker on Windows using Adobe Reader says he can't see t,Intermediate,2
+PROD_DOC_711,Productivity & Documents,I made a letterhead template. How do I save it so it appears in the 'My Templates' list when I start,Intermediate,3
+PROD_DOC_712,Productivity & Documents,"I turned on Track Changes, but the deleted text just disappears instead of crossing out. I need to s",Intermediate,3
+PROD_DOC_713,Productivity & Documents,Can I use my national ID card (smart card) to sign LibreOffice documents?,Advanced,2
+PROD_DOC_714,Productivity & Documents,I want page numbers to start on Page 3 (skipping the title page and TOC). How?,Intermediate,3
+PROD_DOC_715,Productivity & Documents,"When I open a CSV, it puts everything into one column instead of separating it.",Intermediate,3
+PROD_DOC_716,Productivity & Documents,My PDF is 50MB and I need to email it (max 20MB). How do I shrink it?,Intermediate,3
+PROD_DOC_717,Productivity & Documents,LibreOffice marks every word as a typo. I think it's missing the English dictionary.,Beginner,3
+PROD_DOC_718,Productivity & Documents,How do I add a 'DRAFT' watermark diagonally across the page?,Beginner,3
+PROD_DOC_719,Productivity & Documents,I want to put my company logo on every slide in the same spot. Pasting it on every slide is tedious.,Advanced,3
+PROD_DOC_720,Productivity & Documents,My important .odt file is corrupt and won't open. Is there any way to get the text back?,Advanced,3
+PROD_DOC_801,Productivity & Documents,I'm making a budget. How do I make the total sum turn red if I go over $2000?,Beginner,3
+PROD_DOC_802,Productivity & Documents,I'm typing recipes. I want to insert a fraction like ½ without typing 1/2. How?,Beginner,3
+PROD_DOC_803,Productivity & Documents,I need to write a math formula for homework (quadratic equation) in Writer. It looks ugly just typin,Intermediate,3
+PROD_DOC_804,Productivity & Documents,I have a PDF book but I want to read it on my Kindle. How do I convert it to epub or mobi?,Intermediate,3
+PROD_DOC_805,Productivity & Documents,I need to print address labels for Christmas cards. Does Writer have templates for Avery labels?,Intermediate,3
+PROD_DOC_806,Productivity & Documents,I want to arrange some family photos on a page to print. Should I use Writer or Draw?,Beginner,3
+PROD_DOC_807,Productivity & Documents,I'm tracking my family tree. Can I export a chart to PDF to print at a shop?,Intermediate,2
+PROD_DOC_808,Productivity & Documents,I'm making a list of serial numbers for insurance. How do I attach photos of the items into the spre,Beginner,2
+PROD_DOC_809,Productivity & Documents,I want a digital diary. Writer is too plain. Is there something better?,Beginner,3
+PROD_DOC_810,Productivity & Documents,I'm writing a formal complaint. How do I verify my grammar? Spellcheck isn't catching bad grammar.,Intermediate,3
+PROD_DOC_901,Productivity & Documents,I found some old Lotus 1-2-3 (.wk1) files on a floppy. Can Linux open these?,Advanced,1
+PROD_DOC_902,Productivity & Documents,I have a 300-page document with tons of images. Writer is super laggy.,Intermediate,3
+PROD_DOC_903,Productivity & Documents,I broke my GUI but need to print a PDF resume ASAP from the terminal.,Advanced,2
+PROD_DOC_904,Productivity & Documents,I downloaded a PDF but viewers say it's damaged. Is it salvageable?,Advanced,3
+PROD_DOC_905,Productivity & Documents,"I'm trying to mix English and Arabic in a document, but the cursor jumps around and direction is wro",Intermediate,2
+PROD_DOC_906,Productivity & Documents,I keep hearing about Markdown. Can I use it to write PDFs?,Beginner,3
+PROD_DOC_907,Productivity & Documents,I have 100 .doc files I need to convert to PDF. I don't want to open them one by one.,Advanced,3
+PROD_DOC_908,Productivity & Documents,I use the Orca screen reader. LibreOffice isn't reading the menus to me.,Intermediate,1
+PROD_DOC_909,Productivity & Documents,I need to generate a QR code for my wifi to put on the fridge.,Intermediate,3
+PROD_DOC_910,Productivity & Documents,"I enabled Dark Mode in Ubuntu, but the paper in Writer is still blindingly white.",Beginner,3
+PROD_DOC_911,Productivity & Documents,I'm trying to compile a .tex file but it complains about missing `article.cls`.,Advanced,2
+PROD_DOC_912,Productivity & Documents,I downloaded an EPUB but the chapters are out of order. Can I fix it?,Intermediate,2
+PROD_DOC_913,Productivity & Documents,"I want to display a PDF brochure on a screen in our shop lobby, full screen, looping.",Advanced,2
+PROD_DOC_914,Productivity & Documents,Calc charts are too basic for my data. I need to script a 3D surface plot.,Advanced,2
+PROD_DOC_915,Productivity & Documents,My scanner works with `lsusb` but Simple Scan says 'No Scanners Detected'.,Intermediate,3
+PROD_DOC_916,Productivity & Documents,I need to edit a logo SVG file. LibreOffice Draw opens it but messes up gradients.,Intermediate,3
+PROD_DOC_917,Productivity & Documents,Can I record audio while I take notes in class? I type slow.,Beginner,2
+PROD_DOC_918,Productivity & Documents,I have a BibTeX file for my thesis citations. How do I manage it easily with a GUI?,Advanced,2
+PROD_DOC_919,Productivity & Documents,"Believe it or not, I need to send a fax. I have a USB modem. Can Linux do this?",Intermediate,1
+PROD_DOC_920,Productivity & Documents,I need to brainstorm ideas visually. Is there a tool for mind maps?,Beginner,3
+SYS_TROUBLE_001,System Troubleshooting,"Boot fails with 'Kernel panic - not syncing: VFS: Unable to mount root fs on unknown-block(0,0)'. I ",Advanced,2
+SYS_TROUBLE_002,System Troubleshooting,My system freezes for 10 seconds then kills my IDE. Logs show 'Out of memory: Killed process 1234 (j,Intermediate,3
+SYS_TROUBLE_003,System Troubleshooting,`systemd-analyze blame` shows `NetworkManager-wait-online.service` taking 15s. How do I bypass this ,Intermediate,3
+SYS_TROUBLE_004,System Troubleshooting,NVIDIA driver isn't loading after kernel upgrade. `nvidia-smi` returns 'NVIDIA-SMI has failed becaus,Advanced,4
+SYS_TROUBLE_005,System Troubleshooting,My `/var/log/journal` is taking up 4GB. `journalctl --vacuum-size=500M` isn't persisting after reboo,Intermediate,3
+SYS_TROUBLE_006,System Troubleshooting,"Stuck in GRUB rescue mode with `error: unknown filesystem`. `ls` shows `(hd0,gpt1) (hd0,gpt2)`.",Advanced,3
+SYS_TROUBLE_007,System Troubleshooting,Btrfs root filesystem went read-only. `dmesg` shows 'BTRFS: error (device nvme0n1p3) in btrfs_commit,Advanced,2
+SYS_TROUBLE_008,System Troubleshooting,Laptop wakes up immediately after suspend. Logs show `ACPI: PM: Wakeup pending`.,Intermediate,3
+SYS_TROUBLE_009,System Troubleshooting,WiFi authentication fails repeatedly with `reason=3` (DEAUTH_LEAVING) on Enterprise WPA2.,Intermediate,2
+SYS_TROUBLE_010,System Troubleshooting,I have a zombie process `[python3] <defunct>` that `kill -9` won't remove. Parent PID is 1.,Advanced,3
+SYS_TROUBLE_101,System Troubleshooting,Why does my entire UI freeze when copying files to a USB stick? It's driving me crazy. Mouse won't e,Advanced,3
+SYS_TROUBLE_102,System Troubleshooting,"Fractional scaling on Wayland causes my Electron apps (VS Code, Slack) to look blurry. I refuse to s",Intermediate,3
+SYS_TROUBLE_103,System Troubleshooting,`apt upgrade` is held back because of unsatisfied dependencies in a PPA. Now I have broken packages ,Intermediate,3
+SYS_TROUBLE_104,System Troubleshooting,"My VPN connects, but I can't resolve internal domains. `resolvectl status` shows the VPN link, but q",Advanced,3
+SYS_TROUBLE_105,System Troubleshooting,"I can't unmount my external drive. `umount` says 'target is busy', but `lsof` returns absolutely not",Intermediate,4
+SYS_TROUBLE_201,System Troubleshooting,How do I enable `netconsole` to capture kernel panic logs on a remote server that hard crashes witho,Advanced,1
+SYS_TROUBLE_202,System Troubleshooting,I need a tutorial on safely reducing an LVM logical volume formatted with ext4. I don't want to lose,Advanced,2
+SYS_TROUBLE_203,System Troubleshooting,How do I create a custom systemd service that runs a script *before* the network interface comes up?,Intermediate,2
+SYS_TROUBLE_204,System Troubleshooting,How do I temporarily debug SELinux denials without disabling it completely?,Intermediate,2
+SYS_TROUBLE_205,System Troubleshooting,How can I check the health of my NVMe drive? `smartctl -a` gives different output than SATA SSDs.,Intermediate,3
+SYS_TROUBLE_301,System Troubleshooting,"For a headless server, should I stick with Netplan/NetworkManager or switch to systemd-networkd dire",Intermediate,3
+SYS_TROUBLE_302,System Troubleshooting,I'm setting up a workstation. Should I use XFS or Ext4 for the root partition? I had journal corrupt,Advanced,3
+SYS_TROUBLE_303,System Troubleshooting,"I have an NVIDIA 3060. Should I finally switch to Wayland on Fedora 40, or stay on X11 for gaming st",Intermediate,4
+SYS_TROUBLE_304,System Troubleshooting,For SSH access hardening: Fail2Ban vs. SSHGuard? Or just allow-lists?,Advanced,3
+SYS_TROUBLE_305,System Troubleshooting,My Snap Firefox startup time is slow. Should I replace it with the Flatpak version or the official t,Intermediate,4
+SYS_TROUBLE_401,System Troubleshooting,I want to automatically restart a service if it consumes more than 1GB RAM. Writing a bash script fo,Advanced,2
+SYS_TROUBLE_402,System Troubleshooting,How can I automate checking for 'orphan' packages after an update and remove them safely?,Intermediate,3
+SYS_TROUBLE_403,System Troubleshooting,I manage 5 workstations. I want to ensure `/etc/sysctl.conf` always has `net.ipv4.ip_forward=1` with,Advanced,2
+SYS_TROUBLE_404,System Troubleshooting,My custom app logs to `/opt/app/log/out.log` and it fills the disk. How do I add it to system log ro,Intermediate,3
+SYS_TROUBLE_405,System Troubleshooting,I want to automatically backup the `/etc` directory to a remote server every time the system shuts d,Advanced,2
+WEB_RES_001,Web & Research,Why is my CPU at 100% when watching YouTube? My laptop gets super hot and the fans are loud.,Intermediate,4
+WEB_RES_002,Web & Research,"How do I install Google Chrome on Ubuntu? I can't find it in the Software Center, only Chromium.",Beginner,4
+WEB_RES_003,Web & Research,Netflix keeps giving me an error saying DRM is not supported. I just installed Fedora.,Intermediate,3
+WEB_RES_004,Web & Research,How do I sync my bookmarks from Brave on Windows to Brave on Linux Mint?,Beginner,3
+WEB_RES_005,Web & Research,Screen tearing in Chromium when scrolling pages. Using NVIDIA proprietary drivers.,Intermediate,3
+WEB_RES_006,Web & Research,How do I stop websites from tracking me on Firefox without breaking everything?,Beginner,4
+WEB_RES_007,Web & Research,Firefox Snap is too slow to open. How do I switch to the .deb version?,Intermediate,4
+WEB_RES_008,Web & Research,"No sound coming from Vivaldi, but other apps work fine.",Beginner,2
+WEB_RES_009,Web & Research,I can't install extensions in Chrome. It says 'Download interrupted'.,Beginner,3
+WEB_RES_010,Web & Research,Web pages look ugly. Fonts are jagged and thin compared to Windows.,Intermediate,3
+WEB_RES_011,Web & Research,How do I force VA-API on Chromium with Intel graphics? `chrome://gpu` says Video Decode: Software on,Advanced,3
+WEB_RES_012,Web & Research,Firefox opens with the previous session tabs every time. I want a blank page.,Beginner,3
+WEB_RES_013,Web & Research,Chrome is blurry on Wayland (fractional scaling 125%).,Intermediate,3
+WEB_RES_014,Web & Research,How do I change the default search engine from Google to DuckDuckGo in Firefox?,Beginner,4
+WEB_RES_015,Web & Research,"Browsers are loading pages very slowly, but `ping google.com` in terminal is fast.",Intermediate,3
+WEB_RES_016,Web & Research,Firefox says 'Profile Missing' after I tried to move my home folder.,Intermediate,2
+WEB_RES_017,Web & Research,I accidentally closed a tab. What is the shortcut to reopen it?,Beginner,4
+WEB_RES_018,Web & Research,Firefox has a huge title bar. How do I remove it so it looks like Chrome?,Beginner,3
+WEB_RES_019,Web & Research,Some websites are still white even though my system theme is dark.,Beginner,3
+WEB_RES_020,Web & Research,Firefox uses too much RAM. Is there a way to limit it?,Intermediate,4
+WEB_RES_021,Web & Research,I have an NVIDIA card. How do I get hardware video decoding in Firefox?,Advanced,3
+WEB_RES_022,Web & Research,Is it possible to install Microsoft Edge on Debian? I need it for work sites.,Beginner,2
+WEB_RES_023,Web & Research,"Chrome keeps showing 'Aw, Snap!' on specific pages.",Intermediate,3
+WEB_RES_024,Web & Research,I can't print from Firefox. The printer dialog opens but nothing happens when I click Print.,Intermediate,3
+WEB_RES_025,Web & Research,Chrome tries to download PDF files instead of opening them.,Beginner,4
+WEB_RES_026,Web & Research,Pinch to zoom isn't working on my laptop touchpad in Firefox.,Intermediate,3
+WEB_RES_027,Web & Research,How do I turn on the free VPN in Opera?,Beginner,2
+WEB_RES_028,Web & Research,Chrome says 'Update Failed (Error: 12)' when I check 'About Google Chrome'.,Beginner,3
+WEB_RES_029,Web & Research,Chromium asks for a keyring password every time I open it. It's annoying.,Intermediate,3
+WEB_RES_030,Web & Research,How do I completely disable WebRTC to prevent IP leaks?,Intermediate,2
+WEB_RES_031,Web & Research,"My banking site says my browser is unsupported, but I'm on the latest Firefox.",Beginner,3
+WEB_RES_032,Web & Research,"I want to set F1 to switch tabs in Vivaldi, but it opens Help.",Intermediate,2
+WEB_RES_033,Web & Research,YouTube videos stop buffering after a few seconds. I have to refresh to continue.,Intermediate,3
+WEB_RES_034,Web & Research,How do I safely install Tor Browser? Is it in the Ubuntu store?,Beginner,3
+WEB_RES_035,Web & Research,How do I move my Firefox cache to RAM to save SSD writes?,Advanced,2
+WEB_RES_036,Web & Research,The text in Firefox is too small. I have a 4K monitor.,Beginner,3
+WEB_RES_037,Web & Research,Chrome blocks my download saying 'This file is dangerous'. It's just a python script I wrote.,Intermediate,3
+WEB_RES_038,Web & Research,How do I export my bookmarks to an HTML file for backup?,Beginner,3
+WEB_RES_039,Web & Research,Browser games run slow. How do I enable WebGL?,Intermediate,2
+WEB_RES_040,Web & Research,I want to run a headless Firefox to take screenshots of websites via command line.,Advanced,1
+WEB_RES_041,Web & Research,Does Firefox have a built-in translator like Chrome? I don't want to install extensions.,Beginner,3
+WEB_RES_042,Web & Research,Firefox crashes immediately upon opening. Started after update.,Intermediate,3
+WEB_RES_043,Web & Research,I want to install Chromium without Snap. Snap is too slow.,Beginner,4
+WEB_RES_044,Web & Research,I keep getting spam notifications from a news site. How do I stop them?,Beginner,4
+WEB_RES_045,Web & Research,"How do I make Firefox delete all cookies when I close it, but keep my history?",Intermediate,3
+WEB_RES_046,Web & Research,What is the shortcut to jump to the address bar without using the mouse?,Beginner,3
+WEB_RES_047,Web & Research,Brave is flickering green when watching videos.,Intermediate,2
+WEB_RES_048,Web & Research,How do I add a custom search engine? I want to search Arch Wiki from the address bar.,Beginner,3
+WEB_RES_049,Web & Research,Where does Chrome store the user profile data on Linux?,Intermediate,2
+WEB_RES_050,Web & Research,I'm behind a proxy at work. How do I configure Firefox to use it?,Intermediate,2
+WEB_RES_051,Web & Research,How do I group tabs in Chrome? I have too many open.,Beginner,3
+WEB_RES_052,Web & Research,Installing google-chrome from AUR. It fails verification.,Intermediate,2
+WEB_RES_053,Web & Research,Why does LibreWolf not save my passwords?,Intermediate,2
+WEB_RES_054,Web & Research,Touchscreen scrolling is jerky in Firefox.,Intermediate,2
+WEB_RES_055,Web & Research,How do I cast a tab to my Chromecast from Linux?,Beginner,3
+WEB_RES_056,Web & Research,I accidentally deleted a bookmark folder. Can I restore it?,Intermediate,3
+WEB_RES_057,Web & Research,I need to download a file from a URL but the browser is stuck. How do I use terminal?,Intermediate,2
+WEB_RES_058,Web & Research,How do I install a new theme in Firefox?,Beginner,3
+WEB_RES_059,Web & Research,How do I load an unpacked extension in Chrome for development?,Advanced,2
+WEB_RES_060,Web & Research,Firefox takes 10 seconds to start. I have an SSD.,Intermediate,3
+WEB_RES_061,Web & Research,How do I clear browser history with a shortcut?,Beginner,4
+WEB_RES_062,Web & Research,Firefox warns me 'Connection is not secure' on my own router page.,Intermediate,2
+WEB_RES_063,Web & Research,How do I make Firefox tabs vertical? I have a widescreen monitor.,Intermediate,3
+WEB_RES_064,Web & Research,How do I install Brave on Arch? It's not in standard pacman repo.,Beginner,2
+WEB_RES_065,Web & Research,Twitch streams keep buffering or dropping quality.,Intermediate,3
+WEB_RES_066,Web & Research,How do I clear the DNS cache in Chrome? I changed my DNS but Chrome ignores it.,Intermediate,2
+WEB_RES_067,Web & Research,I can't save files to my external hard drive from Firefox Snap.,Intermediate,3
+WEB_RES_068,Web & Research,Emoji are showing as squares or black and white outlines.,Intermediate,3
+WEB_RES_069,Web & Research,My Chrome bookmarks bar disappeared.,Beginner,3
+WEB_RES_070,Web & Research,Firefox Sync isn't syncing my add-ons.,Intermediate,2
+WEB_RES_071,Web & Research,The volume in Firefox is too low even at 100%.,Intermediate,3
+WEB_RES_072,Web & Research,How do I run Chromium with temporary profile entirely in RAM?,Advanced,1
+WEB_RES_073,Web & Research,"When I type in address bar, it searches Amazon instead of Google.",Beginner,3
+WEB_RES_074,Web & Research,Firefox context menus don't match my KDE dark theme.,Intermediate,2
+WEB_RES_075,Web & Research,How do I quickly zoom in and out on a webpage?,Beginner,4
+WEB_RES_076,Web & Research,Installing Vivaldi on Fedora. The repo setup seems complicated.,Intermediate,2
+WEB_RES_077,Web & Research,Does Firefox send my search data to Mozilla?,Intermediate,3
+WEB_RES_078,Web & Research,"I want the latest Firefox features, but Debian only has ESR. How do I switch?",Intermediate,2
+WEB_RES_079,Web & Research,I pressed F12 and a weird code window opened. How do I close it?,Beginner,4
+WEB_RES_080,Web & Research,UBlock Origin isn't blocking YouTube ads anymore.,Intermediate,4
+WEB_RES_081,Web & Research,How to verify if WebRender is enabled in Firefox?,Advanced,2
+WEB_RES_082,Web & Research,Chrome spell check is marking all my French emails as wrong.,Beginner,3
+WEB_RES_083,Web & Research,Why are there so many Firefox processes in System Monitor?,Intermediate,3
+WEB_RES_084,Web & Research,How do I remove a bookmark without searching through the menu?,Beginner,3
+WEB_RES_085,Web & Research,How do I use Burp Suite with Firefox?,Advanced,1
+WEB_RES_086,Web & Research,Some fonts look like squares (tofu) on foreign language sites.,Intermediate,3
+WEB_RES_087,Web & Research,Videos on Twitter don't play. It says 'The media could not be played'.,Intermediate,3
+WEB_RES_088,Web & Research,I visited a site yesterday but can't remember the name. How do I find it?,Beginner,4
+WEB_RES_089,Web & Research,Shortcut to activate the search bar in the page (Find in page)?,Beginner,4
+WEB_RES_090,Web & Research,I want to install the developer edition of Firefox alongside the stable one.,Intermediate,2
+WEB_RES_091,Web & Research,Chrome tabs are too small to click when I have 50 open.,Intermediate,3
+WEB_RES_092,Web & Research,How do I see the saved password for a site in Firefox?,Beginner,4
+WEB_RES_093,Web & Research,Google Maps is very laggy in 3D mode.,Intermediate,3
+WEB_RES_094,Web & Research,How do I change the Chrome background image on the New Tab page?,Beginner,3
+WEB_RES_095,Web & Research,How do I refresh a page that is stuck?,Beginner,4
+WEB_RES_096,Web & Research,How do I enable Do Not Track?,Intermediate,3
+WEB_RES_097,Web & Research,Compiling Firefox from source takes too long. Is there a bin package?,Advanced,1
+WEB_RES_098,Web & Research,I closed the window with all my tabs. Can I get them back?,Beginner,4
+WEB_RES_099,Web & Research,An extension changed my search engine to something weird. I can't change it back.,Intermediate,3
+WEB_RES_100,Web & Research,Firefox freezes when I open a specific heavy website.,Intermediate,3
+WEB_RES_501,Web & Research,I keep seeing ads on YouTube and random sites. What is the best way to block them on Firefox?,Beginner,4
+WEB_RES_502,Web & Research,How do I stop websites from seeing my real IP address using WebRTC in Brave?,Intermediate,3
+WEB_RES_503,Web & Research,Chrome saves my history and I don't want that. How do I make it delete everything when I close it?,Beginner,4
+WEB_RES_504,Web & Research,I want to enable DNS over HTTPS in Firefox to hide my DNS queries from my ISP. Where is that setting,Intermediate,3
+WEB_RES_505,Web & Research,I'm using Librewolf but some sites break because of the canvas fingerprinting protection. How do I d,Advanced,2
+WEB_RES_506,Web & Research,Is there a way to manage my passwords in Chrome without sending them to Google?,Beginner,3
+WEB_RES_507,Web & Research,Firefox keeps asking to save addresses and credit cards. How do I kill this feature completely?,Intermediate,3
+WEB_RES_508,Web & Research,How do I force Chromium to use the system Tor service for all connections?,Advanced,2
+WEB_RES_509,Web & Research,I want to stop Facebook from tracking me around the web. What extension does this?,Beginner,3
+WEB_RES_510,Web & Research,Does Microsoft Edge on Linux send telemetry to Microsoft? How do I turn it off?,Intermediate,3
+WEB_RES_511,Web & Research,Websites keep asking to send me notifications. How do I block these requests permanently?,Beginner,4
+WEB_RES_512,Web & Research,I want to delete cookies for a specific site without clearing my whole history.,Intermediate,3
+WEB_RES_513,Web & Research,I want to use a custom user.js file to harden Firefox. Where do I put it on Linux?,Advanced,2
+WEB_RES_514,Web & Research,How can I tell if a website is secure in Chrome?,Beginner,3
+WEB_RES_515,Web & Research,Brave Shields is breaking a login page I need for work. How do I turn it off temporarily?,Intermediate,2
+WEB_RES_516,Web & Research,What is the 'Strict' Enhanced Tracking Protection in Firefox? Should I use it?,Beginner,2
+WEB_RES_517,Web & Research,I'm using the Firefox Snap on Ubuntu. Does it have access to my documents folder if I want to upload,Intermediate,3
+WEB_RES_518,Web & Research,I can't install extensions from the Web Store in Ungoogled Chromium.,Advanced,2
+WEB_RES_519,Web & Research,How do I clear my cache in Firefox? Some pages are loading old versions.,Beginner,4
+WEB_RES_520,Web & Research,I suspect an extension is spying on me. How do I audit extension permissions in Chrome?,Intermediate,2
+WEB_RES_521,Web & Research,How do I check if Firefox is using the Snap version or the DEB version? I want to avoid Snap for pri,Advanced,3
+WEB_RES_522,Web & Research,I am getting a 'Your connection is not private' error on a government website. How do I fix it?,Beginner,3
+WEB_RES_523,Web & Research,How do I disable Pocket in Firefox? I don't want the recommendations.,Intermediate,3
+WEB_RES_524,Web & Research,Tor Browser is blocked by AppArmor on my Fedora system. How do I fix the profile?,Advanced,2
+WEB_RES_525,Web & Research,How do I turn off the crypto rewards stuff in Brave? I just want a browser.,Beginner,3
+WEB_RES_526,Web & Research,I bookmarked a recipe on my laptop. How do I get it on my Android phone?,Beginner,3
+WEB_RES_527,Web & Research,Chrome sync is paused every time I restart Linux. Why isn't it saving my login?,Intermediate,3
+WEB_RES_528,Web & Research,I want to host my own Firefox Sync server. Can I configure my desktop client to point to it?,Advanced,1
+WEB_RES_529,Web & Research,How do I send a tab from my desktop to my iPad?,Beginner,3
+WEB_RES_530,Web & Research,I can't sync Chromium with my Google Account anymore. It says the API keys are missing.,Intermediate,2
+WEB_RES_531,Web & Research,I'm switching from Chrome to Firefox. How do I bring my bookmarks over?,Beginner,4
+WEB_RES_532,Web & Research,Vivaldi isn't detecting my other devices for sync.,Intermediate,2
+WEB_RES_533,Web & Research,Can I export my Firefox cookies to use with wget on the command line?,Advanced,2
+WEB_RES_534,Web & Research,How do I create a backup of my bookmarks to a file? I'm reformatting my PC.,Beginner,4
+WEB_RES_535,Web & Research,Firefox Sync duplicates my bookmarks every time I sync with my old Windows laptop.,Intermediate,3
+WEB_RES_536,Web & Research,I can't share my screen in Google Meet on Ubuntu. The option is greyed out.,Intermediate,3
+WEB_RES_537,Web & Research,I need to use Outlook Web App as if it were a desktop app. Can I do that?,Beginner,3
+WEB_RES_538,Web & Research,My work requires a smart card to log in to the web portal. Firefox doesn't see it.,Intermediate,2
+WEB_RES_539,Web & Research,I need to trust a custom CA certificate for my company's intranet. How do I add it to Chrome on Arch,Advanced,2
+WEB_RES_540,Web & Research,How do I keep my work bookmarks separate from my personal ones?,Beginner,3
+WEB_RES_541,Web & Research,Zoom web client audio is crackling on Brave.,Intermediate,3
+WEB_RES_542,Web & Research,My company uses a legacy ActiveX site. Is there ANY way to open this on Linux?,Advanced,2
+WEB_RES_543,Web & Research,How do I print to PDF from Chrome? I need to save receipts.,Beginner,4
+WEB_RES_544,Web & Research,Slack in the browser is super slow. Can I increase the memory limit?,Intermediate,2
+WEB_RES_545,Web & Research,I need to test my web app on older Chrome versions. How do I install Chrome 110 alongside current?,Advanced,2
+WEB_RES_546,Web & Research,Netflix keeps saying 'Browser not supported' or giving me an error code.,Beginner,3
+WEB_RES_547,Web & Research,YouTube 4K videos are stuttering on my AMD card. I think hardware acceleration is off.,Intermediate,3
+WEB_RES_548,Web & Research,How do I make Firefox dark mode? It's blinding me at night.,Beginner,4
+WEB_RES_549,Web & Research,Twitter videos won't play. It says 'The media could not be played'.,Intermediate,3
+WEB_RES_550,Web & Research,I want Picture-in-Picture to work with my tiling window manager (i3). The window keeps getting tiled,Advanced,2
+WEB_RES_551,Web & Research,How do I cast my browser tab to my Chromecast TV?,Beginner,3
+WEB_RES_552,Web & Research,Amazon Prime Video quality is stuck at SD (480p). Why no HD?,Intermediate,3
+WEB_RES_553,Web & Research,I want to shop on a foreign site. How do I translate the page?,Beginner,4
+WEB_RES_554,Web & Research,Twitch keeps buffering. Is there an extension to fix the player?,Intermediate,3
+WEB_RES_555,Web & Research,I want to remove the tab bar in Firefox and use a vertical tab extension like Tree Style Tab. How do,Advanced,2
+WEB_RES_556,Web & Research,Touchscreen scrolling isn't working smoothly in Firefox on my Dell XPS.,Intermediate,3
+WEB_RES_557,Web & Research,My browser fonts look terrible and jagged. How do I fix the rendering?,Beginner,3
+WEB_RES_558,Web & Research,"I need to run Firefox in Kiosk mode for a public display. No address bar, no menus.",Advanced,2
+WEB_RES_559,Web & Research,Vivaldi crashes immediately upon opening. I didn't change anything.,Intermediate,2
+WEB_RES_560,Web & Research,I accidentally zoomed in way too much and I can't reset it.,Beginner,3
+WEB_RES_561,Web & Research,How do I see what certificates are installed in my Firefox? I need to remove an old one.,Intermediate,2
+WEB_RES_562,Web & Research,How do I force Chrome to use my system DNS resolver instead of its built-in async DNS?,Advanced,2
+WEB_RES_563,Web & Research,My tabs from my phone aren't showing up in the 'Synced Tabs' section.,Beginner,3
+WEB_RES_564,Web & Research,"I need to capture a full page screenshot of a long report, but print to PDF cuts it off.",Intermediate,3
+WEB_RES_565,Web & Research,How do I enable the dark theme for websites that don't support it natively?,Intermediate,3
+WEB_RES_566,Web & Research,Firefox takes 20 seconds to start. It says 'Reading startup cache'.,Advanced,3
+WEB_RES_567,Web & Research,How do I turn on the free VPN in Opera?,Beginner,2
+WEB_RES_568,Web & Research,Microsoft Teams in the browser keeps refreshing the page on its own.,Intermediate,3
+WEB_RES_569,Web & Research,I want to block auto-playing videos with sound. They are startling me.,Intermediate,3
+WEB_RES_570,Web & Research,"I scanned a QR code on my phone to sign in, but Chrome on desktop didn't react.",Beginner,2
+WEB_RES_571,Web & Research,"I want to isolate Google searches in a container, but I want it to open automatically.",Advanced,2
+WEB_RES_572,Web & Research,How do I make the text bigger on all websites? My eyes aren't what they used to be.,Beginner,4
+WEB_RES_573,Web & Research,Chromium is tearing when I scroll videos. I have an NVIDIA card.,Intermediate,3
+WEB_RES_574,Web & Research,I need to debug a website on a mobile device connected via USB.,Advanced,2
+WEB_RES_575,Web & Research,How do I use Tor in Brave? I see the option but don't know how to start it.,Beginner,3
+WEB_RES_576,Web & Research,I have 50 tabs open on my phone. How do I open them all on my desktop at once?,Intermediate,3
+WEB_RES_577,Web & Research,How do I set Google as my default search engine? It changed to Yahoo.,Beginner,4
+WEB_RES_578,Web & Research,"I want to change the download location for just this one file, but it auto-saves.",Intermediate,3
+WEB_RES_579,Web & Research,I want to spoof my User Agent to look like iPhone on Firefox to test a mobile site.,Advanced,2
+WEB_RES_580,Web & Research,Google Docs offline mode isn't working on Arch.,Intermediate,2
+WEB_RES_581,Web & Research,How do I remove a saved credit card from autofill?,Beginner,3
+WEB_RES_582,Web & Research,My bank's website won't load in Librewolf. It just spins.,Intermediate,2
+WEB_RES_583,Web & Research,How do I enable the compact density mode in Firefox? It disappeared from the customize menu.,Advanced,2
+WEB_RES_584,Web & Research,I need to check the source code of a page. Right-click is disabled by the site.,Beginner,2
+WEB_RES_585,Web & Research,Youtube plays but there is no sound in Firefox. Other apps have sound.,Intermediate,3
+WEB_RES_586,Web & Research,How do I check what devices are logged into my Google account from Chrome?,Beginner,3
+WEB_RES_587,Web & Research,My history isn't syncing to my new laptop. Both say 'Sync On'.,Intermediate,3
+WEB_RES_588,Web & Research,I need to run a specific Java applet in the browser. It's for an old switch controller.,Advanced,1
+WEB_RES_589,Web & Research,How do I rename a bookmark? The name is too long in the bar.,Beginner,3
+WEB_RES_590,Web & Research,Some emojis render as empty boxes in Firefox on Fedora.,Intermediate,3
+WEB_RES_591,Web & Research,How do I disable WebGL completely? I don't want any fingerprinting vector.,Advanced,2
+WEB_RES_592,Web & Research,I accidentally closed a tab I needed for work! How do I get it back?,Beginner,4
+WEB_RES_593,Web & Research,Brave isn't loading images on Reddit. Just text.,Intermediate,2
+WEB_RES_594,Web & Research,I can't save files to my /tmp directory from Firefox Snap.,Advanced,3
+WEB_RES_595,Web & Research,"I want to delete my cache automatically, but KEEP my cookies and logins.",Intermediate,3
+WEB_RES_596,Web & Research,How do I create a shortcut to Google Calendar on my desktop?,Beginner,3
+WEB_RES_597,Web & Research,Vivaldi Notes aren't syncing to my phone.,Intermediate,2
+WEB_RES_598,Web & Research,I want to use a proxy ONLY for a specific domain.,Advanced,2
+WEB_RES_599,Web & Research,The browser interface is too small on my 4K monitor.,Beginner,3
+WEB_RES_600,Web & Research,I enabled 'Do Not Track' but I still see targeted ads.,Intermediate,3

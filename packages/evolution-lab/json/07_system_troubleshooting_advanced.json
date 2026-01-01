@@ -1,0 +1,557 @@
+[
+  {
+    "id": "SYS_TROUBLE_001",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Kernel Panic",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Kernel 6.8"
+    },
+    "interaction": {
+      "user_query": "Boot fails with 'Kernel panic - not syncing: VFS: Unable to mount root fs on unknown-block(0,0)'. I just updated the kernel.",
+      "ai_response": "The kernel cannot find the root filesystem, usually because the initramfs image is missing or corrupted during the update.\n\n**Fix via Live ISO:**\n1. Mount your system partitions (root, boot, sys, proc, dev) into `/mnt`.\n2. Chroot: `sudo chroot /mnt`.\n3. Reinstall the kernel/initramfs:\n   ```bash\n   update-initramfs -u -k all\n   update-grub\n   ```\n4. If that fails, reinstall the kernel package: `apt-get install --reinstall linux-image-generic`."
+    },
+    "technical_tags": ["kernel-panic", "VFS", "initramfs", "chroot"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "SYS_TROUBLE_002",
+    "bucket": "System Troubleshooting",
+    "sub_category": "OOM Killer",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Kernel 6.8"
+    },
+    "interaction": {
+      "user_query": "My system freezes for 10 seconds then kills my IDE. Logs show 'Out of memory: Killed process 1234 (java)'. I have 32GB RAM but no swap.",
+      "ai_response": "Running without swap disables the kernel's ability to page out inactive anonymous memory, forcing an aggressive OOM kill when physical RAM fills.\n\n**Recommendation:**\n1. Create a swap file (at least 4GB-8GB) to allow page reclamation:\n   ```bash\n   sudo dd if=/dev/zero of=/swapfile bs=1G count=8\n   sudo mkswap /swapfile\n   sudo swapon /swapfile\n   ```\n2. Enable `EarlyOOM` or `systemd-oomd` to kill processes before the system hard-locks."
+    },
+    "technical_tags": ["oom-killer", "swap", "memory-management", "java"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "SYS_TROUBLE_003",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Boot Performance",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "systemd 255"
+    },
+    "interaction": {
+      "user_query": "`systemd-analyze blame` shows `NetworkManager-wait-online.service` taking 15s. How do I bypass this without breaking networking?",
+      "ai_response": "This service waits for *all* configured interfaces to have a carrier, which delays boot if an interface is unused or slow (e.g., ethernet unplugged).\n\n**Fix:**\nDisable the wait service if you don't have services (like network mounts) that strictly require network at boot:\n```bash\nsudo systemctl disable --now NetworkManager-wait-online.service\n```\nAlternatively, edit `/etc/NetworkManager/NetworkManager.conf` to ignore specific interfaces."
+    },
+    "technical_tags": [
+      "systemd-analyze",
+      "NetworkManager",
+      "boot-time",
+      "optimization"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "SYS_TROUBLE_004",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Drivers",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "NVIDIA 535"
+    },
+    "interaction": {
+      "user_query": "NVIDIA driver isn't loading after kernel upgrade. `nvidia-smi` returns 'NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver'.",
+      "ai_response": "This happens when the kernel module wasn't rebuilt for the new kernel version.\n\n**Steps:**\n1. Check DKMS status: `dkms status`.\n2. If it says 'added' but not 'installed', build it manually:\n   ```bash\n   sudo dkms autoinstall\n   ```\n3. If it fails, check headers: `sudo apt install linux-headers-$(uname -r)`.\n4. Check Secure Boot; if enabled, the unsigned NVIDIA module won't load."
+    },
+    "technical_tags": ["nvidia", "dkms", "kernel-module", "secure-boot"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "SYS_TROUBLE_005",
+    "bucket": "System Troubleshooting",
+    "sub_category": "System Logs",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Journald"
+    },
+    "interaction": {
+      "user_query": "My `/var/log/journal` is taking up 4GB. `journalctl --vacuum-size=500M` isn't persisting after reboot. How do I limit this permanently?",
+      "ai_response": "The command you ran is a one-time cleanup. To make it permanent, you must edit the configuration file.\n\n**Edit `/etc/systemd/journald.conf`:**\n1. Set `SystemMaxUse=500M`.\n2. Restart the service:\n   ```bash\n   sudo systemctl restart systemd-journald\n   ```\n3. Verify with `journalctl --disk-usage`."
+    },
+    "technical_tags": ["journalctl", "disk-space", "systemd", "logs"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "SYS_TROUBLE_006",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Bootloader",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "GRUB 2.12"
+    },
+    "interaction": {
+      "user_query": "Stuck in GRUB rescue mode with `error: unknown filesystem`. `ls` shows `(hd0,gpt1) (hd0,gpt2)`.",
+      "ai_response": "GRUB has lost the location of its modules (usually inside `/boot/grub`).\n\n**Manual Boot:**\n1. `ls (hd0,gpt2)/` (Identify which partition has /boot/grub).\n2. Set root: `set root=(hd0,gpt2)`.\n3. Set prefix: `set prefix=(hd0,gpt2)/boot/grub`.\n4. Load normal module: `insmod normal` then `normal`.\n\n**Permanent Fix:** Once booted, run `grub-install /dev/sda` and `grub-mkconfig -o /boot/grub/grub.cfg`."
+    },
+    "technical_tags": ["grub", "grub-rescue", "boot-failure", "partitioning"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "SYS_TROUBLE_007",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Storage",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Btrfs"
+    },
+    "interaction": {
+      "user_query": "Btrfs root filesystem went read-only. `dmesg` shows 'BTRFS: error (device nvme0n1p3) in btrfs_commit_transaction:1234'.",
+      "ai_response": "The filesystem detected a critical error or corruption and flipped to RO to prevent data loss.\n\n**Recovery:**\n1. Boot a Fedora Live USB.\n2. Do **not** mount the partition.\n3. Run a check (safe, read-only): `btrfs check /dev/nvme0n1p3`.\n4. If errors exist, backup data immediately using `btrfs restore` before attempting `btrfs check --repair` (which is risky)."
+    },
+    "technical_tags": ["btrfs", "filesystem-corruption", "read-only", "nvme"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "SYS_TROUBLE_008",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Suspend/Resume",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Kernel 6.5"
+    },
+    "interaction": {
+      "user_query": "Laptop wakes up immediately after suspend. Logs show `ACPI: PM: Wakeup pending`.",
+      "ai_response": "A device (often USB or Bluetooth) is triggering a wakeup signal.\n\n**Diagnosis:**\n1. Check enabled wakeup devices: `cat /proc/acpi/wakeup`.\n2. Look for devices marked `*enabled` (e.g., XHC, GLAN).\n3. Toggle them off temporarily: `echo XHC | sudo tee /proc/acpi/wakeup`.\n4. If this fixes it, create a systemd unit or udev rule to disable that specific wakeup trigger on boot."
+    },
+    "technical_tags": [
+      "acpi",
+      "suspend",
+      "power-management",
+      "wakeup-triggers"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "SYS_TROUBLE_009",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Network",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "wpa_supplicant"
+    },
+    "interaction": {
+      "user_query": "WiFi authentication fails repeatedly with `reason=3` (DEAUTH_LEAVING) on Enterprise WPA2.",
+      "ai_response": "Reason 3 often implies the driver sent a deauth packet, but in Enterprise contexts, it's usually an OpenSSL/certificate mismatch or `wpa_supplicant` config error.\n\n**Check:**\n1. Ensure `ca_cert` path in `/etc/wpa_supplicant/wpa_supplicant.conf` is correct.\n2. Try disabling randomization: set `MACAddressPolicy=none` in NetworkManager or systemd-networkd.\n3. Check `dmesg | grep iwlwifi` for firmware crashes."
+    },
+    "technical_tags": [
+      "wifi",
+      "wpa_supplicant",
+      "networking",
+      "authentication"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "SYS_TROUBLE_010",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Process Management",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Kernel 5.15"
+    },
+    "interaction": {
+      "user_query": "I have a zombie process `[python3] <defunct>` that `kill -9` won't remove. Parent PID is 1.",
+      "ai_response": "You cannot kill a zombie; it's already dead. It remains because its parent hasn't read its exit code.\n\nIf the parent is PID 1 (systemd), systemd should reap it automatically. If it's stuck:\n1. The process might be stuck in 'Uninterruptible Sleep' (D state), usually due to failed I/O (check NFS mounts or failing disk).\n2. Check `ps -eo pid,ppid,stat,cmd | grep D`.\n3. You cannot fix D-state processes without fixing the underlying I/O hang or rebooting."
+    },
+    "technical_tags": ["zombie-process", "kill", "process-states", "IO-wait"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "SYS_TROUBLE_101",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Performance",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Kernel 6.8"
+    },
+    "interaction": {
+      "user_query": "Why does my entire UI freeze when copying files to a USB stick? It's driving me crazy. Mouse won't even move.",
+      "ai_response": "This is a classic Linux buffering issue with slow storage. The kernel fills the RAM with write buffers (`dirty pages`) faster than the USB can write, then locks up system IO to flush them.\n\n**Fix:**\nLower the dirty bytes limit to force the kernel to throttle writes earlier:\n```bash\n# Temporary test\necho 15728640 | sudo tee /proc/sys/vm/dirty_bytes\necho 15728640 | sudo tee /proc/sys/vm/dirty_background_bytes\n```\n(Sets limit to ~15MB)."
+    },
+    "technical_tags": ["dirty_bytes", "io-scheduler", "system-freeze", "usb"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "SYS_TROUBLE_102",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Display/Graphics",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Wayland"
+    },
+    "interaction": {
+      "user_query": "Fractional scaling on Wayland causes my Electron apps (VS Code, Slack) to look blurry. I refuse to switch back to X11.",
+      "ai_response": "Electron apps often default to XWayland, which doesn't handle fractional scaling well (it renders at 1x and stretches).\n\n**Fix:**\nForce Electron to run natively on Wayland by passing these flags:\n`--enable-features=UseOzonePlatform --ozone-platform=wayland`\n\nAdd these to the `.desktop` file or create a persistent alias."
+    },
+    "technical_tags": ["wayland", "fractional-scaling", "electron", "blur"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "SYS_TROUBLE_103",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Package Management",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "APT"
+    },
+    "interaction": {
+      "user_query": "`apt upgrade` is held back because of unsatisfied dependencies in a PPA. Now I have broken packages and can't install anything!",
+      "ai_response": "PPAs on Debian are risky (Don't Break Debian). You likely have a version mismatch.\n\n**Recovery:**\n1. `sudo apt --fix-broken install`\n2. If that fails, identify the blocking package and remove it: `sudo dpkg --remove --force-all [package_name]`.\n3. Disable the PPA in `/etc/apt/sources.list.d/` and run `sudo apt update`.\n4. Clean up: `sudo apt autoremove`."
+    },
+    "technical_tags": ["apt", "dependency-hell", "ppa", "broken-packages"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "SYS_TROUBLE_104",
+    "bucket": "System Troubleshooting",
+    "sub_category": "DNS",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "systemd-resolved"
+    },
+    "interaction": {
+      "user_query": "My VPN connects, but I can't resolve internal domains. `resolvectl status` shows the VPN link, but queries go to the public DNS.",
+      "ai_response": "This is a split-DNS issue. Systemd-resolved prioritizes the link with the routing domains.\n\n**Fix:**\n1. Get the VPN interface name (e.g., `tun0`).\n2. Force the search domain for that interface:\n   ```bash\n   sudo resolvectl domain tun0 ~.internal.corp.com\n   ```\n   (The `~` tells resolved to route requests for that domain strictly to this interface)."
+    },
+    "technical_tags": ["dns", "vpn", "systemd-resolved", "split-dns"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "SYS_TROUBLE_105",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Filesystem",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "mount"
+    },
+    "interaction": {
+      "user_query": "I can't unmount my external drive. `umount` says 'target is busy', but `lsof` returns absolutely nothing!",
+      "ai_response": "If `lsof` and `fuser` show nothing, the kernel might be holding the mount.\n\n**Possibilities:**\n1. You are running the command *from inside* the mount point (check your `pwd`).\n2. A loop device or a kernel thread (like NFS) is holding it.\n3. **Lazy Unmount:** If you need it gone now:\n   ```bash\n   sudo umount -l /run/media/user/drive\n   ```\n   (This detaches it from the file hierarchy immediately and cleans up references when they become free)."
+    },
+    "technical_tags": ["umount", "target-busy", "lsof", "lazy-unmount"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "SYS_TROUBLE_201",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Kernel Debugging",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Kernel 6.5"
+    },
+    "interaction": {
+      "user_query": "How do I enable `netconsole` to capture kernel panic logs on a remote server that hard crashes without writing to disk?",
+      "ai_response": "**1. Prepare the Target:**\nLoad the module with parameters for source IP/Port and destination IP/MAC/Port.\n```bash\nmodprobe netconsole netconsole=6666@192.168.1.5/eth0,6666@192.168.1.10/00:11:22:33:44:55\n```\n(Format: `src_port@src_ip/dev,dst_port@dst_ip/dst_mac`)\n\n**2. Prepare the Receiver:**\nOn another machine (192.168.1.10), listen for UDP packets:\n```bash\nnc -u -l -p 6666\n```\n**3. Persistence:** Add to boot params: `netconsole=...` in GRUB."
+    },
+    "technical_tags": [
+      "netconsole",
+      "kernel-debugging",
+      "remote-logging",
+      "crash-dump"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "SYS_TROUBLE_202",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Storage Management",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LVM"
+    },
+    "interaction": {
+      "user_query": "I need a tutorial on safely reducing an LVM logical volume formatted with ext4. I don't want to lose data.",
+      "ai_response": "**Order of operations is critical. Always backup first.**\n\n1. **Unmount:** `sudo umount /dev/mapper/vg-lv`\n2. **Check File System:** `sudo e2fsck -f /dev/mapper/vg-lv`\n3. **Shrink File System:** (Target size e.g., 10G)\n   ```bash\n   sudo resize2fs /dev/mapper/vg-lv 10G\n   ```\n4. **Shrink Logical Volume:** (Must match or be slightly larger than FS size)\n   ```bash\n   sudo lvreduce -L 10G /dev/mapper/vg-lv\n   ```\n5. **Mount:** `sudo mount ...`"
+    },
+    "technical_tags": ["lvm", "resize2fs", "lvreduce", "storage"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "SYS_TROUBLE_203",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Boot Process",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "systemd"
+    },
+    "interaction": {
+      "user_query": "How do I create a custom systemd service that runs a script *before* the network interface comes up?",
+      "ai_response": "**Unit File Configuration:**\nCreate `/etc/systemd/system/pre-network.service`:\n\n```ini\n[Unit]\nDescription=Run script before network\nBefore=network-pre.target\nWants=network-pre.target\n\n[Service]\nType=oneshot\nExecStart=/usr/local/bin/myscript.sh\nRemainAfterExit=yes\n\n[Install]\nWantedBy=multi-user.target\n```\n**Note:** You must target `network-pre.target`. Enable with `systemctl enable pre-network`."
+    },
+    "technical_tags": [
+      "systemd",
+      "unit-file",
+      "dependency-ordering",
+      "network-pre"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "SYS_TROUBLE_204",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Security/Permissions",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "SELinux"
+    },
+    "interaction": {
+      "user_query": "How do I temporarily debug SELinux denials without disabling it completely?",
+      "ai_response": "**1. Set Permissive Mode:**\nThis logs denials but allows the action.\n```bash\nsudo setenforce 0\n```\n**2. Reproduce the Issue:**\nRun your application.\n\n**3. Analyze Logs:**\n```bash\nsudo ausearch -m avc -ts recent\n```\n**4. Generate Policy:**\nIf the action is legitimate, create a policy module:\n```bash\nsudo grep 'denied' /var/log/audit/audit.log | audit2allow -M mypol\nsudo semodule -i mypol.pp\n```\n**5. Re-enable Enforcing:** `sudo setenforce 1`."
+    },
+    "technical_tags": [
+      "selinux",
+      "audit2allow",
+      "permissions",
+      "security-context"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "SYS_TROUBLE_205",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Hardware",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "smartmontools"
+    },
+    "interaction": {
+      "user_query": "How can I check the health of my NVMe drive? `smartctl -a` gives different output than SATA SSDs.",
+      "ai_response": "NVMe drives use different log pages than SATA.\n\n**Command:**\n```bash\nsudo smartctl -a /dev/nvme0n1\n```\n**Key Metrics to Watch:**\n1. `Critical Warning`: Should be 0x00.\n2. `Media and Data Integrity Errors`: Should be 0.\n3. `Percentage Used`: Indicates wear level (100% = endurance limit reached).\n4. `Available Spare`: Should be near 100%.\n\nIf `Critical Warning` is non-zero, replace the drive."
+    },
+    "technical_tags": ["nvme", "smartctl", "disk-health", "hardware-failure"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "SYS_TROUBLE_301",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Comparison",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "systemd-networkd"
+    },
+    "interaction": {
+      "user_query": "For a headless server, should I stick with Netplan/NetworkManager or switch to systemd-networkd directly? What's easier to debug?",
+      "ai_response": "For a headless server, **systemd-networkd** is generally preferred over NetworkManager.\n\n* **Performance:** `networkd` is lighter and boots faster.\n* **Predictability:** It uses static `.network` files in `/etc/systemd/network/`, which are easier to version control than NM's DBus-driven state.\n* **Debugging:** `networkctl status` gives cleaner output for server interfaces than `nmcli`.\n\n*Netplan* is just a renderer; if you use Ubuntu Server, keep Netplan but set the renderer to `networkd` in the yaml config."
+    },
+    "technical_tags": [
+      "netplan",
+      "systemd-networkd",
+      "NetworkManager",
+      "server-config"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "SYS_TROUBLE_302",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Comparison",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Filesystems"
+    },
+    "interaction": {
+      "user_query": "I'm setting up a workstation. Should I use XFS or Ext4 for the root partition? I had journal corruption on Ext4 recently.",
+      "ai_response": "**XFS** is often recommended for large partitions and parallel I/O, but **Ext4** is safer for root partitions on workstations due to shrinkability.\n\n* **Ext4:** Can be shrunk (critical if you ever need to resize LVM/partitions). Very resilient to power loss with `data=ordered`.\n* **XFS:** Cannot be shrunk (only grown). Faster metadata operations.\n\n*Recommendation:* Stick to **Ext4** for `/` (root) for flexibility. Use **XFS** for `/home` or data drives if you deal with large files."
+    },
+    "technical_tags": [
+      "ext4",
+      "xfs",
+      "filesystem-comparison",
+      "partition-resizing"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "SYS_TROUBLE_303",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Comparison",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Display Server"
+    },
+    "interaction": {
+      "user_query": "I have an NVIDIA 3060. Should I finally switch to Wayland on Fedora 40, or stay on X11 for gaming stability?",
+      "ai_response": "As of Driver 555+, **Wayland** is viable for NVIDIA gaming (explicit sync support fixed the flickering).\n\n* **Stay on X11 if:** You rely on color management, complex OBS setups without Pipewire support, or older games that struggle with XWayland.\n* **Switch to Wayland if:** You want mixed refresh rate support (e.g., 144Hz + 60Hz monitors) and better frame pacing.\n\n*Verdict:* Try Wayland. If you see flickering, check if `nvidia-drm.modeset=1` is set in boot params."
+    },
+    "technical_tags": ["wayland", "x11", "nvidia", "gaming"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "SYS_TROUBLE_304",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Comparison",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "SSH"
+    },
+    "interaction": {
+      "user_query": "For SSH access hardening: Fail2Ban vs. SSHGuard? Or just allow-lists?",
+      "ai_response": "**SSHGuard** is lighter and faster (written in C) than **Fail2Ban** (Python), and it interfaces directly with `iptables`/`nftables` without complex regex configuration files.\n\nHowever, **Fail2Ban** is more flexible if you need to protect other services (Apache, Nginx) alongside SSH.\n\n*Best Practice:* Neither is a substitute for key-based authentication. Disable `PasswordAuthentication`, move the port, and use `AllowUsers` in `sshd_config` for the strongest troubleshooting-free defense."
+    },
+    "technical_tags": ["ssh-hardening", "fail2ban", "sshguard", "security"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "SYS_TROUBLE_305",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Comparison",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Snap vs Flatpak"
+    },
+    "interaction": {
+      "user_query": "My Snap Firefox startup time is slow. Should I replace it with the Flatpak version or the official tarball?",
+      "ai_response": "Snap's slow startup is often due to squashfs mounting overhead.\n\n* **Flatpak:** Generally faster startup than Snap for desktop apps, but sandboxing permissions can be tricky to debug.\n* **Tarball/PPA:** Fastest performance, but auto-updates are manual.\n\n*Recommendation:* Remove the Snap (`sudo snap remove firefox`) and use the **Mozilla Team PPA** (`ppa:mozillateam/ppa`) for a native `.deb` installation. This integrates best with system themes and has zero mount overhead."
+    },
+    "technical_tags": ["snap", "flatpak", "firefox", "performance"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "SYS_TROUBLE_401",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Automation",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Cron"
+    },
+    "interaction": {
+      "user_query": "I want to automatically restart a service if it consumes more than 1GB RAM. Writing a bash script for cron, but is there a native way?",
+      "ai_response": "Yes, systemd can handle this natively without cron scripts.\n\n**Edit the Unit File:**\nRun `systemctl edit myservice` and add:\n```ini\n[Service]\nMemoryMax=1G\nRestart=on-failure\n```\nIf the process hits the 1GB limit, the OOM killer (or cgroup limit) will terminate it, and `Restart=on-failure` will bring it back. For softer handling, use `MemoryHigh=900M` to throttle it first."
+    },
+    "technical_tags": [
+      "systemd",
+      "resource-control",
+      "automation",
+      "memory-leak"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "SYS_TROUBLE_402",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Automation",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "pacman"
+    },
+    "interaction": {
+      "user_query": "How can I automate checking for 'orphan' packages after an update and remove them safely?",
+      "ai_response": "You can use a pacman hook or an alias.\n\n**Command:**\n`pacman -Qtdq` lists orphans (dependencies installed for packages that no longer exist).\n\n**Cleanup Alias:**\nAdd to `.bashrc`:\n```bash\nalias cleanup='sudo pacman -Rns $(pacman -Qtdq)'\n```\n**Automation:** Be careful automating this fully (e.g., in a script), as sometimes optional dependencies are flagged as orphans. Always review the list."
+    },
+    "technical_tags": ["pacman", "package-cleanup", "orphans", "automation"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "SYS_TROUBLE_403",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Automation",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Ansible"
+    },
+    "interaction": {
+      "user_query": "I manage 5 workstations. I want to ensure `/etc/sysctl.conf` always has `net.ipv4.ip_forward=1` without editing manually.",
+      "ai_response": "Use a simple Ansible playbook. This ensures idempotency (won't break if run twice).\n\n```yaml\n- name: Enable IP Forwarding\n  sysctl:\n    name: net.ipv4.ip_forward\n    value: '1'\n    state: present\n    reload: yes\n```\nRun with `ansible-playbook setup.yml`. This is safer than `sed` scripts which might duplicate lines."
+    },
+    "technical_tags": ["ansible", "sysctl", "automation", "config-management"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "SYS_TROUBLE_404",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Automation",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Logrotate"
+    },
+    "interaction": {
+      "user_query": "My custom app logs to `/opt/app/log/out.log` and it fills the disk. How do I add it to system log rotation?",
+      "ai_response": "Create a file in `/etc/logrotate.d/myapp`:\n\n```text\n/opt/app/log/*.log {\n    daily\n    rotate 7\n    compress\n    missingok\n    notifempty\n    copytruncate\n}\n```\n**Key:** `copytruncate` is vital if the app keeps the file handle open. It clears the file content after copying, rather than moving the file (which would require restarting the app)."
+    },
+    "technical_tags": ["logrotate", "disk-space", "automation", "logs"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "SYS_TROUBLE_405",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Automation",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Kernel"
+    },
+    "interaction": {
+      "user_query": "I want to automatically backup the `/etc` directory to a remote server every time the system shuts down.",
+      "ai_response": "Create a systemd unit that runs on shutdown.\n\n`/etc/systemd/system/backup-etc.service`:\n```ini\n[Unit]\nDescription=Backup /etc on shutdown\nDefaultDependencies=no\nBefore=shutdown.target reboot.target halt.target\n\n[Service]\nType=oneshot\nExecStart=/usr/bin/rsync -a /etc/ user@remote:/backups/\nTimeoutStartSec=0\n\n[Install]\nWantedBy=halt.target reboot.target shutdown.target\n```\n**Note:** Ensure SSH keys are set up for passwordless login."
+    },
+    "technical_tags": ["systemd", "backup", "shutdown-script", "rsync"],
+    "friction_type": "config_issue"
+  }
+]

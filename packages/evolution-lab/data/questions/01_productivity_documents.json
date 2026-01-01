@@ -1,0 +1,176 @@
+[
+  {
+    "id": "PROD_DOC_001",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Beginner",
+    "user_persona": "Office Migrant",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LibreOffice 7.3"
+    },
+    "interaction": {
+      "user_query": "I can't open my budget.xlsx, it says 'General Error'. I see a weird file named .~lock.budget.xlsx# in the folder.",
+      "ai_response": "The presence of the `.~lock.budget.xlsx#` file indicates that LibreOffice thinks the file is currently open, possibly due to a previous crash or improper shutdown.\n\nTo resolve this:\n1. Open your file manager and ensure 'Show Hidden Files' is enabled (press `Ctrl+H`).\n2. Delete the `.~lock.budget.xlsx#` file.\n3. Try opening the original document again.\n\nThis file is a safety mechanism to prevent overwriting, but it can persist erroneously after a crash."
+    },
+    "technical_tags": ["file-locking", "hidden-files", "libreoffice-calc"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_002",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Intermediate",
+    "user_persona": "Office Migrant",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "LibreOffice 24.2"
+    },
+    "interaction": {
+      "user_query": "My Word document looks totally messed up in Writer. The fonts are different and everything is on the wrong page now.",
+      "ai_response": "This is likely due to missing Microsoft proprietary fonts. LibreOffice substitutes them with metric-compatible alternatives, but slight differences in kerning can cause layout shifts.\n\nTo fix this:\n```bash\nsudo dnf install curl cabextract xorg-x11-font-utils fontconfig\nsudo rpm -i https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm\n```\n\nAfter installation, restart LibreOffice and reopen your document. The original fonts (Calibri, Times New Roman, etc.) should now be available."
+    },
+    "technical_tags": ["font-substitution", "layout-shift", "compatibility"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_003",
+    "bucket": "Productivity & Documents",
+    "sub_category": "PDF Editing",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Evince 46.0"
+    },
+    "interaction": {
+      "user_query": "I downloaded a tax form PDF but I can't type in the boxes. When I click it just moves the page around.",
+      "ai_response": "The default PDF viewer (Evince) doesn't support editing or filling forms. You have a few options:\n\n**For filling forms:**\n```bash\nsudo apt install okular\n```\nThen open the PDF in Okular, which supports form filling.\n\n**For adding text overlays:**\n```bash\nsudo apt install xournalpp\n```\nXournal++ lets you draw and type text on top of any PDF, even non-fillable ones."
+    },
+    "technical_tags": ["pdf-forms", "annotation", "viewer-limitations"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_004",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "LibreOffice 24.8"
+    },
+    "interaction": {
+      "user_query": "How do I convert my Excel VBA macro to work in Calc? It keeps saying 'BASIC runtime error'.",
+      "ai_response": "LibreOffice Basic has significant syntax differences from Excel VBA. Common issues:\n\n1. **Object model differences**: `Worksheets` → `Sheets`, `Range` → `getCellRangeByName`\n2. **Function names**: VBA functions may not exist or have different names\n3. **Option Explicit**: Add this at the top of your macro\n\nFor complex macros, consider using Python with the UNO bridge instead:\n```python\nimport uno\nfrom com.sun.star.sheet import XSpreadsheet\n\n# Access Calc via Python scripting\n```\n\nAlternatively, use the built-in macro recorder (Tools → Macros → Record Macro) to see the correct LibreOffice syntax."
+    },
+    "technical_tags": ["vba-migration", "macro-scripting", "compatibility"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_005",
+    "bucket": "Productivity & Documents",
+    "sub_category": "PDF Editing",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "LibreOffice Draw 7.3"
+    },
+    "interaction": {
+      "user_query": "I tried editing a PDF in Draw and now all the text is broken into individual letters. This is unusable!",
+      "ai_response": "LibreOffice Draw imports PDFs as graphic objects, which often breaks text into individual glyphs or lines. This is not ideal for text editing.\n\nBetter alternatives:\n\n**For minor text edits:**\n```bash\nsudo apt install master-pdf-editor\n```\nMaster PDF Editor preserves text flow.\n\n**For annotations/overlays:**\n```bash\nsudo apt install xournalpp\n```\n\n**For form filling:**\nUse Firefox's built-in PDF viewer or Okular."
+    },
+    "technical_tags": ["pdf-import", "text-reflow", "draw-limitations"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_006",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Beginner",
+    "user_persona": "Office Migrant",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LibreOffice Calc 7.3"
+    },
+    "interaction": {
+      "user_query": "Calc is asking for a password when I open my Excel file. I never set a password!",
+      "ai_response": "The password protection is likely carried over from Excel. Excel files (.xlsx) can have encryption that LibreOffice respects.\n\nThis is different from Linux file permissions. To check:\n\n1. Try opening the file in Excel (if available) to see if it's password-protected there\n2. If you created the file in Excel, check if you accidentally enabled 'Encrypt with Password' in File → Info → Protect Workbook\n\nIf you don't know the password, you'll need to use Excel to remove the protection, or use a password recovery tool."
+    },
+    "technical_tags": [
+      "encryption",
+      "password-protection",
+      "excel-compatibility"
+    ],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_007",
+    "bucket": "Productivity & Documents",
+    "sub_category": "PDF Editing",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Okular 24.02"
+    },
+    "interaction": {
+      "user_query": "How do I digitally sign a PDF? I need to sign a contract but just drawing my signature doesn't seem official.",
+      "ai_response": "Drawing a signature is different from cryptographic digital signing. For legal digital signatures:\n\n**Using Okular:**\n1. Install Okular: `sudo dnf install okular`\n2. You'll need a digital certificate (X.509). Create one:\n```bash\nopenssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365\n```\n3. In Okular: Tools → Sign Document → Configure Signatures\n4. Import your certificate\n5. Click where you want to sign\n\n**Note:** For legal contracts, check if the recipient accepts self-signed certificates or requires a CA-issued one."
+    },
+    "technical_tags": ["digital-signature", "certificates", "pdf-security"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_008",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Beginner",
+    "user_persona": "Office Migrant",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "LibreOffice Writer 24.2"
+    },
+    "interaction": {
+      "user_query": "All my headings in Writer are numbered 0.0.0.0. How do I fix this?",
+      "ai_response": "This is a style inheritance issue, often from importing Word documents. To fix:\n\n1. Go to **Tools → Chapter Numbering**\n2. For each level (1-10), verify the 'Paragraph Style' matches your heading styles (Heading 1, Heading 2, etc.)\n3. Set the numbering format you want (or select 'None' to remove numbering)\n4. Click OK\n\nAlternatively, right-click a heading → **Edit Paragraph Style → Outline & List** → adjust the outline level."
+    },
+    "technical_tags": ["heading-numbering", "style-inheritance", "word-import"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_009",
+    "bucket": "Productivity & Documents",
+    "sub_category": "PDF Viewing",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Atril 1.26"
+    },
+    "interaction": {
+      "user_query": "I can't see the replies to comments in this PDF. I know they're there because my colleague can see them in Acrobat.",
+      "ai_response": "Atril (the default PDF viewer in Mint) has limited support for threaded comments. Try these alternatives:\n\n**Option 1: Okular**\n```bash\nsudo apt install okular\n```\n\n**Option 2: Firefox built-in viewer**\nRight-click the PDF → Open With → Firefox\n\n**Option 3: Chromium/Chrome**\n```bash\nsudo apt install chromium-browser\n```\nDrag the PDF into the browser.\n\nThese viewers have better support for advanced PDF features like comment threading."
+    },
+    "technical_tags": ["pdf-comments", "viewer-compatibility", "annotations"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_010",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Intermediate",
+    "user_persona": "Office Migrant",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "LibreOffice Calc 7.4"
+    },
+    "interaction": {
+      "user_query": "How do I highlight cells in Calc based on the maximum value in a range? In Excel I used conditional formatting.",
+      "ai_response": "Calc supports conditional formatting similar to Excel:\n\n1. Select your data range\n2. Go to **Format → Conditional Formatting → Condition**\n3. Set:\n   - Condition 1: **Cell value is equal to**\n   - Value: `MAX($A$1:$Z$100)` (adjust range)\n   - Apply Style: Choose a highlighting style\n4. Click OK\n\nAlternatively, use the formula option:\n- Condition: **Formula is**\n- Formula: `A1=MAX($A$1:$Z$100)`\n- This highlights cells matching the max value."
+    },
+    "technical_tags": ["conditional-formatting", "formulas", "calc"],
+    "friction_type": "user_error"
+  }
+]

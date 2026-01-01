@@ -1,0 +1,463 @@
+
+ RUN  v3.2.4 /home/profharita/Code/terminaI/packages/core
+      Coverage enabled with v8
+
+stdout | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level A - No approval > should return A for read-only inside workspace
+DEBUG_RISK: {
+  outcome: [32m'reversible'[39m,
+  intention: [32m'autonomous'[39m,
+  domain: [32m'workspace'[39m,
+  risk: [32m'pass'[39m,
+  profile: [32m'balanced'[39m
+}
+
+stderr | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level A - No approval > should return A for read-only inside workspace
+CALLING CLASSIFY OUTCOME
+CLASSIFY_OUTCOME: {"operations":["read"],"touchedPaths":[],"hasUnboundedScopeSignals":false}
+
+stdout | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level A - No approval > should return A for git commit inside workspace
+DEBUG_RISK: {
+  outcome: [32m'soft-irreversible'[39m,
+  intention: [32m'autonomous'[39m,
+  domain: [32m'workspace'[39m,
+  risk: [32m'confirm'[39m,
+  profile: [32m'balanced'[39m
+}
+
+stderr | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level A - No approval > should return A for git commit inside workspace
+CALLING CLASSIFY OUTCOME
+CLASSIFY_OUTCOME: {"operations":["write"],"touchedPaths":[],"hasUnboundedScopeSignals":false}
+
+stdout | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level B - Click-to-approve > should return B for package install (write operation)
+DEBUG_RISK: {
+  outcome: [32m'soft-irreversible'[39m,
+  intention: [32m'autonomous'[39m,
+  domain: [32m'untrusted'[39m,
+  risk: [32m'confirm'[39m,
+  profile: [32m'balanced'[39m
+}
+
+stderr | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level B - Click-to-approve > should return B for package install (write operation)
+CALLING CLASSIFY OUTCOME
+CLASSIFY_OUTCOME: {"operations":["write","network"],"touchedPaths":[],"hasUnboundedScopeSignals":false}
+
+stdout | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level B - Click-to-approve > should return B for network with untrusted provenance
+DEBUG_RISK: {
+  outcome: [32m'soft-irreversible'[39m,
+  intention: [32m'autonomous'[39m,
+  domain: [32m'untrusted'[39m,
+  risk: [32m'confirm'[39m,
+  profile: [32m'balanced'[39m
+}
+
+stderr | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level B - Click-to-approve > should return B for network with untrusted provenance
+CALLING CLASSIFY OUTCOME
+CLASSIFY_OUTCOME: {"operations":["network"],"touchedPaths":[],"hasUnboundedScopeSignals":false}
+
+stdout | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level B - Click-to-approve > should return B for UI automation
+DEBUG_RISK: {
+  outcome: [32m'reversible'[39m,
+  intention: [32m'autonomous'[39m,
+  domain: [32m'workspace'[39m,
+  risk: [32m'pass'[39m,
+  profile: [32m'balanced'[39m
+}
+
+stderr | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level B - Click-to-approve > should return B for UI automation
+CALLING CLASSIFY OUTCOME
+CLASSIFY_OUTCOME: {"operations":["ui"],"touchedPaths":[],"hasUnboundedScopeSignals":false}
+
+stdout | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level B - Click-to-approve > should return B for bounded delete inside workspace
+DEBUG_RISK: {
+  outcome: [32m'irreversible'[39m,
+  intention: [32m'autonomous'[39m,
+  domain: [32m'workspace'[39m,
+  risk: [32m'pin'[39m,
+  profile: [32m'balanced'[39m
+}
+
+stderr | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level B - Click-to-approve > should return B for bounded delete inside workspace
+CALLING CLASSIFY OUTCOME
+CLASSIFY_OUTCOME: {"operations":["delete"],"touchedPaths":["/workspace/someDir"],"hasUnboundedScopeSignals":false}
+
+stdout | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level B - Click-to-approve > should return B for privileged command inside workspace
+DEBUG_RISK: {
+  outcome: [32m'reversible'[39m,
+  intention: [32m'autonomous'[39m,
+  domain: [32m'workspace'[39m,
+  risk: [32m'pass'[39m,
+  profile: [32m'balanced'[39m
+}
+
+stderr | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level B - Click-to-approve > should return B for privileged command inside workspace
+CALLING CLASSIFY OUTCOME
+CLASSIFY_OUTCOME: {"operations":["privileged"],"touchedPaths":[],"hasUnboundedScopeSignals":false}
+
+stdout | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level B - Click-to-approve > should bump A to B when outsideWorkspace is true
+DEBUG_RISK: {
+  outcome: [32m'soft-irreversible'[39m,
+  intention: [32m'autonomous'[39m,
+  domain: [32m'workspace'[39m,
+  risk: [32m'confirm'[39m,
+  profile: [32m'balanced'[39m
+}
+
+stderr | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level B - Click-to-approve > should bump A to B when outsideWorkspace is true
+CALLING CLASSIFY OUTCOME
+CLASSIFY_OUTCOME: {"operations":["write"],"touchedPaths":[],"hasUnboundedScopeSignals":false}
+
+stdout | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level C - Click + PIN > should return C for rm -rf ~ (unbounded scope)
+DEBUG_RISK: {
+  outcome: [32m'irreversible'[39m,
+  intention: [32m'autonomous'[39m,
+  domain: [32m'untrusted'[39m,
+  risk: [32m'pin'[39m,
+  profile: [32m'balanced'[39m
+}
+
+stderr | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level C - Click + PIN > should return C for rm -rf ~ (unbounded scope)
+CALLING CLASSIFY OUTCOME
+CLASSIFY_OUTCOME: {"operations":["delete"],"touchedPaths":["~"],"hasUnboundedScopeSignals":true}
+
+stdout | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level C - Click + PIN > should return C for rm -rf / (unbounded scope)
+DEBUG_RISK: {
+  outcome: [32m'irreversible'[39m,
+  intention: [32m'autonomous'[39m,
+  domain: [32m'untrusted'[39m,
+  risk: [32m'pin'[39m,
+  profile: [32m'balanced'[39m
+}
+
+stderr | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level C - Click + PIN > should return C for rm -rf / (unbounded scope)
+CALLING CLASSIFY OUTCOME
+CLASSIFY_OUTCOME: {"operations":["delete"],"touchedPaths":["/"],"hasUnboundedScopeSignals":true}
+
+stdout | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level C - Click + PIN > should return C for privileged command outside workspace
+DEBUG_RISK: {
+  outcome: [32m'soft-irreversible'[39m,
+  intention: [32m'autonomous'[39m,
+  domain: [32m'workspace'[39m,
+  risk: [32m'confirm'[39m,
+  profile: [32m'balanced'[39m
+}
+
+stderr | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level C - Click + PIN > should return C for privileged command outside workspace
+CALLING CLASSIFY OUTCOME
+CLASSIFY_OUTCOME: {"operations":["privileged","delete"],"touchedPaths":[],"hasUnboundedScopeSignals":false}
+
+stdout | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level C - Click + PIN > should return C for device operations
+DEBUG_RISK: {
+  outcome: [32m'soft-irreversible'[39m,
+  intention: [32m'autonomous'[39m,
+  domain: [32m'workspace'[39m,
+  risk: [32m'confirm'[39m,
+  profile: [32m'balanced'[39m
+}
+
+stderr | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level C - Click + PIN > should return C for device operations
+CALLING CLASSIFY OUTCOME
+CLASSIFY_OUTCOME: {"operations":["device","write"],"touchedPaths":[],"hasUnboundedScopeSignals":false}
+
+stdout | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level C - Click + PIN > should bump B to C when outsideWorkspace is true
+DEBUG_RISK: {
+  outcome: [32m'soft-irreversible'[39m,
+  intention: [32m'autonomous'[39m,
+  domain: [32m'workspace'[39m,
+  risk: [32m'confirm'[39m,
+  profile: [32m'balanced'[39m
+}
+
+stderr | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level C - Click + PIN > should bump B to C when outsideWorkspace is true
+CALLING CLASSIFY OUTCOME
+CLASSIFY_OUTCOME: {"operations":["delete"],"touchedPaths":[],"hasUnboundedScopeSignals":false}
+
+stdout | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Provenance-based escalation > should bump level for web_remote_user with non-read operations
+DEBUG_RISK: {
+  outcome: [32m'soft-irreversible'[39m,
+  intention: [32m'explicit'[39m,
+  domain: [32m'workspace'[39m,
+  risk: [32m'confirm'[39m,
+  profile: [32m'balanced'[39m
+}
+
+stderr | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Provenance-based escalation > should bump level for web_remote_user with non-read operations
+CALLING CLASSIFY OUTCOME
+CLASSIFY_OUTCOME: {"operations":["write"],"touchedPaths":[],"hasUnboundedScopeSignals":false}
+
+stdout | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Provenance-based escalation > should NOT bump for web_remote_user with pure read
+DEBUG_RISK: {
+  outcome: [32m'reversible'[39m,
+  intention: [32m'explicit'[39m,
+  domain: [32m'workspace'[39m,
+  risk: [32m'pass'[39m,
+  profile: [32m'balanced'[39m
+}
+
+stderr | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Provenance-based escalation > should NOT bump for web_remote_user with pure read
+CALLING CLASSIFY OUTCOME
+CLASSIFY_OUTCOME: {"operations":["read"],"touchedPaths":[],"hasUnboundedScopeSignals":false}
+
+stdout | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Provenance-based escalation > should require B for network operations with untrusted provenance
+DEBUG_RISK: {
+  outcome: [32m'soft-irreversible'[39m,
+  intention: [32m'autonomous'[39m,
+  domain: [32m'untrusted'[39m,
+  risk: [32m'confirm'[39m,
+  profile: [32m'balanced'[39m
+}
+
+stderr | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Provenance-based escalation > should require B for network operations with untrusted provenance
+CALLING CLASSIFY OUTCOME
+CLASSIFY_OUTCOME: {"operations":["network"],"touchedPaths":[],"hasUnboundedScopeSignals":false}
+
+stdout | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Complex scenarios > should handle multiple escalation factors correctly
+DEBUG_RISK: {
+  outcome: [32m'irreversible'[39m,
+  intention: [32m'explicit'[39m,
+  domain: [32m'workspace'[39m,
+  risk: [32m'confirm'[39m,
+  profile: [32m'balanced'[39m
+}
+
+stderr | src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Complex scenarios > should handle multiple escalation factors correctly
+CALLING CLASSIFY OUTCOME
+CLASSIFY_OUTCOME: {"operations":["delete","privileged"],"touchedPaths":[],"hasUnboundedScopeSignals":true}
+
+ ❯ src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts (18 tests | 13 failed) 20ms
+   × computeMinimumReviewLevel > Level A - No approval > should return A for read-only inside workspace 11ms
+     → expected [ Array(1) ] to include 'Action is read-only, bounded, and rev…'
+   × computeMinimumReviewLevel > Level A - No approval > should return A for git commit inside workspace 2ms
+     → expected 'B' to be 'A' // Object.is equality
+   ✓ computeMinimumReviewLevel > Level B - Click-to-approve > should return B for package install (write operation) 0ms
+   ✓ computeMinimumReviewLevel > Level B - Click-to-approve > should return B for network with untrusted provenance 0ms
+   × computeMinimumReviewLevel > Level B - Click-to-approve > should return B for UI automation 0ms
+     → expected 'A' to be 'B' // Object.is equality
+   × computeMinimumReviewLevel > Level B - Click-to-approve > should return B for bounded delete inside workspace 1ms
+     → expected 'C' to be 'B' // Object.is equality
+   × computeMinimumReviewLevel > Level B - Click-to-approve > should return B for privileged command inside workspace 0ms
+     → expected 'A' to be 'B' // Object.is equality
+   × computeMinimumReviewLevel > Level B - Click-to-approve > should bump A to B when outsideWorkspace is true 0ms
+     → expected 'B' to be 'C' // Object.is equality
+   × computeMinimumReviewLevel > Level C - Click + PIN > should return C for rm -rf ~ (unbounded scope) 1ms
+     → expected [ …(3) ] to include 'Delete operation with unbounded scope…'
+   ✓ computeMinimumReviewLevel > Level C - Click + PIN > should return C for rm -rf / (unbounded scope) 0ms
+   × computeMinimumReviewLevel > Level C - Click + PIN > should return C for privileged command outside workspace 0ms
+     → expected 'B' to be 'C' // Object.is equality
+   × computeMinimumReviewLevel > Level C - Click + PIN > should return C for device operations 0ms
+     → expected 'B' to be 'C' // Object.is equality
+   ✓ computeMinimumReviewLevel > Level C - Click + PIN > should return C when parseConfidence is low 0ms
+   × computeMinimumReviewLevel > Level C - Click + PIN > should bump B to C when outsideWorkspace is true 0ms
+     → expected 'B' to be 'C' // Object.is equality
+   × computeMinimumReviewLevel > Provenance-based escalation > should bump level for web_remote_user with non-read operations 0ms
+     → expected 'B' to be 'C' // Object.is equality
+   ✓ computeMinimumReviewLevel > Provenance-based escalation > should NOT bump for web_remote_user with pure read 0ms
+   × computeMinimumReviewLevel > Provenance-based escalation > should require B for network operations with untrusted provenance 0ms
+     → expected [ …(2) ] to include 'Network operation with untrusted prov…'
+   × computeMinimumReviewLevel > Complex scenarios > should handle multiple escalation factors correctly 0ms
+     → expected 'B' to be 'C' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 13 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level A - No approval > should return A for read-only inside workspace
+AssertionError: expected [ Array(1) ] to include 'Action is read-only, bounded, and rev…'
+ ❯ src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts:48:30
+     46|       expect(result.requiresClick).toBe(false);
+     47|       expect(result.requiresPin).toBe(false);
+     48|       expect(result.reasons).toContain(
+       |                              ^
+     49|         'Action is read-only, bounded, and reversible',
+     50|       );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/13]⎯
+
+ FAIL  src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level A - No approval > should return A for git commit inside workspace
+AssertionError: expected 'B' to be 'A' // Object.is equality
+
+Expected: [32m"A"[39m
+Received: [31m"B"[39m
+
+ ❯ src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts:61:28
+     59|       });
+     60|       const result = computeMinimumReviewLevel(profile, mockConfig);
+     61|       expect(result.level).toBe('A');
+       |                            ^
+     62|       expect(result.requiresClick).toBe(false);
+     63|       expect(result.requiresPin).toBe(false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/13]⎯
+
+ FAIL  src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level B - Click-to-approve > should return B for UI automation
+AssertionError: expected 'A' to be 'B' // Object.is equality
+
+Expected: [32m"B"[39m
+Received: [31m"A"[39m
+
+ ❯ src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts:99:28
+     97|       });
+     98|       const result = computeMinimumReviewLevel(profile, mockConfig);
+     99|       expect(result.level).toBe('B');
+       |                            ^
+    100|       expect(result.requiresClick).toBe(true);
+    101|       expect(result.requiresPin).toBe(false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/13]⎯
+
+ FAIL  src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level B - Click-to-approve > should return B for bounded delete inside workspace
+AssertionError: expected 'C' to be 'B' // Object.is equality
+
+Expected: [32m"B"[39m
+Received: [31m"C"[39m
+
+ ❯ src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts:113:28
+    111|       });
+    112|       const result = computeMinimumReviewLevel(profile, mockConfig);
+    113|       expect(result.level).toBe('B');
+       |                            ^
+    114|       expect(result.requiresClick).toBe(true);
+    115|       expect(result.requiresPin).toBe(false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/13]⎯
+
+ FAIL  src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level B - Click-to-approve > should return B for privileged command inside workspace
+AssertionError: expected 'A' to be 'B' // Object.is equality
+
+Expected: [32m"B"[39m
+Received: [31m"A"[39m
+
+ ❯ src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts:126:28
+    124|       });
+    125|       const result = computeMinimumReviewLevel(profile, mockConfig);
+    126|       expect(result.level).toBe('B');
+       |                            ^
+    127|       expect(result.requiresClick).toBe(true);
+    128|       expect(result.requiresPin).toBe(false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/13]⎯
+
+ FAIL  src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level B - Click-to-approve > should bump A to B when outsideWorkspace is true
+AssertionError: expected 'B' to be 'C' // Object.is equality
+
+Expected: [32m"C"[39m
+Received: [31m"B"[39m
+
+ ❯ src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts:138:28
+    136|       });
+    137|       const result = computeMinimumReviewLevel(profile, mockConfig);
+    138|       expect(result.level).toBe('C');
+       |                            ^
+    139|       expect(result.requiresClick).toBe(true);
+    140|       expect(result.requiresPin).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/13]⎯
+
+ FAIL  src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level C - Click + PIN > should return C for rm -rf ~ (unbounded scope)
+AssertionError: expected [ …(3) ] to include 'Delete operation with unbounded scope…'
+ ❯ src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts:158:30
+    156|       expect(result.requiresClick).toBe(true);
+    157|       expect(result.requiresPin).toBe(true);
+    158|       expect(result.reasons).toContain(
+       |                              ^
+    159|         'Delete operation with unbounded scope (/, ~, wildcards)',
+    160|       );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/13]⎯
+
+ FAIL  src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level C - Click + PIN > should return C for privileged command outside workspace
+AssertionError: expected 'B' to be 'C' // Object.is equality
+
+Expected: [32m"C"[39m
+Received: [31m"B"[39m
+
+ ❯ src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts:182:28
+    180|       });
+    181|       const result = computeMinimumReviewLevel(profile, mockConfig);
+    182|       expect(result.level).toBe('C');
+       |                            ^
+    183|       expect(result.requiresClick).toBe(true);
+    184|       expect(result.requiresPin).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/13]⎯
+
+ FAIL  src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level C - Click + PIN > should return C for device operations
+AssertionError: expected 'B' to be 'C' // Object.is equality
+
+Expected: [32m"C"[39m
+Received: [31m"B"[39m
+
+ ❯ src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts:196:28
+    194|       });
+    195|       const result = computeMinimumReviewLevel(profile, mockConfig);
+    196|       expect(result.level).toBe('C');
+       |                            ^
+    197|       expect(result.requiresClick).toBe(true);
+    198|       expect(result.requiresPin).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/13]⎯
+
+ FAIL  src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Level C - Click + PIN > should bump B to C when outsideWorkspace is true
+AssertionError: expected 'B' to be 'C' // Object.is equality
+
+Expected: [32m"C"[39m
+Received: [31m"B"[39m
+
+ ❯ src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts:225:28
+    223|       });
+    224|       const result = computeMinimumReviewLevel(profile, mockConfig);
+    225|       expect(result.level).toBe('C');
+       |                            ^
+    226|       expect(result.requiresClick).toBe(true);
+    227|       expect(result.requiresPin).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/13]⎯
+
+ FAIL  src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Provenance-based escalation > should bump level for web_remote_user with non-read operations
+AssertionError: expected 'B' to be 'C' // Object.is equality
+
+Expected: [32m"C"[39m
+Received: [31m"B"[39m
+
+ ❯ src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts:243:28
+    241|       });
+    242|       const result = computeMinimumReviewLevel(profile, mockConfig);
+    243|       expect(result.level).toBe('C');
+       |                            ^
+    244|       expect(result.requiresClick).toBe(true);
+    245|       expect(result.requiresPin).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/13]⎯
+
+ FAIL  src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Provenance-based escalation > should require B for network operations with untrusted provenance
+AssertionError: expected [ …(2) ] to include 'Network operation with untrusted prov…'
+ ❯ src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts:271:30
+    269|       expect(result.requiresClick).toBe(true);
+    270|       expect(result.requiresPin).toBe(false);
+    271|       expect(result.reasons).toContain(
+       |                              ^
+    272|         'Network operation with untrusted provenance',
+    273|       );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/13]⎯
+
+ FAIL  src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts > computeMinimumReviewLevel > Complex scenarios > should handle multiple escalation factors correctly
+AssertionError: expected 'B' to be 'C' // Object.is equality
+
+Expected: [32m"C"[39m
+Received: [31m"B"[39m
+
+ ❯ src/safety/approval-ladder/__tests__/computeMinimumReviewLevel.test.ts:287:28
+    285|       const result = computeMinimumReviewLevel(profile, mockConfig);
+    286|       // Should be C immediately due to unbounded scope
+    287|       expect(result.level).toBe('C');
+       |                            ^
+    288|       expect(result.requiresClick).toBe(true);
+    289|       expect(result.requiresPin).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/13]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  13 failed | 5 passed (18)
+   Start at  12:58:32
+   Duration  1.41s (transform 55ms, setup 18ms, collect 52ms, tests 20ms, environment 0ms, prepare 40ms)
+
+JUNIT report written to /home/profharita/Code/terminaI/packages/core/junit.xml

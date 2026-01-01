@@ -1,0 +1,98 @@
+import { UiToolBase } from './ui-tool-base.js';
+import { UiFocusSchema } from '../gui/protocol/schemas.js';
+import type { UiFocusArgs } from '../gui/protocol/schemas.js';
+import type {
+  ToolCallConfirmationDetails,
+  ToolInvocation,
+  ToolResult,
+} from './tools.js';
+import { BaseToolInvocation, Kind } from './tools.js';
+import type { MessageBus } from '../confirmation-bus/message-bus.js';
+import { UI_FOCUS_TOOL_NAME } from './tool-names.js';
+import { buildUiConfirmationDetails, formatUiResult } from './ui-tool-utils.js';
+import { DesktopAutomationService } from '../gui/service/DesktopAutomationService.js';
+import type { Config } from '../config/config.js';
+
+class UiFocusToolInvocation extends BaseToolInvocation<
+  UiFocusArgs,
+  ToolResult
+> {
+  constructor(
+    params: UiFocusArgs,
+    private readonly config: Config,
+    messageBus?: MessageBus,
+    toolName?: string,
+    toolDisplayName?: string,
+  ) {
+    super(params, messageBus, toolName, toolDisplayName);
+  }
+
+  getDescription(): string {
+    return `Focus on: ${this.params.target}`;
+  }
+
+  protected override async getConfirmationDetails(
+    _abortSignal: AbortSignal,
+  ): Promise<ToolCallConfirmationDetails | false> {
+    return buildUiConfirmationDetails({
+      toolName: this._toolName ?? UI_FOCUS_TOOL_NAME,
+      description: this.getDescription(),
+      provenance: this.getProvenance(),
+      title: 'Confirm UI Focus',
+      onConfirm: async (outcome) => {
+        await this.publishPolicyUpdate(outcome);
+      },
+      config: this.config,
+    });
+  }
+
+  async execute(_signal: AbortSignal): Promise<ToolResult> {
+    const svc = DesktopAutomationService.getInstance();
+    const result = await svc.focus(this.params);
+    return formatUiResult(result, 'UiFocus');
+  }
+}
+
+export class UiFocusTool extends UiToolBase<UiFocusArgs> {
+  constructor(config: Config, messageBus?: MessageBus) {
+    super(
+      UI_FOCUS_TOOL_NAME,
+      'UI Focus',
+      'Focus an element.',
+      Kind.Execute,
+      {
+        type: 'object',
+        properties: {
+          target: { type: 'string' },
+          verify: { type: 'boolean' },
+        },
+        required: ['target'],
+      },
+      true,
+      false,
+      config,
+      messageBus,
+    );
+  }
+
+  override validateToolParams(params: UiFocusArgs): string | null {
+    const res = UiFocusSchema.safeParse(params);
+    if (!res.success) return res.error.message;
+    return null;
+  }
+
+  protected createInvocation(
+    params: UiFocusArgs,
+    messageBus?: MessageBus,
+    toolName?: string,
+    toolDisplayName?: string,
+  ): ToolInvocation<UiFocusArgs, ToolResult> {
+    return new UiFocusToolInvocation(
+      params,
+      this.config,
+      messageBus,
+      toolName,
+      toolDisplayName,
+    );
+  }
+}

@@ -1,0 +1,272 @@
+[
+  {
+    "id": "AUTO_SCRIPT_501",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Security & Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "coreutils 8.32"
+    },
+    "interaction": {
+      "user_query": "I'm writing a bash script to rotate sensitive application logs. Standard `rm` isn't secure enough for these files. How can I securely delete the old logs within the script before the filesystem reclaims the space?",
+      "ai_response": "Use `shred` before removing the file to overwrite the data.\n\n**Example Script Snippet:**\n```bash\nLOG_FILE=\"/var/log/sensitive_app/old_data.log\"\n\n# -u: remove file after overwriting\n# -z: add a final overwrite with zeros to hide shredding\n# -n 3: overwrite 3 times\nshred -u -z -n 3 \"$LOG_FILE\"\n```\n\n**Note:** This is effective on traditional filesystems (ext4) with data=ordered (default). On COW filesystems (Btrfs, ZFS) or flash storage with wear leveling, `shred` guarantees are weaker, and encryption is the preferred secure deletion method."
+    },
+    "technical_tags": ["bash", "security", "shred", "log-rotation"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "AUTO_SCRIPT_502",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Security & Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "OpenSSH 9.2"
+    },
+    "interaction": {
+      "user_query": "I have a backup script running via cron that needs to scp files to a remote server. I don't want to use a passwordless key without restrictions. How can I restrict the SSH key to only allow the specific backup command?",
+      "ai_response": "You can restrict the SSH key in the `~/.ssh/authorized_keys` file on the remote server using the `command=` option.\n\n**Remote Server Config (`~/.ssh/authorized_keys`):**\n```\ncommand=\"rrsync -ro /backups/\",no-agent-forwarding,no-port-forwarding,no-pty,no-user-rc ssh-ed25519 AAAAC3...\n```\n\n**Explanation:**\n* `command=\"...\"`: Forces this command to run regardless of what the client requests.\n* `no-pty`, `no-port-forwarding`: Reduces attack surface.\n* If using `rsync`, look into the `rrsync` (restricted rsync) script usually found in `/usr/share/doc/rsync/scripts/` to allow restricted file transfers."
+    },
+    "technical_tags": ["ssh", "cron", "security", "rsync"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "AUTO_SCRIPT_503",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Security & Privacy",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "bash 5.2"
+    },
+    "interaction": {
+      "user_query": "My automation script requires an API key. I know hardcoding it is bad. How do I pass this variable securely to a script running via systemd service, ensuring it's not visible in `ps aux`?",
+      "ai_response": "Use the `EnvironmentFile` directive in your systemd unit file and restrict permissions on that file.\n\n**1. Create the secrets file:**\n```bash\n# /etc/my-automation/secrets.env\nAPI_KEY=your_secret_key_here\n```\n**2. Secure the file:**\n```bash\nchmod 600 /etc/my-automation/secrets.env\nchown root:root /etc/my-automation/secrets.env\n```\n\n**3. Update Service Unit:**\n```ini\n[Service]\nEnvironmentFile=/etc/my-automation/secrets.env\nExecStart=/usr/local/bin/my-script.sh\n```\n\n**Access in Script:**\nJust use `$API_KEY`. It will be available in the environment but hidden from casual process listings (though root can still inspect `/proc/PID/environ`)."
+    },
+    "technical_tags": ["systemd", "environment-variables", "security", "bash"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "AUTO_SCRIPT_504",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Security & Privacy",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "GnuPG 2.4"
+    },
+    "interaction": {
+      "user_query": "I'm automating an offsite backup to a cloud bucket using `rclone`. I want to encrypt the tarball *before* rclone touches it, using GPG in batch mode. What's the syntax to avoid the interactive passphrase prompt?",
+      "ai_response": "You can use GPG with a symmetric passphrase passed via a file descriptor or batch mode. \n\n**Script Example:**\n```bash\n#!/bin/bash\nPASSPHRASE=\"your_very_long_random_passphrase\"\nSOURCE_DIR=\"/home/user/documents\"\nBACKUP_FILE=\"/tmp/backup_$(date +%F).tar.gz.gpg\"\n\n# Create tar, pipe to gpg\ntar -czf - \"$SOURCE_DIR\" | gpg --batch --yes --passphrase \"$PASSPHRASE\" --symmetric --cipher-algo AES256 -o \"$BACKUP_FILE\"\n\n# Upload\nrclone copy \"$BACKUP_FILE\" remote:backup_bucket\n```\n**Better Security:**\nStore the passphrase in a separate file (secured with `chmod 600`) and use `--passphrase-file /path/to/secret` instead of a variable."
+    },
+    "technical_tags": ["gpg", "encryption", "backup", "bash"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "AUTO_SCRIPT_505",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Security & Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "cron 3.0"
+    },
+    "interaction": {
+      "user_query": "I suspect someone modified my maintenance script. How can I set up an automated check (maybe a cron job) that alerts me if the checksum of `/usr/local/bin/maintenance.sh` changes?",
+      "ai_response": "You can use `sha256sum` and a stored baseline to check for changes.\n\n**Setup:**\n1. Store the initial hash: `sha256sum /usr/local/bin/maintenance.sh > /root/.script_hash`\n2. Create a check script:\n\n```bash\n#!/bin/bash\nCHECK_FILE=\"/root/.script_hash\"\n\nif ! sha256sum -c \"$CHECK_FILE\" --status; then\n    echo \"ALERT: Maintenance script modified!\" | mail -s \"Security Alert\" user@example.com\nfi\n```\n3. Add to cron to run hourly."
+    },
+    "technical_tags": ["integrity-check", "cron", "security", "bash"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "AUTO_SCRIPT_601",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Multi-device Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "rsync 3.2.7"
+    },
+    "interaction": {
+      "user_query": "I have a laptop and a desktop. I wrote a script to rsync my 'Projects' folder between them, but if I run it when the other machine is offline, it hangs forever. How do I add a timeout or check connectivity first?",
+      "ai_response": "You can use `ping` for a quick check or `ConnectTimeout` in SSH options.\n\n**Bash Script Example:**\n```bash\nREMOTE_HOST=\"192.168.1.50\"\n\n# Method 1: Ping check\nif ! ping -c 1 -W 2 \"$REMOTE_HOST\" &> /dev/null; then\n    echo \"Host unreachable, skipping sync.\"\n    exit 0\nfi\n\n# Method 2: Rsync with SSH timeout (Recommended)\nrsync -avz -e \"ssh -o ConnectTimeout=5\" /home/user/Projects/ user@\"$REMOTE_HOST\":/home/user/Projects/\n```"
+    },
+    "technical_tags": ["rsync", "networking", "bash", "error-handling"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "AUTO_SCRIPT_602",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Multi-device Sync",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Syncthing 1.27"
+    },
+    "interaction": {
+      "user_query": "I use Syncthing across 3 devices. Sometimes conflicts generate `.sync-conflict` files. I want a cron job that finds these conflicts and moves them to a separate 'Conflicts' folder for manual review so they don't clutter my workspace.",
+      "ai_response": "You can use `find` with the specific naming pattern Syncthing uses.\n\n**Cron Script:**\n```bash\n#!/bin/bash\nSYNC_DIR=\"/home/user/Sync\"\nCONFLICT_DIR=\"/home/user/Sync_Conflicts\"\nmkdir -p \"$CONFLICT_DIR\"\n\n# Find files containing '.sync-conflict-'\nfind \"$SYNC_DIR\" -type f -name \"*.sync-conflict-*\" -print0 | while IFS= read -r -d '' file; do\n    mv \"$file\" \"$CONFLICT_DIR/\"\n    echo \"Moved conflict: $file\"\ndone\n```\n**Cron Entry:**\n`0 * * * * /home/user/scripts/move_conflicts.sh`"
+    },
+    "technical_tags": ["syncthing", "bash", "file-management", "cron"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "AUTO_SCRIPT_603",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Multi-device Sync",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "git 2.34"
+    },
+    "interaction": {
+      "user_query": "I manage my dotfiles with git. I want a script that runs on login, pulls the latest changes from GitHub, and if there are changes, runs a specific setup script (`./install.sh`). How do I automate this safely?",
+      "ai_response": "You can use a git hook or a wrapper script in your `.profile` or startup apps.\n\n**Script (~/update_dotfiles.sh):**\n```bash\n#!/bin/bash\ncd ~/.dotfiles || exit\n\n# Fetch remote to check for updates\ngit fetch origin main\n\n# Check if local is behind remote\nLOCAL=$(git rev-parse @)\nREMOTE=$(git rev-parse @{u})\n\nif [ \"$LOCAL\" != \"$REMOTE\" ]; then\n    echo \"Updates found. Pulling...\"\n    git pull origin main\n    if [ -f \"./install.sh\" ]; then\n        ./install.sh\n    fi\nfi\n```"
+    },
+    "technical_tags": ["git", "automation", "dotfiles", "bash"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "AUTO_SCRIPT_701",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "curl 7.88"
+    },
+    "interaction": {
+      "user_query": "I need to monitor a specific internal API endpoint (`https://api.internal/health`). If it doesn't return HTTP 200, I need the script to send a message to a Slack webhook.",
+      "ai_response": "You can combine `curl` for the check and `curl` for the webhook notification.\n\n**Script:**\n```bash\n#!/bin/bash\nURL=\"[https://api.internal/health](https://api.internal/health)\"\nSLACK_WEBHOOK=\"[https://hooks.slack.com/services/XYZ/ABC/123](https://hooks.slack.com/services/XYZ/ABC/123)\"\n\nHTTP_CODE=$(curl -s -o /dev/null -w \"%{http_code}\" \"$URL\")\n\nif [ \"$HTTP_CODE\" -ne 200 ]; then\n    PAYLOAD=\"{\\\"text\\\": \\\"⚠️ API Alert: $URL returned $HTTP_CODE\\\"}\"\n    curl -X POST -H 'Content-type: application/json' --data \"$PAYLOAD\" \"$SLACK_WEBHOOK\"\nfi\n```"
+    },
+    "technical_tags": ["api", "monitoring", "curl", "bash"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "AUTO_SCRIPT_702",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Work Context",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "PostgreSQL 16"
+    },
+    "interaction": {
+      "user_query": "I need a nightly backup script for a Postgres database running in Docker. It needs to keep the last 7 days of backups and delete older ones. How do I script this?",
+      "ai_response": "Combine `docker exec`, `pg_dump`, and `find` for rotation.\n\n**Script (`/usr/local/bin/pg_backup.sh`):**\n```bash\n#!/bin/bash\nBACKUP_DIR=\"/mnt/backups/postgres\"\nCONTAINER_NAME=\"my_postgres\"\nDATE=$(date +%F)\n\n# 1. Create Backup\ndocker exec -t \"$CONTAINER_NAME\" pg_dumpall -c -U postgres | gzip > \"$BACKUP_DIR/dump_$DATE.sql.gz\"\n\n# 2. Verify creation (simple check)\nif [ -s \"$BACKUP_DIR/dump_$DATE.sql.gz\" ]; then\n    echo \"Backup successful\"\nelse\n    echo \"Backup failed\" | mail -s \"Backup Error\" admin@example.com\n    exit 1\nfi\n\n# 3. Cleanup files older than 7 days\nfind \"$BACKUP_DIR\" -name \"dump_*.sql.gz\" -mtime +7 -delete\n```"
+    },
+    "technical_tags": ["docker", "postgres", "backup", "rotation"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "AUTO_SCRIPT_801",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Personal/Home",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "ImageMagick 7.1"
+    },
+    "interaction": {
+      "user_query": "I have a folder where I dump all my wallpapers. I want a script that automatically converts any PNGs to JPGs to save space, but only if they are larger than 5MB.",
+      "ai_response": "Use `find` to select files by size and extension, then execute `mogrify` (from ImageMagick).\n\n**Script:**\n```bash\n#!/bin/bash\nWALLPAPER_DIR=\"/home/user/Pictures/Wallpapers\"\n\nfind \"$WALLPAPER_DIR\" -name \"*.png\" -size +5M -print0 | while IFS= read -r -d '' file; do\n    echo \"Converting $file...\"\n    # Convert to jpg with 90% quality\n    mogrify -format jpg -quality 90 \"$file\"\n    # Remove original if successful\n    if [ -f \"${file%.*}.jpg\" ]; then\n        rm \"$file\"\n    fi\ndone\n```"
+    },
+    "technical_tags": [
+      "imagemagick",
+      "bash",
+      "batch-processing",
+      "file-management"
+    ],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "AUTO_SCRIPT_802",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Personal/Home",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "systemd 249"
+    },
+    "interaction": {
+      "user_query": "I'm running a Minecraft server. I want it to automatically restart if it crashes, but I also want it to gracefully stop (send 'stop' command) when I shut down the Linux server. How do I wrap this in a systemd unit?",
+      "ai_response": "You should use `screen` or `tmux` to keep the console accessible, or run it directly and use `ExecStop` to send the command via RCON or standard input (if supported). Here is a standard approach using `ExecStop` with a wrapper.\n\n**Unit File (`/etc/systemd/system/minecraft.service`):**\n```ini\n[Unit]\nDescription=Minecraft Server\nAfter=network.target\n\n[Service]\nUser=minecraft\nWorkingDirectory=/opt/minecraft\n# Run via java directly\nExecStart=/usr/bin/java -Xmx4G -jar server.jar nogui\n\n# Restart on crash\nRestart=on-failure\nRestartSec=20\n\n# Graceful stop requires handling signals or RCON. \n# For simple java processes, systemd sends SIGTERM. \n# Minecraft catches SIGTERM and saves chunks since 1.13+.\nKillSignal=SIGTERM\nTimeoutStopSec=60\n\n[Install]\nWantedBy=multi-user.target\n```"
+    },
+    "technical_tags": [
+      "systemd",
+      "minecraft",
+      "server-management",
+      "service-wrapper"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "AUTO_SCRIPT_901",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Edge Cases",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "bash 5.2"
+    },
+    "interaction": {
+      "user_query": "I have a script that processes thousands of small text files in a loop. It's eating up 100% CPU and making the system unresponsive. How can I modify the script to throttle itself or run at a lower priority without rewriting the logic?",
+      "ai_response": "You can use `nice` (for CPU priority) and `ionice` (for disk I/O) when launching the script, or add a `sleep` in the loop.\n\n**1. Launching with lower priority:**\n```bash\n# Run with lowest CPU priority (19) and Idle I/O class (3)\nnice -n 19 ionice -c 3 ./my_processing_script.sh\n```\n\n**2. Inside the script (Self-renicing):**\n```bash\n#!/bin/bash\nrenice -n 19 -p $$ >/dev/null\n\nfor file in *.txt; do\n    process_file \"$file\"\n    # Optional: minimal sleep to yield CPU\n    # sleep 0.01\ndone\n```"
+    },
+    "technical_tags": ["performance", "nice", "bash", "resource-management"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "AUTO_SCRIPT_902",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Edge Cases",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "bash 5.1"
+    },
+    "interaction": {
+      "user_query": "I'm iterating over files in a directory using `for f in $(ls *.mp4)`. It breaks whenever a filename has a space in it. What is the robust way to loop over files with spaces or weird characters?",
+      "ai_response": "Never parse the output of `ls`. Use shell globbing directly, which handles spaces safely.\n\n**Correct Way:**\n```bash\n# Shell globbing handles spaces automatically\nfor f in *.mp4; do\n    # Quote the variable!\n    echo \"Processing: $f\"\n    ffmpeg -i \"$f\" ...\ndone\n```\n\n**Explanation:**\n`$(ls)` expands the filenames and splits them by whitespace (default IFS). `*.mp4` expands to a list of arguments where each filename is a distinct argument, preserving spaces."
+    },
+    "technical_tags": [
+      "bash",
+      "scripting-best-practices",
+      "file-handling",
+      "loops"
+    ],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "AUTO_SCRIPT_903",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Edge Cases",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "util-linux 2.39"
+    },
+    "interaction": {
+      "user_query": "I have a cron job that runs every minute. Sometimes the script takes longer than a minute to finish, and multiple instances pile up and corrupt the data. How do I ensure only one instance runs at a time?",
+      "ai_response": "Use `flock` (file lock) to manage a lock file. It prevents a new instance from starting if the previous one is holding the lock.\n\n**In Crontab:**\n```bash\n* * * * * /usr/bin/flock -n /var/lock/myscript.lock /usr/local/bin/myscript.sh\n```\n\n**Explanation:**\n* `-n`: Non-blocking mode. If the lock exists, fail immediately (don't wait/queue).\n* The lock is automatically released when the script finishes or crashes."
+    },
+    "technical_tags": ["cron", "concurrency", "flock", "locking"],
+    "friction_type": "config_issue"
+  }
+]

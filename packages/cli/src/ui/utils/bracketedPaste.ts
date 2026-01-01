@@ -1,0 +1,19 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { writeToStdout } from '@terminai/core';
+
+const ENABLE_BRACKETED_PASTE = '\x1b[?2004h';
+const DISABLE_BRACKETED_PASTE = '\x1b[?2004l';
+
+export const enableBracketedPaste = () => {
+  writeToStdout(ENABLE_BRACKETED_PASTE);
+};
+
+export const disableBracketedPaste = () => {
+  writeToStdout(DISABLE_BRACKETED_PASTE);
+};

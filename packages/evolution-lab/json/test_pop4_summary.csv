@@ -1,0 +1,149 @@
+ID,Bucket,Complexity,Question
+APP_ISSUES_003,Application Issues,Beginner,I'm using VLC installed via Flatpak on Fedora. I can't seem to open video files that are stored on m
+APP_ISSUES_004,Application Issues,Beginner,Why does Firefox take like 10 seconds to open on a cold boot? It's really annoying compared to Windo
+APP_ISSUES_005,Application Issues,Intermediate,I'm trying to install a .deb file I downloaded for a printer driver. `dpkg -i` says 'dependency prob
+APP_ISSUES_007,Application Issues,Beginner,Discord won't open. It just shows a grey box saying 'Update Available' but the deb file on the websi
+APP_ISSUES_008,Application Issues,Beginner,"I can't update anything. The App Center says 'Unable to update snap-store: cannot refresh ""snap-stor"
+APP_ISSUES_010,Application Issues,Intermediate,I tried to run `apt update` but I get an error: 'The following signatures couldn't be verified becau
+APP_ISSUES_011,Application Issues,Intermediate,I can't share my screen on Zoom. The button works but the other person just sees a black screen. I'm
+APP_ISSUES_013,Application Issues,Intermediate,I tried `sudo add-apt-repository ppa:some/ppa` on Debian but it says 'command not found'.
+APP_ISSUES_014,Application Issues,Intermediate,My root partition is full! I checked usage and `/var/lib/snapd` is taking up huge amounts of space. 
+APP_ISSUES_015,Application Issues,Intermediate,I installed Ubuntu but my resolution is stuck at 800x600 and games are slow. I have an RTX 3060.
+APP_ISSUES_018,Application Issues,Intermediate,I tried to `pip install requests` but I get 'EnvironmentError: Externally-managed-environment'. What
+APP_ISSUES_020,Application Issues,Intermediate,Watching YouTube in Chrome uses 80% CPU and makes my laptop hot. It runs fine on Windows.
+APP_ISSUES_101,Application Issues,Beginner,I'm trying to install software but I keep getting 'Could not get lock /var/lib/dpkg/lock-frontend'. 
+APP_ISSUES_204,Application Issues,Beginner,I downloaded a file ending in .AppImage. How do I run it? Double clicking does nothing.
+APP_ISSUES_301,Application Issues,Intermediate,I want to install Spotify. Should I use the Snap version that comes with Ubuntu or set up Flatpak? W
+APP_ISSUES_405,Application Issues,Beginner,My web browser is completely frozen and won't close when I click X. How do I force kill it without r
+APP_ISSUES_407,Application Issues,Intermediate,How do I check if my game is actually using my Nvidia GPU and not the integrated graphics?
+APP_ISSUES_416,Application Issues,Advanced,"I type my password, the screen goes black, and then it brings me right back to the login screen. I c"
+APP_ISSUES_417,Application Issues,Beginner,I plugged in my HDMI monitor but the sound is still coming from my laptop speakers. It doesn't switc
+APP_ISSUES_419,Application Issues,Intermediate,"Every time I switch from Windows to Linux, my clock is wrong by exactly 5 hours."
+APP_ISSUES_501,Application Issues,Intermediate,"I installed Discord from the Software Center (Flatpak), but it can't access my Downloads folder to s"
+APP_ISSUES_506,Application Issues,Beginner,Chromium takes forever to open the first time I click it after turning on my computer. Is it broken?
+APP_ISSUES_508,Application Issues,Intermediate,"Every time I open Chrome, it asks me to 'Enter password to unlock your login keyring'. How do I stop"
+APP_ISSUES_801,Application Issues,Intermediate,"I'm trying to play a Windows game on Steam. It launches, I hear sound, but the screen is just black."
+AUTO_SCRIPT_001,Automation & Scripting,Intermediate,"My backup script works fine when I run it manually, but when cron runs it, it fails with 'command no"
+AUTO_SCRIPT_002,Automation & Scripting,Intermediate,"I'm trying to run a script I just wrote, but I keep getting 'Permission denied', even though I am th"
+AUTO_SCRIPT_101,Automation & Scripting,Intermediate,I am losing my mind. I put a script in `/etc/cron.daily` but it never runs. The permissions are 755.
+COMM_EMAIL_001,Communication & Email,Beginner,Thunderbird won't connect to my Gmail. It keeps saying 'Authentication Failed' but my password is de
+COMM_EMAIL_023,Communication & Email,Intermediate,I can receive emails but I cannot send them. SMTP times out.
+COMM_EMAIL_101,Communication & Email,Intermediate,Why is Linux support for Zoom so bad? I can't share audio when I share my screen!
+COMM_EMAIL_104,Communication & Email,Beginner,"I can't send emails! Receiving works fine, but sending gives an SMTP timeout error."
+COMM_EMAIL_202,Communication & Email,Beginner,How do I sync my Google Calendar with the Ubuntu calendar app without installing anything extra?
+COMM_EMAIL_204,Communication & Email,Intermediate,I want to backup all my Thunderbird emails and settings to a USB drive. Which file do I copy?
+COMM_EMAIL_517,Communication & Email,Beginner,I got an email that says it's from 'Support' but the address looks weird. How do I see the real send
+COMM_EMAIL_524,Communication & Email,Beginner,I keep getting spam. Does Thunderbird have a junk filter I need to turn on?
+COMM_EMAIL_602,Communication & Email,Intermediate,How do I sync my Google Contacts to Thunderbird? I hate having two address books.
+COMM_EMAIL_617,Communication & Email,Beginner,I changed my Gmail password. How do I update it in Thunderbird? It just keeps giving login errors.
+COMM_EMAIL_701,Communication & Email,Intermediate,I can't join my company Teams meeting. It just says 'Browser not supported' when I use Firefox.
+COMM_EMAIL_702,Communication & Email,Intermediate,My boss can't see my screen when I share on Zoom. It's just black. I'm on Fedora.
+COMM_EMAIL_801,Communication & Email,Beginner,I can't install Discord. I downloaded the .deb file but double clicking does nothing.
+COMM_EMAIL_807,Communication & Email,Intermediate,I want to send a large video file (100MB) to my grandma. Thunderbird says it's too big.
+DEV_DEVOPS_001,Development & DevOps,Beginner,"I just installed Docker on Ubuntu 24.04. Every time I run `docker ps`, I get 'permission denied whil"
+DEV_DEVOPS_002,Development & DevOps,Intermediate,"I'm trying to push to a private GitHub repo over HTTPS, but I keep getting `Support for password aut"
+DEV_DEVOPS_004,Development & DevOps,Intermediate,I have an SSH key pair generated. I copied the public key to the server using `ssh-copy-id`. However
+DEV_DEVOPS_005,Development & DevOps,Beginner,I tried to run `pip install requests` but got an 'externally-managed-environment' error. I just want
+DEV_DEVOPS_101,Development & DevOps,Advanced,I'm running `docker compose up -d`. The container starts but exits immediately with code 0. `docker 
+DEV_DEVOPS_103,Development & DevOps,Intermediate,"I keep getting EACCES errors when installing global npm packages. I tried `sudo npm install`, but no"
+DEV_DEVOPS_201,Development & DevOps,Beginner,How do I create a simple Dockerfile for a Python script? I just want to run `main.py` which uses `pa
+DEV_DEVOPS_202,Development & DevOps,Intermediate,How do I set up VS Code to edit files directly on my remote Linux server over SSH without using VNC?
+DEV_DEVOPS_204,Development & DevOps,Beginner,How do I ignore the `node_modules` folder in Git? I already committed it by mistake.
+DEV_DEVOPS_205,Development & DevOps,Intermediate,"I'm setting up a web server. How do I configure UFW to allow SSH, HTTP, and HTTPS but block everythi"
+DEV_DEVOPS_305,Development & DevOps,Intermediate,Should I use `conda` or `venv` + `pip` for general Python development?
+DEV_DEVOPS_401,Development & DevOps,Intermediate,I manage 10 different servers. I'm tired of typing `ssh user@ip -i ~/.ssh/key` every time. How can I
+DEV_DEVOPS_501,Development & DevOps,Intermediate,"I'm trying to SSH into my dev server, but it keeps rejecting my key with 'Permissions 0644 for 'id_r"
+DEV_DEVOPS_510,Development & DevOps,Intermediate,I keep getting `EACCES: permission denied` when installing global npm packages. I don't want to use 
+DEV_DEVOPS_704,Development & DevOps,Intermediate,I'm trying to install a Python package with `pip` but I get 'error: externally-managed-environment'.
+ENT_MEDIA_001,Entertainment & Media,Beginner,"Spotify won't open. I click the icon, it bounces for a second, then nothing happens. No error messag"
+ENT_MEDIA_002,Entertainment & Media,Beginner,I can't play an MP4 file I downloaded. It says 'missing codec H.264'.
+ENT_MEDIA_003,Entertainment & Media,Intermediate,Why is Netflix quality so bad? It looks like 720p even though I pay for 4K.
+ENT_MEDIA_007,Entertainment & Media,Intermediate,YouTube makes my laptop fan spin like crazy. How do I turn on hardware decoding?
+ENT_MEDIA_008,Entertainment & Media,Beginner,Most of my Windows games in Steam are grayed out and I can't install them.
+ENT_MEDIA_011,Entertainment & Media,Intermediate,"My Bluetooth headphones sound like a telephone call, very low quality."
+ENT_MEDIA_012,Entertainment & Media,Beginner,Videos look 'torn' horizontally when there is fast movement on screen.
+ENT_MEDIA_023,Entertainment & Media,Intermediate,Games are stuttering badly. I think they are running on my Intel integrated graphics instead of my N
+ENT_MEDIA_025,Entertainment & Media,Intermediate,The volume is too low even at 100%.
+ENT_MEDIA_046,Entertainment & Media,Advanced,League of Legends won't start after the latest Vanguard update.
+ENT_MEDIA_050,Entertainment & Media,Intermediate,Discord screen share has no audio.
+ENT_MEDIA_089,Entertainment & Media,Intermediate,Twitch keeps buffering but my internet is fast.
+FILE_ORG_001,File Organization,Beginner,My USB drive is read-only. I can't delete or add files. It worked fine on Windows yesterday!
+FILE_ORG_002,File Organization,Beginner,"I copied some photos to my computer, but now I can't find where they went. Is there a default folder"
+FILE_ORG_003,File Organization,Beginner,Why can't I create a new folder inside the 'usr' folder? The option is grayed out.
+FILE_ORG_004,File Organization,Beginner,I know I have a config file named .bashrc but I can't see it in my home folder.
+FILE_ORG_005,File Organization,Beginner,I deleted a huge video file from my USB stick but the free space didn't increase.
+FILE_ORG_006,File Organization,Beginner,How do I make a zip file of my photos to email them?
+FILE_ORG_007,File Organization,Beginner,Does Ubuntu have Google Drive built in? I don't want to install weird apps.
+FILE_ORG_008,File Organization,Beginner,I want to wipe my USB stick so I can use it on my TV. Which format should I choose?
+FILE_ORG_010,File Organization,Beginner,What does 'Unmount' mean? Is it the same as Eject?
+FILE_ORG_101,File Organization,Intermediate,This is driving me crazy! I reinstalled Linux and now I can't open my own documents on my secondary 
+FILE_ORG_201,File Organization,Intermediate,How do I change the owner of a folder and all the files inside it to me?
+FILE_ORG_203,File Organization,Intermediate,How can I share a folder on my network so I can see it on my Windows PC?
+FILE_ORG_204,File Organization,Advanced,How do I make my secondary hard drive mount automatically when I turn on the computer?
+FILE_ORG_205,File Organization,Intermediate,I accidentally formatted my SD card! Can I get the photos back?
+FILE_ORG_310,File Organization,Beginner,"Everyone says use Vim to edit config files, but I can't even exit it. Is Nano okay?"
+FILE_ORG_407,File Organization,Beginner,I hate typing `sudo apt update && sudo apt upgrade` every time. Can I shorten it?
+FILE_ORG_501,File Organization,Intermediate,How can I password protect a specific folder in my Home directory? I share this laptop with my broth
+FILE_ORG_502,File Organization,Beginner,"I copied some files from a USB stick to my desktop, but now they have a lock icon on them and I can'"
+FILE_ORG_507,File Organization,Intermediate,I was messing with permissions to make a script run and did `chmod 777` on my whole home folder. Now
+FILE_ORG_517,File Organization,Intermediate,I have a script `.sh` file. I double click it and it just opens in a text editor. I want it to run!
+FILE_ORG_520,File Organization,Intermediate,I cannot modify `/etc/resolv.conf`. Even `sudo rm` says 'Operation not permitted'. Is my drive corru
+FILE_ORG_523,File Organization,Intermediate,I'm trying to copy a 6GB movie file to my USB stick but it says 'File too large'. The stick has 16GB
+FILE_ORG_602,File Organization,Beginner,I switched from Windows. Where is the Google Drive app? I need to sync my work docs.
+FILE_ORG_611,File Organization,Beginner,I plugged my iPhone into my Linux Mint laptop to copy photos. It asks 'Trust this computer' on the p
+FILE_ORG_613,File Organization,Intermediate,"I shared a folder on Windows 11. I can see it in Ubuntu's Network folder, but when I double click, i"
+FILE_ORG_703,File Organization,Beginner,I saved a spreadsheet as .ods but my boss uses Excel and says the formatting is messy. Should I just
+FILE_ORG_705,File Organization,Intermediate,I have 5 separate PDF contracts I need to combine into one file to email. Do I need to buy software?
+LIFE_MGT_001,Life Management,Beginner,"I connected my Google Account in Settings and my main calendar shows up, but my wife's shared calend"
+LIFE_MGT_101,Life Management,Intermediate,I keep getting a 'Credentials have expired' notification for Google every single day. I re-login and
+LIFE_MGT_401,Life Management,Advanced,I want to automatically backup my Documents to Google Drive every night at 3 AM.
+LIFE_MGT_518,Life Management,Beginner,I am using Firefox to log into my bank. It keeps asking to 'Save Login'. I clicked 'Never' by mistak
+LIFE_MGT_618,Life Management,Beginner,"I'm trying to stream my browser to my friends on Discord, but there is no audio! They see the video "
+LIFE_MGT_705,Life Management,Beginner,"Slack notifications don't make a sound. I see the banner, but I miss messages when I'm not looking. "
+LIFE_MGT_706,Life Management,Intermediate,"I'm using Zoom for work. When I share my screen, my computer slows to a crawl. I have an NVIDIA card"
+LIFE_MGT_720,Life Management,Intermediate,I saved my CV as a .docx file to send to a recruiter. They said the formatting is all over the place
+PROD_DOC_002,Productivity & Documents,Beginner,I opened a Word doc from my boss but the fonts look wrong. It's supposed to be Times New Roman but l
+PROD_DOC_005,Productivity & Documents,Intermediate,"When I save as .docx and send it to Windows users, the formatting of my images gets messed up. Shoul"
+PROD_DOC_007,Productivity & Documents,Beginner,My spell check isn't working in Calc. It marks everything as wrong or does nothing.
+PROD_DOC_009,Productivity & Documents,Beginner,LibreOffice is super slow to start up. It takes like 15 seconds to open a blank page.
+PROD_DOC_011,Productivity & Documents,Beginner,I'm trying to print a shipping label to my Brother printer but it prints mostly blank pages or gibbe
+PROD_DOC_101,Productivity & Documents,Beginner,Why does LibreOffice look so ugly and old? It doesn't match my dark theme at all.
+PROD_DOC_102,Productivity & Documents,Intermediate,I am so done with this. My printer works fine on Windows but on Linux it says 'Processing - Not Conn
+PROD_DOC_106,Productivity & Documents,Intermediate,Why does my Resume look perfect in Writer but when I export to PDF the margins are slightly cut off?
+PROD_DOC_301,Productivity & Documents,Beginner,I'm moving from Windows. Is LibreOffice really the best option or is there something closer to MS Of
+PROD_DOC_619,Productivity & Documents,Beginner,"I saved a document to a USB stick, pulled it out, and now the file is empty (0 bytes). Why?"
+SYS_TROUBLE_004,System Troubleshooting,Advanced,NVIDIA driver isn't loading after kernel upgrade. `nvidia-smi` returns 'NVIDIA-SMI has failed becaus
+SYS_TROUBLE_105,System Troubleshooting,Intermediate,"I can't unmount my external drive. `umount` says 'target is busy', but `lsof` returns absolutely not"
+SYS_TROUBLE_303,System Troubleshooting,Intermediate,"I have an NVIDIA 3060. Should I finally switch to Wayland on Fedora 40, or stay on X11 for gaming st"
+SYS_TROUBLE_305,System Troubleshooting,Intermediate,My Snap Firefox startup time is slow. Should I replace it with the Flatpak version or the official t
+WEB_RES_001,Web & Research,Intermediate,Why is my CPU at 100% when watching YouTube? My laptop gets super hot and the fans are loud.
+WEB_RES_002,Web & Research,Beginner,"How do I install Google Chrome on Ubuntu? I can't find it in the Software Center, only Chromium."
+WEB_RES_006,Web & Research,Beginner,How do I stop websites from tracking me on Firefox without breaking everything?
+WEB_RES_007,Web & Research,Intermediate,Firefox Snap is too slow to open. How do I switch to the .deb version?
+WEB_RES_014,Web & Research,Beginner,How do I change the default search engine from Google to DuckDuckGo in Firefox?
+WEB_RES_017,Web & Research,Beginner,I accidentally closed a tab. What is the shortcut to reopen it?
+WEB_RES_020,Web & Research,Intermediate,Firefox uses too much RAM. Is there a way to limit it?
+WEB_RES_025,Web & Research,Beginner,Chrome tries to download PDF files instead of opening them.
+WEB_RES_043,Web & Research,Beginner,I want to install Chromium without Snap. Snap is too slow.
+WEB_RES_044,Web & Research,Beginner,I keep getting spam notifications from a news site. How do I stop them?
+WEB_RES_061,Web & Research,Beginner,How do I clear browser history with a shortcut?
+WEB_RES_075,Web & Research,Beginner,How do I quickly zoom in and out on a webpage?
+WEB_RES_079,Web & Research,Beginner,I pressed F12 and a weird code window opened. How do I close it?
+WEB_RES_080,Web & Research,Intermediate,UBlock Origin isn't blocking YouTube ads anymore.
+WEB_RES_088,Web & Research,Beginner,I visited a site yesterday but can't remember the name. How do I find it?
+WEB_RES_089,Web & Research,Beginner,Shortcut to activate the search bar in the page (Find in page)?
+WEB_RES_092,Web & Research,Beginner,How do I see the saved password for a site in Firefox?
+WEB_RES_095,Web & Research,Beginner,How do I refresh a page that is stuck?
+WEB_RES_098,Web & Research,Beginner,I closed the window with all my tabs. Can I get them back?
+WEB_RES_501,Web & Research,Beginner,I keep seeing ads on YouTube and random sites. What is the best way to block them on Firefox?
+WEB_RES_503,Web & Research,Beginner,Chrome saves my history and I don't want that. How do I make it delete everything when I close it?
+WEB_RES_511,Web & Research,Beginner,Websites keep asking to send me notifications. How do I block these requests permanently?
+WEB_RES_519,Web & Research,Beginner,How do I clear my cache in Firefox? Some pages are loading old versions.
+WEB_RES_531,Web & Research,Beginner,I'm switching from Chrome to Firefox. How do I bring my bookmarks over?
+WEB_RES_534,Web & Research,Beginner,How do I create a backup of my bookmarks to a file? I'm reformatting my PC.
+WEB_RES_543,Web & Research,Beginner,How do I print to PDF from Chrome? I need to save receipts.
+WEB_RES_548,Web & Research,Beginner,How do I make Firefox dark mode? It's blinding me at night.
+WEB_RES_553,Web & Research,Beginner,I want to shop on a foreign site. How do I translate the page?
+WEB_RES_572,Web & Research,Beginner,How do I make the text bigger on all websites? My eyes aren't what they used to be.
+WEB_RES_577,Web & Research,Beginner,How do I set Google as my default search engine? It changed to Yahoo.
+WEB_RES_592,Web & Research,Beginner,I accidentally closed a tab I needed for work! How do I get it back?

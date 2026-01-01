@@ -1,0 +1,871 @@
+[
+  {
+    "id": "FILE_ORG_001",
+    "bucket": "File Organization",
+    "sub_category": "External Drives",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Nautilus 46"
+    },
+    "interaction": {
+      "user_query": "My USB drive is read-only. I can't delete or add files. It worked fine on Windows yesterday!",
+      "ai_response": "The drive wasn't unmounted cleanly from Windows, so Linux mounted it read-only to prevent data corruption.\n\n**Fix:**\n1. Open a terminal.\n2. Run `lsblk` to find your drive (e.g., `/dev/sdb1`).\n3. Run: `sudo ntfsfix /dev/sdb1` (replace `sdb1` with your actual drive identifier).\n4. Unplug and replug the drive.\n\nIt should now be writable. Always use \"Safely Remove\" in Windows."
+    },
+    "technical_tags": ["ntfs", "read-only", "ntfsfix", "external-drive"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_002",
+    "bucket": "File Organization",
+    "sub_category": "General Management",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Nemo 6.0"
+    },
+    "interaction": {
+      "user_query": "I copied some photos to my computer, but now I can't find where they went. Is there a default folder?",
+      "ai_response": "If you used a standard import tool or drag-and-drop without selecting a specific destination, check these locations:\n\n* **Pictures** folder in your Home directory.\n* **Downloads** folder (if you downloaded them).\n* **Recent** tab in the file manager sidebar.\n\nYou can also search for them by pressing `Ctrl + F` in your Home folder and typing `.jpg`."
+    },
+    "technical_tags": ["file-search", "directory-structure", "beginner"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_003",
+    "bucket": "File Organization",
+    "sub_category": "Permissions",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Nautilus"
+    },
+    "interaction": {
+      "user_query": "Why can't I create a new folder inside the 'usr' folder? The option is grayed out.",
+      "ai_response": "System folders like `/usr` are owned by the `root` user to prevent accidental damage to the operating system. You should only store personal files in your `/home/username` directory.\n\nIf you really need to modify system files, use the terminal with `sudo` or open the file manager as an administrator (not recommended for daily tasks)."
+    },
+    "technical_tags": ["permissions", "root", "file-system-hierarchy"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_004",
+    "bucket": "File Organization",
+    "sub_category": "Visibility",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Nautilus"
+    },
+    "interaction": {
+      "user_query": "I know I have a config file named .bashrc but I can't see it in my home folder.",
+      "ai_response": "Files starting with a dot (`.`) are hidden by default in Linux.\n\n**To see them:**\n* Press `Ctrl + H` in your file manager.\n* Or click the menu (three lines) and check **Show Hidden Files**.\n\nPress `Ctrl + H` again to hide them."
+    },
+    "technical_tags": ["hidden-files", "dotfiles", "nautilus-shortcuts"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_005",
+    "bucket": "File Organization",
+    "sub_category": "Disk Space",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Thunar"
+    },
+    "interaction": {
+      "user_query": "I deleted a huge video file from my USB stick but the free space didn't increase.",
+      "ai_response": "When you delete files on a USB drive in Linux, they are often moved to a hidden Trash folder (`.Trash-1000`) on that drive rather than being immediately erased.\n\n**Fix:**\n1. Open the USB drive.\n2. Empty your **Trash** (right-click the Trash icon in the dock or sidebar and select \"Empty Trash\").\n3. Alternatively, use `Shift + Delete` next time to bypass the trash and permanently delete."
+    },
+    "technical_tags": ["trash", "disk-space", "usb-drive"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_006",
+    "bucket": "File Organization",
+    "sub_category": "Archives",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Nautilus"
+    },
+    "interaction": {
+      "user_query": "How do I make a zip file of my photos to email them?",
+      "ai_response": "1. Select the photos you want to zip.\n2. Right-click the selection.\n3. Choose **Compress...** (or **Compress to...**).\n4. Select **.zip** as the format.\n5. Name it and click **Create**."
+    },
+    "technical_tags": ["compression", "zip", "archive"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_007",
+    "bucket": "File Organization",
+    "sub_category": "Cloud Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Settings"
+    },
+    "interaction": {
+      "user_query": "Does Ubuntu have Google Drive built in? I don't want to install weird apps.",
+      "ai_response": "Yes, it is integrated into the Online Accounts feature.\n\n**Setup:**\n1. Go to **Settings** > **Online Accounts**.\n2. Select **Google** and log in.\n3. Ensure \"Files\" is toggled ON.\n\nYour Google Drive will appear as a network drive in the Files app sidebar."
+    },
+    "technical_tags": [
+      "google-drive",
+      "gnome-online-accounts",
+      "cloud-storage"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_008",
+    "bucket": "File Organization",
+    "sub_category": "Formatting",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Disks"
+    },
+    "interaction": {
+      "user_query": "I want to wipe my USB stick so I can use it on my TV. Which format should I choose?",
+      "ai_response": "Most TVs and older devices recognize **FAT32** or **exFAT** best.\n\n* **FAT32:** Most compatible, but cannot hold individual files larger than 4GB.\n* **exFAT:** Compatible with Windows/Mac/Linux and handles large files (movies).\n\n**Recommendation:** Use **exFAT** if you plan to store HD movies."
+    },
+    "technical_tags": ["formatting", "filesystems", "exfat", "fat32"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_009",
+    "bucket": "File Organization",
+    "sub_category": "File Management",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "KDE Plasma (Fedora)",
+      "app_version": "Dolphin"
+    },
+    "interaction": {
+      "user_query": "Dolphin asks me every time if I want to Copy, Move, or Link when I drag a file. Can I just make it move by default?",
+      "ai_response": "This is standard behavior in Dolphin, but you can change it.\n\n1. Go to the 'Hamburger' menu (three lines) > **Configure Dolphin** > **General**.\n2. Uncheck **Show selection marker** (older versions) or look for **Confirmations**.\n\n*Shortcut:* Hold `Shift` while dragging to **Move**, or `Ctrl` to **Copy** without the popup."
+    },
+    "technical_tags": ["dolphin", "drag-and-drop", "shortcuts"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_010",
+    "bucket": "File Organization",
+    "sub_category": "External Drives",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Nautilus"
+    },
+    "interaction": {
+      "user_query": "What does 'Unmount' mean? Is it the same as Eject?",
+      "ai_response": "Practically, yes. **Unmount** stops the system from accessing the file system so data isn't corrupted, but keeps the device powered. **Eject** unmounts it and also often cuts power or prepares the physical mechanism (like a CD tray).\n\nFor USB drives, hitting the Eject symbol ensures the drive is cleanly unmounted and safe to pull out."
+    },
+    "technical_tags": ["mounting", "eject", "terminology"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_101",
+    "bucket": "File Organization",
+    "sub_category": "Permissions",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Nautilus"
+    },
+    "interaction": {
+      "user_query": "This is driving me crazy! I reinstalled Linux and now I can't open my own documents on my secondary drive. It says \"Permission Denied\".",
+      "ai_response": "Your User ID (UID) likely changed during the reinstall, so the files are owned by the \"old\" you.\n\n**Fix:**\nTake ownership of the drive content recursively:\n```bash\nsudo chown -R $USER:$USER /media/username/drive_name\n```\nReplace `/media/username/drive_name` with the actual path to your drive."
+    },
+    "technical_tags": ["chown", "permissions", "uid", "migration"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_102",
+    "bucket": "File Organization",
+    "sub_category": "External Drives",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Bash"
+    },
+    "interaction": {
+      "user_query": "I can't run my game script from my USB drive. It keeps saying 'Permission denied' even after `chmod +x`.",
+      "ai_response": "The USB drive is likely formatted as NTFS or exFAT and mounted with the `noexec` flag, which prevents any scripts from running for security.\n\n**Fix:**\nYou need to remount it with `exec` permissions. If using the terminal:\n```bash\nsudo mount -o remount,exec /path/to/mountpoint\n```\nNote: FAT/NTFS filesystems don't support true Linux permissions, so `chmod` has no effect on them."
+    },
+    "technical_tags": ["noexec", "mount-options", "chmod", "ntfs"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_103",
+    "bucket": "File Organization",
+    "sub_category": "File Operations",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Nautilus"
+    },
+    "interaction": {
+      "user_query": "I tried to copy a folder and got 'Error splicing file: Input/output error'. Now the file is corrupt. What is splicing?!",
+      "ai_response": "This usually indicates a **hardware failure** on the source or destination drive, or a bad connection.\n\n1. Check your cables/USB ports.\n2. Check `dmesg` in the terminal (type `dmesg | tail`) immediately after the error to see if there are I/O errors reported by the kernel.\n3. Stop using the drive immediately if you see sector errors."
+    },
+    "technical_tags": [
+      "input-output-error",
+      "hardware-failure",
+      "dmesg",
+      "splicing"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_104",
+    "bucket": "File Organization",
+    "sub_category": "Naming",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Nautilus"
+    },
+    "interaction": {
+      "user_query": "Why can't I name my file 'Report: Final.pdf'? It works on Mac!",
+      "ai_response": "In Linux (and Unix-like systems), the colon `:` is a valid character for filenames, **but** many specific applications and file systems (like NTFS/FAT32 shared with Windows) forbid it.\n\nAdditionally, the colon is often used as a separator in system paths (like `$PATH`). It is best practice to avoid `/`, `:`, and `\\` in filenames. Use hyphens `-` or underscores `_` instead."
+    },
+    "technical_tags": ["filenames", "special-characters", "compatibility"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_105",
+    "bucket": "File Organization",
+    "sub_category": "Disk Space",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Nemo"
+    },
+    "interaction": {
+      "user_query": "My 1TB drive only shows 916GB available. Where did the rest go?",
+      "ai_response": "This is due to the difference between how manufacturers market storage (Decimal, 1TB = 1000GB) and how computers calculate it (Binary, 1 TiB = 1024 GiB).\n\nAdditionally, the **ext4** filesystem reserves 5% of space for the root user to prevent system lockups if the disk fills up. You can reduce this reserved space to 0% for data-only drives:\n```bash\nsudo tune2fs -m 0 /dev/sdX1\n```"
+    },
+    "technical_tags": ["reserved-blocks", "tune2fs", "disk-usage", "ext4"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_106",
+    "bucket": "File Organization",
+    "sub_category": "Symlinks",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "CLI"
+    },
+    "interaction": {
+      "user_query": "I deleted a folder that was a symlink, and now the original data is gone too! I thought links were just shortcuts?",
+      "ai_response": "If you deleted the **link itself** (e.g., `rm linkname`), the data should be safe. However, if you used a command that followed the link or if you entered the directory and deleted the contents, the original data is gone.\n\nAlso, check if it was a **Hard Link** rather than a Symlink. Hard links point directly to the data inode. If you delete all hard links, the data is deleted."
+    },
+    "technical_tags": ["symlink", "hardlink", "rm", "data-loss"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_107",
+    "bucket": "File Organization",
+    "sub_category": "Root Access",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Nautilus"
+    },
+    "interaction": {
+      "user_query": "How do I open a folder as Root in Nautilus? The right-click option is missing.",
+      "ai_response": "Recent versions of Nautilus removed the direct \"Open as Administrator\" context menu by default or rely on the `nautilus-admin` extension.\n\n**Fix:**\n1. Install the extension: `sudo apt install nautilus-admin`\n2. Restart Nautilus: `nautilus -q`\n\nNow you should see \"Open as Administrator\" when you right-click a folder."
+    },
+    "technical_tags": ["nautilus-admin", "root-access", "sudo"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_108",
+    "bucket": "File Organization",
+    "sub_category": "File Integrity",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "CLI"
+    },
+    "interaction": {
+      "user_query": "I have two folders of photos that look identical. How can I be 100% sure they are the same before deleting one?",
+      "ai_response": "Don't rely on visual inspection. Use `diff` to compare the directory contents recursively:\n\n```bash\ndiff -r /path/to/folder1 /path/to/folder2\n```\n\nIf it returns nothing, they are identical. If you want to compare based on file checksums (slower but safer), use a tool like `fdupes` or `czkawka`."
+    },
+    "technical_tags": ["diff", "file-comparison", "data-integrity"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_109",
+    "bucket": "File Organization",
+    "sub_category": "Snap/Flatpak",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "GIMP (Snap)"
+    },
+    "interaction": {
+      "user_query": "I installed GIMP from the App Store, but it can't see the files on my external hard drive.",
+      "ai_response": "This is a permission issue with Snap packages. By default, they are sandboxed and can't read external media.\n\n**Fix:**\n1. Open **Ubuntu Software** (or App Center).\n2. Find GIMP.\n3. Click **Permissions**.\n4. Enable **Read/write files on removable storage devices**.\n\nAlternatively via terminal: `sudo snap connect gimp:removable-media`."
+    },
+    "technical_tags": ["snap", "sandbox", "permissions", "removable-media"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_110",
+    "bucket": "File Organization",
+    "sub_category": "Mounting",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Thunar"
+    },
+    "interaction": {
+      "user_query": "Thunar says 'Not authorized to perform operation' when I try to mount my internal HDD.",
+      "ai_response": "This is a Polkit permission issue. The system sees the internal drive as a system device, not a user device (like a USB stick).\n\n**Quick Fix (Terminal):**\nUse `udisksctl`: `udisksctl mount -b /dev/sdX1`\n\n**Permanent Fix:**\nAdd the drive to your `/etc/fstab` file so it mounts automatically at boot with correct user permissions."
+    },
+    "technical_tags": ["polkit", "udisksctl", "internal-drive", "permissions"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_201",
+    "bucket": "File Organization",
+    "sub_category": "Permissions",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "CLI"
+    },
+    "interaction": {
+      "user_query": "How do I change the owner of a folder and all the files inside it to me?",
+      "ai_response": "You need the `chown` command with the recursive flag (`-R`).\n\n1. Open a terminal.\n2. Run this command:\n```bash\nsudo chown -R $USER:$USER /path/to/folder\n```\n`$USER` automatically fills in your current username. This sets both the user and the group to you."
+    },
+    "technical_tags": ["chown", "recursive", "ownership", "cli"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_202",
+    "bucket": "File Organization",
+    "sub_category": "Backups",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Timeshift"
+    },
+    "interaction": {
+      "user_query": "I want to set up Timeshift. Should I select RSYNC or BTRFS?",
+      "ai_response": "* **Select RSYNC** if you formatted your disk as ext4 (standard for most installs). It works by copying files.\n* **Select BTRFS** ONLY if you installed Linux on a Btrfs partition. It uses instant snapshots.\n\nFor most default Linux Mint installations, **RSYNC** is the correct choice. Save the snapshots to an external drive if possible!"
+    },
+    "technical_tags": ["timeshift", "rsync", "btrfs", "snapshot"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_203",
+    "bucket": "File Organization",
+    "sub_category": "Network Sharing",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Nautilus"
+    },
+    "interaction": {
+      "user_query": "How can I share a folder on my network so I can see it on my Windows PC?",
+      "ai_response": "Ubuntu uses Samba for this.\n\n1. Right-click the folder > **Properties** > **Local Network Share**.\n2. Check **Share this folder**.\n3. If prompted, click **Install service** to install Samba.\n4. Check **Allow others to create and delete files** if you want write access.\n5. Click **Create Share**.\n6. On Windows, type `\\\\<IP-Address-of-Linux-PC>` in File Explorer."
+    },
+    "technical_tags": ["samba", "network-share", "interoperability"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_204",
+    "bucket": "File Organization",
+    "sub_category": "Mounting",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "fstab"
+    },
+    "interaction": {
+      "user_query": "How do I make my secondary hard drive mount automatically when I turn on the computer?",
+      "ai_response": "You need to edit `/etc/fstab`.\n\n1. Find the UUID of your drive: `sudo blkid`\n2. Create a mount point: `sudo mkdir /media/data`\n3. Edit fstab: `sudo nano /etc/fstab`\n4. Add a line at the end:\n```\nUUID=your-uuid-here  /media/data  ext4  defaults  0  2\n```\n(Replace `ext4` with `ntfs` if it's a Windows drive).\n5. Test it: `sudo mount -a` (If no errors, you are good)."
+    },
+    "technical_tags": ["fstab", "automount", "uuid", "boot"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_205",
+    "bucket": "File Organization",
+    "sub_category": "Recovery",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "TestDisk"
+    },
+    "interaction": {
+      "user_query": "I accidentally formatted my SD card! Can I get the photos back?",
+      "ai_response": "Stop writing to the card immediately. You can use **PhotoRec** (part of the TestDisk package).\n\n1. Install: `sudo dnf install testdisk`\n2. Run: `sudo photorec`\n3. Select your SD card.\n4. Select the partition (usually FAT32).\n5. Choose a destination folder on your PC to save recovered files.\n\nNote: Filenames will be lost (e.g., `f1234.jpg`), but the images should be recoverable."
+    },
+    "technical_tags": ["photorec", "data-recovery", "undelete"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_206",
+    "bucket": "File Organization",
+    "sub_category": "Symlinks",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "CLI"
+    },
+    "interaction": {
+      "user_query": "How do I create a shortcut to a folder in the terminal? Like a symlink?",
+      "ai_response": "Use the `ln -s` command.\n\nSyntax: `ln -s /path/to/original /path/to/link`\n\n**Example:** To link your Documents folder to your Desktop:\n```bash\nln -s /home/user/Documents /home/user/Desktop/DocsLink\n```"
+    },
+    "technical_tags": ["ln", "symlink", "shortcut"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_207",
+    "bucket": "File Organization",
+    "sub_category": "Cloud Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Rclone"
+    },
+    "interaction": {
+      "user_query": "I want to mount my OneDrive as a folder. Is rclone good for this?",
+      "ai_response": "Yes, **rclone** is excellent for this.\n\n1. Install rclone.\n2. Run `rclone config` and follow the prompts to add OneDrive.\n3. Create a directory: `mkdir ~/OneDrive`\n4. Mount it: `rclone mount remote_name: ~/OneDrive --vfs-cache-mode full`\n\nThe `--vfs-cache-mode full` is crucial for making it behave like a real local drive."
+    },
+    "technical_tags": ["rclone", "onedrive", "cloud-mount", "vfs-cache"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_208",
+    "bucket": "File Organization",
+    "sub_category": "Searching",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "find"
+    },
+    "interaction": {
+      "user_query": "How do I find all files larger than 1GB in my home folder using the terminal?",
+      "ai_response": "Use the `find` command:\n\n```bash\nfind ~ -type f -size +1G\n```\n\n* `~`: Search in home directory.\n* `-type f`: Look for files (not folders).\n* `-size +1G`: Look for files larger than 1 Gigabyte."
+    },
+    "technical_tags": ["find", "disk-usage", "cli"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_209",
+    "bucket": "File Organization",
+    "sub_category": "Encryption",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Gnome Disks"
+    },
+    "interaction": {
+      "user_query": "How do I password protect my USB drive?",
+      "ai_response": "You can use LUKS encryption (Note: This makes the drive unreadable on Windows without special software).\n\n1. Open **Disks** utility.\n2. Select the USB drive partition.\n3. Click the gears icon > **Format Partition**.\n4. Choose **Internal Disk for use with Linux systems (LUKS + Ext4)**.\n5. Set a password.\n\nNow, when you plug it in, it will ask for the password to unlock."
+    },
+    "technical_tags": ["encryption", "luks", "security", "gnome-disks"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_210",
+    "bucket": "File Organization",
+    "sub_category": "Duplicates",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Czkawka"
+    },
+    "interaction": {
+      "user_query": "What's the best GUI tool to find duplicate photos? Fdupes is too hard to read.",
+      "ai_response": "Try **Czkawka** (pronounced 'ch-kav-ka'). It's a fast, modern GUI tool.\n\n1. Download the AppImage or install via Flatpak (`flatpak install flathub com.github.qarmin.czkawka`).\n2. Open it, add your Pictures folder.\n3. Click **Search**.\n4. It shows duplicates side-by-side so you can select which ones to delete."
+    },
+    "technical_tags": ["duplicates", "czkawka", "cleaning", "gui"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_301",
+    "bucket": "File Organization",
+    "sub_category": "Filesystems",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "System"
+    },
+    "interaction": {
+      "user_query": "Should I use Btrfs or Ext4 for my new 2TB SSD? I keep hearing about Btrfs.",
+      "ai_response": "**Ext4** is the \"safe/stable\" choice. It's robust, requires zero maintenance, and just works.\n\n**Btrfs** is modern. Choose it if you want:\n* Snapshots (instant system rollbacks).\n* Built-in RAID features.\n* Compression (saves disk space automatically).\n\nIf you are a beginner, Ext4 is simpler. If you use Fedora (which defaults to Btrfs), stick with Btrfs to get the snapshot features."
+    },
+    "technical_tags": ["btrfs", "ext4", "comparison", "filesystem"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_302",
+    "bucket": "File Organization",
+    "sub_category": "Backups",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Backup"
+    },
+    "interaction": {
+      "user_query": "What is the difference between Timeshift and Deja Dup (Backups)? Do I need both?",
+      "ai_response": "Yes, ideally you use both because they do different things.\n\n* **Timeshift:** Backs up the **SYSTEM** (OS files, updates, configs). Use this to fix your PC if an update breaks it.\n* **Deja Dup (Backups):** Backs up your **PERSONAL DATA** (Documents, Photos). It supports encryption and cloud storage.\n\nTimeshift saves your *computer*. Deja Dup saves your *work*."
+    },
+    "technical_tags": [
+      "timeshift",
+      "deja-dup",
+      "backup-strategy",
+      "comparison"
+    ],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_303",
+    "bucket": "File Organization",
+    "sub_category": "Cloud Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Cloud"
+    },
+    "interaction": {
+      "user_query": "Nextcloud vs Dropbox? I want to move away from Big Tech but I'm not a server admin.",
+      "ai_response": "* **Dropbox:** Easiest setup. Just install the .deb file and it works. Good integration, but not private.\n* **Nextcloud:** Requires a server (self-hosted) OR you can sign up for a \"Managed Nextcloud\" provider (like Hetzner or generic providers).\n\nIf you don't want to manage a server, look for a **Managed Nextcloud provider**. You get the privacy benefits without the technical headache."
+    },
+    "technical_tags": ["nextcloud", "dropbox", "privacy", "comparison"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_304",
+    "bucket": "File Organization",
+    "sub_category": "File Managers",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Nautilus vs Nemo"
+    },
+    "interaction": {
+      "user_query": "Nautilus feels too simple. Is Nemo better?",
+      "ai_response": "Many power users prefer **Nemo** (from Linux Mint) over Nautilus (default Ubuntu).\n\n**Nemo Advantages:**\n* Dual-pane view (F3) for easy copying.\n* Type-ahead search (start typing to jump to file).\n* Better status bar info (free space, file count).\n\nYou can install Nemo on Ubuntu (`sudo apt install nemo`) and try it out without removing Nautilus."
+    },
+    "technical_tags": ["nemo", "nautilus", "comparison", "file-manager"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_305",
+    "bucket": "File Organization",
+    "sub_category": "File Copying",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "rsync"
+    },
+    "interaction": {
+      "user_query": "Is `rsync` safer than `cp` for moving large folders?",
+      "ai_response": "Yes, absolutely.\n\n* **Resume capability:** If `cp` crashes halfway, you start over. `rsync` can pick up where it left off.\n* **Progress bar:** `rsync --progress` shows you what is happening.\n* **Verification:** `rsync` checks file integrity better.\n\nFor large transfers, always use: `rsync -av --progress source/ destination/`"
+    },
+    "technical_tags": ["rsync", "cp", "cli", "file-transfer"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_306",
+    "bucket": "File Organization",
+    "sub_category": "Search Tools",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "fzf"
+    },
+    "interaction": {
+      "user_query": "Should I use `locate` or `find`? `find` seems so slow.",
+      "ai_response": "* **`locate`:** Uses a pre-built database. It is instant but might not show files created 5 minutes ago (until `updatedb` runs).\n* **`find`:** Crawls the disk live. It is slower but 100% accurate and supports complex filters (permissions, size, date).\n\nFor everyday \"where is that file\" queries, use `locate`. For scripting or precise operations, use `find`."
+    },
+    "technical_tags": ["find", "locate", "cli", "search"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_307",
+    "bucket": "File Organization",
+    "sub_category": "Deduplication",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "rmlint"
+    },
+    "interaction": {
+      "user_query": "Fdupes vs rmlint? I have 500GB of messy backups.",
+      "ai_response": "**rmlint** is generally faster and smarter than fdupes for large datasets.\n\n* **rmlint** can find duplicates, empty directories, and broken symlinks. It generates a shell script to delete them (safety buffer) rather than deleting immediately.\n* It utilizes multi-threading, making it much quicker on modern SSDs."
+    },
+    "technical_tags": ["rmlint", "fdupes", "deduplication", "cleanup"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_308",
+    "bucket": "File Organization",
+    "sub_category": "Archives",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Archive Manager"
+    },
+    "interaction": {
+      "user_query": "Tar.gz vs Zip? Which one should I use for sending files to a Windows user?",
+      "ai_response": "Use **.zip**.\n\n* **.tar.gz** is standard for Linux. It preserves Linux file permissions (ownership, execute bits), but Windows users need 7-Zip to open it easily.\n* **.zip** is universal. Windows opens it natively. However, it might lose some specific Linux permissions.\n\nFor cross-platform sharing, Zip is king."
+    },
+    "technical_tags": ["compression", "zip", "tar", "compatibility"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_309",
+    "bucket": "File Organization",
+    "sub_category": "Disk format",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Disks"
+    },
+    "interaction": {
+      "user_query": "MBR vs GPT for my new 4TB external drive?",
+      "ai_response": "You must use **GPT** (GUID Partition Table).\n\n* **MBR** (Master Boot Record) is the old standard and has a limit of 2TB. It cannot utilize the full space of a 4TB drive.\n* **GPT** supports drives much larger than 4TB and is more robust against corruption."
+    },
+    "technical_tags": ["partition-table", "mbr", "gpt", "large-drives"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_310",
+    "bucket": "File Organization",
+    "sub_category": "Text Editors",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Nano"
+    },
+    "interaction": {
+      "user_query": "Everyone says use Vim to edit config files, but I can't even exit it. Is Nano okay?",
+      "ai_response": "Yes, **Nano** is perfectly fine and much more beginner-friendly. It lists the shortcuts at the bottom of the screen (e.g., `^O` to save, `^X` to exit).\n\nThere is no shame in using Nano. `micro` is another modern terminal editor that supports standard mouse usage and Ctrl+C/Ctrl+V shortcuts."
+    },
+    "technical_tags": ["nano", "vim", "text-editing", "config"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_401",
+    "bucket": "File Organization",
+    "sub_category": "Automation",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Cron"
+    },
+    "interaction": {
+      "user_query": "How can I automatically delete files in my 'Downloads' folder that are older than 30 days?",
+      "ai_response": "You can use a `cron` job with the `find` command.\n\n1. Open crontab: `crontab -e`\n2. Add this line to run daily:\n```bash\n0 10 * * * find /home/username/Downloads -type f -mtime +30 -delete\n```\nThis checks every day at 10 AM and deletes files modified more than 30 days ago."
+    },
+    "technical_tags": ["cron", "automation", "find", "cleanup"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_402",
+    "bucket": "File Organization",
+    "sub_category": "Batch Processing",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Rename"
+    },
+    "interaction": {
+      "user_query": "I have 100 photos named IMG_001.jpg, IMG_002.jpg... I want to change 'IMG' to 'Vacation'. Do I have to do it one by one?",
+      "ai_response": "No, use the `rename` command (Perl version).\n\n```bash\nrename 's/IMG/Vacation/' *.jpg\n```\n\nIf you prefer a GUI, install **GPRename** or use the **Bulk Rename** tool built into Thunar or Dolphin file managers."
+    },
+    "technical_tags": ["batch-rename", "regex", "automation", "cli"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_403",
+    "bucket": "File Organization",
+    "sub_category": "Sorting",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Bash Script"
+    },
+    "interaction": {
+      "user_query": "Can I make a script to move all my .mp3 files to Music and .jpg to Pictures automatically?",
+      "ai_response": "Yes. Create a simple bash script:\n\n```bash\n#!/bin/bash\nmv ~/Downloads/*.mp3 ~/Music/ 2>/dev/null\nmv ~/Downloads/*.jpg ~/Pictures/ 2>/dev/null\n```\nSave it as `organize.sh`, make it executable (`chmod +x`), and run it whenever your Downloads folder gets messy."
+    },
+    "technical_tags": ["bash-scripting", "file-sorting", "mv", "automation"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_404",
+    "bucket": "File Organization",
+    "sub_category": "Mounting",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Udev"
+    },
+    "interaction": {
+      "user_query": "I want my backup script to run instantly as soon as I plug in my specific USB drive.",
+      "ai_response": "You can use a **udev rule**.\n\n1. Create a file `/etc/udev/rules.d/99-backup.rules`.\n2. Add a rule matching your drive's serial number:\n`ACTION==\"add\", KERNEL==\"sd*1\", ATTRS{serial}==\"YOUR_USB_SERIAL\", RUN+=\"/usr/local/bin/backup_script.sh\"`\n\nThis triggers the script immediately upon connection."
+    },
+    "technical_tags": ["udev", "automation", "trigger", "hardware"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_405",
+    "bucket": "File Organization",
+    "sub_category": "Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Systemd"
+    },
+    "interaction": {
+      "user_query": "How do I make rclone sync run every hour without keeping a terminal open?",
+      "ai_response": "Use a **Systemd Timer** (modern alternative to cron).\n\n1. Create a service file `~/.config/systemd/user/rclone-sync.service` (defines the command).\n2. Create a timer file `~/.config/systemd/user/rclone-sync.timer` (defines the schedule).\n3. Enable it: `systemctl --user enable --now rclone-sync.timer`.\n\nThis is robust and logs errors to the system journal."
+    },
+    "technical_tags": ["systemd", "timers", "rclone", "background-process"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_406",
+    "bucket": "File Organization",
+    "sub_category": "Images",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "ImageMagick"
+    },
+    "interaction": {
+      "user_query": "I have 500 huge PNGs I need to convert to JPG to save space. Fast way?",
+      "ai_response": "Install **ImageMagick** and use the `mogrify` command.\n\n```bash\n# Converts all PNGs to JPG in current folder\nmogrify -format jpg *.png\n```\n\nTo resize them at the same time:\n`mogrify -resize 50% -format jpg *.png`"
+    },
+    "technical_tags": ["imagemagick", "batch-conversion", "cli", "images"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_407",
+    "bucket": "File Organization",
+    "sub_category": "Aliases",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Bash"
+    },
+    "interaction": {
+      "user_query": "I hate typing `sudo apt update && sudo apt upgrade` every time. Can I shorten it?",
+      "ai_response": "Yes, create an **alias**.\n\n1. Open `~/.bashrc` in a text editor.\n2. Add this line at the bottom:\n```bash\nalias update='sudo apt update && sudo apt upgrade'\n```\n3. Save and run `source ~/.bashrc`.\n\nNow just type `update` to do it all."
+    },
+    "technical_tags": ["alias", "bashrc", "efficiency", "shortcuts"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_408",
+    "bucket": "File Organization",
+    "sub_category": "Monitoring",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "inotifywait"
+    },
+    "interaction": {
+      "user_query": "Can I watch a folder and trigger a command whenever a new file is added?",
+      "ai_response": "Yes, use `inotify-tools`.\n\n```bash\n# Loops forever, watching 'incoming' folder\nwhile inotifywait -e create /path/to/incoming; do\n    ./process_files.sh\ndone\n```\nThis is great for automated intake folders."
+    },
+    "technical_tags": ["inotify", "automation", "scripting", "monitoring"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_409",
+    "bucket": "File Organization",
+    "sub_category": "Trash",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Trash-cli"
+    },
+    "interaction": {
+      "user_query": "I want to empty the trash automatically on shutdown.",
+      "ai_response": "You can use `trash-cli` combined with a systemd shutdown script, but a simpler way is using the **Privacy** settings in GNOME.\n\n1. Go to **Settings** > **Privacy** > **File History & Trash**.\n2. Toggle **Automatically Delete Trash Content**.\n3. Set the period (e.g., 7 days).\n\nIf you strictly want it on shutdown, a custom script is required."
+    },
+    "technical_tags": [
+      "trash-cli",
+      "automation",
+      "privacy-settings",
+      "cleanup"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_410",
+    "bucket": "File Organization",
+    "sub_category": "Clipboard",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "xclip"
+    },
+    "interaction": {
+      "user_query": "How do I copy the output of a command directly to my clipboard without selecting it with the mouse?",
+      "ai_response": "Pipe the output to `xclip` (or `wl-copy` for Wayland).\n\n**Example (X11):**\n```bash\ncat myfile.txt | xclip -selection clipboard\n```\n\n**Example (Wayland):**\n```bash\ncat myfile.txt | wl-copy\n```"
+    },
+    "technical_tags": ["xclip", "clipboard", "pipe", "efficiency"],
+    "friction_type": "user_error"
+  }
+]

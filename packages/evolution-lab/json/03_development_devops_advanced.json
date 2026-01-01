@@ -1,0 +1,873 @@
+[
+  {
+    "id": "DEV_DEVOPS_501",
+    "bucket": "Development & DevOps",
+    "sub_category": "SSH",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "OpenSSH 8.9"
+    },
+    "interaction": {
+      "user_query": "I'm trying to SSH into my dev server, but it keeps rejecting my key with 'Permissions 0644 for 'id_rsa' are too open'. I haven't changed the file.",
+      "ai_response": "SSH requires strict permissions on private keys. If the file is readable by others (0644), OpenSSH refuses to use it for security reasons.\n\n**Fix the permissions:**\n```bash\nchmod 600 ~/.ssh/id_rsa\n```\n\nThis ensures only your user can read or write to the key file."
+    },
+    "technical_tags": ["ssh", "permissions", "chmod", "security"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_502",
+    "bucket": "Development & DevOps",
+    "sub_category": "Git",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Git 2.44"
+    },
+    "interaction": {
+      "user_query": "How do I sign my Git commits with GPG automatically? I have generated a key but `git log --show-signature` doesn't show it as verified.",
+      "ai_response": "You need to tell Git which key to use and enable signing globally.\n\n1. **Get your GPG Key ID:**\n   ```bash\n   gpg --list-secret-keys --keyid-format LONG\n   ```\n   Copy the ID after `sec` (e.g., `3AA5C34371567BD2`).\n\n2. **Configure Git:**\n   ```bash\n   git config --global user.signingkey 3AA5C34371567BD2\n   git config --global commit.gpgsign true\n   ```\n\n3. **Export public key for GitHub/GitLab:**\n   ```bash\n   gpg --armor --export 3AA5C34371567BD2\n   ```"
+    },
+    "technical_tags": ["git", "gpg", "security", "signing"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_503",
+    "bucket": "Development & DevOps",
+    "sub_category": "Docker",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Docker 24.0"
+    },
+    "interaction": {
+      "user_query": "I accidentally committed a `.env` file with API keys to a public repo. I removed the file and pushed, but I know it's still in the history. How do I scrub it completely?",
+      "ai_response": "Simply deleting the file in a new commit doesn't remove it from history. You need to rewrite the history using `git-filter-repo` (recommended over BFG or filter-branch).\n\n**Steps:**\n1. Install the tool:\n   ```bash\n   pip install git-filter-repo\n   ```\n2. Run the filter (destructive action!):\n   ```bash\n   git filter-repo --path .env --invert-paths --force\n   ```\n3. Force push the changes:\n   ```bash\n   git push origin --force --all\n   ```\n\n**Important:** Revoke those API keys immediately. Assume they are compromised."
+    },
+    "technical_tags": ["git", "security", "git-filter-repo", "history-rewrite"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_504",
+    "bucket": "Development & DevOps",
+    "sub_category": "Security",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "UFW 0.36"
+    },
+    "interaction": {
+      "user_query": "I enabled UFW on my production server, and now my Docker containers can't communicate with the outside world properly. Does Docker bypass UFW?",
+      "ai_response": "Yes, Docker modifies `iptables` rules directly, often bypassing UFW rules. This can be a security risk or cause connectivity issues.\n\n**To fix this safely:**\n1. Edit `/etc/docker/daemon.json` to disable iptables manipulation (use with caution, requires manual NAT setup):\n   ```json\n   { \"iptables\": false }\n   ```\n   **OR (Better approach):** Use the `ufw-docker` tool to manage these rules specifically.\n   ```bash\n   wget -O /usr/local/bin/ufw-docker [https://github.com/chaifeng/ufw-docker/raw/master/ufw-docker](https://github.com/chaifeng/ufw-docker/raw/master/ufw-docker)\n   chmod +x /usr/local/bin/ufw-docker\n   ufw-docker install\n   ```"
+    },
+    "technical_tags": ["docker", "ufw", "firewall", "iptables", "security"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "DEV_DEVOPS_505",
+    "bucket": "Development & DevOps",
+    "sub_category": "Databases",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "PostgreSQL 16"
+    },
+    "interaction": {
+      "user_query": "I'm setting up a local Postgres instance for development. I want to force SSL connections only for a specific user to test encryption. How do I configure `pg_hba.conf`?",
+      "ai_response": "You can enforce SSL in `pg_hba.conf` by changing the connection type to `hostssl`.\n\n1. **Edit `/var/lib/postgres/data/pg_hba.conf`:**\n   Add this line *before* other generic rules:\n   ```text\n   # TYPE  DATABASE        USER            ADDRESS                 METHOD\n   hostssl all             secure_user     0.0.0.0/0               scram-sha-256\n   ```\n2. **Reload Postgres:**\n   ```bash\n   sudo systemctl reload postgresql\n   ```\n\nThis ensures `secure_user` can only connect if SSL is active."
+    },
+    "technical_tags": ["postgresql", "ssl", "security", "database"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_506",
+    "bucket": "Development & DevOps",
+    "sub_category": "SSH",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "OpenSSH"
+    },
+    "interaction": {
+      "user_query": "I want to disable password authentication entirely on my VPS and only allow SSH keys. Which config file do I change?",
+      "ai_response": "Edit the SSH daemon configuration file.\n\n1. **Open the config:**\n   ```bash\n   sudo nano /etc/ssh/sshd_config\n   ```\n2. **Modify/Add these lines:**\n   ```ssh\n   PasswordAuthentication no\n   ChallengeResponseAuthentication no\n   PubkeyAuthentication yes\n   ```\n3. **Restart SSH:**\n   ```bash\n   sudo systemctl restart sshd\n   ```\n\n**Warning:** Ensure you have added your public key to `~/.ssh/authorized_keys` and tested it in a new terminal before restarting!"
+    },
+    "technical_tags": ["ssh", "security", "hardening", "config"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_507",
+    "bucket": "Development & DevOps",
+    "sub_category": "Docker",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Docker Compose v2"
+    },
+    "interaction": {
+      "user_query": "I'm using Docker Secrets in a swarm mode setup, but my app can't see the secret file at `/run/secrets/db_password`. It says permission denied.",
+      "ai_response": "By default, Docker secrets are owned by `root:root` with mode `0444`. If your container runs as a non-root user (which it should), it might not have read access depending on group permissions.\n\n**Solution:** Explicitly set the UID/GID or file mode in your `docker-compose.yml`:\n\n```yaml\nsecrets:\n  db_password:\n    file: ./secret_data.txt\n\nservices:\n  app:\n    secrets:\n      - source: db_password\n        uid: '1000'\n        gid: '1000'\n        mode: 0440\n```"
+    },
+    "technical_tags": ["docker", "secrets", "permissions", "security"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "DEV_DEVOPS_508",
+    "bucket": "Development & DevOps",
+    "sub_category": "Web Server",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Nginx 1.24"
+    },
+    "interaction": {
+      "user_query": "I'm setting up Nginx as a reverse proxy. How do I prevent it from revealing its version number in the HTTP headers? It's a security finding.",
+      "ai_response": "You can hide the Nginx version by turning off `server_tokens`.\n\n1. **Edit `/etc/nginx/nginx.conf`:**\n   Inside the `http` block, add:\n   ```nginx\n   http {\n       server_tokens off;\n       ...\n   }\n   ```\n2. **Test and Reload:**\n   ```bash\n   sudo nginx -t\n   sudo systemctl reload nginx\n   ```\n\nThis changes the `Server` header to just `nginx` without the version."
+    },
+    "technical_tags": ["nginx", "security", "hardening", "http-headers"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_509",
+    "bucket": "Development & DevOps",
+    "sub_category": "Encryption",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "OpenSSL 3.0"
+    },
+    "interaction": {
+      "user_query": "I need to generate a self-signed certificate for local dev that includes a Subject Alternative Name (SAN) so Chrome doesn't throw `ERR_CERT_COMMON_NAME_INVALID`.",
+      "ai_response": "Browsers now require SANs; the Common Name (CN) is ignored. You need a config file for OpenSSL.\n\n1. **Create `san.cnf`:**\n   ```ini\n   [req]\n   distinguished_name = req_distinguished_name\n   req_extensions = v3_req\n   prompt = no\n   [req_distinguished_name]\n   CN = localhost\n   [v3_req]\n   keyUsage = nonRepudiation, digitalSignature, keyEncipherment\n   extendedKeyUsage = serverAuth\n   subjectAltName = @alt_names\n   [alt_names]\n   DNS.1 = localhost\n   IP.1 = 127.0.0.1\n   ```\n2. **Generate Cert:**\n   ```bash\n   openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout key.pem -out cert.pem -config san.cnf\n   ```"
+    },
+    "technical_tags": ["openssl", "security", "certificates", "https"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "DEV_DEVOPS_510",
+    "bucket": "Development & DevOps",
+    "sub_category": "Tools",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "npm 10"
+    },
+    "interaction": {
+      "user_query": "I keep getting `EACCES: permission denied` when installing global npm packages. I don't want to use `sudo` for npm.",
+      "ai_response": "Using `sudo` with npm is a security risk. You should change the default directory for global packages.\n\n1. **Create a directory for global packages:**\n   ```bash\n   mkdir ~/.npm-global\n   ```\n2. **Configure npm to use it:**\n   ```bash\n   npm config set prefix '~/.npm-global'\n   ```\n3. **Update your PATH (add to `~/.bashrc` or `~/.zshrc`):**\n   ```bash\n   export PATH=~/.npm-global/bin:$PATH\n   ```\n4. **Apply changes:**\n   ```bash\n   source ~/.bashrc\n   ```"
+    },
+    "technical_tags": ["npm", "node", "permissions", "security"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_601",
+    "bucket": "Development & DevOps",
+    "sub_category": "Git",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Git 2.45"
+    },
+    "interaction": {
+      "user_query": "I use the same laptop for work and personal projects. I want to use my work email for repos in `~/work/` and personal email for everything else automatically.",
+      "ai_response": "You can use Git's conditional configuration `includeIf` directive.\n\n1. **Edit global config (`~/.gitconfig`):**\n   ```ini\n   [user]\n       email = personal@example.com\n       name = Personal Name\n\n   [includeIf \"gitdir:~/work/\"]\n       path = ~/work/.gitconfig\n   ```\n2. **Create the work config (`~/work/.gitconfig`):**\n   ```ini\n   [user]\n       email = work@company.com\n       name = Work Name\n   ```\n\nNow, any repo cloned inside `~/work/` will automatically apply the work configuration."
+    },
+    "technical_tags": ["git", "config", "productivity", "multi-profile"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_602",
+    "bucket": "Development & DevOps",
+    "sub_category": "Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Syncthing 1.27"
+    },
+    "interaction": {
+      "user_query": "I'm using Syncthing to sync my code folder between my desktop and laptop. It keeps syncing `node_modules` which takes forever. How do I ignore it?",
+      "ai_response": "You need to create a `.stignore` file in the root of the synced folder (similar to `.gitignore`).\n\n**Steps:**\n1. Open the folder you are syncing.\n2. Create a file named `.stignore`.\n3. Add the patterns to ignore:\n   ```text\n   node_modules\n   .git\n   dist\n   build\n   ```\n\nSyncthing will scan the folder again and drop those files from the sync queue."
+    },
+    "technical_tags": ["syncthing", "sync", "productivity", "ignore-files"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_603",
+    "bucket": "Development & DevOps",
+    "sub_category": "SSH",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "OpenSSH"
+    },
+    "interaction": {
+      "user_query": "I have to SSH into a server that is only accessible via a bastion host. I'm tired of running two ssh commands. How do I automate the jump?",
+      "ai_response": "Use the `ProxyJump` directive in your SSH config.\n\n**Edit `~/.ssh/config`:**\n```ssh\nHost bastion\n    HostName bastion.example.com\n    User admin\n\nHost target-server\n    HostName 10.0.0.5\n    User dev\n    ProxyJump bastion\n```\n\nNow you can just run `ssh target-server`, and SSH will automatically tunnel through the bastion."
+    },
+    "technical_tags": ["ssh", "networking", "config", "proxyjump"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_604",
+    "bucket": "Development & DevOps",
+    "sub_category": "Tools",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "VS Code"
+    },
+    "interaction": {
+      "user_query": "I use VS Code Remote-SSH to develop on a headless Linux box. Every time the server restarts, the IP changes. How do I make VS Code find it by hostname using mDNS?",
+      "ai_response": "If both machines are on the same local network, ensure `avahi-daemon` is running on the Linux server to broadcast its hostname.\n\n1. **Install and enable Avahi:**\n   ```bash\n   sudo dnf install avahi\n   sudo systemctl enable --now avahi-daemon\n   ```\n2. **Connect via `.local` domain:**\n   In VS Code, connect to `user@hostname.local` instead of the IP.\n\nThis resolves the dynamic IP issue via Multicast DNS."
+    },
+    "technical_tags": ["vscode", "networking", "dns", "avahi", "remote-dev"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "DEV_DEVOPS_605",
+    "bucket": "Development & DevOps",
+    "sub_category": "Docker",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Docker"
+    },
+    "interaction": {
+      "user_query": "I want to manage the Docker engine running on my Raspberry Pi from my laptop's Docker CLI. How do I expose the Docker socket securely over the network?",
+      "ai_response": "Exposing the TCP socket is risky. The secure, modern way is to use **Docker Contexts** over SSH.\n\n1. **On your laptop:**\n   ```bash\n   docker context create remote-pi --docker \"host=ssh://pi@192.168.1.50\"\n   ```\n2. **Switch context:**\n   ```bash\n   docker context use remote-pi\n   ```\n\nNow, commands like `docker ps` run against the Pi engine via an SSH tunnel. No open TCP ports needed on the Pi."
+    },
+    "technical_tags": ["docker", "remote-management", "ssh", "contexts"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_606",
+    "bucket": "Development & DevOps",
+    "sub_category": "Databases",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "MariaDB 11"
+    },
+    "interaction": {
+      "user_query": "I need to dump a database from my production server and import it to my local dev environment in one command without creating a temp file.",
+      "ai_response": "You can pipe the output of `mysqldump` over SSH directly into your local mysql client.\n\n```bash\nssh user@prod-server \"mysqldump -u dbuser -p'pass' dbname\" | mysql -u localuser -p localdb\n```\n\n**Note:** Be careful putting passwords in commands (bash history). It's better to use `.my.cnf` or prompt for passwords."
+    },
+    "technical_tags": ["mysql", "mariadb", "ssh", "database-migration", "pipe"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_607",
+    "bucket": "Development & DevOps",
+    "sub_category": "Dotfiles",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "GNU Stow"
+    },
+    "interaction": {
+      "user_query": "I'm setting up a new machine. I cloned my dotfiles repo to `~/dotfiles`. How do I use GNU Stow to symlink my `.bashrc` and `.config/nvim` correctly?",
+      "ai_response": "Structure your dotfiles repo so folders represent packages.\n\n**Directory Structure:**\n```\n~/dotfiles/\n    bash/\n        .bashrc\n    nvim/\n        .config/\n            nvim/\n                init.lua\n```\n\n**Commands:**\n1. Go to the dir: `cd ~/dotfiles`\n2. Stow them:\n   ```bash\n   stow bash\n   stow nvim\n   ```\n\nStow creates symlinks in the parent directory (`~`) pointing to the files inside the package folders."
+    },
+    "technical_tags": ["dotfiles", "stow", "automation", "bash"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_608",
+    "bucket": "Development & DevOps",
+    "sub_category": "Networking",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Tailscale"
+    },
+    "interaction": {
+      "user_query": "I'm using Tailscale to access my dev server. I want to bind my development web server (running on port 3000) so it's ONLY accessible via the Tailscale IP, not the public internet.",
+      "ai_response": "You need to bind your application specifically to the Tailscale interface IP address (usually starts with `100.x.y.z`).\n\n1. **Find Tailscale IP:**\n   ```bash\n   tailscale ip -4\n   ```\n2. **Run your app (example Node.js):**\n   ```bash\n   HOST=100.101.102.103 PORT=3000 node server.js\n   ```\n\nIf you bind to `0.0.0.0`, it listens on all interfaces (public and private). Binding to the specific IP restricts it."
+    },
+    "technical_tags": ["networking", "tailscale", "security", "binding"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_609",
+    "bucket": "Development & DevOps",
+    "sub_category": "Scripting",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Bash 5.2"
+    },
+    "interaction": {
+      "user_query": "I have a script that needs to run on both my Mac (zsh/BSD tools) and Linux (bash/GNU tools). `sed -i` behaves differently on both. How do I handle this portability?",
+      "ai_response": "BSD `sed` (Mac) requires an extension argument for `-i` (like `-i ''`), while GNU `sed` (Linux) does not.\n\n**Portable solution:**\nDetect the OS or use a compatibility function.\n\n```bash\nif [[ \"$OSTYPE\" == \"darwin\"* ]]; then\n    sed -i '' 's/foo/bar/g' filename\nelse\n    sed -i 's/foo/bar/g' filename\nfi\n```\n\nAlternatively, use `perl -pi -e` which behaves consistently across both."
+    },
+    "technical_tags": ["bash", "portability", "sed", "scripting", "macos"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "DEV_DEVOPS_610",
+    "bucket": "Development & DevOps",
+    "sub_category": "Filesystems",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "sshfs"
+    },
+    "interaction": {
+      "user_query": "I mounted a remote directory using `sshfs` to edit files locally. However, when I save, the file permissions on the server get messed up (become root or nobody).",
+      "ai_response": "This usually happens if UID/GIDs don't match. You should map the remote user to your local user.\n\n**Use the `idmap` option:**\n```bash\nsshfs -o idmap=user user@remote:/path/to/dir ~/local_mount\n```\n\nAlso, ensuring you use the `-o allow_other` (if configured in `/etc/fuse.conf`) can help if multiple local users need access, but `idmap=user` is the key for permission consistency."
+    },
+    "technical_tags": ["sshfs", "filesystems", "permissions", "remote-dev"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_701",
+    "bucket": "Development & DevOps",
+    "sub_category": "CI/CD",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "GitLab Runner 16"
+    },
+    "interaction": {
+      "user_query": "My GitLab CI runner (docker executor) fails to push the built image because it can't connect to the registry. It says 'verify certificate: x509: certificate signed by unknown authority'. We use a self-signed registry.",
+      "ai_response": "The Docker daemon inside the runner doesn't trust your self-signed cert. You need to mount the CA certificate into the runner container.\n\n**Update `config.toml` for the runner:**\n```toml\n[[runners]]\n  [runners.docker]\n    volumes = [\"/etc/gitlab-runner/certs/ca.crt:/etc/ssl/certs/ca-certificates.crt:ro\"]\n```\n\nAlternatively, if using dind (Docker-in-Docker), you must place the cert in `/etc/docker/certs.d/registry.domain.com/ca.crt` inside the dind container."
+    },
+    "technical_tags": [
+      "gitlab-ci",
+      "docker",
+      "certificates",
+      "troubleshooting"
+    ],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "DEV_DEVOPS_702",
+    "bucket": "Development & DevOps",
+    "sub_category": "Kubernetes",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "kubectl 1.30"
+    },
+    "interaction": {
+      "user_query": "I'm trying to debug a crashlooping pod in a restricted namespace. `kubectl logs` isn't helping because the container dies instantly. How do I keep it alive to inspect?",
+      "ai_response": "Override the entrypoint to sleep so the container stays running.\n\n**Command:**\n```bash\nkubectl debug podname -it --copy-to=podname-debug --container=appname -- sh\n```\n\nOr if you want to patch the deployment temporarily:\n```yaml\ncommand: [\"/bin/sh\", \"-c\", \"sleep 3600\"]\n```\n\nOnce running, you can `kubectl exec` into it and run the startup command manually to see the error."
+    },
+    "technical_tags": ["kubernetes", "kubectl", "debugging", "containers"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_703",
+    "bucket": "Development & DevOps",
+    "sub_category": "Docker",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Docker Compose"
+    },
+    "interaction": {
+      "user_query": "We use `docker-compose.yml` for prod. For local dev, I need to expose different ports and mount the source code as a volume. Do I copy the file to `docker-compose.dev.yml`?",
+      "ai_response": "Don't copy the whole file. Use **Compose Overrides**.\n\n1. Keep base config in `docker-compose.yml`.\n2. Create `docker-compose.override.yml`:\n   ```yaml\n   services:\n     app:\n       ports:\n         - \"8080:80\"\n       volumes:\n         - .:/code\n   ```\n3. Run normally: `docker compose up`.\n\nDocker automatically merges `docker-compose.override.yml` if it exists. For prod, run `docker compose -f docker-compose.yml -f docker-compose.prod.yml up`."
+    },
+    "technical_tags": [
+      "docker-compose",
+      "config-management",
+      "devops",
+      "workflow"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_704",
+    "bucket": "Development & DevOps",
+    "sub_category": "Python",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Python 3.12"
+    },
+    "interaction": {
+      "user_query": "I'm trying to install a Python package with `pip` but I get 'error: externally-managed-environment'. Ubuntu seems to block pip global installs now.",
+      "ai_response": "Ubuntu 24.04 adheres to PEP 668, preventing pip from modifying system packages to avoid breaking OS tools.\n\n**Solutions:**\n1. **Use venv (Recommended):**\n   ```bash\n   python3 -m venv venv\n   source venv/bin/activate\n   pip install package_name\n   ```\n2. **Use pipx (For CLI tools):**\n   ```bash\n   sudo apt install pipx\n   pipx install package_name\n   ```"
+    },
+    "technical_tags": ["python", "pip", "pep668", "package-management"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "DEV_DEVOPS_705",
+    "bucket": "Development & DevOps",
+    "sub_category": "Networking",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "OpenVPN"
+    },
+    "interaction": {
+      "user_query": "I'm connected to the corporate VPN, but it routes ALL traffic through the office. I only want traffic to `10.20.0.0/16` to go through the VPN. How do I fix the routing?",
+      "ai_response": "Check the OpenVPN client config or the arguments you are passing.\n\n1. **Ignore pushed routes:**\n   Add to your config:\n   ```openvpn\n   route-nopull\n   ```\n2. **Add manual route:**\n   ```openvpn\n   route 10.20.0.0 255.255.0.0 vpn_gateway\n   ```\n\nThis tells OpenVPN to ignore the server's instruction to redirect the default gateway and only route the specific subnet."
+    },
+    "technical_tags": ["networking", "openvpn", "routing", "split-tunneling"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_706",
+    "bucket": "Development & DevOps",
+    "sub_category": "Database",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Redis"
+    },
+    "interaction": {
+      "user_query": "My Redis container keeps getting OOM killed in production under load. I have plenty of RAM on the host. I suspect overcommit memory settings.",
+      "ai_response": "Redis requires the kernel to allow memory overcommit. If not set, background saves (bgsave) can fail and crash.\n\n**Fix on the Host (Linux):**\n1. **Enable temporarily:**\n   ```bash\n   sudo sysctl vm.overcommit_memory=1\n   ```\n2. **Make permanent (`/etc/sysctl.conf`):**\n   ```text\n   vm.overcommit_memory = 1\n   ```\n3. **Disable Transparent Huge Pages (THP):**\n   Often needed for Redis performance. Check Redis logs for warnings about this."
+    },
+    "technical_tags": ["redis", "kernel", "memory", "performance", "sysctl"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_707",
+    "bucket": "Development & DevOps",
+    "sub_category": "Ansible",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Ansible 9"
+    },
+    "interaction": {
+      "user_query": "I'm writing an Ansible playbook. I need to copy a config file only if the destination file doesn't exist. If it exists, I want to leave it alone (preserve user changes).",
+      "ai_response": "The `copy` module overwrites by default. Use `force: no`.\n\n```yaml\n- name: Copy config file safely\n  ansible.builtin.copy:\n    src: default.conf\n    dest: /etc/myapp/config.conf\n    force: no\n```\n\nThis acts like a \"create if missing\" operation."
+    },
+    "technical_tags": ["ansible", "automation", "configuration", "yaml"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_708",
+    "bucket": "Development & DevOps",
+    "sub_category": "Logging",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Logrotate"
+    },
+    "interaction": {
+      "user_query": "My custom app logs to `/var/log/myapp/debug.log`. It filled up the disk yesterday. I added a logrotate config, but it's not rotating. Does logrotate run as a daemon?",
+      "ai_response": "Logrotate is usually run by a cron job (`/etc/cron.daily/logrotate`), not a daemon. If your config is valid but not running, check two things:\n\n1. **Force run to test:**\n   ```bash\n   sudo logrotate -d /etc/logrotate.d/myapp  # Debug mode\n   sudo logrotate -f /etc/logrotate.d/myapp  # Force rotate\n   ```\n2. **Permissions:** Ensure the parent directory allows the user running logrotate (usually root) to write/rename files."
+    },
+    "technical_tags": ["logging", "logrotate", "sysadmin", "maintenance"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_709",
+    "bucket": "Development & DevOps",
+    "sub_category": "Node.js",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Node 20"
+    },
+    "interaction": {
+      "user_query": "I'm getting `ENOSPC: System limit for number of file watchers reached` when running my React app's dev server. I haven't opened that many files.",
+      "ai_response": "Webpack/Vite watches all files in `node_modules`. The default Linux limit is often too low (8192).\n\n**Increase the limit:**\n1. **Check current:** `sysctl fs.inotify.max_user_watches`\n2. **Increase permanently:**\n   echo \"fs.inotify.max_user_watches=524288\" | sudo tee -a /etc/sysctl.conf\n   sudo sysctl -p"
+    },
+    "technical_tags": ["node", "kernel", "inotify", "react", "performance"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_710",
+    "bucket": "Development & DevOps",
+    "sub_category": "Monitoring",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Prometheus"
+    },
+    "interaction": {
+      "user_query": "I'm running Node Exporter on my server, but I don't want to open port 9100 to the public internet. Prometheus scrapes from a central server. How do I secure this?",
+      "ai_response": "Don't open port 9100 in the firewall. Instead, use a VPN or reverse proxy with Basic Auth.\n\n**Simplest firewall method (UFW):**\n```bash\nufw allow from <Prometheus_Server_IP> to any port 9100\nufw deny 9100\n```\n\nIf the servers are not on the same VPC/network, set up WireGuard or use an Nginx sidecar container to handle authentication before forwarding to localhost:9100."
+    },
+    "technical_tags": [
+      "monitoring",
+      "prometheus",
+      "security",
+      "firewall",
+      "networking"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_801",
+    "bucket": "Development & DevOps",
+    "sub_category": "Home Lab",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Pi-hole Docker"
+    },
+    "interaction": {
+      "user_query": "I'm running Pi-hole in Docker. It works, but the query log shows all requests coming from `172.17.0.1` (the gateway) instead of the actual client IPs. How do I see real client IPs?",
+      "ai_response": "This happens when using the default Docker bridge network because of NAT.\n\n**Solution:** Use `network_mode: host`.\n\nUpdate your `docker-compose.yml`:\n```yaml\nservices:\n  pihole:\n    network_mode: \"host\"\n    # Remove 'ports' section as host mode uses host ports directly\n```\n**Note:** This requires port 53 and 80 to be free on your host machine."
+    },
+    "technical_tags": ["docker", "networking", "pihole", "homelab"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "DEV_DEVOPS_802",
+    "bucket": "Development & DevOps",
+    "sub_category": "Media Server",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Jellyfin"
+    },
+    "interaction": {
+      "user_query": "I set up Jellyfin on Docker, but hardware acceleration (VAAPI) isn't working. The transcoder crashes. I have an Intel CPU with QuickSync.",
+      "ai_response": "You need to pass the render device to the container.\n\n**Update `docker-compose.yml`:**\n```yaml\nservices:\n  jellyfin:\n    devices:\n      - /dev/dri/renderD128:/dev/dri/renderD128\n      - /dev/dri/card0:/dev/dri/card0\n```\n\nAlso, ensure the user running the container is part of the `render` or `video` group, or force the group ID:\n```yaml\nenvironment:\n  - GIDLIST=109  # ID of render group on host\n```"
+    },
+    "technical_tags": [
+      "docker",
+      "jellyfin",
+      "hardware-acceleration",
+      "permissions"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_803",
+    "bucket": "Development & DevOps",
+    "sub_category": "Proxy",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Traefik v3"
+    },
+    "interaction": {
+      "user_query": "I'm using Traefik as my home lab reverse proxy. I want to expose a service but only to my LAN subnet (192.168.1.0/24). How do I restrict this in the labels?",
+      "ai_response": "You need to define an IPAllowList middleware.\n\n1. **Define Middleware (in labels):**\n   ```yaml\n   - \"traefik.http.middlewares.lan-only.ipallowlist.sourcerange=192.168.1.0/24\"\n   ```\n2. **Apply to Router:**\n   ```yaml\n   - \"traefik.http.routers.myservice.middlewares=lan-only\"\n   ```\n\nNow, any request from outside that CIDR block will get a 403 Forbidden."
+    },
+    "technical_tags": ["traefik", "networking", "security", "docker"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_804",
+    "bucket": "Development & DevOps",
+    "sub_category": "Storage",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "ZFS"
+    },
+    "interaction": {
+      "user_query": "I have a ZFS pool `tank` for my home server data. I want to verify the integrity of the data to check for bit rot. What command do I run?",
+      "ai_response": "Run a scrub operation.\n\n```bash\nsudo zpool scrub tank\n```\n\n**Check status:**\n```bash\nzpool status tank\n```\nIt will show the scan progress and any checksum errors found. It is recommended to schedule this monthly."
+    },
+    "technical_tags": ["zfs", "storage", "maintenance", "integrity"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_805",
+    "bucket": "Development & DevOps",
+    "sub_category": "DNS",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "ddclient"
+    },
+    "interaction": {
+      "user_query": "I have a dynamic IP at home. I installed `ddclient` to update my Cloudflare DNS, but it's not updating. The logs say 'invalid login'. I'm using my Cloudflare account email and password.",
+      "ai_response": "Cloudflare's newer API requires an API Token, not your account password.\n\n1. Create a token in Cloudflare dashboard (Template: Edit Zone DNS).\n2. Update `/etc/ddclient.conf`:\n   ```ini\n   protocol=cloudflare\n   use=web\n   zone=example.com\n   login=token\n   password=YOUR_API_TOKEN_HERE\n   subdomain.example.com\n   ```\n   Note: The `login` field is literally the string `token`, and the password field holds the actual token."
+    },
+    "technical_tags": ["dns", "ddclient", "cloudflare", "networking"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "DEV_DEVOPS_806",
+    "bucket": "Development & DevOps",
+    "sub_category": "Virtualization",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "KVM/QEMU"
+    },
+    "interaction": {
+      "user_query": "I'm running a Windows VM in KVM (virt-manager). The disk I/O is terrible. I'm using a qcow2 file. How do I optimize this?",
+      "ai_response": "Use **VirtIO** drivers for disk and network. Windows doesn't have them by default.\n\n1. **Download VirtIO ISO:** Get `virtio-win.iso` from Fedora/Red Hat.\n2. **Change Disk Bus:** In VM settings, change the disk bus from SATA/IDE to **VirtIO**.\n3. **Mount ISO & Boot:** You'll need to load the drivers from the ISO during boot or install them if you can get into Windows.\n4. **Cache Mode:** Set disk cache mode to `none` or `writeback` for performance (at slight risk of data loss on power failure)."
+    },
+    "technical_tags": ["kvm", "virtualization", "performance", "windows"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_807",
+    "bucket": "Development & DevOps",
+    "sub_category": "Backup",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Restic"
+    },
+    "interaction": {
+      "user_query": "I use Restic to back up my home directory to Backblaze B2. I want to forget old snapshots: keep daily for 7 days, weekly for 4 weeks, monthly for 6 months.",
+      "ai_response": "Use the `forget` command with the pruning policy.\n\n```bash\nrestic forget --keep-daily 7 --keep-weekly 4 --keep-monthly 6 --prune\n```\n\nThe `--prune` flag is essential; without it, restic deletes the snapshot reference but doesn't actually remove the data blobs from the storage, saving no space."
+    },
+    "technical_tags": ["backups", "restic", "cloud-storage", "maintenance"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_808",
+    "bucket": "Development & DevOps",
+    "sub_category": "Web Server",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Caddy"
+    },
+    "interaction": {
+      "user_query": "I'm switching from Nginx to Caddy for my home server because I heard SSL is automatic. How do I reverse proxy `localhost:8080` to `app.mydomain.com`?",
+      "ai_response": "Caddyfile configuration is very concise.\n\n**Create `Caddyfile`:**\n```caddyfile\napp.mydomain.com {\n    reverse_proxy localhost:8080\n}\n```\n\nRun `caddy run`. Caddy will automatically fetch and renew the Let's Encrypt certificate for you, provided ports 80/443 are forwarded to this machine."
+    },
+    "technical_tags": ["caddy", "web-server", "ssl", "reverse-proxy"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_809",
+    "bucket": "Development & DevOps",
+    "sub_category": "Automation",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Systemd"
+    },
+    "interaction": {
+      "user_query": "I wrote a Python script `server_stats.py` that I want to run every 15 minutes. Should I use cron or a systemd timer?",
+      "ai_response": "Systemd timers are preferred for better logging and dependency handling.\n\n1. **Create Service (`~/.config/systemd/user/stats.service`):**\n   ```ini\n   [Service]\n   ExecStart=/usr/bin/python3 /home/user/server_stats.py\n   ```\n2. **Create Timer (`~/.config/systemd/user/stats.timer`):**\n   ```ini\n   [Timer]\n   OnBootSec=5min\n   OnUnitActiveSec=15min\n   [Install]\n   WantedBy=timers.target\n   ```\n3. **Enable:** `systemctl --user enable --now stats.timer`"
+    },
+    "technical_tags": ["systemd", "automation", "cron", "scripting"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_810",
+    "bucket": "Development & DevOps",
+    "sub_category": "Git",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Gitea"
+    },
+    "interaction": {
+      "user_query": "I'm running a self-hosted Gitea instance. I want to mirror a GitHub repo, but Gitea fails to clone it because the repo is large (2GB).",
+      "ai_response": "You likely need to increase the Git buffer limits in your Gitea configuration or the global git config on the server.\n\n**Edit `app.ini` (Gitea config):**\n```ini\n[git]\nTIMEOUT.MIGRATE = 600\n```\n\n**Edit Git Config (Global on server):**\n```bash\ngit config --global http.postBuffer 524288000\n```\nAlso check Nginx/Reverse Proxy `client_max_body_size` settings; set it to 0 (unlimited) or a high value."
+    },
+    "technical_tags": ["gitea", "git", "networking", "config"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_901",
+    "bucket": "Development & DevOps",
+    "sub_category": "Legacy",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "PHP 5.6"
+    },
+    "interaction": {
+      "user_query": "I have to maintain a legacy app that requires PHP 5.6. Ubuntu 22.04 only has PHP 8.1. How do I install the old version without compiling from source?",
+      "ai_response": "Use the Ondřej Surý PPA, which maintains multiple PHP versions.\n\n1. **Add PPA:**\n   ```bash\n   sudo add-apt-repository ppa:ondrej/php\n   sudo apt update\n   ```\n2. **Install PHP 5.6:**\n   ```bash\n   sudo apt install php5.6\n   ```\n3. **Switch CLI version (if needed):**\n   ```bash\n   sudo update-alternatives --config php\n   ```"
+    },
+    "technical_tags": ["php", "legacy", "ppa", "package-management"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "DEV_DEVOPS_902",
+    "bucket": "Development & DevOps",
+    "sub_category": "Kernel",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Kernel 6.8"
+    },
+    "interaction": {
+      "user_query": "I'm doing some eBPF development and I need access to `/sys/kernel/debug`. It's empty. How do I enable it?",
+      "ai_response": "The debugfs filesystem is not mounted.\n\n**Mount it manually:**\n```bash\nsudo mount -t debugfs none /sys/kernel/debug\n```\n\n**Persist it (`/etc/fstab`):**\n```text\ndebugfs /sys/kernel/debug debugfs defaults 0 0\n```\nNote: You generally need to be root to access files in there."
+    },
+    "technical_tags": ["kernel", "ebpf", "debugging", "filesystems"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_903",
+    "bucket": "Development & DevOps",
+    "sub_category": "Docker",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Podman"
+    },
+    "interaction": {
+      "user_query": "I'm using Podman instead of Docker. When I run a container that tries to bind to port 80, it fails with 'Permission denied'. Docker used to do this fine.",
+      "ai_response": "Podman runs rootless by default. Non-root users cannot bind to ports below 1024.\n\n**Solutions:**\n1. **Use a high port:** Map to 8080 (`-p 8080:80`).\n2. **Lower the privilege boundary:**\n   ```bash\n   echo \"net.ipv4.ip_unprivileged_port_start=80\" | sudo tee -a /etc/sysctl.conf\n   sudo sysctl -p\n   ```"
+    },
+    "technical_tags": ["podman", "docker", "security", "networking"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "DEV_DEVOPS_904",
+    "bucket": "Development & DevOps",
+    "sub_category": "Git",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Git"
+    },
+    "interaction": {
+      "user_query": "I performed a `git reset --hard` and lost a commit that wasn't pushed. It's been 20 minutes. Is it gone forever?",
+      "ai_response": "No, it's likely still in the `reflog`. Git keeps dangling commits for a while (default 30 days).\n\n1. **Find the SHA:**\n   ```bash\n   git reflog\n   ```\n   Look for the entry before the reset.\n2. **Restore it:**\n   ```bash\n   git checkout -b recovered-branch <SHA>\n   ```"
+    },
+    "technical_tags": ["git", "recovery", "reflog", "troubleshooting"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_905",
+    "bucket": "Development & DevOps",
+    "sub_category": "Cross-Compilation",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "QEMU User Static"
+    },
+    "interaction": {
+      "user_query": "I'm trying to build a Docker image for `arm64` on my `amd64` machine using `docker buildx`. It fails with 'exec user process caused: exec format error'.",
+      "ai_response": "You need QEMU emulation registered to run ARM binaries on x86.\n\n**Register binfmt handlers:**\n```bash\ndocker run --rm --privileged multiarch/qemu-user-static --reset -p yes\n```\n\nThen create a new builder:\n```bash\ndocker buildx create --use\ndocker buildx build --platform linux/arm64 .\n```"
+    },
+    "technical_tags": ["docker", "buildx", "arm64", "cross-compile"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "DEV_DEVOPS_906",
+    "bucket": "Development & DevOps",
+    "sub_category": "Database",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "CentOS Stream 9",
+      "app_version": "MySQL 8"
+    },
+    "interaction": {
+      "user_query": "I have a MySQL database with a corrupted MyISAM table. The service won't start. How do I fix the table without starting the full service?",
+      "ai_response": "You can try to repair it using the command line tool.\n\n1. Go to the data directory (e.g., `/var/lib/mysql/dbname`).\n2. Run `myisamchk`:\n   ```bash\n   sudo myisamchk -r tablename.MYI\n   ```\n\n**Note:** Ensure MySQL is strictly NOT running when you do this, or you will corrupt it further. Ideally, migrate to InnoDB which has crash recovery."
+    },
+    "technical_tags": ["mysql", "database-repair", "legacy", "myisam"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_907",
+    "bucket": "Development & DevOps",
+    "sub_category": "Networking",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Alpine Linux",
+      "app_version": "nc"
+    },
+    "interaction": {
+      "user_query": "I'm on a minimal Alpine container debugging a connection. `curl` and `wget` are missing. How do I test if a remote TCP port is open using just `nc`?",
+      "ai_response": "Use `nc` (netcat) with the `-z` (scan) and `-v` (verbose) flags.\n\n```bash\nnc -zv 192.168.1.50 8080\n```\n\nIf the connection succeeds, it will print 'open'. If it hangs or says connection refused, the port is blocked or closed."
+    },
+    "technical_tags": ["networking", "debugging", "netcat", "containers"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_908",
+    "bucket": "Development & DevOps",
+    "sub_category": "Storage",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LVM"
+    },
+    "interaction": {
+      "user_query": "I ran out of space on `/`. I added a new virtual disk `/dev/sdb`. How do I extend the root LVM volume without rebooting?",
+      "ai_response": "1. **Create Physical Volume:** `pvcreate /dev/sdb`\n2. **Extend Volume Group:** `vgextend ubuntu-vg /dev/sdb`\n3. **Extend Logical Volume:** `lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv`\n4. **Resize Filesystem:**\n   ```bash\n   resize2fs /dev/ubuntu-vg/ubuntu-lv\n   ```\n   (Use `xfs_growfs /` if you are using XFS)."
+    },
+    "technical_tags": ["lvm", "storage", "disk-management", "sysadmin"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_909",
+    "bucket": "Development & DevOps",
+    "sub_category": "Shell",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Bash",
+      "app_version": "Terminal"
+    },
+    "interaction": {
+      "user_query": "I have a file named `-dash-prefix.txt` and I can't delete it. `rm -dash-prefix.txt` thinks it's a flag.",
+      "ai_response": "You need to signal the end of command flags using `--` or provide a path.\n\n**Option 1:**\n```bash\nrm -- -dash-prefix.txt\n```\n\n**Option 2:**\n```bash\nrm ./-dash-prefix.txt\n```"
+    },
+    "technical_tags": ["bash", "shell", "edge-case", "trick"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_910",
+    "bucket": "Development & DevOps",
+    "sub_category": "Hardware",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Serial"
+    },
+    "interaction": {
+      "user_query": "I'm trying to console into a switch using a USB-to-Serial adapter. I added my user to the `dialout` group, but `screen /dev/ttyUSB0` still says permission denied.",
+      "ai_response": "Group changes require a re-login to take effect. If you don't want to log out/in, you can activate the group in the current shell:\n\n```bash\nnewgrp dialout\n```\n\nNow try the screen command again. If it still fails, check `ls -l /dev/ttyUSB0` to ensure the group ownership is indeed `dialout`."
+    },
+    "technical_tags": ["hardware", "permissions", "serial", "networking"],
+    "friction_type": "user_error"
+  }
+]

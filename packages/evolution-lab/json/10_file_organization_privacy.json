@@ -1,0 +1,1212 @@
+[
+  {
+    "id": "FILE_ORG_501",
+    "bucket": "File Organization",
+    "sub_category": "Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "file_manager": "Nautilus"
+    },
+    "interaction": {
+      "user_query": "How can I password protect a specific folder in my Home directory? I share this laptop with my brother and don't want him seeing my journal.",
+      "ai_response": "The easiest way to password-protect a folder on GNOME (Ubuntu) without complex partitioning is using **GaaP (GNOME Encrypted Folder)** or creating a compressed archive with a password.\n\n**Method 1: Password Protected Zip (Easiest)**\n1. Right-click the folder -> **Compress**.\n2. Select **.zip** or **.7z**.\n3. Click **Password protected** and set your password.\n\n**Method 2: Gnome Encfs Manager (Better integration)**\n```bash\nsudo add-apt-repository ppa:gencfsm/ppa\nsudo apt install gnome-encfs-manager\n```\nOpen the app and create a new 'stash' which acts as a password-protected vault."
+    },
+    "technical_tags": ["encryption", "security", "zip", "nautilus"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_502",
+    "bucket": "File Organization",
+    "sub_category": "Permissions",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "filesystem": "ext4"
+    },
+    "interaction": {
+      "user_query": "I copied some files from a USB stick to my desktop, but now they have a lock icon on them and I can't edit them. It says 'Read-only'.",
+      "ai_response": "This usually happens if the files were owned by 'root' or a different user when copied. You need to take ownership of them.\n\n**Fix via Terminal:**\n```bash\nsudo chown -R $USER:$USER ~/Desktop/folder_name\nchmod -R 755 ~/Desktop/folder_name\n```\n\n**Fix via GUI:**\n1. Right-click the folder -> **Properties** -> **Permissions**.\n2. Click 'Apply Permissions to Enclosed Files'.\n3. Change Owner to your username."
+    },
+    "technical_tags": ["permissions", "chown", "chmod", "read-only"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_503",
+    "bucket": "File Organization",
+    "sub_category": "Privacy",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "tool": "LUKS"
+    },
+    "interaction": {
+      "user_query": "I want to create a hidden, encrypted container file to store tax documents. I don't want to encrypt my whole drive, just a 5GB file I can mount when needed.",
+      "ai_response": "You can create a LUKS-encrypted file container.\n\n**1. Create the empty file (5GB):**\n```bash\ndd if=/dev/zero of=secret_vault.img bs=1M count=5000\n```\n\n**2. Format it as a LUKS device:**\n```bash\ncryptsetup luksFormat secret_vault.img\n```\n\n**3. Open and format the filesystem:**\n```bash\nsudo cryptsetup open secret_vault.img my_vault\nsudo mkfs.ext4 /dev/mapper/my_vault\n```\n\n**4. Mount it:**\n```bash\nmkdir ~/Vault\nsudo mount /dev/mapper/my_vault ~/Vault\n```"
+    },
+    "technical_tags": ["encryption", "luks", "dd", "security"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_504",
+    "bucket": "File Organization",
+    "sub_category": "Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "file_manager": "Thunar"
+    },
+    "interaction": {
+      "user_query": "How do I securely delete a file so it can't be recovered? I tried moving to trash and emptying it, but I read that doesn't actually wipe the data.",
+      "ai_response": "Standard deletion just marks space as available. To securely wipe the data, use the `shred` command.\n\n**To shred a single file:**\n```bash\nshred -u -z -n 3 sensitive_file.txt\n```\n* `-u`: Removes the file after overwriting.\n* `-z`: Adds a final overwrite with zeros to hide shredding.\n* `-n 3`: Overwrites 3 times.\n\n**Note:** This is less effective on SSDs due to wear leveling. For SSDs, full disk encryption is the best security method."
+    },
+    "technical_tags": ["shred", "security", "deletion", "recovery"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_505",
+    "bucket": "File Organization",
+    "sub_category": "Permissions",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "filesystem": "NTFS"
+    },
+    "interaction": {
+      "user_query": "My external drive (NTFS) mounts automatically, but I can't change the permissions of files on it. `chmod` does nothing.",
+      "ai_response": "NTFS does not support Linux-style permissions natively. The permissions are simulated at mount time.\n\n**To fix this, you must remount with specific options:**\n\n1. Unmount the drive.\n2. Identify the partition (e.g., `/dev/sdb1`) using `lsblk`.\n3. Mount it manually setting your user ID (uid) as the owner:\n```bash\nsudo mount -t ntfs-3g -o uid=$(id -u),gid=$(id -g),umask=022 /dev/sdb1 /mnt/mydrive\n```\nTo make this permanent, you would add an entry to `/etc/fstab`."
+    },
+    "technical_tags": ["ntfs", "mount", "permissions", "chmod"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_506",
+    "bucket": "File Organization",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "file_manager": "Nemo"
+    },
+    "interaction": {
+      "user_query": "I hid a folder by putting a dot in front of the name `.Private`, but now I can't find it myself! How do I see it again?",
+      "ai_response": "In Linux, files starting with a `.` are hidden by default.\n\n**To toggle hidden files in Nemo (Mint):**\n* Press **Ctrl + H** on your keyboard.\n* Or go to **View** -> **Show Hidden Files**.\n\nYou will now see `.Private`. To unhide it permanently, rename it to remove the dot (right-click -> Rename)."
+    },
+    "technical_tags": ["hidden-files", "nemo", "gui", "renaming"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_507",
+    "bucket": "File Organization",
+    "sub_category": "Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "tool": "chmod"
+    },
+    "interaction": {
+      "user_query": "I was messing with permissions to make a script run and did `chmod 777` on my whole home folder. Now SSH won't let me log in because 'permissions are too open'. Help!",
+      "ai_response": "This is a critical security issue. SSH requires strict permissions on the `.ssh` directory.\n\n**Reset Home Directory Permissions:**\n```bash\nchmod 750 /home/$USER\n```\n\n**Fix SSH Permissions specifically:**\n```bash\nchmod 700 ~/.ssh\nchmod 600 ~/.ssh/authorized_keys\nchmod 600 ~/.ssh/id_rsa\nchmod 644 ~/.ssh/id_rsa.pub\n```\nNever use `777` recursively on your home directory."
+    },
+    "technical_tags": ["permissions", "ssh", "security", "chmod"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_508",
+    "bucket": "File Organization",
+    "sub_category": "Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "tool": "GPG"
+    },
+    "interaction": {
+      "user_query": "I have a text file with passwords. I want to encrypt it so only I can read it with a passphrase. I don't want a full encrypted folder, just this one file.",
+      "ai_response": "You can use `gpg` for symmetric encryption (password-based).\n\n**To Encrypt:**\n```bash\ngpg -c passwords.txt\n```\nThis creates `passwords.txt.gpg`. You will be prompted to type a passphrase.\n\n**To Decrypt:**\n```bash\ngpg passwords.txt.gpg\n```\nDelete the original `passwords.txt` after confirming the `.gpg` file works."
+    },
+    "technical_tags": ["gpg", "encryption", "cli", "security"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_509",
+    "bucket": "File Organization",
+    "sub_category": "Permissions",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "tool": "ACL"
+    },
+    "interaction": {
+      "user_query": "I have a shared folder for a project group. I want User A to read/write, User B to only read, and the default group to have no access. Standard chown/chmod isn't enough.",
+      "ai_response": "You need Access Control Lists (ACLs) for granular permissions.\n\n**1. Enable ACL (if not already):**\nUsually enabled by default on ext4/xfs.\n\n**2. Set Permissions:**\n```bash\n# Give User A Read/Write (rw)\nsetfacl -m u:usera:rw /path/to/folder\n\n# Give User B Read Only (r)\nsetfacl -m u:userb:r /path/to/folder\n```\n\n**3. Check Permissions:**\n```bash\ngetfacl /path/to/folder\n```"
+    },
+    "technical_tags": ["acl", "permissions", "setfacl", "collaboration"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_510",
+    "bucket": "File Organization",
+    "sub_category": "Backups",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "tool": "Deja Dup"
+    },
+    "interaction": {
+      "user_query": "Deja Dup keeps asking for an encryption password to restore my files, but I forgot it! Is there a backdoor or recovery key?",
+      "ai_response": "Unfortunately, **no**. Deja Dup (Duplicity) uses GPG encryption. If you lose the encryption password, the data is mathematically irretrievable.\n\nIf you have the original machine where the backup was configured, you *might* be able to retrieve the password from the login keyring (Passwards and Keys app -> search for Deja Dup). If that is gone, the data is lost."
+    },
+    "technical_tags": ["backups", "deja-dup", "encryption", "password-loss"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_511",
+    "bucket": "File Organization",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "file_manager": "Nemo"
+    },
+    "interaction": {
+      "user_query": "When I right click a folder I don't see an option to encrypt it. How do I turn on encryption for just my Documents folder?",
+      "ai_response": "Linux doesn't typically support 'right-click encrypt folder' natively without specific filesystem setups (like fscrypt) or third-party tools.\n\n**Recommended Workaround:**\nInstall **Veracrypt** or use a **password-protected zip file**.\n\nIf you want seamless encryption, reinstalling Linux and choosing 'Encrypt home folder' or 'Full disk encryption' during setup is the most reliable method for the future."
+    },
+    "technical_tags": ["encryption", "gui", "veracrypt", "usability"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_512",
+    "bucket": "File Organization",
+    "sub_category": "Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "tool": "umask"
+    },
+    "interaction": {
+      "user_query": "Every new file I create is readable by everyone on the system (644). I want new files to be private to me (600) by default. How do I change this global setting?",
+      "ai_response": "You need to change your **umask** setting.\n\n**Current Default (probably 022):** Results in 755 for folders and 644 for files.\n\n**Desired Setting (077):** Results in 700 for folders and 600 for files.\n\n**To make it permanent:**\nAdd this line to the bottom of your `~/.bashrc` (or `~/.profile`):\n```bash\numask 077\n```\nLog out and back in for it to take effect."
+    },
+    "technical_tags": ["umask", "permissions", "bashrc", "security"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_513",
+    "bucket": "File Organization",
+    "sub_category": "Privacy",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "tool": "AppArmor"
+    },
+    "interaction": {
+      "user_query": "I'm trying to let Firefox save a file to a custom folder `/data/downloads`, but it keeps saying permission denied even though I own the folder. Syslog says something about AppArmor.",
+      "ai_response": "Snap versions of Firefox are confined by AppArmor and can only access specific paths (like `/home`).\n\n**Option 1: Connect the interface (if using Snap)**\n```bash\nsnap connect firefox:removable-media\n```\n(Note: `/data` might not fall under removable-media).\n\n**Option 2: Bind Mount**\nMount your data folder into your home directory so Firefox sees it as legal:\n```bash\nmkdir ~/SpecialDownloads\nsudo mount --bind /data/downloads ~/SpecialDownloads\n```"
+    },
+    "technical_tags": ["apparmor", "snap", "permissions", "firefox"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_514",
+    "bucket": "File Organization",
+    "sub_category": "Permissions",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Manjaro",
+      "file_manager": "Dolphin"
+    },
+    "interaction": {
+      "user_query": "I can't delete a file called `socket.lock`. It says permission denied. I am the admin user!",
+      "ai_response": "Being an 'admin' user doesn't grant instant root access in the file manager. If the file is owned by root or created by a system process, you need `sudo`.\n\n**1. Open Terminal in that folder (F4 in Dolphin).**\n**2. Delete with sudo:**\n```bash\nsudo rm socket.lock\n```\nBe careful using sudo rm!"
+    },
+    "technical_tags": ["sudo", "rm", "permissions", "dolphin"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_515",
+    "bucket": "File Organization",
+    "sub_category": "Backups",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "tool": "Restic"
+    },
+    "interaction": {
+      "user_query": "I'm using Restic for backups. I initialized a repo on my external drive, but now when I try to backup it says 'Fatal: wrong password or no key found'. I am typing the right password!",
+      "ai_response": "Restic is very strict about keys. Common issues:\n\n1.  **Typo during init:** You might have mistyped the password when you first created the repo.\n2.  **Wrong repo path:** Ensure you are pointing to the exact folder created by `restic init`.\n3.  **Copy/Paste:** If you are pasting the password, check for trailing spaces.\n\nTry checking the keys:\n```bash\nrestic -r /path/to/repo key list\n```\nIf you cannot unlock it, there is no way to recover the data."
+    },
+    "technical_tags": ["restic", "encryption", "backups", "cli"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_516",
+    "bucket": "File Organization",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "browser": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I wipe all metadata (EXIF) from my photos before uploading them? I don't want people to know my GPS location.",
+      "ai_response": "You can use a tool called `exiftool`.\n\n**1. Install it:**\n```bash\nsudo apt install libimage-exiftool-perl\n```\n\n**2. Remove all metadata from a file:**\n```bash\nexiftool -all= image.jpg\n```\n\n**3. Remove from all images in a folder:**\n```bash\nexiftool -all= *.jpg\n```\nIt will create backups (image.jpg_original) by default."
+    },
+    "technical_tags": ["metadata", "privacy", "exiftool", "photos"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_517",
+    "bucket": "File Organization",
+    "sub_category": "Permissions",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "tool": "chmod"
+    },
+    "interaction": {
+      "user_query": "I have a script `.sh` file. I double click it and it just opens in a text editor. I want it to run!",
+      "ai_response": "For security, Linux does not execute text files by default unless they have the 'execute' permission.\n\n**1. Add Execute Permission:**\nRight-click -> Properties -> Permissions -> Check **'Allow executing file as program'**.\n\n**2. Run preference (Nemo/Nautilus):**\nSometimes the file manager defaults to 'View executable text files'. Go to Preferences -> Behavior and select **'Ask each time'** or **'Run executable text files when they are opened'**."
+    },
+    "technical_tags": ["scripts", "permissions", "executable", "gui"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_518",
+    "bucket": "File Organization",
+    "sub_category": "Security",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "tool": "fscrypt"
+    },
+    "interaction": {
+      "user_query": "I want to use native ext4 encryption (fscrypt) on a specific directory, but `tune2fs -O encrypt` fails.",
+      "ai_response": "Enabling encryption on the filesystem level usually requires the filesystem to be unmounted.\n\n1.  **Boot from a Live USB.**\n2.  **Run the command on the partition:**\n    ```bash\n    sudo tune2fs -O encrypt /dev/sdXn\n    ```\n3.  **Reboot into Debian.**\n4.  **Install fscrypt:**\n    ```bash\n    sudo apt install fscrypt\n    sudo fscrypt setup\n    ```\n5.  **Encrypt the directory:**\n    ```bash\n    mkdir secret\n    fscrypt encrypt secret\n    ```"
+    },
+    "technical_tags": ["ext4", "encryption", "fscrypt", "live-usb"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_519",
+    "bucket": "File Organization",
+    "sub_category": "Backups",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "tool": "Pika Backup"
+    },
+    "interaction": {
+      "user_query": "I want a backup tool that is easy like Time Machine on Mac. Timeshift says it's for system files. What do I use for my photos?",
+      "ai_response": "**Pika Backup** is a great, modern choice for GNOME users that acts like Time Machine for personal files (using BorgBackup under the hood).\n\n**Install:**\n```bash\nsudo apt install pika-backup\n# Or via Flatpak\nflatpak install flathub org.gnome.World.PikaBackup\n```\n\nIt allows you to browse historical versions of your files easily and saves space by deduplicating data."
+    },
+    "technical_tags": ["pika-backup", "borg", "gui", "recommendation"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_520",
+    "bucket": "File Organization",
+    "sub_category": "Permissions",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "tool": "chattr"
+    },
+    "interaction": {
+      "user_query": "I cannot modify `/etc/resolv.conf`. Even `sudo rm` says 'Operation not permitted'. Is my drive corrupted?",
+      "ai_response": "The file likely has the **immutable attribute** set, which prevents even root from modifying or deleting it. This is often done by network managers to prevent overwrites.\n\n**Check attributes:**\n```bash\nlsattr /etc/resolv.conf\n```\nIf you see an `i` (e.g., `----i---------`), it is immutable.\n\n**Remove the attribute:**\n```bash\nsudo chattr -i /etc/resolv.conf\n```\nNow you can edit or delete it."
+    },
+    "technical_tags": ["chattr", "immutable", "permissions", "attributes"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_521",
+    "bucket": "File Organization",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "file_manager": "Nautilus"
+    },
+    "interaction": {
+      "user_query": "Nautilus keeps showing 'Recent Files' including some private documents I opened. How do I clear this list or turn it off?",
+      "ai_response": "You can manage this in the system Privacy settings.\n\n**1. Open Settings.**\n**2. Go to Privacy -> File History & Trash.**\n**3. Turn off 'File History'.**\n\nTo clear the current list:\n* Click **'Clear History...'** in that same menu.\n* Or in Nautilus, click the 'Recent' tab, select all, and remove (this removes the shortcut, not the actual files)."
+    },
+    "technical_tags": ["privacy", "history", "nautilus", "settings"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_522",
+    "bucket": "File Organization",
+    "sub_category": "Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "tool": "Selinux"
+    },
+    "interaction": {
+      "user_query": "I set up a web server in my home folder `/home/me/www`, but Apache gives a 403 Forbidden. Permissions are 755. Someone said 'Check SELinux'.",
+      "ai_response": "SELinux blocks Apache from reading user home directories by default for security.\n\n**1. Check context:**\n```bash\nls -Z /home/me/www\n```\nIt probably has `user_home_t`.\n\n**2. Change context to allow web serving:**\n```bash\nsudo chcon -R -t httpd_sys_content_t /home/me/www\n```\n\n**3. Or allow Apache to read home directories (less secure):**\n```bash\nsudo setsebool -P httpd_enable_homedirs 1\n```"
+    },
+    "technical_tags": ["selinux", "apache", "permissions", "security"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_523",
+    "bucket": "File Organization",
+    "sub_category": "Permissions",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "filesystem": "FAT32"
+    },
+    "interaction": {
+      "user_query": "I'm trying to copy a 6GB movie file to my USB stick but it says 'File too large'. The stick has 16GB free! Why?",
+      "ai_response": "Your USB stick is likely formatted as **FAT32**.\n\n* **Limitation:** FAT32 has a maximum single file size limit of **4GB**.\n\n**Solution:**\nYou must reformat the drive to a filesystem that supports larger files, like **exFAT** (compatible with Windows/Mac/Linux) or **NTFS**.\n\n1. Copy existing data off the stick.\n2. Open 'Disks' or 'GParted'.\n3. Format partition as **exFAT**."
+    },
+    "technical_tags": ["fat32", "exfat", "file-size-limit", "formatting"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_524",
+    "bucket": "File Organization",
+    "sub_category": "Backups",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "tool": "rsync"
+    },
+    "interaction": {
+      "user_query": "I'm using rsync to backup to an external drive, but the destination has root permissions and I get permission denied errors. How do I backup my home folder preserving all permissions?",
+      "ai_response": "To preserve permissions (`-p`) and ownership (`-o`), rsync usually needs to run as root (or write to a filesystem where your user has full control). If the destination is an ext4 partition owned by root:\n\n**Run rsync with sudo:**\n```bash\nsudo rsync -avh /home/youruser /media/backup_drive/\n```\n\n* `-a`: Archive mode (preserves permissions, times, owners).\n* `-v`: Verbose.\n* `-h`: Human readable.\n\nEnsure the destination drive is formatted as a Linux filesystem (ext4), not NTFS/FAT, to correctly store these permissions."
+    },
+    "technical_tags": ["rsync", "backups", "permissions", "sudo"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_525",
+    "bucket": "File Organization",
+    "sub_category": "Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "tool": "BleachBit"
+    },
+    "interaction": {
+      "user_query": "I ran BleachBit as root to clean space, and now my permissions on some temp folders are messed up and some apps won't start. How do I fix default system permissions?",
+      "ai_response": "Running BleachBit as root can be aggressive. If system file permissions are broken, reinstalling the affected packages is the safest fix.\n\n**To verify and reinstall core packages:**\n```bash\nsudo apt install --reinstall coreutils\n```\n\nThere is no single 'reset all permissions' button in Linux without a reinstall. If `/tmp` has wrong permissions:\n```bash\nsudo chmod 1777 /tmp\n```\n(The `1` is the sticky bit, essential for `/tmp`)."
+    },
+    "technical_tags": ["bleachbit", "permissions", "tmp", "maintenance"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_601",
+    "bucket": "File Organization",
+    "sub_category": "Multi-device Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "tool": "Syncthing"
+    },
+    "interaction": {
+      "user_query": "I installed Syncthing on my laptop and phone. Both say 'Disconnected'. They are on the same Wi-Fi. Firewall?",
+      "ai_response": "This is almost always a firewall issue (UFW on Ubuntu).\n\n**Allow Syncthing ports:**\n```bash\nsudo ufw allow 22000/tcp\nsudo ufw allow 22000/udp\nsudo ufw allow 21027/udp\n```\n\nAlso, check the GUI (localhost:8384). If the device IDs are added correctly but it says 'Unused', you might need to share a folder to trigger the initial connection handshake."
+    },
+    "technical_tags": ["syncthing", "firewall", "ufw", "networking"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_602",
+    "bucket": "File Organization",
+    "sub_category": "Cloud Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "tool": "Google Drive"
+    },
+    "interaction": {
+      "user_query": "I switched from Windows. Where is the Google Drive app? I need to sync my work docs.",
+      "ai_response": "Google does not provide an official Drive client for Linux.\n\n**Option 1: GNOME Online Accounts (Built-in)**\n1. Go to System Settings -> Online Accounts.\n2. Add Google.\n3. Your Drive will appear in Nemo as a network mount (slow for large files).\n\n**Option 2: Insync (Paid, Best experience)**\nThird-party app that offers full offline syncing like on Windows.\n\n**Option 3: Rclone (Free, Advanced)**\nCommand-line tool to sync or mount drive."
+    },
+    "technical_tags": [
+      "google-drive",
+      "gnome-online-accounts",
+      "insync",
+      "cloud"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_603",
+    "bucket": "File Organization",
+    "sub_category": "Multi-device Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "tool": "Nextcloud"
+    },
+    "interaction": {
+      "user_query": "My Nextcloud client says 'Sync conflict' on a bunch of files. It created duplicate files named 'conflicted copy'. How do I resolve this without checking 100 files manually?",
+      "ai_response": "Conflict resolution is manual in Nextcloud to prevent data loss. There isn't an automatic 'overwrite all' button in the client GUI.\n\n**Strategy:**\n1.  Sort the folder by name to group the originals and conflicts.\n2.  If you know the **local** version is correct, you can delete the server versions (check timestamps).\n3.  Or, delete the local `conflicted copy` files if the server is correct.\n\n**Command to delete all local conflicted copies (Caution!):**\n```bash\nfind ~/Nextcloud -name '*conflicted copy*' -delete\n```"
+    },
+    "technical_tags": ["nextcloud", "sync-conflict", "find", "maintenance"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_604",
+    "bucket": "File Organization",
+    "sub_category": "Cloud Sync",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "tool": "Rclone"
+    },
+    "interaction": {
+      "user_query": "I mounted my OneDrive using `rclone mount`. It works, but it freezes my file manager when I try to open a folder with lots of images. How do I cache it?",
+      "ai_response": "Rclone mount downloads files on demand, which is slow for thumbnails. You need to enable VFS caching.\n\n**Update your mount command:**\n```bash\nrclone mount remote:path /path/to/mount \\\n--vfs-cache-mode full \\\n--vfs-cache-max-size 10G \\\n--vfs-cache-max-age 24h\n```\n* `--vfs-cache-mode full`: Caches reads and writes to disk, significantly speeding up browsing after the initial load."
+    },
+    "technical_tags": ["rclone", "onedrive", "performance", "caching"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_605",
+    "bucket": "File Organization",
+    "sub_category": "Multi-device Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "tool": "Bluetooth"
+    },
+    "interaction": {
+      "user_query": "I can send files FROM my phone TO my laptop via Bluetooth, but when I try to send FROM laptop TO phone, it fails immediately.",
+      "ai_response": "This is usually because the phone (Android/iOS) requires you to **accept the visibility/receiving request** or the screen is off.\n\n1.  Unlock your phone.\n2.  Go to Bluetooth settings and ensure the device is 'Visible'.\n3.  On Ubuntu, ensure 'File Sharing' is enabled in **Settings -> Sharing -> Bluetooth Sharing**.\n4.  Try sending again; watch the phone screen for a 'Accept file?' prompt."
+    },
+    "technical_tags": ["bluetooth", "sharing", "android", "connectivity"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_606",
+    "bucket": "File Organization",
+    "sub_category": "Multi-device Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "tool": "Warpinator"
+    },
+    "interaction": {
+      "user_query": "I love Warpinator for local transfers, but sometimes it just doesn't see my other computer on the LAN. They can ping each other.",
+      "ai_response": "Warpinator relies on the network allowing multicast/broadcast traffic for discovery.\n\n**Troubleshooting:**\n1.  **Firewall:** Ensure port **42000** (TCP/UDP) is open on both machines.\n    ```bash\n    sudo ufw allow 42000\n    ```\n2.  **Group Code:** Ensure both machines have the exact same 'Group Code' in Warpinator preferences (default is 'Warpinator').\n3.  **VPN:** If one machine is on a VPN, it might block local LAN discovery. Disable VPN temporarily."
+    },
+    "technical_tags": ["warpinator", "lan", "networking", "troubleshooting"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_607",
+    "bucket": "File Organization",
+    "sub_category": "Cloud Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "tool": "Dropbox"
+    },
+    "interaction": {
+      "user_query": "I installed Dropbox from the .deb file. The icon appears in the tray, but it says 'Connecting...' forever. I am not using a proxy.",
+      "ai_response": "The Dropbox proprietary daemon sometimes struggles with missing dependencies or outdated glibc versions on older/stable distros, though Debian 12 should be fine. \n\n**Try restarting the daemon manually to see errors:**\n```bash\ndropbox stop\n~/.dropbox-dist/dropboxd\n```\n\n**Common Fix:**\nIf it's a filesystem monitoring limit:\n```bash\necho fs.inotify.max_user_watches=100000 | sudo tee -a /etc/sysctl.conf; sudo sysctl -p\n```\nDropbox needs to watch many files; the default limit is often too low."
+    },
+    "technical_tags": ["dropbox", "inotify", "daemon", "troubleshooting"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_608",
+    "bucket": "File Organization",
+    "sub_category": "Multi-device Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "tool": "KDE Connect"
+    },
+    "interaction": {
+      "user_query": "KDE Connect (GSConnect) allows me to browse my phone files, but I can't write to the SD card, only internal storage. Permission denied.",
+      "ai_response": "Android restricts write access to external SD cards for apps that don't use the specific Storage Access Framework API correctly or have legacy permissions.\n\n**Workaround:**\n1.  On the Android KDE Connect app, go to **Plugin Settings** -> **Filesystem Expose**.\n2.  Tap **'Add storage location'**.\n3.  Manually select the SD card root folder and grant permission.\n4.  Re-mount the phone on the PC."
+    },
+    "technical_tags": ["kde-connect", "android", "permissions", "sd-card"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_609",
+    "bucket": "File Organization",
+    "sub_category": "Cloud Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "tool": "MegaSync"
+    },
+    "interaction": {
+      "user_query": "MegaSync consumes huge CPU when it starts up. I have 500GB of files. Is it re-uploading everything?",
+      "ai_response": "It is likely **indexing** and hashing your files to check for changes. It shouldn't re-upload unless the timestamps or file sizes changed.\n\n**Optimization:**\n1.  Exclude heavy folders like `node_modules` or build directories (`target`, `build`) using the **Exclusions** list in Mega settings.\n2.  Frequent changes to many small files trigger constant rehashing. Sync only your Documents/Media, not active coding project folders."
+    },
+    "technical_tags": ["mega", "performance", "cpu-usage", "indexing"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_610",
+    "bucket": "File Organization",
+    "sub_category": "Multi-device Sync",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "tool": "NFS"
+    },
+    "interaction": {
+      "user_query": "I set up an NFS share on my NAS. It mounts fine, but all files are owned by 'nobody:nogroup' and I can't write to them.",
+      "ai_response": "This is an **ID mapping** issue. NFS server and client user IDs (UIDs) do not match.\n\n**Quick Fix (Client side):**\nIf the server exports with `root_squash` (default), and you aren't matching UIDs:\n1.  Check the server `/etc/exports`. If safe (home LAN), use `all_squash,anonuid=1000,anongid=1000` to force all connections to be the server's main user.\n\n**Better Fix:**\nEnsure your user on the client has the same UID as the user on the NAS (usually 1000).\n```bash\nid\n```"
+    },
+    "technical_tags": ["nfs", "permissions", "networking", "uid"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_611",
+    "bucket": "File Organization",
+    "sub_category": "Multi-device Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "tool": "USB Tethering"
+    },
+    "interaction": {
+      "user_query": "I plugged my iPhone into my Linux Mint laptop to copy photos. It asks 'Trust this computer' on the phone, I click Trust, but nothing shows up in the file manager.",
+      "ai_response": "iOS is tricky with Linux. You usually need `libimobiledevice`.\n\n1.  **Unlock the iPhone screen**.\n2.  Open the terminal and check if the pair works:\n    ```bash\n    idevicepair pair\n    ```\n3.  Accept the trust prompt on the phone again.\n4.  If it succeeds, retry opening the file manager. If `idevicepair` is missing:\n    ```bash\n    sudo apt install libimobiledevice-utils ifuse\n    ```"
+    },
+    "technical_tags": ["iphone", "ios", "libimobiledevice", "mounting"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_612",
+    "bucket": "File Organization",
+    "sub_category": "Multi-device Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "tool": "Syncthing"
+    },
+    "interaction": {
+      "user_query": "Syncthing keeps stopping because 'Database is locked'. I have to restart the service to fix it.",
+      "ai_response": "This usually means two instances of Syncthing are trying to run simultaneously (e.g., a system service and a user service).\n\n**Check running processes:**\n```bash\nps aux | grep syncthing\n```\n\n**Fix:**\nDisable the system-wide service and use only the user service (recommended for file permissions):\n```bash\nsudo systemctl stop syncthing@root\nsudo systemctl disable syncthing@root\nsystemctl --user enable --now syncthing\n```"
+    },
+    "technical_tags": ["syncthing", "systemd", "services", "troubleshooting"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_613",
+    "bucket": "File Organization",
+    "sub_category": "Multi-device Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "tool": "Samba"
+    },
+    "interaction": {
+      "user_query": "I shared a folder on Windows 11. I can see it in Ubuntu's Network folder, but when I double click, it asks for password again and again. It won't accept my Windows PIN.",
+      "ai_response": "SMB shares do not accept Windows Hello PINs. You must use your **Microsoft Account password** or the local account password.\n\nIf using a Microsoft Account:\n* **Username:** Your full email address (e.g., `john@outlook.com`).\n* **Password:** Your email password.\n\nIf that fails, try putting the computer name as the domain: `COMPUTERNAME\\Username`."
+    },
+    "technical_tags": ["samba", "windows", "network-share", "authentication"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_614",
+    "bucket": "File Organization",
+    "sub_category": "Cloud Sync",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "tool": "Nextcloud"
+    },
+    "interaction": {
+      "user_query": "I'm self-hosting Nextcloud. The desktop client works, but uploading large files (2GB+) fails with 'Connection Closed'. Server config issue?",
+      "ai_response": "Yes, this is usually a PHP or web server limit on the host.\n\n**You need to adjust `php.ini` settings on the server:**\n```ini\nupload_max_filesize = 10G\npost_max_size = 10G\nmax_execution_time = 3600\nmax_input_time = 3600\n```\nAlso check Nginx/Apache configs (`client_max_body_size` in Nginx). Restart the web server after changes."
+    },
+    "technical_tags": ["nextcloud", "php", "server-config", "upload-limits"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_615",
+    "bucket": "File Organization",
+    "sub_category": "Multi-device Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "tool": "Thunderbird"
+    },
+    "interaction": {
+      "user_query": "I access my email on both my phone and Linux laptop. If I delete an email on Linux, it stays on my phone! Why isn't it syncing?",
+      "ai_response": "You are likely using **POP3** instead of **IMAP** protocol in Thunderbird.\n\n* **POP3:** Downloads email to the device. Deletions are often local-only.\n* **IMAP:** Syncs with the server. Deletions reflect everywhere.\n\n**Fix:**\nYou cannot convert the account type directly. You need to:\n1. Add a *New Account* in Thunderbird.\n2. Choose **IMAP** during setup.\n3. Move any local folders from the old POP3 account to the new IMAP account.\n4. Remove the POP3 account."
+    },
+    "technical_tags": ["thunderbird", "email", "imap", "pop3"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_701",
+    "bucket": "File Organization",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "tool": "Git"
+    },
+    "interaction": {
+      "user_query": "I cloned a work repo, but the file permissions are all wrong (everything is executable). I try to chmod 644 files but git says they are 'modified'. How do I tell git to ignore permission changes?",
+      "ai_response": "You can configure git to ignore file mode (permission) changes in this repository.\n\n**Run this inside the repo:**\n```bash\ngit config core.fileMode false\n```\n\nHowever, if the files *should* be 644 and are committed as 755 in the repo, you should fix them and commit the fix:\n```bash\nchmod 644 filename\ngit add filename\ngit commit -m \"Fix permissions\"\n```"
+    },
+    "technical_tags": ["git", "permissions", "chmod", "development"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_702",
+    "bucket": "File Organization",
+    "sub_category": "Work Context",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "tool": "Docker"
+    },
+    "interaction": {
+      "user_query": "I mounted a host folder into a Docker container. The app inside the container writes files as 'root', so I can't edit them on my host machine. How do I fix this mapping?",
+      "ai_response": "This is a classic Docker permission issue.\n\n**Option 1: Pass UID/GID**\nRun the container with your user's ID:\n```bash\ndocker run -u $(id -u):$(id -g) -v $(pwd):/app image_name\n```\n\n**Option 2: User Remapping (Daemon level)**\nConfigure `/etc/docker/daemon.json` to remap container root to your host user (more complex).\n\n**Quick Fix for existing files:**\n```bash\nsudo chown -R $USER:$USER ./folder\n```"
+    },
+    "technical_tags": ["docker", "permissions", "containers", "mounting"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_703",
+    "bucket": "File Organization",
+    "sub_category": "Work Context",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "tool": "LibreOffice"
+    },
+    "interaction": {
+      "user_query": "I saved a spreadsheet as .ods but my boss uses Excel and says the formatting is messy. Should I just save as .xlsx?",
+      "ai_response": "Yes, for maximum compatibility with Microsoft Office users, save as **.xlsx**.\n\n**To set it as default:**\n1.  Open LibreOffice Calc.\n2.  **Tools** -> **Options** -> **Load/Save** -> **General**.\n3.  Under 'Default File Format and ODF Settings':\n    * Document type: Spreadsheet\n    * Always save as: **Excel 2007-365 (*.xlsx)**.\n\nNote: Complex macros or highly specific formatting might still differ slightly."
+    },
+    "technical_tags": ["libreoffice", "compatibility", "formats", "excel"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_704",
+    "bucket": "File Organization",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "tool": "zip"
+    },
+    "interaction": {
+      "user_query": "I need to zip a folder for a client, but I want to exclude the hidden .git folder and all the .DS_Store files. The GUI compressor just zips everything.",
+      "ai_response": "The command line `zip` tool is best for exclusions.\n\n**Command:**\n```bash\nzip -r project_archive.zip my_project_folder -x \"*.git*\" -x \"*.DS_Store\"\n```\n* `-r`: Recursive (folder).\n* `-x`: Exclude pattern. Note the quotes around the patterns to prevent shell expansion."
+    },
+    "technical_tags": ["zip", "cli", "archives", "exclusions"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_705",
+    "bucket": "File Organization",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "tool": "PDF"
+    },
+    "interaction": {
+      "user_query": "I have 5 separate PDF contracts I need to combine into one file to email. Do I need to buy software?",
+      "ai_response": "No, you can use `pdfunite` (part of `poppler-utils`) or ImageMagick.\n\n**Using pdfunite (Recommended):**\n```bash\nsudo apt install poppler-utils\npdfunite file1.pdf file2.pdf file3.pdf output_combined.pdf\n```\n\n**Using GUI:**\nInstall **PDF Arranger** (`sudo apt install pdfarranger`) for a visual way to merge, reorder, and delete pages."
+    },
+    "technical_tags": ["pdf", "merging", "pdfunite", "pdfarranger"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_706",
+    "bucket": "File Organization",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "tool": "SSHFS"
+    },
+    "interaction": {
+      "user_query": "I mount my work server via SSHFS. It works, but if the internet drops, my file manager freezes completely until I reboot.",
+      "ai_response": "This happens because the mount hangs on I/O. You need to use the `reconnect` and `ServerAliveInterval` options so it fails gracefully or reconnects.\n\n**Better SSHFS command:**\n```bash\nsshfs user@host:/remote/path /local/mount -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3\n```\n\n**To unfreeze without rebooting:**\n```bash\nfusermount -u -z /local/mount\n```\n(`-z` performs a lazy unmount, detaching it immediately)."
+    },
+    "technical_tags": ["sshfs", "mounting", "network-issues", "freezing"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_707",
+    "bucket": "File Organization",
+    "sub_category": "Work Context",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "tool": "Deduplication"
+    },
+    "interaction": {
+      "user_query": "We have a 4TB shared drive at the office full of duplicate marketing assets. I want to replace duplicates with Hard Links to save space. What tool does this safely?",
+      "ai_response": "**rdfind** or **jdupes** are excellent for this.\n\n**Using rdfind:**\n```bash\nsudo apt install rdfind\nrdfind -makehardlinks true /path/to/shared/drive\n```\n\n**Warning:** Hard links point to the same inode. If someone modifies one 'copy', **all** instances change. Ensure this is desired behavior. If users need to modify files independently, do not use hard links; delete the duplicates instead."
+    },
+    "technical_tags": [
+      "deduplication",
+      "hard-links",
+      "rdfind",
+      "storage-management"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_708",
+    "bucket": "File Organization",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "tool": "VPN"
+    },
+    "interaction": {
+      "user_query": "I need to access a Windows SMB share `\\\\server\\files` via VPN. I am connected to VPN, but the file manager can't find the server by name.",
+      "ai_response": "VPNs often don't push DNS settings correctly for local domain names, or WINS isn't working.\n\n**Workaround: Use the IP Address**\nInstead of `smb://server/files`, try:\n`smb://192.168.1.50/files`\n\n(Replace with the actual internal IP of the server). You can also add the server hostname and IP to your `/etc/hosts` file if the IP is static."
+    },
+    "technical_tags": ["vpn", "smb", "dns", "networking"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_709",
+    "bucket": "File Organization",
+    "sub_category": "Work Context",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "tool": "Archive Manager"
+    },
+    "interaction": {
+      "user_query": "My colleague sent me a `.rar` file. Archive Manager says 'An error occurred loading the archive'.",
+      "ai_response": "Ubuntu does not install the proprietary RAR support by default.\n\n**Install unrar:**\n```bash\nsudo apt install unrar\n```\nAfter installing, try opening the file again in Archive Manager."
+    },
+    "technical_tags": ["rar", "unrar", "archives", "compatibility"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_710",
+    "bucket": "File Organization",
+    "sub_category": "Work Context",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "filesystem": "Btrfs"
+    },
+    "interaction": {
+      "user_query": "I have a Btrfs volume for project data. I want to create a snapshot before running a risky batch script, so I can roll back instantly if it messes up.",
+      "ai_response": "Btrfs snapshots are perfect for this.\n\n**1. Create the snapshot:**\n```bash\nsudo btrfs subvolume snapshot /data/projects /data/projects_backup\n```\n\n**2. Run your script.**\n\n**3. If it fails and you need to restore:**\n```bash\n# Delete messed up version\nsudo btrfs subvolume delete /data/projects\n# Restore from snapshot\nsudo btrfs subvolume snapshot /data/projects_backup /data/projects\n```"
+    },
+    "technical_tags": ["btrfs", "snapshots", "recovery", "versioning"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_801",
+    "bucket": "File Organization",
+    "sub_category": "Personal/Home",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "SteamOS (Arch based)",
+      "tool": "Steam"
+    },
+    "interaction": {
+      "user_query": "I bought a new SD card for my Steam Deck. How do I move my installed games from the internal drive to the SD card without redownloading?",
+      "ai_response": "You can do this directly within Steam's Gaming Mode or Desktop Mode.\n\n**Method:**\n1.  Press the **Steam** button -> **Settings** -> **Storage**.\n2.  Select **Internal Drive**.\n3.  Press **Y** (or select) to Move content.\n4.  Select the games you want to move and confirm destination (MicroSD).\n\nIf you are in Desktop Mode Linux, you can create a Steam Library folder on the SD card in Steam Settings -> Downloads -> Steam Library Folders."
+    },
+    "technical_tags": ["steam", "storage", "migration", "games"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_802",
+    "bucket": "File Organization",
+    "sub_category": "Personal/Home",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "tool": "Plex"
+    },
+    "interaction": {
+      "user_query": "I installed Plex Media Server. It can't see my movies in `/home/me/Videos`. I added the library but it stays empty.",
+      "ai_response": "The Plex user (`plex`) does not have permission to read your home directory.\n\n**Solution:**\n1.  **Grant read/execute access** to your home (simplest, slightly less secure):\n    ```bash\n    chmod 755 /home/me\n    ```\n2.  **Better:** Move your media to a neutral location like `/srv/media` or an external drive, and ensure permissions allow others to read:\n    ```bash\n    sudo chown -R $USER:plex /path/to/media\n    chmod -R 750 /path/to/media\n    ```"
+    },
+    "technical_tags": ["plex", "permissions", "media-server", "ownership"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_803",
+    "bucket": "File Organization",
+    "sub_category": "Personal/Home",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "tool": "fstab"
+    },
+    "interaction": {
+      "user_query": "I have a secondary hard drive for data. Every time I reboot, I have to click it in the file manager to 'mount' it before my music player can find the songs.",
+      "ai_response": "You need to auto-mount the drive at boot.\n\n**Using GNOME Disks (GUI - Easiest):**\n1.  Open **Disks**.\n2.  Select the partition.\n3.  Click the **Gears icon** -> **Edit Mount Options**.\n4.  Turn off 'User Session Defaults'.\n5.  Check **'Mount at system startup'**.\n6.  Set a permanent mount point (e.g., `/mnt/Data`).\n7.  Click OK and reboot."
+    },
+    "technical_tags": ["automount", "fstab", "gnome-disks", "convenience"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_804",
+    "bucket": "File Organization",
+    "sub_category": "Personal/Home",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "tool": "LVM"
+    },
+    "interaction": {
+      "user_query": "I have two 1TB drives. I want to combine them into one big 2TB volume for my movies. I don't want RAID redundancy, just one big folder.",
+      "ai_response": "You can use **LVM (Logical Volume Manager)**.\n\n**Overview:**\n1.  **Initialize drives:** `pvcreate /dev/sdb /dev/sdc`\n2.  **Create Group:** `vgcreate media_vg /dev/sdb /dev/sdc`\n3.  **Create Volume:** `lvcreate -l 100%FREE -n media_lv media_vg`\n4.  **Format:** `mkfs.ext4 /dev/media_vg/media_lv`\n5.  **Mount:** Mount `/dev/media_vg/media_lv` to your folder.\n\n*Warning:* If one drive fails, you may lose data on both. This is RAID 0 logic (JBOD/Span)."
+    },
+    "technical_tags": ["lvm", "storage-pooling", "disk-management", "setup"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_805",
+    "bucket": "File Organization",
+    "sub_category": "Personal/Home",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "tool": "Shotwell"
+    },
+    "interaction": {
+      "user_query": "I imported photos from my camera into Shotwell. Did it move the photos or just copy them? I don't want duplicates taking up space.",
+      "ai_response": "By default, Shotwell usually **copies** photos to `~/Pictures` organized by date. It does not delete them from the source (camera/SD card).\n\nIf you imported from a folder already on your computer, it might have just linked them or copied them depending on your settings (Preferences -> Library -> 'Import photos to library' vs 'Link to photos'). Check the file path of a photo in Shotwell (Right click -> Show in File Manager) to see where it lives."
+    },
+    "technical_tags": ["shotwell", "photos", "importing", "duplication"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_806",
+    "bucket": "File Organization",
+    "sub_category": "Personal/Home",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "tool": "FFmpeg"
+    },
+    "interaction": {
+      "user_query": "I have a .mkv movie with 5 audio tracks. I want to remove the 4 foreign language tracks to save space. Can I do this without re-encoding the video?",
+      "ai_response": "Yes, you can copy the video stream and select specific audio streams using FFmpeg.\n\n**Example (Keep video and 1st audio stream only):**\n```bash\nffmpeg -i input.mkv -map 0:v -map 0:a:0 -c copy output.mkv\n```\n* `-c copy`: Copies streams without re-encoding (very fast).\n* `-map 0:a:0`: Selects the first audio track.\n\nAlternatively, use **MKVToolNix GUI** for a visual way to uncheck tracks."
+    },
+    "technical_tags": ["ffmpeg", "mkv", "media-management", "optimization"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_807",
+    "bucket": "File Organization",
+    "sub_category": "Personal/Home",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "filesystem": "exFAT"
+    },
+    "interaction": {
+      "user_query": "My USB drive says 'read only' suddenly. I used it on my TV to watch a movie, now Linux won't let me add files.",
+      "ai_response": "The filesystem likely wasn't unmounted cleanly (pulled out of the TV), so it's marked as 'dirty'. Linux mounts dirty exFAT drives as read-only to prevent damage.\n\n**Fix:**\nYou need to repair the filesystem.\n```bash\nsudo fsck.exfat -a /dev/sdX1\n```\n(Replace `/dev/sdX1` with your drive identifier, find it with `lsblk`)."
+    },
+    "technical_tags": ["exfat", "fsck", "read-only", "troubleshooting"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_808",
+    "bucket": "File Organization",
+    "sub_category": "Personal/Home",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "tool": "MusicBrainz Picard"
+    },
+    "interaction": {
+      "user_query": "My music collection is a mess of folders like 'Unknown Artist'. I want to automatically rename and move files based on tags like `Artist/Album/Song.mp3`.",
+      "ai_response": "**MusicBrainz Picard** is the best tool for this.\n\n1.  Install: `sudo pacman -S picard`\n2.  Add your folder.\n3.  Click **Cluster** -> **Lookup** (or Scan).\n4.  Once matched (files turn gold/green on the right), go to **Options** -> **File Naming**.\n5.  Check **'Move files when saving'** and **'Rename files when saving'**.\n6.  Set your pattern (e.g., `%artist%/%album%/%title%`).\n7.  Hit Save."
+    },
+    "technical_tags": ["music-organization", "picard", "renaming", "metadata"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_809",
+    "bucket": "File Organization",
+    "sub_category": "Personal/Home",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "tool": "Symbolic Links"
+    },
+    "interaction": {
+      "user_query": "I want my 'Downloads' folder to actually be on my big secondary HDD, but I want to keep the shortcut in my Home folder.",
+      "ai_response": "You should use a **Symbolic Link (symlink)**.\n\n1.  **Move the current folder:**\n    ```bash\n    mv ~/Downloads /mnt/HDD/Downloads\n    ```\n2.  **Create the link:**\n    ```bash\n    ln -s /mnt/HDD/Downloads ~/Downloads\n    ```\nNow `~/Downloads` points to the HDD. Note: If you have Snap apps (like Firefox Snap), they might have trouble reading the new location unless you adjust permissions or mount binds."
+    },
+    "technical_tags": ["symlink", "storage-management", "downloads", "cli"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_810",
+    "bucket": "File Organization",
+    "sub_category": "Personal/Home",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "tool": "Clementine"
+    },
+    "interaction": {
+      "user_query": "I have duplicates of many songs. Some are MP3, some are FLAC. I want to keep FLAC and delete MP3s if they are duplicates.",
+      "ai_response": "Standard deduplication tools hash the file content, so they won't see MP3 and FLAC as duplicates because the data differs.\n\n**Solution:**\nUse **fdupes** manually or a music-specific cleaner.\n\nA simple shell approach:\n```bash\n# Find FLAC files, look for matching MP3, delete MP3\nfind . -name \"*.flac\" | while read f; do\n  mp3=\"${f%.flac}.mp3\"\n  if [ -f \"$mp3\" ]; then\n    echo \"Deleting duplicate $mp3\"\n    rm \"$mp3\"\n  fi\ndone\n```\n**Test with `echo` first!**"
+    },
+    "technical_tags": ["deduplication", "scripting", "audio-formats", "bash"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_901",
+    "bucket": "File Organization",
+    "sub_category": "Edge Cases",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "tool": "dd"
+    },
+    "interaction": {
+      "user_query": "I accidentally formatted my partition table! `lsblk` shows the drive is empty. I haven't written anything new to it. Can I get my partitions back?",
+      "ai_response": "Yes, if the data hasn't been overwritten, **TestDisk** can likely recover the partition table.\n\n**Recovery Steps:**\n1.  `sudo apt install testdisk`\n2.  Run `sudo testdisk`.\n3.  Select the drive -> **Proceed**.\n4.  Select Partition type (usually **Intel** or **EFI GPT**).\n5.  Select **Analyse** -> **Quick Search**.\n6.  If it finds your partitions (Green), press **Enter** -> **Write**."
+    },
+    "technical_tags": ["recovery", "testdisk", "partition-table", "emergency"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_902",
+    "bucket": "File Organization",
+    "sub_category": "Edge Cases",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "filesystem": "btrfs"
+    },
+    "interaction": {
+      "user_query": "I have a file named `-dash-prefix.txt` and I can't remove it! `rm -dash-prefix.txt` thinks it's a command option.",
+      "ai_response": "This is a common shell parsing issue. You need to tell the command that the options have ended.\n\n**Method 1:**\n```bash\nrm -- -dash-prefix.txt\n```\n(`--` signifies end of flags).\n\n**Method 2:**\nReference the current directory path:\n```bash\nrm ./ -dash-prefix.txt\n```"
+    },
+    "technical_tags": ["shell-tricks", "rm", "weird-filenames", "cli"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_903",
+    "bucket": "File Organization",
+    "sub_category": "Edge Cases",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "tool": "find"
+    },
+    "interaction": {
+      "user_query": "I extracted a zip bomb accidentally. Now I have 100,000 files in one folder and `rm *` says 'Argument list too long'.",
+      "ai_response": "The shell cannot expand `*` when there are that many files.\n\n**Use `find` to delete them:**\n```bash\nfind . -maxdepth 1 -type f -delete\n```\n(Make sure you are IN the folder you want to empty!).\n\n**Alternative:**\n```bash\nls -f | xargs rm\n```\n(Using `ls -f` is faster as it doesn't sort)."
+    },
+    "technical_tags": ["rm", "argument-list-too-long", "cleanup", "find"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_904",
+    "bucket": "File Organization",
+    "sub_category": "Edge Cases",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "filesystem": "ext4"
+    },
+    "interaction": {
+      "user_query": "I am out of inodes on my disk (`df -i` is 100%), but I have 50GB of space free! I can't create any new files.",
+      "ai_response": "You have too many small files, consuming all available inodes (file entries).\n\n**Find the culprit folder:**\nRun this to count files per directory:\n```bash\nsudo du --inodes -d 1 / | sort -rh | head -n 10\n```\nCommon causes: `/var/lib/docker`, massive cache folders, or mail spools. You must delete files to free up inodes; you cannot increase inode count on ext4 without reformatting."
+    },
+    "technical_tags": [
+      "inodes",
+      "disk-usage",
+      "maintenance",
+      "troubleshooting"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_905",
+    "bucket": "File Organization",
+    "sub_category": "Edge Cases",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "tool": "badblocks"
+    },
+    "interaction": {
+      "user_query": "I think my hard drive is failing. Some files give 'Input/output error' when reading. How do I check for physical bad sectors?",
+      "ai_response": "Input/output errors usually indicate failing hardware.\n\n**1. Check SMART Data:**\n```bash\nsudo smartctl -a /dev/sdX\n```\nLook for 'Reallocated_Sector_Ct'.\n\n**2. Check for bad blocks (Non-destructive read test):**\n```bash\nsudo badblocks -sv /dev/sdX\n```\nIf this returns errors, **backup immediately** and replace the drive. Do not write to it."
+    },
+    "technical_tags": [
+      "smartctl",
+      "badblocks",
+      "hardware-failure",
+      "diagnostics"
+    ],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_906",
+    "bucket": "File Organization",
+    "sub_category": "Edge Cases",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "tool": "photorec"
+    },
+    "interaction": {
+      "user_query": "I `rm`'d a very important video file. It's not in trash. It was on my external ext4 drive. I haven't touched the drive since.",
+      "ai_response": "Stop using the drive immediately. Unmount it if possible.\n\n**Use PhotoRec (part of TestDisk):**\n1.  `sudo apt install testdisk`\n2.  `sudo photorec /dev/sdX`\n3.  Select partition -> **ext4** -> **Free Space** (try to scan only free space first).\n4.  Select a destination to save recovered files (Must be a DIFFERENT drive).\n\nPhotoRec recovers files but loses filenames (e.g., `f12345.mp4`)."
+    },
+    "technical_tags": ["recovery", "photorec", "undelete", "data-loss"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_907",
+    "bucket": "File Organization",
+    "sub_category": "Edge Cases",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "tool": "iconv"
+    },
+    "interaction": {
+      "user_query": "I unzipped a file from a Windows machine in Japan, and all the filenames are weird garbage characters like `?????.txt`.",
+      "ai_response": "The filenames are likely in Shift-JIS encoding but your system expects UTF-8.\n\n**Fix using `convmv`:**\n```bash\nsudo apt install convmv\n# Test conversion\nconvmv -f shift-jis -t utf-8 -r --notest path/to/folder\n```\n* `-f`: From encoding.\n* `-t`: To encoding.\n* `--notest`: Actually rename the files (run without this first to preview)."
+    },
+    "technical_tags": ["encoding", "convmv", "filenames", "localization"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_908",
+    "bucket": "File Organization",
+    "sub_category": "Edge Cases",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "tool": "symlinks"
+    },
+    "interaction": {
+      "user_query": "I created a symlink loop (Folder A points to B, B points to A). `find` command goes on forever. How do I find and break broken/circular links?",
+      "ai_response": "You can use the `symlinks` utility to analyze links.\n\n**1. Install:** `sudo dnf install symlinks`\n**2. Report issues:** `symlinks -r /path/to/check`\n**3. Delete dangling/messy links:** `symlinks -d /path/to/check`\n\nAlternatively, `find` detects loops if you use standard options, but will complain: `find -L .`"
+    },
+    "technical_tags": ["symlinks", "loop", "maintenance", "troubleshooting"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_909",
+    "bucket": "File Organization",
+    "sub_category": "Edge Cases",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "tool": "Sparse Files"
+    },
+    "interaction": {
+      "user_query": "I copied a 50GB virtual machine disk image (`.qcow2`) to a USB stick, but the USB stick is only 32GB. The file copied successfully! How?",
+      "ai_response": "The original file was likely a **sparse file** (mostly empty zeros). When you copied it, if the tool supported sparse copying, it only wrote the actual data.\n\nHowever, standard `cp` to FAT/exFAT usually expands sparse files to full size, which would fail.\n\nIf it succeeded, verify the file size:\n```bash\ndu -h file.qcow2  # Disk usage\nls -lh file.qcow2 # Apparent size\n```\nIf `du` is small, it's sparse."
+    },
+    "technical_tags": ["sparse-files", "qcow2", "storage-theory", "cp"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_910",
+    "bucket": "File Organization",
+    "sub_category": "Edge Cases",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "tool": "touch"
+    },
+    "interaction": {
+      "user_query": "I need to change the 'Modified Date' of a file to last year for... reasons. Is that possible?",
+      "ai_response": "Yes, you can modify timestamps using `touch`.\n\n**Command:**\n```bash\ntouch -d \"2023-01-01 12:00\" filename.txt\n```\nThis changes the access and modification time. Note that the 'Change' time (ctime) updates to 'now' and cannot be easily spoofed on standard filesystems."
+    },
+    "technical_tags": ["touch", "timestamps", "metadata", "cli"],
+    "friction_type": "user_error"
+  }
+]

@@ -1,0 +1,31 @@
+[agent]
+name = "wifi-fix"
+description = "Diagnose and repair WiFi connectivity issues"
+
+[commands]
+# Read-only diagnostic commands (auto-approved)
+read = [
+  "nmcli device status",
+  "nmcli connection show",
+  "ip link show",
+  "ip addr show",
+  "ping -c 3 8.8.8.8",
+  "ping -c 3 google.com",
+  "iwconfig",
+  "networkctl status",
+  "cat /etc/resolv.conf",
+  "systemctl status NetworkManager"
+]
+
+# Write commands requiring user confirmation
+write = [
+  "nmcli connection up",
+  "nmcli device connect",
+  "nmcli networking on",
+  "systemctl restart NetworkManager",
+  "ip link set up"
+]
+
+[policy]
+default = "read-only"
+write_requires = "user-confirm"

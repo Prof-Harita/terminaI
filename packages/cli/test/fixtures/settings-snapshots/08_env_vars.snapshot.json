@@ -1,0 +1,826 @@
+[DEBUG] CLI: main() called
+[DEBUG] CLI: main() called
+{
+  "allowedMcpServers": [],
+  "blockedMcpServers": [],
+  "sessionId": "e765eaae-602e-42f4-b4bf-fe7a126bb4e6",
+  "fileSystemService": {},
+  "modelConfigService": {
+    "config": {
+      "aliases": {
+        "base": {
+          "modelConfig": {
+            "generateContentConfig": {
+              "temperature": 0,
+              "topP": 1
+            }
+          }
+        },
+        "chat-base": {
+          "extends": "base",
+          "modelConfig": {
+            "generateContentConfig": {
+              "thinkingConfig": {
+                "includeThoughts": true
+              },
+              "temperature": 1,
+              "topP": 0.95,
+              "topK": 64
+            }
+          }
+        },
+        "chat-base-2.5": {
+          "extends": "chat-base",
+          "modelConfig": {
+            "generateContentConfig": {
+              "thinkingConfig": {
+                "thinkingBudget": 8192
+              }
+            }
+          }
+        },
+        "chat-base-3": {
+          "extends": "chat-base",
+          "modelConfig": {
+            "generateContentConfig": {
+              "thinkingConfig": {
+                "thinkingLevel": "HIGH"
+              }
+            }
+          }
+        },
+        "gemini-3-pro-preview": {
+          "extends": "chat-base-3",
+          "modelConfig": {
+            "model": "gemini-3-pro-preview"
+          }
+        },
+        "gemini-3-flash-preview": {
+          "extends": "chat-base-3",
+          "modelConfig": {
+            "model": "gemini-3-flash-preview"
+          }
+        },
+        "gemini-2.5-pro": {
+          "extends": "chat-base-2.5",
+          "modelConfig": {
+            "model": "gemini-2.5-pro"
+          }
+        },
+        "gemini-2.5-flash": {
+          "extends": "chat-base-2.5",
+          "modelConfig": {
+            "model": "gemini-2.5-flash"
+          }
+        },
+        "gemini-2.5-flash-lite": {
+          "extends": "chat-base-2.5",
+          "modelConfig": {
+            "model": "gemini-2.5-flash-lite"
+          }
+        },
+        "gemini-2.5-flash-base": {
+          "extends": "base",
+          "modelConfig": {
+            "model": "gemini-2.5-flash"
+          }
+        },
+        "classifier": {
+          "extends": "base",
+          "modelConfig": {
+            "model": "gemini-2.5-flash-lite",
+            "generateContentConfig": {
+              "maxOutputTokens": 1024,
+              "thinkingConfig": {
+                "thinkingBudget": 512
+              }
+            }
+          }
+        },
+        "prompt-completion": {
+          "extends": "base",
+          "modelConfig": {
+            "model": "gemini-2.5-flash-lite",
+            "generateContentConfig": {
+              "temperature": 0.3,
+              "maxOutputTokens": 16000,
+              "thinkingConfig": {
+                "thinkingBudget": 0
+              }
+            }
+          }
+        },
+        "edit-corrector": {
+          "extends": "base",
+          "modelConfig": {
+            "model": "gemini-2.5-flash-lite",
+            "generateContentConfig": {
+              "thinkingConfig": {
+                "thinkingBudget": 0
+              }
+            }
+          }
+        },
+        "summarizer-default": {
+          "extends": "base",
+          "modelConfig": {
+            "model": "gemini-2.5-flash-lite",
+            "generateContentConfig": {
+              "maxOutputTokens": 2000
+            }
+          }
+        },
+        "summarizer-shell": {
+          "extends": "base",
+          "modelConfig": {
+            "model": "gemini-2.5-flash-lite",
+            "generateContentConfig": {
+              "maxOutputTokens": 2000
+            }
+          }
+        },
+        "web-search": {
+          "extends": "gemini-2.5-flash-base",
+          "modelConfig": {
+            "generateContentConfig": {
+              "tools": [
+                {
+                  "googleSearch": {}
+                }
+              ]
+            }
+          }
+        },
+        "web-fetch": {
+          "extends": "gemini-2.5-flash-base",
+          "modelConfig": {
+            "generateContentConfig": {
+              "tools": [
+                {
+                  "urlContext": {}
+                }
+              ]
+            }
+          }
+        },
+        "web-fetch-fallback": {
+          "extends": "gemini-2.5-flash-base",
+          "modelConfig": {}
+        },
+        "loop-detection": {
+          "extends": "gemini-2.5-flash-base",
+          "modelConfig": {}
+        },
+        "loop-detection-double-check": {
+          "extends": "base",
+          "modelConfig": {
+            "model": "gemini-2.5-pro"
+          }
+        },
+        "llm-edit-fixer": {
+          "extends": "gemini-2.5-flash-base",
+          "modelConfig": {}
+        },
+        "next-speaker-checker": {
+          "extends": "gemini-2.5-flash-base",
+          "modelConfig": {}
+        },
+        "chat-compression-3-pro": {
+          "modelConfig": {
+            "model": "gemini-3-pro-preview"
+          }
+        },
+        "chat-compression-3-flash": {
+          "modelConfig": {
+            "model": "gemini-3-flash-preview"
+          }
+        },
+        "chat-compression-2.5-pro": {
+          "modelConfig": {
+            "model": "gemini-2.5-pro"
+          }
+        },
+        "chat-compression-2.5-flash": {
+          "modelConfig": {
+            "model": "gemini-2.5-flash"
+          }
+        },
+        "chat-compression-2.5-flash-lite": {
+          "modelConfig": {
+            "model": "gemini-2.5-flash-lite"
+          }
+        },
+        "chat-compression-default": {
+          "modelConfig": {
+            "model": "gemini-2.5-pro"
+          }
+        }
+      },
+      "overrides": [
+        {
+          "match": {
+            "model": "chat-base",
+            "isRetry": true
+          },
+          "modelConfig": {
+            "generateContentConfig": {
+              "temperature": 1
+            }
+          }
+        }
+      ]
+    },
+    "runtimeAliases": {}
+  },
+  "embeddingModel": "gemini-embedding-001",
+  "targetDir": "/home/profharita/Code/terminaI",
+  "workspaceContext": {
+    "targetDir": "/home/profharita/Code/terminaI",
+    "directories": {},
+    "initialDirectories": {},
+    "onDirectoriesChangedListeners": {}
+  },
+  "debugMode": false,
+  "question": "",
+  "previewMode": false,
+  "excludeTools": [],
+  "userMemory": "--- Context from: terminaI.md ---\n## Building and running\n\nBefore submitting any changes, it is crucial to validate them by running the\nfull preflight check. This command will build the repository, run all tests,\ncheck for type errors, and lint the code.\n\nTo run the full suite of checks, execute the following command:\n\n```bash\nnpm run preflight\n```\n\nThis single command ensures that your changes meet all the quality gates of the\nproject. While you can run the individual steps (`build`, `test`, `typecheck`,\n`lint`) separately, it is highly recommended to use `npm run preflight` to\nensure a comprehensive validation.\n\n## Writing Tests\n\nThis project uses **Vitest** as its primary testing framework. When writing\ntests, aim to follow existing patterns. Key conventions include:\n\n### Test Structure and Framework\n\n- **Framework**: All tests are written using Vitest (`describe`, `it`, `expect`,\n  `vi`).\n- **File Location**: Test files (`*.test.ts` for logic, `*.test.tsx` for React\n  components) are co-located with the source files they test.\n- **Configuration**: Test environments are defined in `vitest.config.ts` files.\n- **Setup/Teardown**: Use `beforeEach` and `afterEach`. Commonly,\n  `vi.resetAllMocks()` is called in `beforeEach` and `vi.restoreAllMocks()` in\n  `afterEach`.\n\n### Mocking (`vi` from Vitest)\n\n- **ES Modules**: Mock with\n  `vi.mock('module-name', async (importOriginal) => { ... })`. Use\n  `importOriginal` for selective mocking.\n  - _Example_:\n    `vi.mock('os', async (importOriginal) => { const actual = await importOriginal(); return { ...actual, homedir: vi.fn() }; });`\n- **Mocking Order**: For critical dependencies (e.g., `os`, `fs`) that affect\n  module-level constants, place `vi.mock` at the _very top_ of the test file,\n  before other imports.\n- **Hoisting**: Use `const myMock = vi.hoisted(() => vi.fn());` if a mock\n  function needs to be defined before its use in a `vi.mock` factory.\n- **Mock Functions**: Create with `vi.fn()`. Define behavior with\n  `mockImplementation()`, `mockResolvedValue()`, or `mockRejectedValue()`.\n- **Spying**: Use `vi.spyOn(object, 'methodName')`. Restore spies with\n  `mockRestore()` in `afterEach`.\n\n### Commonly Mocked Modules\n\n- **Node.js built-ins**: `fs`, `fs/promises`, `os` (especially `os.homedir()`),\n  `path`, `child_process` (`execSync`, `spawn`).\n- **External SDKs**: `@google/genai`, `@modelcontextprotocol/sdk`.\n- **Internal Project Modules**: Dependencies from other project packages are\n  often mocked.\n\n### React Component Testing (CLI UI - Ink)\n\n- Use `render()` from `ink-testing-library`.\n- Assert output with `lastFrame()`.\n- Wrap components in necessary `Context.Provider`s.\n- Mock custom React hooks and complex child components using `vi.mock()`.\n\n### Asynchronous Testing\n\n- Use `async/await`.\n- For timers, use `vi.useFakeTimers()`, `vi.advanceTimersByTimeAsync()`,\n  `vi.runAllTimersAsync()`.\n- Test promise rejections with `await expect(promise).rejects.toThrow(...)`.\n\n### General Guidance\n\n- When adding tests, first examine existing tests to understand and conform to\n  established conventions.\n- Pay close attention to the mocks at the top of existing test files; they\n  reveal critical dependencies and how they are managed in a test environment.\n\n## Git Repo\n\nThe main branch for this project is called \"main\"\n\n## JavaScript/TypeScript\n\nWhen contributing to this React, Node, and TypeScript codebase, please\nprioritize the use of plain JavaScript objects with accompanying TypeScript\ninterface or type declarations over JavaScript class syntax. This approach\noffers significant advantages, especially concerning interoperability with React\nand overall code maintainability.\n\n### Preferring Plain Objects over Classes\n\nJavaScript classes, by their nature, are designed to encapsulate internal state\nand behavior. While this can be useful in some object-oriented paradigms, it\noften introduces unnecessary complexity and friction when working with React's\ncomponent-based architecture. Here's why plain objects are preferred:\n\n- Seamless React Integration: React components thrive on explicit props and\n  state management. Classes' tendency to store internal state directly within\n  instances can make prop and state propagation harder to reason about and\n  maintain. Plain objects, on the other hand, are inherently immutable (when\n  used thoughtfully) and can be easily passed as props, simplifying data flow\n  and reducing unexpected side effects.\n\n- Reduced Boilerplate and Increased Conciseness: Classes often promote the use\n  of constructors, this binding, getters, setters, and other boilerplate that\n  can unnecessarily bloat code. TypeScript interface and type declarations\n  provide powerful static type checking without the runtime overhead or\n  verbosity of class definitions. This allows for more succinct and readable\n  code, aligning with JavaScript's strengths in functional programming.\n\n- Enhanced Readability and Predictability: Plain objects, especially when their\n  structure is clearly defined by TypeScript interfaces, are often easier to\n  read and understand. Their properties are directly accessible, and there's no\n  hidden internal state or complex inheritance chains to navigate. This\n  predictability leads to fewer bugs and a more maintainable codebase.\n\n- Simplified Immutability: While not strictly enforced, plain objects encourage\n  an immutable approach to data. When you need to modify an object, you\n  typically create a new one with the desired changes, rather than mutating the\n  original. This pattern aligns perfectly with React's reconciliation process\n  and helps prevent subtle bugs related to shared mutable state.\n\n- Better Serialization and Deserialization: Plain JavaScript objects are\n  naturally easy to serialize to JSON and deserialize back, which is a common\n  requirement in web development (e.g., for API communication or local storage).\n  Classes, with their methods and prototypes, can complicate this process.\n\n### Embracing ES Module Syntax for Encapsulation\n\nRather than relying on Java-esque private or public class members, which can be\nverbose and sometimes limit flexibility, we strongly prefer leveraging ES module\nsyntax (`import`/`export`) for encapsulating private and public APIs.\n\n- Clearer Public API Definition: With ES modules, anything that is exported is\n  part of the public API of that module, while anything not exported is\n  inherently private to that module. This provides a very clear and explicit way\n  to define what parts of your code are meant to be consumed by other modules.\n\n- Enhanced Testability (Without Exposing Internals): By default, unexported\n  functions or variables are not accessible from outside the module. This\n  encourages you to test the public API of your modules, rather than their\n  internal implementation details. If you find yourself needing to spy on or\n  stub an unexported function for testing purposes, it's often a \"code smell\"\n  indicating that the function might be a good candidate for extraction into its\n  own separate, testable module with a well-defined public API. This promotes a\n  more robust and maintainable testing strategy.\n\n- Reduced Coupling: Explicitly defined module boundaries through import/export\n  help reduce coupling between different parts of your codebase. This makes it\n  easier to refactor, debug, and understand individual components in isolation.\n\n### Avoiding `any` Types and Type Assertions; Preferring `unknown`\n\nTypeScript's power lies in its ability to provide static type checking, catching\npotential errors before your code runs. To fully leverage this, it's crucial to\navoid the `any` type and be judicious with type assertions.\n\n- **The Dangers of `any`**: Using any effectively opts out of TypeScript's type\n  checking for that particular variable or expression. While it might seem\n  convenient in the short term, it introduces significant risks:\n  - **Loss of Type Safety**: You lose all the benefits of type checking, making\n    it easy to introduce runtime errors that TypeScript would otherwise have\n    caught.\n  - **Reduced Readability and Maintainability**: Code with `any` types is harder\n    to understand and maintain, as the expected type of data is no longer\n    explicitly defined.\n  - **Masking Underlying Issues**: Often, the need for any indicates a deeper\n    problem in the design of your code or the way you're interacting with\n    external libraries. It's a sign that you might need to refine your types or\n    refactor your code.\n\n- **Preferring `unknown` over `any`**: When you absolutely cannot determine the\n  type of a value at compile time, and you're tempted to reach for any, consider\n  using unknown instead. unknown is a type-safe counterpart to any. While a\n  variable of type unknown can hold any value, you must perform type narrowing\n  (e.g., using typeof or instanceof checks, or a type assertion) before you can\n  perform any operations on it. This forces you to handle the unknown type\n  explicitly, preventing accidental runtime errors.\n\n  ```ts\n  function processValue(value: unknown) {\n    if (typeof value === 'string') {\n      // value is now safely a string\n      console.log(value.toUpperCase());\n    } else if (typeof value === 'number') {\n      // value is now safely a number\n      console.log(value * 2);\n    }\n    // Without narrowing, you cannot access properties or methods on 'value'\n    // console.log(value.someProperty); // Error: Object is of type 'unknown'.\n  }\n  ```\n\n- **Type Assertions (`as Type`) - Use with Caution**: Type assertions tell the\n  TypeScript compiler, \"Trust me, I know what I'm doing; this is definitely of\n  this type.\" While there are legitimate use cases (e.g., when dealing with\n  external libraries that don't have perfect type definitions, or when you have\n  more information than the compiler), they should be used sparingly and with\n  extreme caution.\n  - **Bypassing Type Checking**: Like `any`, type assertions bypass TypeScript's\n    safety checks. If your assertion is incorrect, you introduce a runtime error\n    that TypeScript would not have warned you about.\n  - **Code Smell in Testing**: A common scenario where `any` or type assertions\n    might be tempting is when trying to test \"private\" implementation details\n    (e.g., spying on or stubbing an unexported function within a module). This\n    is a strong indication of a \"code smell\" in your testing strategy and\n    potentially your code structure. Instead of trying to force access to\n    private internals, consider whether those internal details should be\n    refactored into a separate module with a well-defined public API. This makes\n    them inherently testable without compromising encapsulation.\n\n### Type narrowing `switch` clauses\n\nUse the `checkExhaustive` helper in the default clause of a switch statement.\nThis will ensure that all of the possible options within the value or\nenumeration are used.\n\nThis helper method can be found in `packages/cli/src/utils/checks.ts`\n\n### Embracing JavaScript's Array Operators\n\nTo further enhance code cleanliness and promote safe functional programming\npractices, leverage JavaScript's rich set of array operators as much as\npossible. Methods like `.map()`, `.filter()`, `.reduce()`, `.slice()`,\n`.sort()`, and others are incredibly powerful for transforming and manipulating\ndata collections in an immutable and declarative way.\n\nUsing these operators:\n\n- Promotes Immutability: Most array operators return new arrays, leaving the\n  original array untouched. This functional approach helps prevent unintended\n  side effects and makes your code more predictable.\n- Improves Readability: Chaining array operators often lead to more concise and\n  expressive code than traditional for loops or imperative logic. The intent of\n  the operation is clear at a glance.\n- Facilitates Functional Programming: These operators are cornerstones of\n  functional programming, encouraging the creation of pure functions that take\n  inputs and produce outputs without causing side effects. This paradigm is\n  highly beneficial for writing robust and testable code that pairs well with\n  React.\n\nBy consistently applying these principles, we can maintain a codebase that is\nnot only efficient and performant but also a joy to work with, both now and in\nthe future.\n\n## React (mirrored and adjusted from [react-mcp-server](https://github.com/facebook/react/blob/4448b18760d867f9e009e810571e7a3b8930bb19/compiler/packages/react-mcp-server/src/index.ts#L376C1-L441C94))\n\n### Role\n\nYou are a React assistant that helps users write more efficient and optimizable\nReact code. You specialize in identifying patterns that enable React Compiler to\nautomatically apply optimizations, reducing unnecessary re-renders and improving\napplication performance.\n\n### Follow these guidelines in all code you produce and suggest\n\nUse functional components with Hooks: Do not generate class components or use\nold lifecycle methods. Manage state with useState or useReducer, and side\neffects with useEffect (or related Hooks). Always prefer functions and Hooks for\nany new component logic.\n\nKeep components pure and side-effect-free during rendering: Do not produce code\nthat performs side effects (like subscriptions, network requests, or modifying\nexternal variables) directly inside the component's function body. Such actions\nshould be wrapped in useEffect or performed in event handlers. Ensure your\nrender logic is a pure function of props and state.\n\nRespect one-way data flow: Pass data down through props and avoid any global\nmutations. If two components need to share data, lift that state up to a common\nparent or use React Context, rather than trying to sync local state or use\nexternal variables.\n\nNever mutate state directly: Always generate code that updates state immutably.\nFor example, use spread syntax or other methods to create new objects/arrays\nwhen updating state. Do not use assignments like state.someValue = ... or array\nmutations like array.push() on state variables. Use the state setter (setState\nfrom useState, etc.) to update state.\n\nAccurately use useEffect and other effect Hooks: whenever you think you could\nuseEffect, think and reason harder to avoid it. useEffect is primarily only used\nfor synchronization, for example synchronizing React with some external state.\nIMPORTANT - Don't setState (the 2nd value returned by useState) within a\nuseEffect as that will degrade performance. When writing effects, include all\nnecessary dependencies in the dependency array. Do not suppress ESLint rules or\nomit dependencies that the effect's code uses. Structure the effect callbacks to\nhandle changing values properly (e.g., update subscriptions on prop changes,\nclean up on unmount or dependency change). If a piece of logic should only run\nin response to a user action (like a form submission or button click), put that\nlogic in an event handler, not in a useEffect. Where possible, useEffects should\nreturn a cleanup function.\n\nFollow the Rules of Hooks: Ensure that any Hooks (useState, useEffect,\nuseContext, custom Hooks, etc.) are called unconditionally at the top level of\nReact function components or other Hooks. Do not generate code that calls Hooks\ninside loops, conditional statements, or nested helper functions. Do not call\nHooks in non-component functions or outside the React component rendering\ncontext.\n\nUse refs only when necessary: Avoid using useRef unless the task genuinely\nrequires it (such as focusing a control, managing an animation, or integrating\nwith a non-React library). Do not use refs to store application state that\nshould be reactive. If you do use refs, never write to or read from ref.current\nduring the rendering of a component (except for initial setup like lazy\ninitialization). Any ref usage should not affect the rendered output directly.\n\nPrefer composition and small components: Break down UI into small, reusable\ncomponents rather than writing large monolithic components. The code you\ngenerate should promote clarity and reusability by composing components\ntogether. Similarly, abstract repetitive logic into custom Hooks when\nappropriate to avoid duplicating code.\n\nOptimize for concurrency: Assume React may render your components multiple times\nfor scheduling purposes (especially in development with Strict Mode). Write code\nthat remains correct even if the component function runs more than once. For\ninstance, avoid side effects in the component body and use functional state\nupdates (e.g., setCount(c => c + 1)) when updating state based on previous state\nto prevent race conditions. Always include cleanup functions in effects that\nsubscribe to external resources. Don't write useEffects for \"do this when this\nchanges\" side effects. This ensures your generated code will work with React's\nconcurrent rendering features without issues.\n\nOptimize to reduce network waterfalls - Use parallel data fetching wherever\npossible (e.g., start multiple requests at once rather than one after another).\nLeverage Suspense for data loading and keep requests co-located with the\ncomponent that needs the data. In a server-centric approach, fetch related data\ntogether in a single request on the server side (using Server Components, for\nexample) to reduce round trips. Also, consider using caching layers or global\nfetch management to avoid repeating identical requests.\n\nRely on React Compiler - useMemo, useCallback, and React.memo can be omitted if\nReact Compiler is enabled. Avoid premature optimization with manual memoization.\nInstead, focus on writing clear, simple components with direct data flow and\nside-effect-free render functions. Let the React Compiler handle tree-shaking,\ninlining, and other performance enhancements to keep your code base simpler and\nmore maintainable.\n\nDesign for a good user experience - Provide clear, minimal, and non-blocking UI\nstates. When data is loading, show lightweight placeholders (e.g., skeleton\nscreens) rather than intrusive spinners everywhere. Handle errors gracefully\nwith a dedicated error boundary or a friendly inline message. Where possible,\nrender partial data as it becomes available rather than making the user wait for\neverything. Suspense allows you to declare the loading states in your component\ntree in a natural way, preventing “flash” states and improving perceived\nperformance.\n\n### Process\n\n1. Analyze the user's code for optimization opportunities:\n   - Check for React anti-patterns that prevent compiler optimization\n   - Look for component structure issues that limit compiler effectiveness\n   - Think about each suggestion you are making and consult React docs for best\n     practices\n\n2. Provide actionable guidance:\n   - Explain specific code changes with clear reasoning\n   - Show before/after examples when suggesting changes\n   - Only suggest changes that meaningfully improve optimization potential\n\n### Optimization Guidelines\n\n- State updates should be structured to enable granular updates\n- Side effects should be isolated and dependencies clearly defined\n\n## Documentation guidelines\n\nWhen working in the `/docs` directory, follow the guidelines in this section:\n\n- **Role:** You are an expert technical writer and AI assistant for contributors\n  to Gemini CLI. Produce professional, accurate, and consistent documentation to\n  guide users of Gemini CLI.\n- **Technical Accuracy:** Do not invent facts, commands, code, API names, or\n  output. All technical information specific to Gemini CLI must be based on code\n  found within this directory and its subdirectories.\n- **Style Authority:** Your source for writing guidance and style is the\n  \"Documentation contribution process\" section in the root directory's\n  `CONTRIBUTING.md` file, as well as any guidelines provided this section.\n- **Information Architecture Consideration:** Before proposing documentation\n  changes, consider the information architecture. If a change adds significant\n  new content to existing documents, evaluate if creating a new, more focused\n  page or changes to `sidebar.json` would provide a better user experience.\n- **Proactive User Consideration:** The user experience should be a primary\n  concern when making changes to documentation. Aim to fill gaps in existing\n  knowledge whenever possible while keeping documentation concise and easy for\n  users to understand. If changes might hinder user understanding or\n  accessibility, proactively raise these concerns and propose alternatives.\n\n## Comments policy\n\nOnly write high-value comments if at all. Avoid talking to the user through\ncomments.\n\n## General requirements\n\n- If there is something you do not understand or is ambiguous, seek confirmation\n  or clarification from the user before making changes based on assumptions.\n- Use hyphens instead of underscores in flag names (e.g. `my-flag` instead of\n  `my_flag`).\n- Always refer to Gemini CLI as `Gemini CLI`, never `the Gemini CLI`.\n--- End of Context from: terminaI.md ---",
+  "geminiMdFileCount": 1,
+  "geminiMdFilePaths": [
+    "/home/profharita/Code/terminaI/terminaI.md"
+  ],
+  "approvalMode": "default",
+  "showMemoryUsage": false,
+  "accessibility": {
+    "screenReader": false
+  },
+  "telemetrySettings": {
+    "enabled": false,
+    "target": "local",
+    "otlpEndpoint": "http://localhost:4317",
+    "logPrompts": true
+  },
+  "usageStatisticsEnabled": true,
+  "geminiClient": {
+    "sessionTurnCount": 0,
+    "loopDetector": {
+      "promptId": "",
+      "lastToolCallKey": null,
+      "toolCallRepetitionCount": 0,
+      "streamContentHistory": "",
+      "contentStats": {},
+      "lastContentIndex": 0,
+      "loopDetected": false,
+      "inCodeBlock": false,
+      "turnsInCurrentPrompt": 0,
+      "llmCheckInterval": 3,
+      "lastCheckTurn": 0,
+      "disabledForSession": false
+    },
+    "compressionService": {},
+    "lastPromptId": "e765eaae-602e-42f4-b4bf-fe7a126bb4e6",
+    "currentSequenceModel": null,
+    "forceFullIdeContext": true,
+    "hasFailedCompressionAttempt": false
+  },
+  "modelRouterService": {
+    "strategy": {
+      "name": "agent-router",
+      "strategies": [
+        {
+          "name": "fallback"
+        },
+        {
+          "name": "override"
+        },
+        {
+          "name": "classifier"
+        },
+        {
+          "name": "default"
+        }
+      ]
+    }
+  },
+  "modelAvailabilityService": {
+    "health": {}
+  },
+  "fileFiltering": {
+    "respectGitIgnore": true,
+    "respectGeminiIgnore": true,
+    "enableRecursiveFileSearch": true,
+    "disableFuzzySearch": false
+  },
+  "fileDiscoveryService": {
+    "gitIgnoreFilter": {
+      "projectRoot": "/home/profharita/Code/terminaI",
+      "cache": {},
+      "processedExtraPatterns": []
+    },
+    "geminiIgnoreFilter": {
+      "projectRoot": "/home/profharita/Code/terminaI",
+      "patterns": [],
+      "ig": {
+        "_rules": {
+          "_ignoreCase": true,
+          "_rules": []
+        },
+        "_strictPathCheck": true,
+        "_ignoreCache": {},
+        "_testCache": {}
+      }
+    },
+    "combinedIgnoreFilter": {
+      "projectRoot": "/home/profharita/Code/terminaI",
+      "cache": {},
+      "processedExtraPatterns": []
+    },
+    "projectRoot": "/home/profharita/Code/terminaI"
+  },
+  "checkpointing": false,
+  "cwd": "/home/profharita/Code/terminaI",
+  "model": "auto-gemini-3",
+  "hasAccessToPreviewModel": false,
+  "noBrowser": false,
+  "folderTrust": false,
+  "ideMode": false,
+  "sessionProvenance": [],
+  "webRemoteStatus": null,
+  "_activeModel": "auto-gemini-3",
+  "maxSessionTurns": -1,
+  "listSessions": false,
+  "listExtensions": false,
+  "_extensionLoader": {
+    "eventEmitter": {
+      "_events": {},
+      "_eventsCount": 0
+    },
+    "startingCount": 0,
+    "startCompletedCount": 0,
+    "stoppingCount": 0,
+    "stopCompletedCount": 0,
+    "isStarting": false,
+    "extensionEnablementManager": {
+      "configFilePath": "/tmp/tmp.USnbMKGxHx/.terminai/extensions/extension-enablement.json",
+      "configDir": "/tmp/tmp.USnbMKGxHx/.terminai/extensions",
+      "enabledExtensionNamesOverride": []
+    },
+    "settings": {},
+    "telemetryConfig": {
+      "allowedMcpServers": [],
+      "blockedMcpServers": [],
+      "sessionId": "0d518832-5f18-4330-abe6-22fa3913907a",
+      "fileSystemService": {},
+      "modelConfigService": {
+        "runtimeAliases": {}
+      },
+      "embeddingModel": "gemini-embedding-001",
+      "targetDir": "/home/profharita/Code/terminaI",
+      "workspaceContext": {
+        "targetDir": "/home/profharita/Code/terminaI",
+        "directories": {},
+        "initialDirectories": {},
+        "onDirectoriesChangedListeners": {}
+      },
+      "debugMode": false,
+      "previewMode": false,
+      "userMemory": "",
+      "geminiMdFileCount": 0,
+      "geminiMdFilePaths": [],
+      "approvalMode": "default",
+      "showMemoryUsage": false,
+      "accessibility": {},
+      "telemetrySettings": {
+        "enabled": false,
+        "target": "local",
+        "otlpEndpoint": "http://localhost:4317",
+        "logPrompts": true
+      },
+      "usageStatisticsEnabled": true,
+      "geminiClient": {
+        "sessionTurnCount": 0,
+        "loopDetector": {
+          "promptId": "",
+          "lastToolCallKey": null,
+          "toolCallRepetitionCount": 0,
+          "streamContentHistory": "",
+          "contentStats": {},
+          "lastContentIndex": 0,
+          "loopDetected": false,
+          "inCodeBlock": false,
+          "turnsInCurrentPrompt": 0,
+          "llmCheckInterval": 3,
+          "lastCheckTurn": 0,
+          "disabledForSession": false
+        },
+        "compressionService": {},
+        "lastPromptId": "0d518832-5f18-4330-abe6-22fa3913907a",
+        "currentSequenceModel": null,
+        "forceFullIdeContext": true,
+        "hasFailedCompressionAttempt": false
+      },
+      "modelRouterService": {
+        "strategy": {
+          "name": "agent-router",
+          "strategies": [
+            {
+              "name": "fallback"
+            },
+            {
+              "name": "override"
+            },
+            {
+              "name": "classifier"
+            },
+            {
+              "name": "default"
+            }
+          ]
+        }
+      },
+      "modelAvailabilityService": {
+        "health": {}
+      },
+      "fileFiltering": {
+        "respectGitIgnore": true,
+        "respectGeminiIgnore": true,
+        "enableRecursiveFileSearch": true,
+        "disableFuzzySearch": false
+      },
+      "fileDiscoveryService": null,
+      "checkpointing": false,
+      "cwd": "/home/profharita/Code/terminaI",
+      "model": "",
+      "hasAccessToPreviewModel": false,
+      "noBrowser": false,
+      "folderTrust": false,
+      "ideMode": false,
+      "sessionProvenance": [],
+      "webRemoteStatus": null,
+      "_activeModel": "",
+      "maxSessionTurns": -1,
+      "listSessions": false,
+      "listExtensions": false,
+      "_extensionLoader": {
+        "startingCount": 0,
+        "startCompletedCount": 0,
+        "stoppingCount": 0,
+        "stopCompletedCount": 0,
+        "isStarting": false,
+        "extensions": []
+      },
+      "_enabledExtensions": [],
+      "enableExtensionReloading": false,
+      "quotaErrorOccurred": false,
+      "experimentalZedIntegration": false,
+      "loadMemoryFromIncludeDirectories": false,
+      "importFormat": "tree",
+      "discoveryMaxDirs": 200,
+      "interactive": false,
+      "ptyInfo": "child_process",
+      "useRipgrep": true,
+      "enableInteractiveShell": false,
+      "skipNextSpeakerCheck": true,
+      "shellExecutionConfig": {
+        "terminalWidth": 80,
+        "terminalHeight": 24,
+        "showColor": false,
+        "pager": "cat"
+      },
+      "extensionManagement": true,
+      "enablePromptCompletion": false,
+      "truncateToolOutputThreshold": 4000000,
+      "truncateToolOutputLines": 1000,
+      "enableToolOutputTruncation": true,
+      "initialized": false,
+      "storage": {
+        "targetDir": "/home/profharita/Code/terminaI"
+      },
+      "fileExclusions": {},
+      "useSmartEdit": true,
+      "useWriteTodos": true,
+      "messageBus": {
+        "_events": {},
+        "_eventsCount": 0,
+        "policyEngine": {
+          "rules": [],
+          "checkers": [],
+          "hookCheckers": [],
+          "defaultDecision": "ask_user",
+          "nonInteractive": false,
+          "allowHooks": true
+        },
+        "debug": false
+      },
+      "outputSettings": {
+        "format": "text"
+      },
+      "enableMessageBusIntegration": false,
+      "codebaseInvestigatorSettings": {
+        "enabled": true,
+        "maxNumTurns": 10,
+        "maxTimeMinutes": 3,
+        "thinkingBudget": 8192
+      },
+      "introspectionAgentSettings": {
+        "enabled": false
+      },
+      "continueOnFailedApiCall": true,
+      "retryFetchErrors": false,
+      "enableShellOutputEfficiency": true,
+      "shellToolInactivityTimeout": 300000,
+      "disableYoloMode": false,
+      "brainAuthority": "escalate-only",
+      "pendingIncludeDirectories": [],
+      "enableHooks": false,
+      "disabledHooks": [],
+      "enableAgents": false,
+      "experimentalJitContext": false,
+      "auditSettings": {
+        "redactUiTypedText": true,
+        "retentionDays": 30,
+        "exportFormat": "jsonl",
+        "exportRedaction": "enterprise"
+      },
+      "recipeSettings": {
+        "paths": [
+          "/home/profharita/Code/terminaI/.terminai/recipes"
+        ],
+        "communityPaths": [],
+        "allowCommunity": false,
+        "confirmCommunityOnFirstLoad": true,
+        "trustedCommunityRecipes": []
+      },
+      "guiAutomationSettings": {
+        "minReviewLevel": "B",
+        "clickMinReviewLevel": "B",
+        "typeMinReviewLevel": "B",
+        "redactTypedTextByDefault": true,
+        "snapshotMaxDepth": 10,
+        "snapshotMaxNodes": 100,
+        "maxActionsPerMinute": 60
+      },
+      "auditLedger": {
+        "filePath": "/tmp/tmp.USnbMKGxHx/.terminai/logs/audit/0d518832-5f18-4330-abe6-22fa3913907a.jsonl",
+        "redactionOptions": {
+          "redactUiTypedText": true
+        },
+        "lastHash": "",
+        "initialized": false
+      },
+      "approvalPin": "000000",
+      "providerConfig": {
+        "provider": "gemini"
+      },
+      "logsRetentionDays": 7,
+      "replToolConfig": {
+        "sandboxTier": "tier1",
+        "timeoutMs": 30000
+      }
+    },
+    "workspaceDir": "/home/profharita/Code/terminaI",
+    "loadedExtensions": []
+  },
+  "_enabledExtensions": [],
+  "enableExtensionReloading": false,
+  "quotaErrorOccurred": false,
+  "experimentalZedIntegration": false,
+  "loadMemoryFromIncludeDirectories": false,
+  "importFormat": "tree",
+  "discoveryMaxDirs": 200,
+  "interactive": true,
+  "ptyInfo": "lydell-node-pty",
+  "trustedFolder": true,
+  "useRipgrep": true,
+  "enableInteractiveShell": true,
+  "skipNextSpeakerCheck": true,
+  "shellExecutionConfig": {
+    "terminalWidth": 80,
+    "terminalHeight": 24,
+    "showColor": false,
+    "pager": "cat"
+  },
+  "extensionManagement": true,
+  "enablePromptCompletion": false,
+  "truncateToolOutputThreshold": 4000000,
+  "truncateToolOutputLines": 1000,
+  "enableToolOutputTruncation": true,
+  "initialized": false,
+  "storage": {
+    "targetDir": "/home/profharita/Code/terminaI"
+  },
+  "fileExclusions": {},
+  "useSmartEdit": true,
+  "useWriteTodos": false,
+  "messageBus": {
+    "_events": {},
+    "_eventsCount": 0,
+    "policyEngine": {
+      "rules": [
+        {
+          "toolName": "delegate_to_agent",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "glob_files",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "grep_search",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "list_files",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "read_file",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "read_many_files",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "search_web",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "SubagentInvocation",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "ui.query",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "ui.capabilities",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "ui.wait",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "ui.assert",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "ui.health",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "ui.describe",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "discovered_tool_*",
+          "decision": "ask_user",
+          "priority": 1.01
+        },
+        {
+          "toolName": "edit_file",
+          "decision": "ask_user",
+          "priority": 1.01
+        },
+        {
+          "toolName": "save_memory",
+          "decision": "ask_user",
+          "priority": 1.01
+        },
+        {
+          "toolName": "run_terminal_command",
+          "decision": "ask_user",
+          "priority": 1.01
+        },
+        {
+          "toolName": "write_to_file",
+          "decision": "ask_user",
+          "priority": 1.01
+        },
+        {
+          "toolName": "web_fetch",
+          "decision": "ask_user",
+          "priority": 1.01
+        },
+        {
+          "toolName": "ui.snapshot",
+          "decision": "ask_user",
+          "priority": 1.01
+        },
+        {
+          "toolName": "ui.click",
+          "decision": "ask_user",
+          "priority": 1.01
+        },
+        {
+          "toolName": "ui.click_xy",
+          "decision": "deny",
+          "priority": 1.01
+        },
+        {
+          "toolName": "ui.type",
+          "decision": "ask_user",
+          "priority": 1.01
+        },
+        {
+          "toolName": "ui.key",
+          "decision": "ask_user",
+          "priority": 1.01
+        },
+        {
+          "toolName": "ui.scroll",
+          "decision": "ask_user",
+          "priority": 1.01
+        },
+        {
+          "toolName": "ui.focus",
+          "decision": "ask_user",
+          "priority": 1.01
+        }
+      ],
+      "checkers": [],
+      "hookCheckers": [],
+      "defaultDecision": "ask_user",
+      "nonInteractive": false,
+      "allowHooks": true
+    },
+    "debug": false
+  },
+  "outputSettings": {
+    "format": "text"
+  },
+  "enableMessageBusIntegration": true,
+  "codebaseInvestigatorSettings": {
+    "enabled": true,
+    "maxNumTurns": 10,
+    "maxTimeMinutes": 3,
+    "thinkingBudget": 8192
+  },
+  "introspectionAgentSettings": {
+    "enabled": false
+  },
+  "continueOnFailedApiCall": true,
+  "retryFetchErrors": false,
+  "enableShellOutputEfficiency": true,
+  "shellToolInactivityTimeout": 300000,
+  "disableYoloMode": false,
+  "brainAuthority": "escalate-only",
+  "pendingIncludeDirectories": [],
+  "enableHooks": false,
+  "hooks": {},
+  "disabledHooks": [],
+  "enableAgents": false,
+  "experimentalJitContext": false,
+  "auditSettings": {
+    "redactUiTypedText": true,
+    "retentionDays": 30,
+    "exportFormat": "jsonl",
+    "exportRedaction": "enterprise"
+  },
+  "recipeSettings": {
+    "paths": [
+      "/home/profharita/Code/terminaI/.terminai/recipes"
+    ],
+    "communityPaths": [],
+    "allowCommunity": false,
+    "confirmCommunityOnFirstLoad": true,
+    "trustedCommunityRecipes": []
+  },
+  "guiAutomationSettings": {
+    "snapshotMaxDepth": null,
+    "snapshotMaxNodes": null,
+    "maxActionsPerMinute": null
+  },
+  "auditLedger": {
+    "filePath": "/tmp/tmp.USnbMKGxHx/.terminai/logs/audit/e765eaae-602e-42f4-b4bf-fe7a126bb4e6.jsonl",
+    "redactionOptions": {
+      "redactUiTypedText": true
+    },
+    "lastHash": "",
+    "initialized": false
+  },
+  "approvalPin": "000000",
+  "providerConfig": {
+    "provider": "gemini"
+  },
+  "logsRetentionDays": 7,
+  "replToolConfig": {
+    "sandboxTier": "tier1",
+    "timeoutMs": 30000
+  }
+}

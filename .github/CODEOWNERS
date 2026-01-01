@@ -1,0 +1,14 @@
+# Default: require review from the project owner/maintainers.
+* @Prof-Harita
+
+# Critical release/identity files.
+/package.json @Prof-Harita
+/package-lock.json @Prof-Harita
+/LICENSE @Prof-Harita
+/SECURITY.md @Prof-Harita
+/.github/workflows/ @Prof-Harita
+
+# Docs and website.
+/docs/ @Prof-Harita
+/docs-terminai/ @Prof-Harita
+/terminai-website/ @Prof-Harita

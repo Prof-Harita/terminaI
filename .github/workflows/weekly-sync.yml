@@ -1,0 +1,102 @@
+name: Weekly Upstream Sync
+
+on:
+  schedule:
+    - cron: '0 3 * * SAT' # Saturday 3 AM UTC
+  workflow_dispatch: # Manual trigger
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  trigger-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Issue for Jules
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const today = new Date().toISOString().split('T')[0];
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[Upstream Sync] Week of ${today}`,
+              body: `## Weekly Upstream Sync
+
+            **Your mission:** Absorb upstream improvements while preserving TerminaI identity.
+
+            Read \`AGENTS.md\` Section 5.1 for complete instructions. Summary below:
+
+            ---
+
+            ### Phase 1: Fetch & Classify
+
+            \`\`\`bash
+            git remote add upstream https://github.com/google-gemini/gemini-cli.git 2>/dev/null || true
+            git fetch upstream
+            git log --oneline HEAD..upstream/main
+            \`\`\`
+
+            Classify each commit:
+            - 🟢 **CORE** → Cherry-pick directly
+            - 🟡 **FORK** → Reimplement the *intent* in our code
+            - ⚪ **IRRELEVANT** → Skip entirely
+
+            ---
+
+            ### Phase 2: Integrate
+
+            \`\`\`bash
+            git checkout -b upstream-sync/${today}
+            \`\`\`
+
+            For CORE commits:
+            \`\`\`bash
+            git cherry-pick -x <hash>
+            \`\`\`
+
+            For FORK commits:
+            - Read the upstream diff
+            - Understand the problem being solved
+            - Apply the same solution to our diverged files
+            - **Keep TerminaI branding** (never "Gemini" in user-facing strings)
+
+            ---
+
+            ### Phase 3: Verify
+
+            \`\`\`bash
+            npm run test:ci
+            npm run lint
+            npx prettier --write .
+            \`\`\`
+
+            All tests must pass before opening PR.
+
+            ---
+
+            ### Phase 4: Document & PR
+
+            Create in \`.upstream/patches/${today}/\`:
+            - \`classification.md\` — Your CORE/FORK/IRRELEVANT breakdown
+            - \`commits.txt\` — Raw commit list
+            - \`release_notes.md\` — Human-readable summary
+
+            Open PR with:
+            - Title: \`[Upstream Sync] Week of ${today}\`
+            - Assign: @Prof-Harita
+            - Labels: \`upstream-sync\`, \`automated\`
+
+            ---
+
+            ### Reference
+
+            - [\`AGENTS.md\`](../AGENTS.md) — Complete instructions
+            - [\`FORK_ZONES.md\`](../docs-terminai/FORK_ZONES.md) — Zone classification
+            `,
+              labels: ['upstream-sync', 'automated']
+            });
+
+            console.log('Issue created for upstream sync');

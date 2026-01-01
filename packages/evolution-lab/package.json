@@ -1,0 +1,33 @@
+{
+  "name": "@terminai/evolution-lab",
+  "version": "0.1.0",
+  "description": "Agentic Testing Lab for TerminaI",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "evolution-lab": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/cli.js",
+    "lab": "node dist/cli.js full",
+    "adversary": "node dist/cli.js adversary",
+    "run-tasks": "node dist/cli.js run",
+    "aggregate": "node dist/cli.js aggregate",
+    "suite": "node dist/cli.js suite",
+    "test": "vitest run --passWithNoTests",
+    "test:ci": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@terminai/core": "file:../core",
+    "yargs": "^17.7.2",
+    "glob": "^12.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "@types/yargs": "^17.0.32",
+    "typescript": "^5.3.3",
+    "vitest": "^3.1.1"
+  }
+}

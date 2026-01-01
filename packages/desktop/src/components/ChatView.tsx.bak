@@ -1,0 +1,637 @@
+"use client"
+
+import type React from "react"
+import type { RefObject } from 'react'
+import { useState, useRef, useEffect, useCallback, useMemo } from "react"
+import { Button } from "./ui/button"
+import { Badge } from './ui/badge'
+import { cn } from "../lib/utils"
+import type { Message } from '../types/cli'
+import { useSettingsStore } from '../stores/settingsStore'
+import { Loader2, Send, Paperclip, Mic, X, ChevronDown, ChevronRight, Copy, Check, RotateCcw } from "lucide-react"
+import { useVoiceStore } from '../stores/voiceStore'
+import { Waveform } from './Waveform'
+import { useState as useReactState } from 'react' // Avoid conflict with existing useState
+
+interface ChatViewProps {
+  messages: Message[]
+  isConnected: boolean
+  isProcessing: boolean
+  currentToolStatus?: string | null
+  sendMessage: (text: string) => void
+  respondToConfirmation: (id: string, approved: boolean, pin?: string) => void
+  inputRef?: RefObject<HTMLTextAreaElement | null>
+  onPendingConfirmation?: (id: string | null) => void
+  voiceEnabled?: boolean
+}
+
+function CodeBlock({ code, language }: { code: string; language?: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="relative group my-2 text-left">
+      <div className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 bg-background/50 backdrop-blur-sm border border-border"
+          onClick={handleCopy}
+        >
+          {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+        </Button>
+      </div>
+      <pre className="bg-muted/50 rounded-md p-4 font-mono text-sm overflow-x-auto border border-border">
+        {language && <div className="text-xs text-muted-foreground mb-2 uppercase">{language}</div>}
+        <code>{code}</code>
+      </pre>
+    </div>
+  );
+}
+
+function ToolResult({ content }: { content: string }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const isLong = content.length > 500;
+  const displayContent = isLong && !isExpanded ? content.slice(0, 500) + '...' : content;
+
+  return (
+    <div>
+      <div className="font-mono whitespace-pre-wrap opacity-80">{displayContent}</div>
+      {isLong && (
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="text-primary hover:underline mt-1 font-semibold block"
+        >
+          {isExpanded ? 'Show less' : 'Show full output'}
+        </button>
+      )}
+    </div>
+  );
+}
+
+export function ChatView({
+  messages,
+  isConnected,
+  isProcessing,
+  currentToolStatus,
+  sendMessage,
+  inputRef,
+  onPendingConfirmation,
+  voiceEnabled,
+}: ChatViewProps) {
+  const voiceState = useVoiceStore((s) => s.state);
+  const voiceError = useVoiceStore((s) => s.error);
+  const [input, setInput] = useState(() => {
+    return localStorage.getItem('terminai_chat_draft') || '';
+  });
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const [attachments, setAttachments] = useState<File[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Memoize user message history (most recent first)
+  const userMessages = useMemo(
+    () =>
+      messages
+        .filter((m) => m.role === 'user')
+        .map((m) => m.content)
+        .reverse(),
+    [messages],
+  );
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const internalInputRef = useRef<HTMLTextAreaElement>(null)
+  const actualInputRef = inputRef || internalInputRef
+  const timestampsRef = useRef<Map<string, number>>(new Map())
+
+  // Include tool events for execution logs
+  const filteredMessages = messages.map(msg => ({
+    ...msg,
+    events: msg.events ?? []
+  })).filter(msg => 
+    msg.content || 
+    msg.pendingConfirmation || 
+    msg.events.some(e => ['text', 'tool_call', 'tool_result'].includes(e.type))
+  )
+
+  const examplePrompts = [
+    'List all files in the current directory',
+    'Show my git status',
+    'Install dependencies for this project',
+  ];
+
+  const displayMessages =
+    filteredMessages.length === 0
+      ? [
+          {
+            id: 'welcome',
+            role: 'assistant' as const,
+            content:
+              "Hello! I'm your terminal agent assistant. I can help you execute commands, manage files, and automate your workflows.\n\nTry one of these to get started:",
+            events: [],
+            examplePrompts,
+          },
+        ]
+      : filteredMessages;
+
+  // Check if we need to show API key prompt
+  const needsApiKey = !useSettingsStore((s) => s.agentToken);
+
+  // Drag and drop state
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Task 36: @ Autocomplete state
+  const [showFileSuggestions, setShowFileSuggestions] = useState(false);
+  const [fileQuery, setFileQuery] = useState('');
+  const mockFiles = ['README.md', 'package.json', 'src/App.tsx', 'src/main.tsx', 'tsconfig.json'];
+  const filteredFiles = mockFiles.filter(f => f.toLowerCase().includes(fileQuery.toLowerCase()));
+
+  // Track pending confirmation for keyboard shortcuts
+  useEffect(() => {
+    const pendingMsg = messages.find((m) => m.pendingConfirmation);
+    const confirmation = pendingMsg?.pendingConfirmation;
+    onPendingConfirmation?.(
+      confirmation?.id ?? null,
+      confirmation?.requiresPin ?? false,
+      false, // PIN ready state will be managed by ConfirmationCard (added in future task)
+    );
+  }, [messages, onPendingConfirmation]);
+
+  // Task 45: Secondary status for long tools
+  const [showLongRunningWarning, setShowLongRunningWarning] = useState(false);
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isProcessing && currentToolStatus) {
+      timer = setTimeout(() => setShowLongRunningWarning(true), 5000);
+    } else {
+      setShowLongRunningWarning(false);
+    }
+    return () => clearTimeout(timer);
+  }, [isProcessing, currentToolStatus]);
+
+  const scrollToBottom = useCallback(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+    }
+  }, [])
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [filteredMessages, scrollToBottom])
+
+  // Save draft to localStorage
+  useEffect(() => {
+    localStorage.setItem('terminai_chat_draft', input);
+  }, [input]);
+
+  const handleSendMessage = () => {
+    if (input.trim() || attachments.length > 0) {
+      sendMessage(input);
+      setInput("");
+      setAttachments([]);
+      localStorage.removeItem('terminai_chat_draft');
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files) {
+      setAttachments(prev => [...prev, ...Array.from(e.dataTransfer.files)]);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+      setHistoryIndex(-1);
+      return;
+    }
+
+    // Up-Arrow: Navigate to older messages
+    if (e.key === 'ArrowUp' && (input === '' || historyIndex >= 0)) {
+      e.preventDefault();
+      const newIndex = Math.min(historyIndex + 1, userMessages.length - 1);
+      if (newIndex >= 0 && userMessages[newIndex]) {
+        setHistoryIndex(newIndex);
+        setInput(userMessages[newIndex]);
+      }
+      return;
+    }
+
+    // Down-Arrow: Navigate to newer messages
+    if (e.key === 'ArrowDown' && historyIndex >= 0) {
+      e.preventDefault();
+      const newIndex = historyIndex - 1;
+      if (newIndex < 0) {
+        setHistoryIndex(-1);
+        setInput('');
+      } else {
+        setHistoryIndex(newIndex);
+        setInput(userMessages[newIndex]);
+      }
+      return;
+    }
+  };
+
+  return (
+    <div className="h-full flex flex-col bg-background">
+      {voiceEnabled && voiceError && (
+        <div className="mx-4 mt-4 p-3 bg-red-500/10 border border-red-500/30 rounded-md flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+          <div className="text-red-500 mt-0.5">!</div>
+          <div className="flex-1">
+            <h4 className="text-sm font-semibold text-red-500">Microphone Issue</h4>
+            <p className="text-xs text-muted-foreground">{voiceError}</p>
+            <button 
+              onClick={() => useVoiceStore.getState().setError(null)}
+              className="mt-2 text-[10px] text-red-500 hover:underline font-medium"
+            >
+              Dismiss
+            </button>
+          </div>
+          <a 
+            href="#" 
+            onClick={(e) => { e.preventDefault(); sendMessage('/help voice'); }}
+            className="text-[10px] bg-red-500/20 hover:bg-red-500/30 text-red-500 px-2 py-1 rounded"
+          >
+            Fix Instructions
+          </a>
+        </div>
+      )}
+      {/* Chat messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 pt-16 scroll-smooth" ref={scrollRef}>
+        {needsApiKey && (
+          <div className="flex justify-start mb-4">
+            <div className="max-w-[85%] rounded-lg px-4 py-4 bg-amber-500/10 border border-amber-500/30">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-lg">🔑</span>
+                <span className="font-semibold text-amber-500">API Key Required</span>
+              </div>
+              <p className="text-sm text-muted-foreground mb-3">
+                To get started, you need a Gemini API key.
+              </p>
+              <a
+                href="https://aistudio.google.com/app/apikey"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm hover:opacity-90"
+              >
+                Get API Key →
+              </a>
+            </div>
+          </div>
+        )}
+        {displayMessages.map((message, idx) => {
+          const existing = timestampsRef.current.get(message.id)
+          const timestamp = existing ?? Date.now()
+          if (!existing) {
+            timestampsRef.current.set(message.id, timestamp)
+          }
+
+          return (
+          <div key={message.id} className={cn("flex", message.role === "user" ? "justify-end" : "justify-start")}>
+            <div
+              className={cn(
+                "max-w-[85%] rounded-lg px-4 py-2.5 text-base leading-relaxed",
+                message.role === "user"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-foreground border border-border relative group",
+              )}
+            >
+              {message.role === "assistant" && (
+                <button
+                  onClick={() => navigator.clipboard.writeText(message.content)}
+                  className="absolute -right-10 top-2 opacity-0 group-hover:opacity-100 transition-opacity p-2 text-muted-foreground hover:text-foreground"
+                  title="Copy message"
+                >
+                  <Copy className="h-4 w-4" />
+                </button>
+              )}
+              {message.content && (
+                <div className="whitespace-pre-wrap break-words inline">
+                  {message.content}
+                  {isProcessing && idx === displayMessages.length - 1 && message.role === "assistant" && (
+                    <span className="inline-block w-1.5 h-4 ml-1 bg-primary animate-pulse align-middle" />
+                  )}
+                </div>
+              )}
+              
+              {/* Task 41/42: Execution Logs */}
+              {message.events.length > 0 && (
+                <div className="mt-2 space-y-1">
+                  {message.events.map((event, eventIdx) => {
+                    if (event.type === 'tool_call' || event.type === 'tool_result') {
+                      return (
+                        <ToolLog 
+                          key={eventIdx} 
+                          event={event} 
+                          onRetry={(name, args) => {
+                            const argsStr = args ? ` with ${JSON.stringify(args)}` : '';
+                            sendMessage(`Retry failed tool ${name}${argsStr}`);
+                          }}
+                        />
+                      )
+                    }
+                    if (event.type === 'text' && event.text !== message.content) {
+                       return <div key={eventIdx} className="text-sm opacity-80">{event.text}</div>
+                    }
+                    return null
+                  })}
+                </div>
+              )}
+
+              {/* Example prompts for welcome message */}
+              {message.examplePrompts && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {message.examplePrompts.map((prompt: string, i: number) => (
+                    <button
+                      key={i}
+                      onClick={() => sendMessage(prompt)}
+                      className="px-3 py-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary rounded-full transition-colors"
+                    >
+                      {prompt}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <div className={cn("text-xs mt-1.5", message.role === "user" ? "opacity-70" : "text-muted-foreground")}>
+                {new Date(timestamp).toLocaleTimeString()}
+              </div>
+            </div>
+          </div>
+          )
+        })}
+      </div>
+
+      {/* Agent thinking indicator */}
+      {isProcessing && (
+        <div className="px-4 py-3 border-t border-border bg-muted/30">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-base text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <div className="flex flex-col">
+                <span>{currentToolStatus || "Agent is executing commands..."}</span>
+                {showLongRunningWarning && (
+                  <span className="text-[10px] text-amber-500/80 animate-pulse">
+                    This is taking longer than expected...
+                  </span>
+                )}
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-red-500 hover:text-red-600 hover:bg-red-500/10"
+              onClick={() => sendMessage('/stop')}
+            >
+              Stop
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Input area */}
+      <div 
+        className={cn(
+          "border-t border-border p-4 bg-card transition-colors",
+          isDragging ? "bg-accent/20" : ""
+        )}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        <div className="flex flex-col gap-2">
+          {/* Task 38: Attachment Preview Chips */}
+          {attachments.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-1">
+              {attachments.map((file, i) => (
+                <Badge key={i} variant="secondary" className="pl-2 pr-1 py-1 flex items-center gap-1">
+                  <span className="max-w-[150px] truncate text-xs">{file.name}</span>
+                  <button
+                    onClick={() => setAttachments(prev => prev.filter((_, idx) => idx !== i))}
+                    className="ml-1 rounded-full p-0.5 hover:bg-muted-foreground/30 transition-colors"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
+              ))}
+            </div>
+          )}
+
+          <div className="flex gap-2 items-end">
+            <div className="flex-1 relative">
+              <input
+                type="file"
+                multiple
+                className="hidden"
+                ref={fileInputRef}
+                onChange={(e) => {
+                  if (e.target.files) {
+                    setAttachments(prev => [...prev, ...Array.from(e.target.files!)]);
+                  }
+                }}
+              />
+              <textarea
+              ref={actualInputRef}
+              value={input}
+              onChange={(e) => {
+                const newValue = e.target.value;
+                setInput(newValue);
+                
+                // Task 36: Detect @ for file autocomplete
+                const lastChar = newValue[newValue.length - 1];
+                const parts = newValue.split(' ');
+                const lastPart = parts[parts.length - 1];
+                
+                if (lastPart.startsWith('@')) {
+                  setShowFileSuggestions(true);
+                  setFileQuery(lastPart.slice(1));
+                } else {
+                  setShowFileSuggestions(false);
+                }
+
+                // Reset history navigation on manual edit
+                if (historyIndex >= 0) {
+                  setHistoryIndex(-1);
+                }
+              }}
+              onKeyDown={handleKeyDown}
+              placeholder={isProcessing ? "Agent is thinking..." : "Ask anything, @ for context"}
+              rows={3}
+              disabled={isProcessing}
+              className={cn(
+                "w-full px-4 py-2.5 pr-10 bg-input border rounded-md focus:outline-none focus:ring-2 focus:ring-ring text-base resize-none min-h-[84px] max-h-48",
+                isProcessing
+                  ? "opacity-60 cursor-not-allowed border-amber-500/40 bg-amber-500/5"
+                  : "border-border"
+              )}
+              style={{ height: "84px" }}
+              onInput={(e) => {
+                const target = e.target as HTMLTextAreaElement
+                target.style.height = "84px"
+                target.style.height = `${Math.min(target.scrollHeight, 192)}px`
+              }}
+            />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-1 bottom-1 h-8 w-8 text-muted-foreground hover:text-foreground"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <Paperclip className="h-4 w-4" />
+            </Button>
+
+            {/* Task 36: File Suggestions Popover */}
+            {showFileSuggestions && filteredFiles.length > 0 && (
+              <div className="absolute bottom-full left-0 mb-2 w-64 bg-card border border-border rounded-md shadow-xl overflow-hidden z-10">
+                <div className="p-2 border-b border-border bg-muted/50 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                  Files in workspace
+                </div>
+                <div className="max-h-48 overflow-y-auto">
+                  {filteredFiles.map((file) => (
+                    <button
+                      key={file}
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground transition-colors truncate"
+                      onClick={() => {
+                        const parts = input.split(' ');
+                        parts[parts.length - 1] = `@${file}`;
+                        setInput(parts.join(' ') + ' ');
+                        setShowFileSuggestions(false);
+                        actualInputRef.current?.focus();
+                      }}
+                    >
+                      {file}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-col items-center gap-1">
+              <Waveform active={voiceEnabled && voiceState === 'LISTENING'} />
+              <Button 
+                size="icon" 
+                className={cn(
+                  "h-[42px] w-[42px] flex-shrink-0 transition-all duration-300",
+                  voiceEnabled ? "bg-red-500 hover:bg-red-600 shadow-[0_0_15px_rgba(239,68,68,0.4)]" : "bg-muted"
+                )} 
+                disabled={!voiceEnabled}
+                title={voiceEnabled ? "Voice mode active (Space to talk)" : "Voice mode disabled"}
+              >
+                <Mic className={cn("h-4 w-4", voiceEnabled ? "text-white" : "text-muted-foreground")} />
+              </Button>
+            </div>
+            <Button onClick={handleSendMessage} size="icon" className="h-[42px] w-[42px] flex-shrink-0" disabled={isProcessing || (!input.trim() && attachments.length === 0)}>
+              <Send className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+        <div className="text-xs text-muted-foreground mt-2 flex items-center gap-2">
+          <button 
+            className="hover:text-foreground transition-colors cursor-pointer"
+            onClick={() => sendMessage('/model')}
+          >
+            /model
+          </button>
+          <span className="opacity-50">•</span>
+          <span>{isConnected ? 'Connected' : 'Disconnected'}</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ToolLog({ event, onRetry }: { event: any; onRetry?: (name: string, args?: any) => void }) {
+  const [isOpen, setIsOpen] = useReactState(false)
+  const [copied, setCopied] = useReactState(false)
+
+  const handleCopy = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    const content = event.type === 'tool_call' 
+      ? JSON.stringify(event.call, null, 2)
+      : event.result?.output || event.result?.error || ''
+    navigator.clipboard.writeText(String(content))
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handleRetry = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (onRetry && event.toolName) {
+      onRetry(event.toolName, event.toolArgs)
+    }
+  }
+
+  const isError = event.type === 'tool_result' && event.result?.error
+  const label = event.type === 'tool_call' 
+    ? `Running ${event.call.name}`
+    : `Result: ${event.toolName || 'tool'}`
+
+  return (
+    <div className="rounded border border-border/40 bg-black/20 overflow-hidden my-1">
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between px-2 py-1 hover:bg-white/5 transition-colors group"
+      >
+        <div className="flex items-center gap-2 overflow-hidden">
+          {isOpen ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+          <span className={cn(
+            "text-[10px] font-mono truncate",
+            isError ? "text-red-400" : "text-muted-foreground group-hover:text-foreground"
+          )}>
+            {label}
+          </span>
+        </div>
+        {(isOpen || isError) && (
+          <div className="flex items-center gap-2">
+            {isError && (
+              <button 
+                onClick={handleRetry}
+                className="p-1 hover:bg-white/10 rounded transition-colors text-red-400 hover:text-red-300 flex items-center gap-1"
+                title="Retry tool"
+              >
+                <RotateCcw size={10} />
+                <span className="text-[8px] font-bold uppercase tracking-tighter">Retry</span>
+              </button>
+            )}
+            {isOpen && (
+              <button 
+                onClick={handleCopy}
+                className="p-1 hover:bg-white/10 rounded transition-colors text-muted-foreground hover:text-foreground"
+                title="Copy output"
+              >
+                {copied ? <Check size={10} className="text-green-500" /> : <Copy size={10} />}
+              </button>
+            )}
+          </div>
+        )}
+      </button>
+      {isOpen && (
+        <div className="px-3 py-2 border-t border-border/20 bg-black/40">
+          <div className="text-[10px] font-mono overflow-x-auto text-muted-foreground/90 leading-tight">
+            <ToolResult content={
+              event.type === 'tool_call' 
+                ? JSON.stringify(event.call.input, null, 2)
+                : event.result?.output || event.result?.error || 'No output'
+            } />
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}

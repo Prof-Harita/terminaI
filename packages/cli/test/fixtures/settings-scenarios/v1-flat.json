@@ -1,0 +1,5 @@
+{
+  "previewFeatures": true,
+  "yolo": true,
+  "model": "gemini-1.5-pro"
+}

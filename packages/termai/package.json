@@ -1,0 +1,40 @@
+{
+  "name": "@terminai/cli-wrapper",
+  "version": "0.21.0",
+  "description": "TerminaI CLI - AI-Powered Terminal",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Prof-Harita/terminaI.git"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "terminai": "dist/index.js"
+  },
+  "scripts": {
+    "build": "node ../../scripts/build_package.js && cp system.md dist/system.md",
+    "start": "node dist/index.js",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write .",
+    "test": "vitest run --passWithNoTests",
+    "test:ci": "vitest run --passWithNoTests",
+    "typecheck": "tsc --noEmit"
+  },
+  "files": [
+    "dist",
+    "system.md",
+    "README.md"
+  ],
+  "dependencies": {
+    "@terminai/cli": "file:../cli"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "typescript": "^5.3.3",
+    "vitest": "^3.1.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

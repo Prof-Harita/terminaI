@@ -1,0 +1,378 @@
+
+> @terminai/a2a-server@0.21.0-nightly.20251219.70696e364 test
+> vitest run src/http/app.test.ts
+
+
+ RUN  v3.2.4 /home/profharita/Code/termAI/packages/a2a-server
+      Coverage enabled with v8
+
+ ❯ src/http/app.test.ts (19 tests | 16 failed) 63ms
+   × E2E Tests > should create a new task and stream status updates (text-content) via POST / 23ms
+     → expected 200 "OK", got 500 "Internal Server Error"
+   × E2E Tests > should create a new task, schedule a tool call, and wait for approval 2ms
+     → expected 200 "OK", got 500 "Internal Server Error"
+   × E2E Tests > should handle multiple tool calls in a single turn 2ms
+     → expected 200 "OK", got 500 "Internal Server Error"
+   × E2E Tests > should handle multiple tool calls sequentially in YOLO mode 2ms
+     → expected 200 "OK", got 500 "Internal Server Error"
+   × E2E Tests > should handle tool calls that do not require approval 2ms
+     → expected 200 "OK", got 500 "Internal Server Error"
+   × E2E Tests > should bypass tool approval in YOLO mode 1ms
+     → expected 200 "OK", got 500 "Internal Server Error"
+   × E2E Tests > should include traceId in status updates when available 1ms
+     → expected 200 "OK", got 500 "Internal Server Error"
+   ✓ E2E Tests > /listCommands > should return a list of top-level commands 3ms
+   ✓ E2E Tests > /listCommands > should handle cyclic commands gracefully 2ms
+   × E2E Tests > /executeCommand > should return extensions for valid command 6ms
+     → expected 200 "OK", got 500 "Internal Server Error"
+   × E2E Tests > /executeCommand > should return 404 for invalid command 2ms
+     → expected 404 "Not Found", got 500 "Internal Server Error"
+   × E2E Tests > /executeCommand > should return 400 for missing command 1ms
+     → expected 400 "Bad Request", got 500 "Internal Server Error"
+   × E2E Tests > /executeCommand > should return 400 if args is not an array 1ms
+     → expected 400 "Bad Request", got 500 "Internal Server Error"
+   × E2E Tests > /executeCommand > should execute a command that does not require a workspace when CODER_AGENT_WORKSPACE_PATH is not set 3ms
+     → expected 500 to be 200 // Object.is equality
+   × E2E Tests > /executeCommand > should return 400 for a command that requires a workspace when CODER_AGENT_WORKSPACE_PATH is not set 1ms
+     → expected 500 to be 400 // Object.is equality
+   × E2E Tests > /executeCommand > should execute a command that requires a workspace when CODER_AGENT_WORKSPACE_PATH is set 1ms
+     → expected 500 to be 200 // Object.is equality
+   × E2E Tests > /executeCommand > should include agentExecutor in context 1ms
+     → expected 200 "OK", got 500 "Internal Server Error"
+   ✓ E2E Tests > /executeCommand > /executeCommand streaming > should execute a streaming command and stream back events 0ms
+   × E2E Tests > /executeCommand > /executeCommand streaming > should handle non-streaming commands gracefully 2ms
+     → expected 200 "OK", got 500 "Internal Server Error"
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 16 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/http/app.test.ts > E2E Tests > should create a new task and stream status updates (text-content) via POST /
+Error: expected 200 "OK", got 500 "Internal Server Error"
+ ❯ src/http/app.test.ts:157:8
+    155|         }
+    156|       })
+    157|       .expect(200);
+       |        ^
+    158| 
+    159|     const events = streamToSSEEvents(res.text);
+ ❯ Test._assertStatus ../../node_modules/supertest/lib/test.js:309:14
+ ❯ ../../node_modules/supertest/lib/test.js:365:13
+ ❯ Test._assertFunction ../../node_modules/supertest/lib/test.js:342:13
+ ❯ Test.assert ../../node_modules/supertest/lib/test.js:195:23
+ ❯ localAssert ../../node_modules/supertest/lib/test.js:138:14
+ ❯ fn ../../node_modules/supertest/lib/test.js:156:7
+ ❯ Test.callback ../../node_modules/superagent/src/node/index.js:904:3
+ ❯ IncomingMessage.<anonymous> ../../node_modules/superagent/src/node/index.js:1183:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/16]⎯
+
+ FAIL  src/http/app.test.ts > E2E Tests > should create a new task, schedule a tool call, and wait for approval
+Error: expected 200 "OK", got 500 "Internal Server Error"
+ ❯ src/http/app.test.ts:224:8
+    222|       .set('Content-Type', 'application/json')
+    223|       .send(body)
+    224|       .expect(200);
+       |        ^
+    225| 
+    226|     const events = streamToSSEEvents(res.text);
+ ❯ Test._assertStatus ../../node_modules/supertest/lib/test.js:309:14
+ ❯ ../../node_modules/supertest/lib/test.js:365:13
+ ❯ Test._assertFunction ../../node_modules/supertest/lib/test.js:342:13
+ ❯ Test.assert ../../node_modules/supertest/lib/test.js:195:23
+ ❯ localAssert ../../node_modules/supertest/lib/test.js:138:14
+ ❯ fn ../../node_modules/supertest/lib/test.js:156:7
+ ❯ Test.callback ../../node_modules/superagent/src/node/index.js:904:3
+ ❯ IncomingMessage.<anonymous> ../../node_modules/superagent/src/node/index.js:1183:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/16]⎯
+
+ FAIL  src/http/app.test.ts > E2E Tests > should handle multiple tool calls in a single turn
+Error: expected 200 "OK", got 500 "Internal Server Error"
+ ❯ src/http/app.test.ts:331:8
+    329|       .set('Content-Type', 'application/json')
+    330|       .send(body)
+    331|       .expect(200);
+       |        ^
+    332| 
+    333|     const events = streamToSSEEvents(res.text);
+ ❯ Test._assertStatus ../../node_modules/supertest/lib/test.js:309:14
+ ❯ ../../node_modules/supertest/lib/test.js:365:13
+ ❯ Test._assertFunction ../../node_modules/supertest/lib/test.js:342:13
+ ❯ Test.assert ../../node_modules/supertest/lib/test.js:195:23
+ ❯ localAssert ../../node_modules/supertest/lib/test.js:138:14
+ ❯ fn ../../node_modules/supertest/lib/test.js:156:7
+ ❯ Test.callback ../../node_modules/superagent/src/node/index.js:904:3
+ ❯ IncomingMessage.<anonymous> ../../node_modules/superagent/src/node/index.js:1183:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/16]⎯
+
+ FAIL  src/http/app.test.ts > E2E Tests > should handle multiple tool calls sequentially in YOLO mode
+Error: expected 200 "OK", got 500 "Internal Server Error"
+ ❯ src/http/app.test.ts:490:8
+    488|       .set('Content-Type', 'application/json')
+    489|       .send(body)
+    490|       .expect(200);
+       |        ^
+    491| 
+    492|     const events = streamToSSEEvents(res.text);
+ ❯ Test._assertStatus ../../node_modules/supertest/lib/test.js:309:14
+ ❯ ../../node_modules/supertest/lib/test.js:365:13
+ ❯ Test._assertFunction ../../node_modules/supertest/lib/test.js:342:13
+ ❯ Test.assert ../../node_modules/supertest/lib/test.js:195:23
+ ❯ localAssert ../../node_modules/supertest/lib/test.js:138:14
+ ❯ fn ../../node_modules/supertest/lib/test.js:156:7
+ ❯ Test.callback ../../node_modules/superagent/src/node/index.js:904:3
+ ❯ IncomingMessage.<anonymous> ../../node_modules/superagent/src/node/index.js:1183:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/16]⎯
+
+ FAIL  src/http/app.test.ts > E2E Tests > should handle tool calls that do not require approval
+Error: expected 200 "OK", got 500 "Internal Server Error"
+ ❯ src/http/app.test.ts:612:8
+    610|       .set('Content-Type', 'application/json')
+    611|       .send(body)
+    612|       .expect(200);
+       |        ^
+    613| 
+    614|     const events = streamToSSEEvents(res.text);
+ ❯ Test._assertStatus ../../node_modules/supertest/lib/test.js:309:14
+ ❯ ../../node_modules/supertest/lib/test.js:365:13
+ ❯ Test._assertFunction ../../node_modules/supertest/lib/test.js:342:13
+ ❯ Test.assert ../../node_modules/supertest/lib/test.js:195:23
+ ❯ localAssert ../../node_modules/supertest/lib/test.js:138:14
+ ❯ fn ../../node_modules/supertest/lib/test.js:156:7
+ ❯ Test.callback ../../node_modules/superagent/src/node/index.js:904:3
+ ❯ IncomingMessage.<anonymous> ../../node_modules/superagent/src/node/index.js:1183:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/16]⎯
+
+ FAIL  src/http/app.test.ts > E2E Tests > should bypass tool approval in YOLO mode
+Error: expected 200 "OK", got 500 "Internal Server Error"
+ ❯ src/http/app.test.ts:743:8
+    741|       .set('Content-Type', 'application/json')
+    742|       .send(body)
+    743|       .expect(200);
+       |        ^
+    744| 
+    745|     const events = streamToSSEEvents(res.text);
+ ❯ Test._assertStatus ../../node_modules/supertest/lib/test.js:309:14
+ ❯ ../../node_modules/supertest/lib/test.js:365:13
+ ❯ Test._assertFunction ../../node_modules/supertest/lib/test.js:342:13
+ ❯ Test.assert ../../node_modules/supertest/lib/test.js:195:23
+ ❯ localAssert ../../node_modules/supertest/lib/test.js:138:14
+ ❯ fn ../../node_modules/supertest/lib/test.js:156:7
+ ❯ Test.callback ../../node_modules/superagent/src/node/index.js:904:3
+ ❯ IncomingMessage.<anonymous> ../../node_modules/superagent/src/node/index.js:1183:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/16]⎯
+
+ FAIL  src/http/app.test.ts > E2E Tests > should include traceId in status updates when available
+Error: expected 200 "OK", got 500 "Internal Server Error"
+ ❯ src/http/app.test.ts:843:8
+    841|       .set('Content-Type', 'application/json')
+    842|       .send(body)
+    843|       .expect(200);
+       |        ^
+    844| 
+    845|     const events = streamToSSEEvents(res.text);
+ ❯ Test._assertStatus ../../node_modules/supertest/lib/test.js:309:14
+ ❯ ../../node_modules/supertest/lib/test.js:365:13
+ ❯ Test._assertFunction ../../node_modules/supertest/lib/test.js:342:13
+ ❯ Test.assert ../../node_modules/supertest/lib/test.js:195:23
+ ❯ localAssert ../../node_modules/supertest/lib/test.js:138:14
+ ❯ fn ../../node_modules/supertest/lib/test.js:156:7
+ ❯ Test.callback ../../node_modules/superagent/src/node/index.js:904:3
+ ❯ IncomingMessage.<anonymous> ../../node_modules/superagent/src/node/index.js:1183:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/16]⎯
+
+ FAIL  src/http/app.test.ts > E2E Tests > /executeCommand > should return extensions for valid command
+Error: expected 200 "OK", got 500 "Internal Server Error"
+ ❯ src/http/app.test.ts:991:10
+    989|         .set('Content-Type', 'application/json')
+    990|         .send(body)
+    991|         .expect(200);
+       |          ^
+    992| 
+    993|       expect(res.body).toEqual({
+ ❯ Test._assertStatus ../../node_modules/supertest/lib/test.js:309:14
+ ❯ ../../node_modules/supertest/lib/test.js:365:13
+ ❯ Test._assertFunction ../../node_modules/supertest/lib/test.js:342:13
+ ❯ Test.assert ../../node_modules/supertest/lib/test.js:195:23
+ ❯ localAssert ../../node_modules/supertest/lib/test.js:138:14
+ ❯ fn ../../node_modules/supertest/lib/test.js:156:7
+ ❯ Test.callback ../../node_modules/superagent/src/node/index.js:904:3
+ ❯ IncomingMessage.<anonymous> ../../node_modules/superagent/src/node/index.js:1183:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/16]⎯
+
+ FAIL  src/http/app.test.ts > E2E Tests > /executeCommand > should return 404 for invalid command
+Error: expected 404 "Not Found", got 500 "Internal Server Error"
+ ❯ src/http/app.test.ts:1010:10
+    1008|         .set('Content-Type', 'application/json')
+    1009|         .send(body)
+    1010|         .expect(404);
+       |          ^
+    1011| 
+    1012|       expect(res.body.error).toBe('Command not found: invalid command'…
+ ❯ Test._assertStatus ../../node_modules/supertest/lib/test.js:309:14
+ ❯ ../../node_modules/supertest/lib/test.js:365:13
+ ❯ Test._assertFunction ../../node_modules/supertest/lib/test.js:342:13
+ ❯ Test.assert ../../node_modules/supertest/lib/test.js:195:23
+ ❯ localAssert ../../node_modules/supertest/lib/test.js:138:14
+ ❯ fn ../../node_modules/supertest/lib/test.js:156:7
+ ❯ Test.callback ../../node_modules/superagent/src/node/index.js:904:3
+ ❯ IncomingMessage.<anonymous> ../../node_modules/superagent/src/node/index.js:1183:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/16]⎯
+
+ FAIL  src/http/app.test.ts > E2E Tests > /executeCommand > should return 400 for missing command
+Error: expected 400 "Bad Request", got 500 "Internal Server Error"
+ ❯ src/http/app.test.ts:1024:10
+    1022|         .set('Content-Type', 'application/json')
+    1023|         .send(body)
+    1024|         .expect(400);
+       |          ^
+    1025|       expect(getExtensionsSpy).not.toHaveBeenCalled();
+    1026|     });
+ ❯ Test._assertStatus ../../node_modules/supertest/lib/test.js:309:14
+ ❯ ../../node_modules/supertest/lib/test.js:365:13
+ ❯ Test._assertFunction ../../node_modules/supertest/lib/test.js:342:13
+ ❯ Test.assert ../../node_modules/supertest/lib/test.js:195:23
+ ❯ localAssert ../../node_modules/supertest/lib/test.js:138:14
+ ❯ fn ../../node_modules/supertest/lib/test.js:156:7
+ ❯ Test.callback ../../node_modules/superagent/src/node/index.js:904:3
+ ❯ IncomingMessage.<anonymous> ../../node_modules/superagent/src/node/index.js:1183:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/16]⎯
+
+ FAIL  src/http/app.test.ts > E2E Tests > /executeCommand > should return 400 if args is not an array
+Error: expected 400 "Bad Request", got 500 "Internal Server Error"
+ ❯ src/http/app.test.ts:1036:10
+    1034|         .set('Content-Type', 'application/json')
+    1035|         .send(body)
+    1036|         .expect(400);
+       |          ^
+    1037| 
+    1038|       expect(res.body.error).toBe('"args" field must be an array.');
+ ❯ Test._assertStatus ../../node_modules/supertest/lib/test.js:309:14
+ ❯ ../../node_modules/supertest/lib/test.js:365:13
+ ❯ Test._assertFunction ../../node_modules/supertest/lib/test.js:342:13
+ ❯ Test.assert ../../node_modules/supertest/lib/test.js:195:23
+ ❯ localAssert ../../node_modules/supertest/lib/test.js:138:14
+ ❯ fn ../../node_modules/supertest/lib/test.js:156:7
+ ❯ Test.callback ../../node_modules/superagent/src/node/index.js:904:3
+ ❯ IncomingMessage.<anonymous> ../../node_modules/superagent/src/node/index.js:1183:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/16]⎯
+
+ FAIL  src/http/app.test.ts > E2E Tests > /executeCommand > should execute a command that does not require a workspace when CODER_AGENT_WORKSPACE_PATH is not set
+AssertionError: expected 500 to be 200 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 200[39m
+[31m+ 500[39m
+
+ ❯ src/http/app.test.ts:1060:31
+    1058|         .send(body);
+    1059| 
+    1060|       expect(response.status).toBe(200);
+       |                               ^
+    1061|       expect(response.body.data).toBe('success');
+    1062|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/16]⎯
+
+ FAIL  src/http/app.test.ts > E2E Tests > /executeCommand > should return 400 for a command that requires a workspace when CODER_AGENT_WORKSPACE_PATH is not set
+AssertionError: expected 500 to be 400 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 400[39m
+[31m+ 500[39m
+
+ ❯ src/http/app.test.ts:1083:31
+    1081|         .send(body);
+    1082| 
+    1083|       expect(response.status).toBe(400);
+       |                               ^
+    1084|       expect(response.body.error).toBe(
+    1085|         'Command "workspace-command" requires a workspace, but CODER_A…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/16]⎯
+
+ FAIL  src/http/app.test.ts > E2E Tests > /executeCommand > should execute a command that requires a workspace when CODER_AGENT_WORKSPACE_PATH is set
+AssertionError: expected 500 to be 200 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 200[39m
+[31m+ 500[39m
+
+ ❯ src/http/app.test.ts:1108:31
+    1106|         .send(body);
+    1107| 
+    1108|       expect(response.status).toBe(200);
+       |                               ^
+    1109|       expect(response.body.data).toBe('success');
+    1110|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/16]⎯
+
+ FAIL  src/http/app.test.ts > E2E Tests > /executeCommand > should include agentExecutor in context
+Error: expected 200 "OK", got 500 "Internal Server Error"
+ ❯ src/http/app.test.ts:1132:10
+    1130|         .set('Content-Type', 'application/json')
+    1131|         .send(body)
+    1132|         .expect(200);
+       |          ^
+    1133| 
+    1134|       expect(res.body.data).toBe('success');
+ ❯ Test._assertStatus ../../node_modules/supertest/lib/test.js:309:14
+ ❯ ../../node_modules/supertest/lib/test.js:365:13
+ ❯ Test._assertFunction ../../node_modules/supertest/lib/test.js:342:13
+ ❯ Test.assert ../../node_modules/supertest/lib/test.js:195:23
+ ❯ localAssert ../../node_modules/supertest/lib/test.js:138:14
+ ❯ fn ../../node_modules/supertest/lib/test.js:156:7
+ ❯ Test.callback ../../node_modules/superagent/src/node/index.js:904:3
+ ❯ IncomingMessage.<anonymous> ../../node_modules/superagent/src/node/index.js:1183:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/16]⎯
+
+ FAIL  src/http/app.test.ts > E2E Tests > /executeCommand > /executeCommand streaming > should handle non-streaming commands gracefully
+Error: expected 200 "OK", got 500 "Internal Server Error"
+ ❯ src/http/app.test.ts:1225:12
+    1223|           .set('Content-Type', 'application/json')
+    1224|           .send(body)
+    1225|           .expect(200);
+       |            ^
+    1226| 
+    1227|         expect(res.body).toEqual({ name: 'non-stream-test', data: 'don…
+ ❯ Test._assertStatus ../../node_modules/supertest/lib/test.js:309:14
+ ❯ ../../node_modules/supertest/lib/test.js:365:13
+ ❯ Test._assertFunction ../../node_modules/supertest/lib/test.js:342:13
+ ❯ Test.assert ../../node_modules/supertest/lib/test.js:195:23
+ ❯ localAssert ../../node_modules/supertest/lib/test.js:138:14
+ ❯ fn ../../node_modules/supertest/lib/test.js:156:7
+ ❯ Test.callback ../../node_modules/superagent/src/node/index.js:904:3
+ ❯ IncomingMessage.<anonymous> ../../node_modules/superagent/src/node/index.js:1183:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/16]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  16 failed | 3 passed (19)
+   Start at  18:11:53
+   Duration  1.90s (transform 557ms, setup 0ms, collect 1.44s, tests 63ms, environment 0ms, prepare 48ms)
+
+JUNIT report written to /home/profharita/Code/termAI/packages/a2a-server/junit.xml
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path /home/profharita/Code/termAI/packages/a2a-server
+npm error workspace @terminai/a2a-server@0.21.0-nightly.20251219.70696e364
+npm error location /home/profharita/Code/termAI/packages/a2a-server
+npm error command failed
+npm error command sh -c vitest run src/http/app.test.ts

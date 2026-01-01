@@ -1,0 +1,832 @@
+[DEBUG] CLI: main() called
+[DEBUG] CLI: main() called
+{
+  "allowedMcpServers": [],
+  "blockedMcpServers": [],
+  "sessionId": "019ea930-6f68-42f9-bb32-29703d8da92a",
+  "fileSystemService": {},
+  "modelConfigService": {
+    "config": {
+      "aliases": {
+        "base": {
+          "modelConfig": {
+            "generateContentConfig": {
+              "temperature": 0,
+              "topP": 1
+            }
+          }
+        },
+        "chat-base": {
+          "extends": "base",
+          "modelConfig": {
+            "generateContentConfig": {
+              "thinkingConfig": {
+                "includeThoughts": true
+              },
+              "temperature": 1,
+              "topP": 0.95,
+              "topK": 64
+            }
+          }
+        },
+        "chat-base-2.5": {
+          "extends": "chat-base",
+          "modelConfig": {
+            "generateContentConfig": {
+              "thinkingConfig": {
+                "thinkingBudget": 8192
+              }
+            }
+          }
+        },
+        "chat-base-3": {
+          "extends": "chat-base",
+          "modelConfig": {
+            "generateContentConfig": {
+              "thinkingConfig": {
+                "thinkingLevel": "HIGH"
+              }
+            }
+          }
+        },
+        "gemini-3-pro-preview": {
+          "extends": "chat-base-3",
+          "modelConfig": {
+            "model": "gemini-3-pro-preview"
+          }
+        },
+        "gemini-3-flash-preview": {
+          "extends": "chat-base-3",
+          "modelConfig": {
+            "model": "gemini-3-flash-preview"
+          }
+        },
+        "gemini-2.5-pro": {
+          "extends": "chat-base-2.5",
+          "modelConfig": {
+            "model": "gemini-2.5-pro"
+          }
+        },
+        "gemini-2.5-flash": {
+          "extends": "chat-base-2.5",
+          "modelConfig": {
+            "model": "gemini-2.5-flash"
+          }
+        },
+        "gemini-2.5-flash-lite": {
+          "extends": "chat-base-2.5",
+          "modelConfig": {
+            "model": "gemini-2.5-flash-lite"
+          }
+        },
+        "gemini-2.5-flash-base": {
+          "extends": "base",
+          "modelConfig": {
+            "model": "gemini-2.5-flash"
+          }
+        },
+        "classifier": {
+          "extends": "base",
+          "modelConfig": {
+            "model": "gemini-2.5-flash-lite",
+            "generateContentConfig": {
+              "maxOutputTokens": 1024,
+              "thinkingConfig": {
+                "thinkingBudget": 512
+              }
+            }
+          }
+        },
+        "prompt-completion": {
+          "extends": "base",
+          "modelConfig": {
+            "model": "gemini-2.5-flash-lite",
+            "generateContentConfig": {
+              "temperature": 0.3,
+              "maxOutputTokens": 16000,
+              "thinkingConfig": {
+                "thinkingBudget": 0
+              }
+            }
+          }
+        },
+        "edit-corrector": {
+          "extends": "base",
+          "modelConfig": {
+            "model": "gemini-2.5-flash-lite",
+            "generateContentConfig": {
+              "thinkingConfig": {
+                "thinkingBudget": 0
+              }
+            }
+          }
+        },
+        "summarizer-default": {
+          "extends": "base",
+          "modelConfig": {
+            "model": "gemini-2.5-flash-lite",
+            "generateContentConfig": {
+              "maxOutputTokens": 2000
+            }
+          }
+        },
+        "summarizer-shell": {
+          "extends": "base",
+          "modelConfig": {
+            "model": "gemini-2.5-flash-lite",
+            "generateContentConfig": {
+              "maxOutputTokens": 2000
+            }
+          }
+        },
+        "web-search": {
+          "extends": "gemini-2.5-flash-base",
+          "modelConfig": {
+            "generateContentConfig": {
+              "tools": [
+                {
+                  "googleSearch": {}
+                }
+              ]
+            }
+          }
+        },
+        "web-fetch": {
+          "extends": "gemini-2.5-flash-base",
+          "modelConfig": {
+            "generateContentConfig": {
+              "tools": [
+                {
+                  "urlContext": {}
+                }
+              ]
+            }
+          }
+        },
+        "web-fetch-fallback": {
+          "extends": "gemini-2.5-flash-base",
+          "modelConfig": {}
+        },
+        "loop-detection": {
+          "extends": "gemini-2.5-flash-base",
+          "modelConfig": {}
+        },
+        "loop-detection-double-check": {
+          "extends": "base",
+          "modelConfig": {
+            "model": "gemini-2.5-pro"
+          }
+        },
+        "llm-edit-fixer": {
+          "extends": "gemini-2.5-flash-base",
+          "modelConfig": {}
+        },
+        "next-speaker-checker": {
+          "extends": "gemini-2.5-flash-base",
+          "modelConfig": {}
+        },
+        "chat-compression-3-pro": {
+          "modelConfig": {
+            "model": "gemini-3-pro-preview"
+          }
+        },
+        "chat-compression-3-flash": {
+          "modelConfig": {
+            "model": "gemini-3-flash-preview"
+          }
+        },
+        "chat-compression-2.5-pro": {
+          "modelConfig": {
+            "model": "gemini-2.5-pro"
+          }
+        },
+        "chat-compression-2.5-flash": {
+          "modelConfig": {
+            "model": "gemini-2.5-flash"
+          }
+        },
+        "chat-compression-2.5-flash-lite": {
+          "modelConfig": {
+            "model": "gemini-2.5-flash-lite"
+          }
+        },
+        "chat-compression-default": {
+          "modelConfig": {
+            "model": "gemini-2.5-pro"
+          }
+        }
+      },
+      "overrides": [
+        {
+          "match": {
+            "model": "chat-base",
+            "isRetry": true
+          },
+          "modelConfig": {
+            "generateContentConfig": {
+              "temperature": 1
+            }
+          }
+        }
+      ]
+    },
+    "runtimeAliases": {}
+  },
+  "embeddingModel": "gemini-embedding-001",
+  "targetDir": "/tmp/tmp.19yDjzAZWL",
+  "workspaceContext": {
+    "targetDir": "/tmp/tmp.19yDjzAZWL",
+    "directories": {},
+    "initialDirectories": {},
+    "onDirectoriesChangedListeners": {}
+  },
+  "debugMode": false,
+  "question": "",
+  "previewMode": false,
+  "allowedTools": [
+    "ls",
+    "cat"
+  ],
+  "excludeTools": [],
+  "userMemory": "",
+  "geminiMdFileCount": 0,
+  "geminiMdFilePaths": [],
+  "approvalMode": "default",
+  "showMemoryUsage": false,
+  "accessibility": {
+    "screenReader": false
+  },
+  "telemetrySettings": {
+    "enabled": false,
+    "target": "local",
+    "otlpEndpoint": "http://localhost:4317",
+    "logPrompts": true
+  },
+  "usageStatisticsEnabled": true,
+  "geminiClient": {
+    "sessionTurnCount": 0,
+    "loopDetector": {
+      "promptId": "",
+      "lastToolCallKey": null,
+      "toolCallRepetitionCount": 0,
+      "streamContentHistory": "",
+      "contentStats": {},
+      "lastContentIndex": 0,
+      "loopDetected": false,
+      "inCodeBlock": false,
+      "turnsInCurrentPrompt": 0,
+      "llmCheckInterval": 3,
+      "lastCheckTurn": 0,
+      "disabledForSession": false
+    },
+    "compressionService": {},
+    "lastPromptId": "019ea930-6f68-42f9-bb32-29703d8da92a",
+    "currentSequenceModel": null,
+    "forceFullIdeContext": true,
+    "hasFailedCompressionAttempt": false
+  },
+  "modelRouterService": {
+    "strategy": {
+      "name": "agent-router",
+      "strategies": [
+        {
+          "name": "fallback"
+        },
+        {
+          "name": "override"
+        },
+        {
+          "name": "classifier"
+        },
+        {
+          "name": "default"
+        }
+      ]
+    }
+  },
+  "modelAvailabilityService": {
+    "health": {}
+  },
+  "fileFiltering": {
+    "respectGitIgnore": true,
+    "respectGeminiIgnore": true,
+    "enableRecursiveFileSearch": true,
+    "disableFuzzySearch": false
+  },
+  "fileDiscoveryService": {
+    "gitIgnoreFilter": null,
+    "geminiIgnoreFilter": {
+      "projectRoot": "/tmp/tmp.19yDjzAZWL",
+      "patterns": [],
+      "ig": {
+        "_rules": {
+          "_ignoreCase": true,
+          "_rules": []
+        },
+        "_strictPathCheck": true,
+        "_ignoreCache": {},
+        "_testCache": {}
+      }
+    },
+    "combinedIgnoreFilter": null,
+    "projectRoot": "/tmp/tmp.19yDjzAZWL"
+  },
+  "checkpointing": false,
+  "cwd": "/tmp/tmp.19yDjzAZWL",
+  "model": "auto-gemini-3",
+  "hasAccessToPreviewModel": false,
+  "noBrowser": false,
+  "folderTrust": false,
+  "ideMode": false,
+  "sessionProvenance": [],
+  "webRemoteStatus": null,
+  "_activeModel": "auto-gemini-3",
+  "maxSessionTurns": -1,
+  "listSessions": false,
+  "listExtensions": false,
+  "_extensionLoader": {
+    "eventEmitter": {
+      "_events": {},
+      "_eventsCount": 0
+    },
+    "startingCount": 0,
+    "startCompletedCount": 0,
+    "stoppingCount": 0,
+    "stopCompletedCount": 0,
+    "isStarting": false,
+    "extensionEnablementManager": {
+      "configFilePath": "/tmp/tmp.o7iM35SweW/.terminai/extensions/extension-enablement.json",
+      "configDir": "/tmp/tmp.o7iM35SweW/.terminai/extensions",
+      "enabledExtensionNamesOverride": []
+    },
+    "settings": {
+      "tools": {}
+    },
+    "telemetryConfig": {
+      "allowedMcpServers": [],
+      "blockedMcpServers": [],
+      "sessionId": "848017b3-6d49-4f01-bc88-9c99240bbc56",
+      "fileSystemService": {},
+      "modelConfigService": {
+        "runtimeAliases": {}
+      },
+      "embeddingModel": "gemini-embedding-001",
+      "targetDir": "/tmp/tmp.19yDjzAZWL",
+      "workspaceContext": {
+        "targetDir": "/tmp/tmp.19yDjzAZWL",
+        "directories": {},
+        "initialDirectories": {},
+        "onDirectoriesChangedListeners": {}
+      },
+      "debugMode": false,
+      "previewMode": false,
+      "userMemory": "",
+      "geminiMdFileCount": 0,
+      "geminiMdFilePaths": [],
+      "approvalMode": "default",
+      "showMemoryUsage": false,
+      "accessibility": {},
+      "telemetrySettings": {
+        "enabled": false,
+        "target": "local",
+        "otlpEndpoint": "http://localhost:4317",
+        "logPrompts": true
+      },
+      "usageStatisticsEnabled": true,
+      "geminiClient": {
+        "sessionTurnCount": 0,
+        "loopDetector": {
+          "promptId": "",
+          "lastToolCallKey": null,
+          "toolCallRepetitionCount": 0,
+          "streamContentHistory": "",
+          "contentStats": {},
+          "lastContentIndex": 0,
+          "loopDetected": false,
+          "inCodeBlock": false,
+          "turnsInCurrentPrompt": 0,
+          "llmCheckInterval": 3,
+          "lastCheckTurn": 0,
+          "disabledForSession": false
+        },
+        "compressionService": {},
+        "lastPromptId": "848017b3-6d49-4f01-bc88-9c99240bbc56",
+        "currentSequenceModel": null,
+        "forceFullIdeContext": true,
+        "hasFailedCompressionAttempt": false
+      },
+      "modelRouterService": {
+        "strategy": {
+          "name": "agent-router",
+          "strategies": [
+            {
+              "name": "fallback"
+            },
+            {
+              "name": "override"
+            },
+            {
+              "name": "classifier"
+            },
+            {
+              "name": "default"
+            }
+          ]
+        }
+      },
+      "modelAvailabilityService": {
+        "health": {}
+      },
+      "fileFiltering": {
+        "respectGitIgnore": true,
+        "respectGeminiIgnore": true,
+        "enableRecursiveFileSearch": true,
+        "disableFuzzySearch": false
+      },
+      "fileDiscoveryService": null,
+      "checkpointing": false,
+      "cwd": "/tmp/tmp.19yDjzAZWL",
+      "model": "",
+      "hasAccessToPreviewModel": false,
+      "noBrowser": false,
+      "folderTrust": false,
+      "ideMode": false,
+      "sessionProvenance": [],
+      "webRemoteStatus": null,
+      "_activeModel": "",
+      "maxSessionTurns": -1,
+      "listSessions": false,
+      "listExtensions": false,
+      "_extensionLoader": {
+        "startingCount": 0,
+        "startCompletedCount": 0,
+        "stoppingCount": 0,
+        "stopCompletedCount": 0,
+        "isStarting": false,
+        "extensions": []
+      },
+      "_enabledExtensions": [],
+      "enableExtensionReloading": false,
+      "quotaErrorOccurred": false,
+      "experimentalZedIntegration": false,
+      "loadMemoryFromIncludeDirectories": false,
+      "importFormat": "tree",
+      "discoveryMaxDirs": 200,
+      "interactive": false,
+      "ptyInfo": "child_process",
+      "useRipgrep": true,
+      "enableInteractiveShell": false,
+      "skipNextSpeakerCheck": true,
+      "shellExecutionConfig": {
+        "terminalWidth": 80,
+        "terminalHeight": 24,
+        "showColor": false,
+        "pager": "cat"
+      },
+      "extensionManagement": true,
+      "enablePromptCompletion": false,
+      "truncateToolOutputThreshold": 4000000,
+      "truncateToolOutputLines": 1000,
+      "enableToolOutputTruncation": true,
+      "initialized": false,
+      "storage": {
+        "targetDir": "/tmp/tmp.19yDjzAZWL"
+      },
+      "fileExclusions": {},
+      "useSmartEdit": true,
+      "useWriteTodos": true,
+      "messageBus": {
+        "_events": {},
+        "_eventsCount": 0,
+        "policyEngine": {
+          "rules": [],
+          "checkers": [],
+          "hookCheckers": [],
+          "defaultDecision": "ask_user",
+          "nonInteractive": false,
+          "allowHooks": true
+        },
+        "debug": false
+      },
+      "outputSettings": {
+        "format": "text"
+      },
+      "enableMessageBusIntegration": false,
+      "codebaseInvestigatorSettings": {
+        "enabled": true,
+        "maxNumTurns": 10,
+        "maxTimeMinutes": 3,
+        "thinkingBudget": 8192
+      },
+      "introspectionAgentSettings": {
+        "enabled": false
+      },
+      "continueOnFailedApiCall": true,
+      "retryFetchErrors": false,
+      "enableShellOutputEfficiency": true,
+      "shellToolInactivityTimeout": 300000,
+      "disableYoloMode": false,
+      "brainAuthority": "escalate-only",
+      "pendingIncludeDirectories": [],
+      "enableHooks": false,
+      "disabledHooks": [],
+      "enableAgents": false,
+      "experimentalJitContext": false,
+      "auditSettings": {
+        "redactUiTypedText": true,
+        "retentionDays": 30,
+        "exportFormat": "jsonl",
+        "exportRedaction": "enterprise"
+      },
+      "recipeSettings": {
+        "paths": [
+          "/tmp/tmp.19yDjzAZWL/.terminai/recipes"
+        ],
+        "communityPaths": [],
+        "allowCommunity": false,
+        "confirmCommunityOnFirstLoad": true,
+        "trustedCommunityRecipes": []
+      },
+      "guiAutomationSettings": {
+        "minReviewLevel": "B",
+        "clickMinReviewLevel": "B",
+        "typeMinReviewLevel": "B",
+        "redactTypedTextByDefault": true,
+        "snapshotMaxDepth": 10,
+        "snapshotMaxNodes": 100,
+        "maxActionsPerMinute": 60
+      },
+      "auditLedger": {
+        "filePath": "/tmp/tmp.o7iM35SweW/.terminai/logs/audit/848017b3-6d49-4f01-bc88-9c99240bbc56.jsonl",
+        "redactionOptions": {
+          "redactUiTypedText": true
+        },
+        "lastHash": "",
+        "initialized": false
+      },
+      "approvalPin": "000000",
+      "providerConfig": {
+        "provider": "gemini"
+      },
+      "logsRetentionDays": 7,
+      "replToolConfig": {
+        "sandboxTier": "tier1",
+        "timeoutMs": 30000
+      }
+    },
+    "workspaceDir": "/tmp/tmp.19yDjzAZWL",
+    "loadedExtensions": []
+  },
+  "_enabledExtensions": [],
+  "enableExtensionReloading": false,
+  "quotaErrorOccurred": false,
+  "experimentalZedIntegration": false,
+  "loadMemoryFromIncludeDirectories": false,
+  "importFormat": "tree",
+  "discoveryMaxDirs": 200,
+  "interactive": true,
+  "ptyInfo": "lydell-node-pty",
+  "trustedFolder": true,
+  "useRipgrep": true,
+  "enableInteractiveShell": true,
+  "skipNextSpeakerCheck": true,
+  "shellExecutionConfig": {
+    "terminalWidth": 80,
+    "terminalHeight": 24,
+    "showColor": false,
+    "pager": "cat"
+  },
+  "extensionManagement": true,
+  "enablePromptCompletion": false,
+  "truncateToolOutputThreshold": 4000000,
+  "truncateToolOutputLines": 1000,
+  "enableToolOutputTruncation": true,
+  "initialized": false,
+  "storage": {
+    "targetDir": "/tmp/tmp.19yDjzAZWL"
+  },
+  "fileExclusions": {},
+  "useSmartEdit": true,
+  "useWriteTodos": false,
+  "messageBus": {
+    "_events": {},
+    "_eventsCount": 0,
+    "policyEngine": {
+      "rules": [
+        {
+          "toolName": "ls",
+          "decision": "allow",
+          "priority": 2.3
+        },
+        {
+          "toolName": "cat",
+          "decision": "allow",
+          "priority": 2.3
+        },
+        {
+          "toolName": "delegate_to_agent",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "glob_files",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "grep_search",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "list_files",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "read_file",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "read_many_files",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "search_web",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "SubagentInvocation",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "ui.query",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "ui.capabilities",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "ui.wait",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "ui.assert",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "ui.health",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "ui.describe",
+          "decision": "allow",
+          "priority": 1.05
+        },
+        {
+          "toolName": "discovered_tool_*",
+          "decision": "ask_user",
+          "priority": 1.01
+        },
+        {
+          "toolName": "edit_file",
+          "decision": "ask_user",
+          "priority": 1.01
+        },
+        {
+          "toolName": "save_memory",
+          "decision": "ask_user",
+          "priority": 1.01
+        },
+        {
+          "toolName": "run_terminal_command",
+          "decision": "ask_user",
+          "priority": 1.01
+        },
+        {
+          "toolName": "write_to_file",
+          "decision": "ask_user",
+          "priority": 1.01
+        },
+        {
+          "toolName": "web_fetch",
+          "decision": "ask_user",
+          "priority": 1.01
+        },
+        {
+          "toolName": "ui.snapshot",
+          "decision": "ask_user",
+          "priority": 1.01
+        },
+        {
+          "toolName": "ui.click",
+          "decision": "ask_user",
+          "priority": 1.01
+        },
+        {
+          "toolName": "ui.click_xy",
+          "decision": "deny",
+          "priority": 1.01
+        },
+        {
+          "toolName": "ui.type",
+          "decision": "ask_user",
+          "priority": 1.01
+        },
+        {
+          "toolName": "ui.key",
+          "decision": "ask_user",
+          "priority": 1.01
+        },
+        {
+          "toolName": "ui.scroll",
+          "decision": "ask_user",
+          "priority": 1.01
+        },
+        {
+          "toolName": "ui.focus",
+          "decision": "ask_user",
+          "priority": 1.01
+        }
+      ],
+      "checkers": [],
+      "hookCheckers": [],
+      "defaultDecision": "ask_user",
+      "nonInteractive": false,
+      "allowHooks": true
+    },
+    "debug": false
+  },
+  "outputSettings": {
+    "format": "text"
+  },
+  "enableMessageBusIntegration": true,
+  "codebaseInvestigatorSettings": {
+    "enabled": true,
+    "maxNumTurns": 10,
+    "maxTimeMinutes": 3,
+    "thinkingBudget": 8192
+  },
+  "introspectionAgentSettings": {
+    "enabled": false
+  },
+  "continueOnFailedApiCall": true,
+  "retryFetchErrors": false,
+  "enableShellOutputEfficiency": true,
+  "shellToolInactivityTimeout": 300000,
+  "disableYoloMode": false,
+  "brainAuthority": "escalate-only",
+  "pendingIncludeDirectories": [],
+  "enableHooks": false,
+  "hooks": {},
+  "disabledHooks": [],
+  "enableAgents": false,
+  "experimentalJitContext": false,
+  "auditSettings": {
+    "redactUiTypedText": true,
+    "retentionDays": 30,
+    "exportFormat": "jsonl",
+    "exportRedaction": "enterprise"
+  },
+  "recipeSettings": {
+    "paths": [
+      "/tmp/tmp.19yDjzAZWL/.terminai/recipes"
+    ],
+    "communityPaths": [],
+    "allowCommunity": false,
+    "confirmCommunityOnFirstLoad": true,
+    "trustedCommunityRecipes": []
+  },
+  "guiAutomationSettings": {
+    "snapshotMaxDepth": null,
+    "snapshotMaxNodes": null,
+    "maxActionsPerMinute": null
+  },
+  "auditLedger": {
+    "filePath": "/tmp/tmp.o7iM35SweW/.terminai/logs/audit/019ea930-6f68-42f9-bb32-29703d8da92a.jsonl",
+    "redactionOptions": {
+      "redactUiTypedText": true
+    },
+    "lastHash": "",
+    "initialized": false
+  },
+  "approvalPin": "000000",
+  "providerConfig": {
+    "provider": "gemini"
+  },
+  "logsRetentionDays": 7,
+  "replToolConfig": {
+    "sandboxTier": "tier1",
+    "timeoutMs": 30000
+  }
+}

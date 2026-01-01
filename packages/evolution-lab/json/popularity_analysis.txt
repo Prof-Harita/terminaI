@@ -1,0 +1,10 @@
+Total sample: 84 entries
+
+Popularity breakdown:
+  Level 4 (Very Common): 60 entries
+  Level 3 (Common):      24 entries
+  Level 2 (Occasional):  0 entries
+  Level 1 (Rare):        0 entries
+
+Top 3 popularity levels (4+3+2): 84 entries
+Top 2 popularity levels (4+3):   84 entries

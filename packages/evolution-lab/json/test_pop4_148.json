@@ -1,0 +1,2617 @@
+[
+  {
+    "id": "APP_ISSUES_003",
+    "bucket": "Application Issues",
+    "sub_category": "Flatpak Permissions",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "VLC (Flatpak)"
+    },
+    "interaction": {
+      "user_query": "I'm using VLC installed via Flatpak on Fedora. I can't seem to open video files that are stored on my second hard drive (/mnt/data).",
+      "ai_response": "Flatpaks are sandboxed and often only have access to your home folder by default. You need to grant access to the other drive.\n\n**Easiest Fix:**\nInstall **Flatseal** from the software center. Open it, select VLC, and add `/mnt/data` (or 'All System Files') to the **Filesystem** permissions.\n\n**Command Line Fix:**\n```bash\nflatpak override --user --filesystem=/mnt/data org.videolan.VLC\n```"
+    },
+    "technical_tags": ["flatpak", "flatseal", "permissions", "filesystem"],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_004",
+    "bucket": "Application Issues",
+    "sub_category": "Snap Performance",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox (Snap)"
+    },
+    "interaction": {
+      "user_query": "Why does Firefox take like 10 seconds to open on a cold boot? It's really annoying compared to Windows.",
+      "ai_response": "This is a known issue with the Snap version of Firefox, primarily due to decompression speed and initializing the sandbox environment on the first run.\n\n**Workarounds:**\n1. **Patience:** Subsequent launches are usually instant.\n2. **Switch to Deb:** You can replace the Snap with the official Mozilla PPA version or the standard .deb if you prefer faster cold starts, though Ubuntu defaults to Snap for security and updates."
+    },
+    "technical_tags": ["snap", "performance", "firefox", "slow-startup"],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_005",
+    "bucket": "Application Issues",
+    "sub_category": "Dependency Hell",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "External .deb"
+    },
+    "interaction": {
+      "user_query": "I'm trying to install a .deb file I downloaded for a printer driver. `dpkg -i` says 'dependency problems - leaving unconfigured'.",
+      "ai_response": "`dpkg` doesn't automatically download missing dependencies. You need to ask `apt` to fix the broken state.\n\n**Fix:**\nRun this command immediately after the failed install:\n```bash\nsudo apt --fix-broken install\n```\nThis will download the missing dependencies and complete the configuration of your printer driver."
+    },
+    "technical_tags": ["dpkg", "apt", "dependencies", "fix-broken"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_007",
+    "bucket": "Application Issues",
+    "sub_category": "Discord Loop",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Discord (.deb)"
+    },
+    "interaction": {
+      "user_query": "Discord won't open. It just shows a grey box saying 'Update Available' but the deb file on the website is the same version I have!",
+      "ai_response": "Discord checks for updates on launch and blocks usage if outdated, but the repo is often slow to update.\n\n**Quick Fix (Edit Config):**\n1. Open `~/.config/discord/settings.json` in a text editor.\n2. Change `\"SKIP_HOST_UPDATE\": false` to `true` (add the line if missing).\n\n**Better Fix:**\nSwitch to the **Flatpak** or **Snap** version of Discord, as these are usually updated much faster than the .deb package."
+    },
+    "technical_tags": ["discord", "update-loop", "config", "workaround"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_008",
+    "bucket": "Application Issues",
+    "sub_category": "Snap Store Error",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "App Center"
+    },
+    "interaction": {
+      "user_query": "I can't update anything. The App Center says 'Unable to update snap-store: cannot refresh \"snap-store\": snap \"snap-store\" has running apps'.",
+      "ai_response": "The App Center (snap-store) cannot update itself while it is running.\n\n**Fix:**\nClose the App Center and run this in the terminal:\n```bash\nsudo killall snap-store\nsudo snap refresh snap-store\n```\nThis forcibly closes the store and updates it in the background."
+    },
+    "technical_tags": [
+      "snap",
+      "snap-store",
+      "update-failure",
+      "process-management"
+    ],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_010",
+    "bucket": "Application Issues",
+    "sub_category": "Repository Key Error",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "APT"
+    },
+    "interaction": {
+      "user_query": "I tried to run `apt update` but I get an error: 'The following signatures couldn't be verified because the public key is not available: NO_PUBKEY...'.",
+      "ai_response": "You have a repository added (probably for a third-party app like Spotify or Chrome) but are missing its GPG security key.\n\n**Fix:**\nCopy the key ID from the error (e.g., `ABC12345`) and run:\n```bash\nsudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys ABC12345\n```\n(Note: `apt-key` is deprecated but still works; the modern way is to download the .gpg key to `/etc/apt/trusted.gpg.d/`)."
+    },
+    "technical_tags": ["apt", "gpg", "keys", "repository"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_011",
+    "bucket": "Application Issues",
+    "sub_category": "Wayland Screen Sharing",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Zoom (Flatpak)"
+    },
+    "interaction": {
+      "user_query": "I can't share my screen on Zoom. The button works but the other person just sees a black screen. I'm on Fedora Workstation.",
+      "ai_response": "Fedora uses Wayland by default, which handles screen sharing differently than X11. Zoom (especially older versions) sometimes struggles with this.\n\n**Fix:**\n1. Log out.\n2. Click the gear icon on the login screen.\n3. Select **'GNOME on Xorg'**.\n4. Log in and try Zoom again.\n\nAlternatively, ensure you are using the Flatpak version of Zoom, which has better Portal support for Wayland screen sharing."
+    },
+    "technical_tags": ["wayland", "zoom", "screen-sharing", "xorg"],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_013",
+    "bucket": "Application Issues",
+    "sub_category": "PPA Add Error",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Terminal"
+    },
+    "interaction": {
+      "user_query": "I tried `sudo add-apt-repository ppa:some/ppa` on Debian but it says 'command not found'.",
+      "ai_response": "Debian does not support Ubuntu PPAs out of the box, and using them can break your system ('FrankenDebian'). `add-apt-repository` is not installed by default.\n\n**Advice:**\nAvoid using Ubuntu PPAs on Debian. Check if the software is available in the standard Debian repos, or use **Flatpak** or **Snap**, which are safer ways to get newer software on Debian."
+    },
+    "technical_tags": ["debian", "ppa", "add-apt-repository", "compatibility"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_014",
+    "bucket": "Application Issues",
+    "sub_category": "Snap Disk Usage",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Snapd"
+    },
+    "interaction": {
+      "user_query": "My root partition is full! I checked usage and `/var/lib/snapd` is taking up huge amounts of space. Can I delete it?",
+      "ai_response": "Snap keeps older versions of apps by default (usually 3 versions per app), which eats space. Do not delete the folder manually.\n\n**Fix:**\nReduce the retention limit to 2 versions:\n```bash\nsudo snap set system refresh.retain=2\n```\nThen clean up old revisions manually or wait for the system to purge them."
+    },
+    "technical_tags": ["snap", "disk-space", "cleanup", "maintenance"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_015",
+    "bucket": "Application Issues",
+    "sub_category": "Nvidia Drivers",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Drivers"
+    },
+    "interaction": {
+      "user_query": "I installed Ubuntu but my resolution is stuck at 800x600 and games are slow. I have an RTX 3060.",
+      "ai_response": "You are likely running on the generic 'Nouveau' drivers. You need the proprietary Nvidia drivers for proper performance.\n\n**Fix:**\n1. Open **'Software & Updates'**.\n2. Go to the **'Additional Drivers'** tab.\n3. Wait for the list to load, then select the option usually labeled **'Using NVIDIA driver metapackage... (proprietary, tested)'**.\n4. Click Apply Changes and reboot."
+    },
+    "technical_tags": ["nvidia", "drivers", "resolution", "gaming"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_018",
+    "bucket": "Application Issues",
+    "sub_category": "Python Version Conflict",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Python Pip"
+    },
+    "interaction": {
+      "user_query": "I tried to `pip install requests` but I get 'EnvironmentError: Externally-managed-environment'. What does this mean?",
+      "ai_response": "Newer Linux distros prevent you from running `pip install` globally to avoid breaking system packages.\n\n**Fix:**\nUse a virtual environment (recommended):\n```bash\npython3 -m venv myenv\nsource myenv/bin/activate\npip install requests\n```\nOr use `pipx` for installing command-line tools: `sudo apt install pipx`."
+    },
+    "technical_tags": ["python", "pip", "pep668", "virtualenv"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "APP_ISSUES_020",
+    "bucket": "Application Issues",
+    "sub_category": "Browser Hardware Acceleration",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "Watching YouTube in Chrome uses 80% CPU and makes my laptop hot. It runs fine on Windows.",
+      "ai_response": "Hardware video acceleration might not be enabled by default in Chrome on Linux.\n\n**Fix:**\n1. Go to `chrome://flags`.\n2. Search for \"Video Decode\" and set it to **Enabled**.\n3. Search for \"Ozone Platform\" and try setting it to **Auto** or **Wayland** (if using Wayland).\n4. Restart Chrome and check CPU usage again."
+    },
+    "technical_tags": ["chrome", "hardware-acceleration", "cpu-usage", "video"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_101",
+    "bucket": "Application Issues",
+    "sub_category": "Locked Apt Database",
+    "complexity": "Beginner",
+    "user_persona": "Frustrated User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "APT"
+    },
+    "interaction": {
+      "user_query": "I'm trying to install software but I keep getting 'Could not get lock /var/lib/dpkg/lock-frontend'. I rebooted and it's STILL happening! HELP!",
+      "ai_response": "This happens if an update process crashed or is running in the background (like 'Unattended Upgrades').\n\n**Fix:**\n1. Ensure no other update windows are open.\n2. If sure nothing is running, remove the lock:\n```bash\nsudo rm /var/lib/dpkg/lock-frontend\nsudo rm /var/lib/dpkg/lock\nsudo dpkg --configure -a\n```"
+    },
+    "technical_tags": ["apt", "lock-file", "troubleshooting", "error"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_204",
+    "bucket": "Application Issues",
+    "sub_category": "Make AppImage Executable",
+    "complexity": "Beginner",
+    "user_persona": "Newcomer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "File Manager"
+    },
+    "interaction": {
+      "user_query": "I downloaded a file ending in .AppImage. How do I run it? Double clicking does nothing.",
+      "ai_response": "AppImages are not executable by default for security.\n\n**GUI Method:**\n1. Right-click the file -> **Properties**.\n2. Go to the **Permissions** tab.\n3. Check the box **'Allow executing file as program'**.\n4. Close and double-click to run.\n\n**Terminal Method:**\n```bash\nchmod +x application.AppImage\n./application.AppImage\n```"
+    },
+    "technical_tags": ["appimage", "permissions", "chmod", "basics"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_301",
+    "bucket": "Application Issues",
+    "sub_category": "Snap vs Flatpak Spotify",
+    "complexity": "Intermediate",
+    "user_persona": "Music Lover",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Spotify"
+    },
+    "interaction": {
+      "user_query": "I want to install Spotify. Should I use the Snap version that comes with Ubuntu or set up Flatpak? Which one works better?",
+      "ai_response": "Both are official/verified, but they have slight differences:\n\n* **Snap:** Pre-installed backend on Ubuntu, so it's 'click and install'. Sometimes slower to launch. Integrates well with Ubuntu media keys.\n* **Flatpak:** Often has slightly faster startup times. Sandbox permissions are easier to manage with Flatseal.\n\n**Recommendation:** Stick with **Snap** on Ubuntu for simplicity unless you notice slow startup speeds, then try Flatpak."
+    },
+    "technical_tags": [
+      "spotify",
+      "comparison",
+      "snap-vs-flatpak",
+      "recommendation"
+    ],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_405",
+    "bucket": "Application Issues",
+    "sub_category": "Kill Unresponsive App",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "System"
+    },
+    "interaction": {
+      "user_query": "My web browser is completely frozen and won't close when I click X. How do I force kill it without restarting the computer?",
+      "ai_response": "**Method 1: xkill**\n1. Open a terminal.\n2. Type `xkill` and press Enter.\n3. Your cursor will turn into an X. Click the frozen window to kill it instantly.\n\n**Method 2: System Monitor**\nOpen 'System Monitor', find the browser process, right-click it, and select 'Kill Process'."
+    },
+    "technical_tags": [
+      "xkill",
+      "frozen-app",
+      "troubleshooting",
+      "process-management"
+    ],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_407",
+    "bucket": "Application Issues",
+    "sub_category": "Check GPU Usage",
+    "complexity": "Intermediate",
+    "user_persona": "Gamer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Nvidia Settings"
+    },
+    "interaction": {
+      "user_query": "How do I check if my game is actually using my Nvidia GPU and not the integrated graphics?",
+      "ai_response": "**Command Line:**\nRun `nvidia-smi`. It lists all processes currently running on the GPU.\n\n**GUI:**\nOpen **NVIDIA X Server Settings**. If you see your game listed in the processes or GPU utilization goes up when the game is running, it's working."
+    },
+    "technical_tags": ["nvidia", "monitoring", "gpu", "gaming"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_416",
+    "bucket": "Application Issues",
+    "sub_category": "Login Loop",
+    "complexity": "Advanced",
+    "user_persona": "Panic Mode",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Gnome"
+    },
+    "interaction": {
+      "user_query": "I type my password, the screen goes black, and then it brings me right back to the login screen. I can't get to my desktop!",
+      "ai_response": "This 'Login Loop' is often caused by a botched driver install or a permissions error in your home directory.\n\n**Fix:**\n1. Press `Ctrl+Alt+F3` to get a terminal.\n2. Login.\n3. Check ownership of `.Xauthority`:\n   ```bash\n   ls -l .Xauthority\n   ```\n   If it says `root`, change it back to you:\n   ```bash\n   sudo chown $USER:$USER .Xauthority\n   ```\n4. Reboot."
+    },
+    "technical_tags": ["login-loop", "xauthority", "permissions", "crash"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_417",
+    "bucket": "Application Issues",
+    "sub_category": "Sound Output Missing",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Pipewire"
+    },
+    "interaction": {
+      "user_query": "I plugged in my HDMI monitor but the sound is still coming from my laptop speakers. It doesn't switch automatically.",
+      "ai_response": "You need to manually select the output device.\n\n**Fix:**\n1. Open **Settings** -> **Sound**.\n2. Under **Output Device**, click the dropdown (or list) and select 'HDMI / DisplayPort'.\n3. Adjust the volume slider to ensure it's not muted."
+    },
+    "technical_tags": ["sound", "pipewire", "hdmi", "settings"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_419",
+    "bucket": "Application Issues",
+    "sub_category": "Dual Boot Time Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Dual Booter",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "System Clock"
+    },
+    "interaction": {
+      "user_query": "Every time I switch from Windows to Linux, my clock is wrong by exactly 5 hours.",
+      "ai_response": "Linux stores time in UTC on the motherboard; Windows stores it in Local Time.\n\n**Fix:**\nTell Linux to use Local Time to match Windows:\n```bash\ntimedatectl set-local-rtc 1 --adjust-system-clock\n```"
+    },
+    "technical_tags": ["time", "dual-boot", "windows", "timedatectl"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_501",
+    "bucket": "Application Issues",
+    "sub_category": "Flatpak",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Discord (Flatpak)"
+    },
+    "interaction": {
+      "user_query": "I installed Discord from the Software Center (Flatpak), but it can't access my Downloads folder to send files. It acts like the folder is empty.",
+      "ai_response": "Flatpak apps are sandboxed and often restricted from accessing personal folders by default.\n\n**Fix:**\n1. Install **Flatseal** from the Software Center.\n2. Open Flatseal, select Discord, and toggle on **Filesystem > All user files** (or specific folders).\n3. Restart Discord.\n\nAlternatively, use the command line:\n```bash\nflatpak override --user --filesystem=~/Downloads com.discordapp.Discord\n```"
+    },
+    "technical_tags": [
+      "flatpak",
+      "sandboxing",
+      "permissions",
+      "fedora-40",
+      "flatseal"
+    ],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_506",
+    "bucket": "Application Issues",
+    "sub_category": "Snap",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Chromium"
+    },
+    "interaction": {
+      "user_query": "Chromium takes forever to open the first time I click it after turning on my computer. Is it broken?",
+      "ai_response": "This is a known 'cold boot' issue with Snaps due to the time required to mount the squashfs filesystem.\n\n**Context:** It is not broken. Subsequent launches will be fast. You can try the Flatpak version or native `.deb` (from a PPA) if the startup delay is critical for you."
+    },
+    "technical_tags": [
+      "snap",
+      "performance",
+      "startup-time",
+      "ubuntu-24.04",
+      "chromium"
+    ],
+    "friction_type": "sandboxing"
+  },
+  {
+    "id": "APP_ISSUES_508",
+    "bucket": "Application Issues",
+    "sub_category": "Native (.deb)",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Google Chrome"
+    },
+    "interaction": {
+      "user_query": "Every time I open Chrome, it asks me to 'Enter password to unlock your login keyring'. How do I stop this popup?",
+      "ai_response": "This happens if you have auto-login enabled, so the keyring didn't unlock with your user session.\n\n**Fix:**\n1. Open 'Passwords and Keys' (Seahorse).\n2. Right-click 'Login' -> Change Password.\n3. Enter your current password, and leave the *new* password blank (press Continue -> Continue).\n*Warning: This stores passwords unencrypted, but stops the popup.*"
+    },
+    "technical_tags": [
+      "keyring",
+      "authentication",
+      "chrome",
+      "ubuntu-24.04",
+      "usability"
+    ],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "APP_ISSUES_801",
+    "bucket": "Application Issues",
+    "sub_category": "Steam (Native)",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Steam"
+    },
+    "interaction": {
+      "user_query": "I'm trying to play a Windows game on Steam. It launches, I hear sound, but the screen is just black. I enabled Proton Experimental.",
+      "ai_response": "A black screen with audio often indicates a video codec issue or a Vulkan shader compilation hang.\n\n**Fix:**\n1. Right-click the game in Steam > Properties > Launch Options.\n2. Add: `PROTON_USE_WINED3D=1 %command%`\n3. If that fails, remove that command and try switching Proton versions to **Proton 8.0** or **GE-Proton** (community build)."
+    },
+    "technical_tags": ["steam", "proton", "gaming", "arch-linux", "vulkan"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "AUTO_SCRIPT_001",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Cron",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "cron 3.0"
+    },
+    "interaction": {
+      "user_query": "My backup script works fine when I run it manually, but when cron runs it, it fails with 'command not found' errors.",
+      "ai_response": "Cron doesn't load your shell environment (.bashrc, .profile). It has a minimal PATH.\n\n**Fix: Use absolute paths**\n```bash\n#!/bin/bash\n# Instead of:\n# docker ps\n\n# Use:\n/usr/bin/docker ps\n```\n\n**Or set PATH in crontab:**\n```cron\nPATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\n\n0 2 * * * /home/user/backup.sh\n```\n\n**Find command locations:**\n```bash\nwhich docker  # Shows /usr/bin/docker\n```"
+    },
+    "technical_tags": ["cron", "environment-variables", "path", "automation"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "AUTO_SCRIPT_002",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Bash Scripting",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "bash 5.2"
+    },
+    "interaction": {
+      "user_query": "I'm trying to run a script I just wrote, but I keep getting 'Permission denied', even though I am the owner.",
+      "ai_response": "Being the file owner isn't enough; the file must have the **execute bit** set.\n\n**Fix:**\n```bash\nchmod +x myscript.sh\n./myscript.sh\n```\n\nAlternatively, you can run it by passing it to the interpreter explicitly:\n```bash\nbash myscript.sh\n```"
+    },
+    "technical_tags": ["bash", "permissions", "chmod", "execution"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "AUTO_SCRIPT_101",
+    "bucket": "Automation & Scripting",
+    "sub_category": "Cron",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "cron 3.0"
+    },
+    "interaction": {
+      "user_query": "I am losing my mind. I put a script in `/etc/cron.daily` but it never runs. The permissions are 755.",
+      "ai_response": "Scripts in `/etc/cron.daily` (and similar directories) driven by `run-parts` have strict naming conventions in some distros (like Debian/Ubuntu).\n\n**The Trap:**\nFilenames cannot contain dots `.` or extensions like `.sh` unless explicitly configured otherwise.\n\n**Fix:**\nRename `backup.sh` to `backup`.\n```bash\nmv /etc/cron.daily/backup.sh /etc/cron.daily/backup\n```\nAlso ensure it doesn't rely on environment variables set in `.bashrc`."
+    },
+    "technical_tags": [
+      "cron",
+      "run-parts",
+      "troubleshooting",
+      "naming-conventions"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_001",
+    "bucket": "Communication & Email",
+    "sub_category": "Thunderbird",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Thunderbird 115.5"
+    },
+    "interaction": {
+      "user_query": "Thunderbird won't connect to my Gmail. It keeps saying 'Authentication Failed' but my password is definitely correct!",
+      "ai_response": "Gmail deprecated basic password authentication. You need to use OAuth2:\n\n1. Open Thunderbird\n2. Go to **Account Settings** → **Server Settings**\n3. Change **Authentication Method** from 'Normal Password' to 'OAuth2'\n4. Try connecting again - a browser window will open for Google login\n5. Authorize Thunderbird\n\nThis is more secure than storing your password directly."
+    },
+    "technical_tags": ["oauth2", "gmail", "authentication", "thunderbird"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_023",
+    "bucket": "Communication & Email",
+    "sub_category": "Thunderbird",
+    "complexity": "Intermediate",
+    "user_persona": "Freelancer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "I can receive emails but I cannot send them. SMTP times out.",
+      "ai_response": "Sending failures are almost always port or encryption settings.\n\n1. Go to **Account Settings** -> **Outgoing Server (SMTP)** at the bottom of the left list.\n2. Select your server and click **Edit**.\n3. Common settings for Gmail/Outlook:\n   - Port: **587** (STARTTLS) OR **465** (SSL/TLS).\n   - Authentication: **OAuth2** (for Gmail/MS) or Normal Password.\n4. **Tip:** If using a VPN, disconnect it and try again. Some VPN IPs are blocked by SMTP spam filters."
+    },
+    "technical_tags": ["smtp", "sending_error", "firewall", "port_settings"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_101",
+    "bucket": "Communication & Email",
+    "sub_category": "Zoom",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Zoom 5.17",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "Why is Linux support for Zoom so bad? I can't share audio when I share my screen!",
+      "ai_response": "Sharing system audio during screen share is a known limitation of the Zoom Linux client, largely due to how Linux handles audio routing (PulseAudio/PipeWire) differently than Windows.\n\n**Workaround:**\n1. When clicking **Share Screen**, look for the **Share Sound** checkbox at the bottom (it is often missing on Linux depending on the version).\n2. If missing, you must select **'Optimize for video clip'** which sometimes forces the audio bridge.\n3. Ideally, use the **Zoom PWA (Web App)** in Chrome, which leverages the browser's better media handling capabilities."
+    },
+    "technical_tags": [
+      "zoom",
+      "audio_share",
+      "screen_sharing",
+      "limitations",
+      "debian"
+    ],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_104",
+    "bucket": "Communication & Email",
+    "sub_category": "Thunderbird",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Thunderbird 115",
+      "display_server": "X11"
+    },
+    "interaction": {
+      "user_query": "I can't send emails! Receiving works fine, but sending gives an SMTP timeout error.",
+      "ai_response": "This is usually a port or SSL issue with your outgoing server.\n\n**Check these settings:**\n1. Go to **Account Settings** → **Outgoing Server (SMTP)** (bottom left).\n2. Select your server and click **Edit**.\n3. **Port:** Should usually be `587` (STARTTLS) or `465` (SSL/TLS). Port `25` is often blocked by ISPs.\n4. **Authentication:** Ensure it matches your incoming settings (usually 'Normal Password' or 'OAuth2' for Gmail/Outlook)."
+    },
+    "technical_tags": [
+      "smtp",
+      "sending_error",
+      "timeout",
+      "port_587",
+      "thunderbird"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_202",
+    "bucket": "Communication & Email",
+    "sub_category": "Gmail",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Online Accounts",
+      "display_server": "Wayland"
+    },
+    "interaction": {
+      "user_query": "How do I sync my Google Calendar with the Ubuntu calendar app without installing anything extra?",
+      "ai_response": "Ubuntu has built-in integration for this.\n\n1. Open **Settings** → **Online Accounts**.\n2. Select **Google**.\n3. Sign in and grant permissions.\n4. Ensure the **Calendar** toggle is ON.\n5. Open the GNOME Calendar app (or click the date in the top bar); your Google events will sync automatically after a few moments."
+    },
+    "technical_tags": [
+      "google_calendar",
+      "gnome",
+      "online_accounts",
+      "sync",
+      "ubuntu"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_204",
+    "bucket": "Communication & Email",
+    "sub_category": "Thunderbird",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Thunderbird 102",
+      "display_server": "X11"
+    },
+    "interaction": {
+      "user_query": "I want to backup all my Thunderbird emails and settings to a USB drive. Which file do I copy?",
+      "ai_response": "You need to copy your **Profile** folder.\n\n1. Close Thunderbird.\n2. Open your File Manager and press `Ctrl+H` to show hidden files.\n3. Navigate to `.thunderbird` (usually in your Home folder).\n4. You will see a folder with a random name like `abc1234.default-release`.\n5. Copy the **entire** `.thunderbird` folder to your USB drive. To restore, just paste it back into the Home folder on the new computer."
+    },
+    "technical_tags": [
+      "backup",
+      "migration",
+      "profile",
+      "thunderbird",
+      "hidden_files"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_517",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "I got an email that says it's from 'Support' but the address looks weird. How do I see the real sender?",
+      "ai_response": "Phishing emails often spoof the display name. \n\n**To verify:**\n1. Look at the **From** field. If it says \"Support <xyz@random-domain.com>\", it's fake.\n2. Press **Ctrl+U** to view the **Message Source**. Look for the `Return-Path` header. If it doesn't match the company claiming to email you, it's spam/phishing."
+    },
+    "technical_tags": ["thunderbird", "phishing", "security", "email-headers"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_524",
+    "bucket": "Communication & Email",
+    "sub_category": "Privacy & Security",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Thunderbird"
+    },
+    "interaction": {
+      "user_query": "I keep getting spam. Does Thunderbird have a junk filter I need to turn on?",
+      "ai_response": "Thunderbird has an adaptive Junk filter, but it needs training.\n\n**To enable and train:**\n1. **Account Settings > Junk Settings** -> Ensure **'Enable adaptive junk mail controls'** is checked.\n2. When you see spam, **do not just delete it**. Select it and click the **Junk** icon (flame/recycle symbol).\n3. Thunderbird learns from this and will start moving similar emails to the Junk folder automatically."
+    },
+    "technical_tags": ["thunderbird", "spam-filter", "junk"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_602",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "How do I sync my Google Contacts to Thunderbird? I hate having two address books.",
+      "ai_response": "Thunderbird supports CardDAV natively now.\n\n**Steps:**\n1. Go to **Address Book**.\n2. Click **New Address Book** > **Add CardDAV Address Book**.\n3. **Username:** Your Gmail address.\n4. **Location:** `https://www.googleapis.com/carddav/v1/principals/user@gmail.com/lists/default/` (or usually just typing the email is enough for Thunderbird to auto-detect Google).\n5. It will ask for OAuth2 login. Accept it."
+    },
+    "technical_tags": ["thunderbird", "carddav", "google-contacts", "sync"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "COMM_EMAIL_617",
+    "bucket": "Communication & Email",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Thunderbird 115"
+    },
+    "interaction": {
+      "user_query": "I changed my Gmail password. How do I update it in Thunderbird? It just keeps giving login errors.",
+      "ai_response": "Thunderbird uses OAuth tokens for Gmail, not just a saved password.\n\n**To reset:**\n1. Go to **Settings > Privacy & Security > Saved Passwords**.\n2. Delete the entry for `oauth://accounts.google.com` corresponding to your email.\n3. Restart Thunderbird. It will prompt you to log in via a Google web popup again."
+    },
+    "technical_tags": ["thunderbird", "gmail", "oauth", "password-reset"],
+    "friction_type": "auth_failure"
+  },
+  {
+    "id": "COMM_EMAIL_701",
+    "bucket": "Communication & Email",
+    "sub_category": "Work/Professional",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Microsoft Teams (PWA)"
+    },
+    "interaction": {
+      "user_query": "I can't join my company Teams meeting. It just says 'Browser not supported' when I use Firefox.",
+      "ai_response": "Microsoft Teams web (and PWA) works best on Chromium-based browsers (Chrome/Edge). Firefox support is limited.\n\n**Solution:**\n1. Install **Google Chrome** or **Microsoft Edge** for Linux.\n2. Navigate to `teams.microsoft.com`.\n3. Click the three dots in the browser > **Apps** > **Install Microsoft Teams**. This creates a standalone PWA that works reliably."
+    },
+    "technical_tags": ["teams", "browser-support", "pwa", "work"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "COMM_EMAIL_702",
+    "bucket": "Communication & Email",
+    "sub_category": "Work/Professional",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Zoom (Flatpak)"
+    },
+    "interaction": {
+      "user_query": "My boss can't see my screen when I share on Zoom. It's just black. I'm on Fedora.",
+      "ai_response": "Fedora uses Wayland by default, which Zoom (especially the Flatpak) sometimes struggles with.\n\n**Fix:**\n1. Open Zoom **Settings > Share Screen**.\n2. Uncheck **'Use hardware acceleration for screen sharing'**.\n3. Ensure you select the **'Desktop'** or **'PipeWire'** option when the share dialog pops up, not just a specific X11 window if it's acting up.\n4. If issues persist, log out of Fedora and choose **'GNOME on Xorg'** at the login screen."
+    },
+    "technical_tags": ["zoom", "wayland", "screen-sharing", "fedora"],
+    "friction_type": "wayland_conflict"
+  },
+  {
+    "id": "COMM_EMAIL_801",
+    "bucket": "Communication & Email",
+    "sub_category": "Personal/Home",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Discord"
+    },
+    "interaction": {
+      "user_query": "I can't install Discord. I downloaded the .deb file but double clicking does nothing.",
+      "ai_response": "On Ubuntu 22.04+, the software center sometimes glitches with local .deb files.\n\n**Try this:**\n1. Right-click the file > **Open With** > **Software Install**.\n2. If that fails, open Terminal, drag the file into it, and add `sudo apt install ./` before the file path. \n   Example: `sudo apt install ./discord-0.0.1.deb`."
+    },
+    "technical_tags": ["discord", "installation", "deb", "ubuntu"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "COMM_EMAIL_807",
+    "bucket": "Communication & Email",
+    "sub_category": "Personal/Home",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Thunderbird"
+    },
+    "interaction": {
+      "user_query": "I want to send a large video file (100MB) to my grandma. Thunderbird says it's too big.",
+      "ai_response": "Email isn't designed for large files (limit is usually 25MB).\n\n**Use File Link:**\n1. Thunderbird has a 'File Link' feature.\n2. Go to **Settings > Composition > Attachments**.\n3. Add a provider (like WeTransfer or Dropbox).\n4. When you attach a large file, Thunderbird will offer to upload it there and just insert a download link in the email body."
+    },
+    "technical_tags": ["thunderbird", "file-link", "attachments", "cloud"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "DEV_DEVOPS_001",
+    "bucket": "Development & DevOps",
+    "sub_category": "Docker",
+    "complexity": "Beginner",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Docker 26.0"
+    },
+    "interaction": {
+      "user_query": "I just installed Docker on Ubuntu 24.04. Every time I run `docker ps`, I get 'permission denied while trying to connect to the Docker daemon socket'. I don't want to use sudo for every command.",
+      "ai_response": "The error occurs because the Docker daemon socket is owned by `root`, and other users can only access it via the `docker` group.\n\n**Fix:**\n1. Add your user to the docker group:\n   ```bash\n   sudo usermod -aG docker $USER\n   ```\n2. **Log out and log back in** (or restart) to apply group membership changes.\n\n**Verification:**\n```bash\ngroups # Should output 'docker'\ndocker run hello-world\n```"
+    },
+    "technical_tags": ["docker", "permissions", "usermod", "daemon"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_002",
+    "bucket": "Development & DevOps",
+    "sub_category": "Git",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Git 2.44"
+    },
+    "interaction": {
+      "user_query": "I'm trying to push to a private GitHub repo over HTTPS, but I keep getting `Support for password authentication was removed`. I typed my GitHub password correctly.",
+      "ai_response": "GitHub removed support for account passwords over HTTPS in 2021. You must use a Personal Access Token (PAT) or switch to SSH.\n\n**Solution (PAT):**\n1. Go to GitHub Settings -> Developer Settings -> Personal Access Tokens -> Tokens (classic).\n2. Generate a token with `repo` scope.\n3. When `git push` prompts for a password, paste the **token** instead of your account password.\n\n**Better Long-term Fix (Credential Helper):**\n```bash\ngit config --global credential.helper store\n# The next time you push, it will save the token.\n```"
+    },
+    "technical_tags": ["git", "authentication", "github", "https"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "DEV_DEVOPS_004",
+    "bucket": "Development & DevOps",
+    "sub_category": "SSH",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "OpenSSH 9.7"
+    },
+    "interaction": {
+      "user_query": "I have an SSH key pair generated. I copied the public key to the server using `ssh-copy-id`. However, it still asks for a password when I login. `UsePAM` is yes in sshd_config.",
+      "ai_response": "This is usually a permissions issue on the server side. SSH is strict about file ownership and modes.\n\n**Fix on Server:**\nCheck permissions for the `.ssh` directory and `authorized_keys` file.\n```bash\nchmod 700 ~/.ssh\nchmod 600 ~/.ssh/authorized_keys\nchown -R $USER:$USER ~/.ssh\n```\n\nAlso, ensure `/etc/ssh/sshd_config` has:\n`PubkeyAuthentication yes`\n\nRestart sshd if you changed the config:\n`sudo systemctl restart sshd`"
+    },
+    "technical_tags": ["ssh", "permissions", "chmod", "authentication"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_005",
+    "bucket": "Development & DevOps",
+    "sub_category": "Python",
+    "complexity": "Beginner",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Python 3.10"
+    },
+    "interaction": {
+      "user_query": "I tried to run `pip install requests` but got an 'externally-managed-environment' error. I just want to install a package for a quick script.",
+      "ai_response": "Newer Linux distributions prevent global pip installs to avoid conflicting with system package managers (apt). You should use a virtual environment.\n\n**Recommended approach:**\n```bash\npython3 -m venv myenv\nsource myenv/bin/activate\npip install requests\n```\n\n**Alternative (User install):**\nIf you really need it for your user without a venv (not recommended for dev projects):\n```bash\npip install requests --break-system-packages\n```\n*(Note: Avoid this if possible; stick to venv)*."
+    },
+    "technical_tags": ["python", "pip", "virtualenv", "pep668"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "DEV_DEVOPS_101",
+    "bucket": "Development & DevOps",
+    "sub_category": "Docker",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Docker Compose v2"
+    },
+    "interaction": {
+      "user_query": "I'm running `docker compose up -d`. The container starts but exits immediately with code 0. `docker logs` is empty. How do I debug a silent exit?",
+      "ai_response": "A container exiting with code 0 means the main process finished successfully. Docker containers only run as long as the PID 1 process is alive.\n\n**Common Cause:** You might be using an image (like `ubuntu` or `node`) without a long-running foreground command.\n\n**Fixes:**\n1. **Check Command:** Ensure your `CMD` or `entrypoint` starts a server (e.g., `node server.js` not just `node`).\n2. **Keep Alive (Debug):** Add `tty: true` to your compose file or run with a keep-alive command to inspect:\n   ```yaml\n   command: tail -f /dev/null\n   ```\n3. **Foreground:** Ensure the app isn't daemonizing itself (e.g., `nginx -g 'daemon off;'`)."
+    },
+    "technical_tags": [
+      "docker",
+      "debugging",
+      "containers",
+      "process-management"
+    ],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_103",
+    "bucket": "Development & DevOps",
+    "sub_category": "Node.js",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "npm 10"
+    },
+    "interaction": {
+      "user_query": "I keep getting EACCES errors when installing global npm packages. I tried `sudo npm install`, but now my permissions are messed up. How do I fix this cleanly?",
+      "ai_response": "Using `sudo` with npm is discouraged as it creates root-owned files in your home directory.\n\n**Fix Permissions:**\n```bash\nsudo chown -R $USER:$(id -gn $USER) ~/.npm\n```\n\n**Prevent Future Issues (Change Default Directory):**\n1. Make a directory for global packages:\n   ```bash\n   mkdir ~/.npm-global\n   npm config set prefix '~/.npm-global'\n   ```\n2. Add to PATH in `~/.bashrc` (or `.zshrc`):\n   ```bash\n   export PATH=~/.npm-global/bin:$PATH\n   ```\n3. `source ~/.bashrc`\nNow you can `npm install -g package` without sudo."
+    },
+    "technical_tags": ["node", "npm", "permissions", "environment"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_201",
+    "bucket": "Development & DevOps",
+    "sub_category": "Docker",
+    "complexity": "Beginner",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Any Linux",
+      "app_version": "Docker 26.0"
+    },
+    "interaction": {
+      "user_query": "How do I create a simple Dockerfile for a Python script? I just want to run `main.py` which uses `pandas`.",
+      "ai_response": "Here is a standard `Dockerfile` for a Python app.\n\n**1. Create `requirements.txt`:**\n```\npandas\n```\n\n**2. Create `Dockerfile`:**\n```dockerfile\n# Use a lightweight Python base image\nFROM python:3.9-slim\n\n# Set working directory\nWORKDIR /app\n\n# Copy requirements first to leverage caching\nCOPY requirements.txt .\n\n# Install dependencies\nRUN pip install --no-cache-dir -r requirements.txt\n\n# Copy source code\nCOPY main.py .\n\n# Command to run\nCMD [\"python\", \"main.py\"]\n```\n\n**3. Build and Run:**\n```bash\ndocker build -t my-python-app .\ndocker run my-python-app\n```"
+    },
+    "technical_tags": ["docker", "python", "dockerfile", "containerization"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_202",
+    "bucket": "Development & DevOps",
+    "sub_category": "VS Code",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "VS Code 1.88"
+    },
+    "interaction": {
+      "user_query": "How do I set up VS Code to edit files directly on my remote Linux server over SSH without using VNC?",
+      "ai_response": "Use the **Remote - SSH** extension. It is far superior to editing files via SFTP.\n\n**Steps:**\n1. Install the \"Remote - SSH\" extension by Microsoft in VS Code.\n2. Click the green remote icon (bottom left) -> **Connect to Host**.\n3. Enter `user@your-server-ip`.\n4. It will install a small VS Code server agent on the remote machine.\n5. Once connected, use **File -> Open Folder** to browse the remote filesystem.\n\n*Pro-tip:* Set up SSH keys first so you don't have to type your password every time."
+    },
+    "technical_tags": ["vscode", "ssh", "remote-dev", "ide"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_204",
+    "bucket": "Development & DevOps",
+    "sub_category": "Git",
+    "complexity": "Beginner",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Linux",
+      "app_version": "Git"
+    },
+    "interaction": {
+      "user_query": "How do I ignore the `node_modules` folder in Git? I already committed it by mistake.",
+      "ai_response": "You need to add it to `.gitignore` and remove the cached files from the index.\n\n**1. Create .gitignore:**\n```bash\necho \"node_modules/\" >> .gitignore\n```\n\n**2. Remove from git (keep local files):**\n```bash\ngit rm -r --cached node_modules\n```\n\n**3. Commit:**\n```bash\ngit commit -m \"Stop tracking node_modules\"\n```\n\nNow git ignores the folder, but the files remain on your disk."
+    },
+    "technical_tags": ["git", "gitignore", "cleanup", "version-control"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_205",
+    "bucket": "Development & DevOps",
+    "sub_category": "Networking",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "UFW"
+    },
+    "interaction": {
+      "user_query": "I'm setting up a web server. How do I configure UFW to allow SSH, HTTP, and HTTPS but block everything else?",
+      "ai_response": "UFW (Uncomplicated Firewall) is great for this. Always allow SSH first to avoid locking yourself out.\n\n**Commands:**\n```bash\nsudo ufw default deny incoming\nsudo ufw default allow outgoing\n\n# Allow SSH (Port 22)\nsudo ufw allow ssh\n# Or if using custom SSH port: sudo ufw allow 2222/tcp\n\n# Allow Web Traffic\nsudo ufw allow http  # Port 80\nsudo ufw allow https # Port 443\n\n# Enable\nsudo ufw enable\n```\n**Check status:** `sudo ufw status verbose`"
+    },
+    "technical_tags": ["firewall", "ufw", "security", "networking"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_305",
+    "bucket": "Development & DevOps",
+    "sub_category": "Python",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Linux",
+      "app_version": "Python"
+    },
+    "interaction": {
+      "user_query": "Should I use `conda` or `venv` + `pip` for general Python development?",
+      "ai_response": "**Recommendation: `venv` + `pip` (or `poetry`) for standard dev; `conda` for Data Science.**\n\n* **venv/pip:** Standard, lightweight, built into Python. Best for web dev (Django/Flask) and automation scripts. Combine with `pyenv` to manage Python versions.\n* **Conda:** Handles binary dependencies (C libraries) exceptionally well. If you are using NumPy, SciPy, or TensorFlow and struggle with compilation errors during install, Conda is the lifesaver.\n* **Poetry:** Consider this if you need robust dependency locking and publishing features."
+    },
+    "technical_tags": ["python", "conda", "pip", "environment-management"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_401",
+    "bucket": "Development & DevOps",
+    "sub_category": "SSH",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Any Linux",
+      "app_version": "OpenSSH"
+    },
+    "interaction": {
+      "user_query": "I manage 10 different servers. I'm tired of typing `ssh user@ip -i ~/.ssh/key` every time. How can I speed this up?",
+      "ai_response": "Use the **SSH Config** file (`~/.ssh/config`).\n\n**Setup:**\nCreate/Edit `~/.ssh/config`:\n```ssh\nHost web\n    HostName 192.168.1.10\n    User myuser\n    IdentityFile ~/.ssh/web_key\n\nHost db\n    HostName 192.168.1.20\n    User admin\n    IdentityFile ~/.ssh/db_key\n```\n\n**Usage:**\nNow you just type `ssh web` or `ssh db`. You can also add `ForwardAgent` or `Port` settings here per host."
+    },
+    "technical_tags": ["ssh", "ssh-config", "automation", "workflow"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_501",
+    "bucket": "Development & DevOps",
+    "sub_category": "SSH",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "OpenSSH 8.9"
+    },
+    "interaction": {
+      "user_query": "I'm trying to SSH into my dev server, but it keeps rejecting my key with 'Permissions 0644 for 'id_rsa' are too open'. I haven't changed the file.",
+      "ai_response": "SSH requires strict permissions on private keys. If the file is readable by others (0644), OpenSSH refuses to use it for security reasons.\n\n**Fix the permissions:**\n```bash\nchmod 600 ~/.ssh/id_rsa\n```\n\nThis ensures only your user can read or write to the key file."
+    },
+    "technical_tags": ["ssh", "permissions", "chmod", "security"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "DEV_DEVOPS_510",
+    "bucket": "Development & DevOps",
+    "sub_category": "Tools",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "npm 10"
+    },
+    "interaction": {
+      "user_query": "I keep getting `EACCES: permission denied` when installing global npm packages. I don't want to use `sudo` for npm.",
+      "ai_response": "Using `sudo` with npm is a security risk. You should change the default directory for global packages.\n\n1. **Create a directory for global packages:**\n   ```bash\n   mkdir ~/.npm-global\n   ```\n2. **Configure npm to use it:**\n   ```bash\n   npm config set prefix '~/.npm-global'\n   ```\n3. **Update your PATH (add to `~/.bashrc` or `~/.zshrc`):**\n   ```bash\n   export PATH=~/.npm-global/bin:$PATH\n   ```\n4. **Apply changes:**\n   ```bash\n   source ~/.bashrc\n   ```"
+    },
+    "technical_tags": ["npm", "node", "permissions", "security"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "DEV_DEVOPS_704",
+    "bucket": "Development & DevOps",
+    "sub_category": "Python",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Python 3.12"
+    },
+    "interaction": {
+      "user_query": "I'm trying to install a Python package with `pip` but I get 'error: externally-managed-environment'. Ubuntu seems to block pip global installs now.",
+      "ai_response": "Ubuntu 24.04 adheres to PEP 668, preventing pip from modifying system packages to avoid breaking OS tools.\n\n**Solutions:**\n1. **Use venv (Recommended):**\n   ```bash\n   python3 -m venv venv\n   source venv/bin/activate\n   pip install package_name\n   ```\n2. **Use pipx (For CLI tools):**\n   ```bash\n   sudo apt install pipx\n   pipx install package_name\n   ```"
+    },
+    "technical_tags": ["python", "pip", "pep668", "package-management"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "ENT_MEDIA_001",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Spotify",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Spotify 1.2.31"
+    },
+    "interaction": {
+      "user_query": "Spotify won't open. I click the icon, it bounces for a second, then nothing happens. No error message.",
+      "ai_response": "This is likely the 'singleton lock' issue - Spotify crashed and left a lock file.\n\n**Fix:**\n```bash\nrm -rf ~/.cache/spotify\nrm -rf ~/.config/spotify\n```\n\nThen try launching Spotify again. This clears the corrupted cache and lock files."
+    },
+    "technical_tags": ["spotify", "singleton-lock", "cache-corruption"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "ENT_MEDIA_002",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Video Playback",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Default Video Player"
+    },
+    "interaction": {
+      "user_query": "I can't play an MP4 file I downloaded. It says 'missing codec H.264'.",
+      "ai_response": "Linux Mint requires extra multimedia codecs for proprietary formats like H.264.\n\n**Install codecs:**\n```bash\nsudo apt update\nsudo apt install mint-meta-codecs\n```\nRestart your video player after installation."
+    },
+    "technical_tags": ["codecs", "h264", "mint-meta-codecs"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_003",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Streaming",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox 124"
+    },
+    "interaction": {
+      "user_query": "Why is Netflix quality so bad? It looks like 720p even though I pay for 4K.",
+      "ai_response": "Browsers on Linux are generally restricted to 720p/1080p due to Widevine DRM L1 certification requirements. \n\n**Workaround:**\n1. Install the 'Netflix 1080p' extension in Firefox.\n2. Force 1080p playback using the extension shortcut (`Ctrl + Alt + Shift + S` to verify bitrate)."
+    },
+    "technical_tags": ["netflix", "widevine", "drm", "firefox"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_007",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Hardware Acceleration",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "YouTube makes my laptop fan spin like crazy. How do I turn on hardware decoding?",
+      "ai_response": "You need to enable VA-API for your GPU.\n\n**For Intel/AMD:**\n1. Install codecs:\n```bash\nsudo dnf install ffmpeg gstreamer1-plugin-openh264 mozilla-openh264\n```\n2. Verify support:\n```bash\nvainfo\n```\n3. In Firefox `about:config`, set `media.ffmpeg.vaapi.enabled` to `true`."
+    },
+    "technical_tags": ["va-api", "firefox", "hardware-acceleration", "youtube"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_008",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Gaming",
+    "complexity": "Beginner",
+    "user_persona": "Gamer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Steam"
+    },
+    "interaction": {
+      "user_query": "Most of my Windows games in Steam are grayed out and I can't install them.",
+      "ai_response": "You need to enable Steam Play (Proton) for all titles, not just supported ones.\n\n**Steps:**\n1. Go to **Steam > Settings > Compatibility**.\n2. Check **Enable Steam Play for all other titles**.\n3. Restart Steam."
+    },
+    "technical_tags": ["steam", "proton", "compatibility", "gaming"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_011",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Audio",
+    "complexity": "Intermediate",
+    "user_persona": "Audiophile",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "PipeWire"
+    },
+    "interaction": {
+      "user_query": "My Bluetooth headphones sound like a telephone call, very low quality.",
+      "ai_response": "Your headphones are likely stuck in HSP/HFP (Headset) mode instead of A2DP (High Fidelity).\n\n**Fix:**\n1. Open **Settings > Sound**.\n2. Under Output, select your headphones.\n3. Change the **Configuration/Profile** drop-down from 'Headset Head Unit (HSP/HFP)' to 'High Fidelity Playback (A2DP Sink)'."
+    },
+    "technical_tags": ["bluetooth", "a2dp", "pipewire", "audio-quality"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_012",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Video Playback",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Totem"
+    },
+    "interaction": {
+      "user_query": "Videos look 'torn' horizontally when there is fast movement on screen.",
+      "ai_response": "This is screen tearing. If you are using NVIDIA, you need to enable 'Force Composition Pipeline'.\n\n**Fix:**\n1. Open **NVIDIA X Server Settings**.\n2. Go to **X Server Display Configuration** > **Advanced**.\n3. Check **Force Composition Pipeline**.\n4. Click **Apply** and Save to X Configuration File."
+    },
+    "technical_tags": [
+      "screen-tearing",
+      "nvidia",
+      "vsync",
+      "composition-pipeline"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_023",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Steam",
+    "complexity": "Intermediate",
+    "user_persona": "Gamer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Steam"
+    },
+    "interaction": {
+      "user_query": "Games are stuttering badly. I think they are running on my Intel integrated graphics instead of my NVIDIA card.",
+      "ai_response": "You can force the GPU usage via launch options.\n\n**Fix:**\nRight-click the game in Steam > Properties > Launch Options.\nEnter:\n```\n__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia %command%\n```"
+    },
+    "technical_tags": ["steam", "nvidia", "prime-offload", "hybrid-graphics"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_025",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Audio",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "PulseAudio"
+    },
+    "interaction": {
+      "user_query": "The volume is too low even at 100%.",
+      "ai_response": "You can enable 'Over-amplification' in Settings.\n\n**Fix:**\n1. Go to **Settings > Sound**.\n2. Look for **Over-amplification** toggle and switch it ON.\n3. This allows volume up to ~150%."
+    },
+    "technical_tags": ["audio", "volume", "over-amplification", "gnome"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "ENT_MEDIA_046",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Gaming",
+    "complexity": "Advanced",
+    "user_persona": "Gamer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Lutris"
+    },
+    "interaction": {
+      "user_query": "League of Legends won't start after the latest Vanguard update.",
+      "ai_response": "Vanguard is a kernel-level anti-cheat that does not work on Linux. \n\n**Status:**\nAs of recent updates, LoL is unplayable on Linux/Wine due to Vanguard requirements. You must dual-boot Windows to play."
+    },
+    "technical_tags": [
+      "league-of-legends",
+      "vanguard",
+      "anti-cheat",
+      "compatibility"
+    ],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_050",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Discord",
+    "complexity": "Intermediate",
+    "user_persona": "Gamer",
+    "system_context": {
+      "distro": "Pop!_OS",
+      "app_version": "Discord"
+    },
+    "interaction": {
+      "user_query": "Discord screen share has no audio.",
+      "ai_response": "Discord on Linux generally doesn't support audio capture in screen share out of the box.\n\n**Fix:**\nUse a modified client like **Vencord** or **Vesktop** which patches this functionality, or use a virtual audio cable setup via PulseAudio."
+    },
+    "technical_tags": ["discord", "screen-share", "audio", "compatibility"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "ENT_MEDIA_089",
+    "bucket": "Entertainment & Media",
+    "sub_category": "Browser",
+    "complexity": "Intermediate",
+    "user_persona": "Viewer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Twitch keeps buffering but my internet is fast.",
+      "ai_response": "It could be DNS over HTTPS or HTTP/3 issues.\n\n**Fix:**\nIn `about:config`, try setting `network.http.http3.enable` to `false`. Sometimes ISP peering with Twitch is bad; trying a VPN often confirms this."
+    },
+    "technical_tags": ["firefox", "twitch", "buffering", "networking"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_001",
+    "bucket": "File Organization",
+    "sub_category": "External Drives",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Nautilus 46"
+    },
+    "interaction": {
+      "user_query": "My USB drive is read-only. I can't delete or add files. It worked fine on Windows yesterday!",
+      "ai_response": "The drive wasn't unmounted cleanly from Windows, so Linux mounted it read-only to prevent data corruption.\n\n**Fix:**\n1. Open a terminal.\n2. Run `lsblk` to find your drive (e.g., `/dev/sdb1`).\n3. Run: `sudo ntfsfix /dev/sdb1` (replace `sdb1` with your actual drive identifier).\n4. Unplug and replug the drive.\n\nIt should now be writable. Always use \"Safely Remove\" in Windows."
+    },
+    "technical_tags": ["ntfs", "read-only", "ntfsfix", "external-drive"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_002",
+    "bucket": "File Organization",
+    "sub_category": "General Management",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Nemo 6.0"
+    },
+    "interaction": {
+      "user_query": "I copied some photos to my computer, but now I can't find where they went. Is there a default folder?",
+      "ai_response": "If you used a standard import tool or drag-and-drop without selecting a specific destination, check these locations:\n\n* **Pictures** folder in your Home directory.\n* **Downloads** folder (if you downloaded them).\n* **Recent** tab in the file manager sidebar.\n\nYou can also search for them by pressing `Ctrl + F` in your Home folder and typing `.jpg`."
+    },
+    "technical_tags": ["file-search", "directory-structure", "beginner"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_003",
+    "bucket": "File Organization",
+    "sub_category": "Permissions",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Nautilus"
+    },
+    "interaction": {
+      "user_query": "Why can't I create a new folder inside the 'usr' folder? The option is grayed out.",
+      "ai_response": "System folders like `/usr` are owned by the `root` user to prevent accidental damage to the operating system. You should only store personal files in your `/home/username` directory.\n\nIf you really need to modify system files, use the terminal with `sudo` or open the file manager as an administrator (not recommended for daily tasks)."
+    },
+    "technical_tags": ["permissions", "root", "file-system-hierarchy"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_004",
+    "bucket": "File Organization",
+    "sub_category": "Visibility",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Nautilus"
+    },
+    "interaction": {
+      "user_query": "I know I have a config file named .bashrc but I can't see it in my home folder.",
+      "ai_response": "Files starting with a dot (`.`) are hidden by default in Linux.\n\n**To see them:**\n* Press `Ctrl + H` in your file manager.\n* Or click the menu (three lines) and check **Show Hidden Files**.\n\nPress `Ctrl + H` again to hide them."
+    },
+    "technical_tags": ["hidden-files", "dotfiles", "nautilus-shortcuts"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_005",
+    "bucket": "File Organization",
+    "sub_category": "Disk Space",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Thunar"
+    },
+    "interaction": {
+      "user_query": "I deleted a huge video file from my USB stick but the free space didn't increase.",
+      "ai_response": "When you delete files on a USB drive in Linux, they are often moved to a hidden Trash folder (`.Trash-1000`) on that drive rather than being immediately erased.\n\n**Fix:**\n1. Open the USB drive.\n2. Empty your **Trash** (right-click the Trash icon in the dock or sidebar and select \"Empty Trash\").\n3. Alternatively, use `Shift + Delete` next time to bypass the trash and permanently delete."
+    },
+    "technical_tags": ["trash", "disk-space", "usb-drive"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_006",
+    "bucket": "File Organization",
+    "sub_category": "Archives",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Nautilus"
+    },
+    "interaction": {
+      "user_query": "How do I make a zip file of my photos to email them?",
+      "ai_response": "1. Select the photos you want to zip.\n2. Right-click the selection.\n3. Choose **Compress...** (or **Compress to...**).\n4. Select **.zip** as the format.\n5. Name it and click **Create**."
+    },
+    "technical_tags": ["compression", "zip", "archive"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_007",
+    "bucket": "File Organization",
+    "sub_category": "Cloud Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Settings"
+    },
+    "interaction": {
+      "user_query": "Does Ubuntu have Google Drive built in? I don't want to install weird apps.",
+      "ai_response": "Yes, it is integrated into the Online Accounts feature.\n\n**Setup:**\n1. Go to **Settings** > **Online Accounts**.\n2. Select **Google** and log in.\n3. Ensure \"Files\" is toggled ON.\n\nYour Google Drive will appear as a network drive in the Files app sidebar."
+    },
+    "technical_tags": [
+      "google-drive",
+      "gnome-online-accounts",
+      "cloud-storage"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_008",
+    "bucket": "File Organization",
+    "sub_category": "Formatting",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Disks"
+    },
+    "interaction": {
+      "user_query": "I want to wipe my USB stick so I can use it on my TV. Which format should I choose?",
+      "ai_response": "Most TVs and older devices recognize **FAT32** or **exFAT** best.\n\n* **FAT32:** Most compatible, but cannot hold individual files larger than 4GB.\n* **exFAT:** Compatible with Windows/Mac/Linux and handles large files (movies).\n\n**Recommendation:** Use **exFAT** if you plan to store HD movies."
+    },
+    "technical_tags": ["formatting", "filesystems", "exfat", "fat32"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_010",
+    "bucket": "File Organization",
+    "sub_category": "External Drives",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Nautilus"
+    },
+    "interaction": {
+      "user_query": "What does 'Unmount' mean? Is it the same as Eject?",
+      "ai_response": "Practically, yes. **Unmount** stops the system from accessing the file system so data isn't corrupted, but keeps the device powered. **Eject** unmounts it and also often cuts power or prepares the physical mechanism (like a CD tray).\n\nFor USB drives, hitting the Eject symbol ensures the drive is cleanly unmounted and safe to pull out."
+    },
+    "technical_tags": ["mounting", "eject", "terminology"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_101",
+    "bucket": "File Organization",
+    "sub_category": "Permissions",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Nautilus"
+    },
+    "interaction": {
+      "user_query": "This is driving me crazy! I reinstalled Linux and now I can't open my own documents on my secondary drive. It says \"Permission Denied\".",
+      "ai_response": "Your User ID (UID) likely changed during the reinstall, so the files are owned by the \"old\" you.\n\n**Fix:**\nTake ownership of the drive content recursively:\n```bash\nsudo chown -R $USER:$USER /media/username/drive_name\n```\nReplace `/media/username/drive_name` with the actual path to your drive."
+    },
+    "technical_tags": ["chown", "permissions", "uid", "migration"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_201",
+    "bucket": "File Organization",
+    "sub_category": "Permissions",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "CLI"
+    },
+    "interaction": {
+      "user_query": "How do I change the owner of a folder and all the files inside it to me?",
+      "ai_response": "You need the `chown` command with the recursive flag (`-R`).\n\n1. Open a terminal.\n2. Run this command:\n```bash\nsudo chown -R $USER:$USER /path/to/folder\n```\n`$USER` automatically fills in your current username. This sets both the user and the group to you."
+    },
+    "technical_tags": ["chown", "recursive", "ownership", "cli"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_203",
+    "bucket": "File Organization",
+    "sub_category": "Network Sharing",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Nautilus"
+    },
+    "interaction": {
+      "user_query": "How can I share a folder on my network so I can see it on my Windows PC?",
+      "ai_response": "Ubuntu uses Samba for this.\n\n1. Right-click the folder > **Properties** > **Local Network Share**.\n2. Check **Share this folder**.\n3. If prompted, click **Install service** to install Samba.\n4. Check **Allow others to create and delete files** if you want write access.\n5. Click **Create Share**.\n6. On Windows, type `\\\\<IP-Address-of-Linux-PC>` in File Explorer."
+    },
+    "technical_tags": ["samba", "network-share", "interoperability"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_204",
+    "bucket": "File Organization",
+    "sub_category": "Mounting",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "fstab"
+    },
+    "interaction": {
+      "user_query": "How do I make my secondary hard drive mount automatically when I turn on the computer?",
+      "ai_response": "You need to edit `/etc/fstab`.\n\n1. Find the UUID of your drive: `sudo blkid`\n2. Create a mount point: `sudo mkdir /media/data`\n3. Edit fstab: `sudo nano /etc/fstab`\n4. Add a line at the end:\n```\nUUID=your-uuid-here  /media/data  ext4  defaults  0  2\n```\n(Replace `ext4` with `ntfs` if it's a Windows drive).\n5. Test it: `sudo mount -a` (If no errors, you are good)."
+    },
+    "technical_tags": ["fstab", "automount", "uuid", "boot"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_205",
+    "bucket": "File Organization",
+    "sub_category": "Recovery",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "TestDisk"
+    },
+    "interaction": {
+      "user_query": "I accidentally formatted my SD card! Can I get the photos back?",
+      "ai_response": "Stop writing to the card immediately. You can use **PhotoRec** (part of the TestDisk package).\n\n1. Install: `sudo dnf install testdisk`\n2. Run: `sudo photorec`\n3. Select your SD card.\n4. Select the partition (usually FAT32).\n5. Choose a destination folder on your PC to save recovered files.\n\nNote: Filenames will be lost (e.g., `f1234.jpg`), but the images should be recoverable."
+    },
+    "technical_tags": ["photorec", "data-recovery", "undelete"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_310",
+    "bucket": "File Organization",
+    "sub_category": "Text Editors",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Nano"
+    },
+    "interaction": {
+      "user_query": "Everyone says use Vim to edit config files, but I can't even exit it. Is Nano okay?",
+      "ai_response": "Yes, **Nano** is perfectly fine and much more beginner-friendly. It lists the shortcuts at the bottom of the screen (e.g., `^O` to save, `^X` to exit).\n\nThere is no shame in using Nano. `micro` is another modern terminal editor that supports standard mouse usage and Ctrl+C/Ctrl+V shortcuts."
+    },
+    "technical_tags": ["nano", "vim", "text-editing", "config"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_407",
+    "bucket": "File Organization",
+    "sub_category": "Aliases",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Bash"
+    },
+    "interaction": {
+      "user_query": "I hate typing `sudo apt update && sudo apt upgrade` every time. Can I shorten it?",
+      "ai_response": "Yes, create an **alias**.\n\n1. Open `~/.bashrc` in a text editor.\n2. Add this line at the bottom:\n```bash\nalias update='sudo apt update && sudo apt upgrade'\n```\n3. Save and run `source ~/.bashrc`.\n\nNow just type `update` to do it all."
+    },
+    "technical_tags": ["alias", "bashrc", "efficiency", "shortcuts"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_501",
+    "bucket": "File Organization",
+    "sub_category": "Privacy",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "file_manager": "Nautilus"
+    },
+    "interaction": {
+      "user_query": "How can I password protect a specific folder in my Home directory? I share this laptop with my brother and don't want him seeing my journal.",
+      "ai_response": "The easiest way to password-protect a folder on GNOME (Ubuntu) without complex partitioning is using **GaaP (GNOME Encrypted Folder)** or creating a compressed archive with a password.\n\n**Method 1: Password Protected Zip (Easiest)**\n1. Right-click the folder -> **Compress**.\n2. Select **.zip** or **.7z**.\n3. Click **Password protected** and set your password.\n\n**Method 2: Gnome Encfs Manager (Better integration)**\n```bash\nsudo add-apt-repository ppa:gencfsm/ppa\nsudo apt install gnome-encfs-manager\n```\nOpen the app and create a new 'stash' which acts as a password-protected vault."
+    },
+    "technical_tags": ["encryption", "security", "zip", "nautilus"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_502",
+    "bucket": "File Organization",
+    "sub_category": "Permissions",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "filesystem": "ext4"
+    },
+    "interaction": {
+      "user_query": "I copied some files from a USB stick to my desktop, but now they have a lock icon on them and I can't edit them. It says 'Read-only'.",
+      "ai_response": "This usually happens if the files were owned by 'root' or a different user when copied. You need to take ownership of them.\n\n**Fix via Terminal:**\n```bash\nsudo chown -R $USER:$USER ~/Desktop/folder_name\nchmod -R 755 ~/Desktop/folder_name\n```\n\n**Fix via GUI:**\n1. Right-click the folder -> **Properties** -> **Permissions**.\n2. Click 'Apply Permissions to Enclosed Files'.\n3. Change Owner to your username."
+    },
+    "technical_tags": ["permissions", "chown", "chmod", "read-only"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_507",
+    "bucket": "File Organization",
+    "sub_category": "Security",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "tool": "chmod"
+    },
+    "interaction": {
+      "user_query": "I was messing with permissions to make a script run and did `chmod 777` on my whole home folder. Now SSH won't let me log in because 'permissions are too open'. Help!",
+      "ai_response": "This is a critical security issue. SSH requires strict permissions on the `.ssh` directory.\n\n**Reset Home Directory Permissions:**\n```bash\nchmod 750 /home/$USER\n```\n\n**Fix SSH Permissions specifically:**\n```bash\nchmod 700 ~/.ssh\nchmod 600 ~/.ssh/authorized_keys\nchmod 600 ~/.ssh/id_rsa\nchmod 644 ~/.ssh/id_rsa.pub\n```\nNever use `777` recursively on your home directory."
+    },
+    "technical_tags": ["permissions", "ssh", "security", "chmod"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_517",
+    "bucket": "File Organization",
+    "sub_category": "Permissions",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "tool": "chmod"
+    },
+    "interaction": {
+      "user_query": "I have a script `.sh` file. I double click it and it just opens in a text editor. I want it to run!",
+      "ai_response": "For security, Linux does not execute text files by default unless they have the 'execute' permission.\n\n**1. Add Execute Permission:**\nRight-click -> Properties -> Permissions -> Check **'Allow executing file as program'**.\n\n**2. Run preference (Nemo/Nautilus):**\nSometimes the file manager defaults to 'View executable text files'. Go to Preferences -> Behavior and select **'Ask each time'** or **'Run executable text files when they are opened'**."
+    },
+    "technical_tags": ["scripts", "permissions", "executable", "gui"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_520",
+    "bucket": "File Organization",
+    "sub_category": "Permissions",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "tool": "chattr"
+    },
+    "interaction": {
+      "user_query": "I cannot modify `/etc/resolv.conf`. Even `sudo rm` says 'Operation not permitted'. Is my drive corrupted?",
+      "ai_response": "The file likely has the **immutable attribute** set, which prevents even root from modifying or deleting it. This is often done by network managers to prevent overwrites.\n\n**Check attributes:**\n```bash\nlsattr /etc/resolv.conf\n```\nIf you see an `i` (e.g., `----i---------`), it is immutable.\n\n**Remove the attribute:**\n```bash\nsudo chattr -i /etc/resolv.conf\n```\nNow you can edit or delete it."
+    },
+    "technical_tags": ["chattr", "immutable", "permissions", "attributes"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_523",
+    "bucket": "File Organization",
+    "sub_category": "Permissions",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "filesystem": "FAT32"
+    },
+    "interaction": {
+      "user_query": "I'm trying to copy a 6GB movie file to my USB stick but it says 'File too large'. The stick has 16GB free! Why?",
+      "ai_response": "Your USB stick is likely formatted as **FAT32**.\n\n* **Limitation:** FAT32 has a maximum single file size limit of **4GB**.\n\n**Solution:**\nYou must reformat the drive to a filesystem that supports larger files, like **exFAT** (compatible with Windows/Mac/Linux) or **NTFS**.\n\n1. Copy existing data off the stick.\n2. Open 'Disks' or 'GParted'.\n3. Format partition as **exFAT**."
+    },
+    "technical_tags": ["fat32", "exfat", "file-size-limit", "formatting"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_602",
+    "bucket": "File Organization",
+    "sub_category": "Cloud Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "tool": "Google Drive"
+    },
+    "interaction": {
+      "user_query": "I switched from Windows. Where is the Google Drive app? I need to sync my work docs.",
+      "ai_response": "Google does not provide an official Drive client for Linux.\n\n**Option 1: GNOME Online Accounts (Built-in)**\n1. Go to System Settings -> Online Accounts.\n2. Add Google.\n3. Your Drive will appear in Nemo as a network mount (slow for large files).\n\n**Option 2: Insync (Paid, Best experience)**\nThird-party app that offers full offline syncing like on Windows.\n\n**Option 3: Rclone (Free, Advanced)**\nCommand-line tool to sync or mount drive."
+    },
+    "technical_tags": [
+      "google-drive",
+      "gnome-online-accounts",
+      "insync",
+      "cloud"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_611",
+    "bucket": "File Organization",
+    "sub_category": "Multi-device Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "tool": "USB Tethering"
+    },
+    "interaction": {
+      "user_query": "I plugged my iPhone into my Linux Mint laptop to copy photos. It asks 'Trust this computer' on the phone, I click Trust, but nothing shows up in the file manager.",
+      "ai_response": "iOS is tricky with Linux. You usually need `libimobiledevice`.\n\n1.  **Unlock the iPhone screen**.\n2.  Open the terminal and check if the pair works:\n    ```bash\n    idevicepair pair\n    ```\n3.  Accept the trust prompt on the phone again.\n4.  If it succeeds, retry opening the file manager. If `idevicepair` is missing:\n    ```bash\n    sudo apt install libimobiledevice-utils ifuse\n    ```"
+    },
+    "technical_tags": ["iphone", "ios", "libimobiledevice", "mounting"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "FILE_ORG_613",
+    "bucket": "File Organization",
+    "sub_category": "Multi-device Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "tool": "Samba"
+    },
+    "interaction": {
+      "user_query": "I shared a folder on Windows 11. I can see it in Ubuntu's Network folder, but when I double click, it asks for password again and again. It won't accept my Windows PIN.",
+      "ai_response": "SMB shares do not accept Windows Hello PINs. You must use your **Microsoft Account password** or the local account password.\n\nIf using a Microsoft Account:\n* **Username:** Your full email address (e.g., `john@outlook.com`).\n* **Password:** Your email password.\n\nIf that fails, try putting the computer name as the domain: `COMPUTERNAME\\Username`."
+    },
+    "technical_tags": ["samba", "windows", "network-share", "authentication"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_703",
+    "bucket": "File Organization",
+    "sub_category": "Work Context",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "tool": "LibreOffice"
+    },
+    "interaction": {
+      "user_query": "I saved a spreadsheet as .ods but my boss uses Excel and says the formatting is messy. Should I just save as .xlsx?",
+      "ai_response": "Yes, for maximum compatibility with Microsoft Office users, save as **.xlsx**.\n\n**To set it as default:**\n1.  Open LibreOffice Calc.\n2.  **Tools** -> **Options** -> **Load/Save** -> **General**.\n3.  Under 'Default File Format and ODF Settings':\n    * Document type: Spreadsheet\n    * Always save as: **Excel 2007-365 (*.xlsx)**.\n\nNote: Complex macros or highly specific formatting might still differ slightly."
+    },
+    "technical_tags": ["libreoffice", "compatibility", "formats", "excel"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "FILE_ORG_705",
+    "bucket": "File Organization",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "tool": "PDF"
+    },
+    "interaction": {
+      "user_query": "I have 5 separate PDF contracts I need to combine into one file to email. Do I need to buy software?",
+      "ai_response": "No, you can use `pdfunite` (part of `poppler-utils`) or ImageMagick.\n\n**Using pdfunite (Recommended):**\n```bash\nsudo apt install poppler-utils\npdfunite file1.pdf file2.pdf file3.pdf output_combined.pdf\n```\n\n**Using GUI:**\nInstall **PDF Arranger** (`sudo apt install pdfarranger`) for a visual way to merge, reorder, and delete pages."
+    },
+    "technical_tags": ["pdf", "merging", "pdfunite", "pdfarranger"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_001",
+    "bucket": "Life Management",
+    "sub_category": "Calendar Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "GNOME Calendar 45"
+    },
+    "interaction": {
+      "user_query": "I connected my Google Account in Settings and my main calendar shows up, but my wife's shared calendar that I can see on my phone is missing.",
+      "ai_response": "GNOME Calendar defaults to syncing only your primary calendar. To add shared calendars:\n\n1. Open **Evolution** (the backend for GNOME Calendar):\n```bash\nevolution\n```\n2. Go to **Edit → Preferences → Calendar and Tasks**\n3. Expand your Google account\n4. Check the boxes for the shared calendars you want to sync\n5. Close Evolution and reopen GNOME Calendar\n\nThe shared calendars should now appear."
+    },
+    "technical_tags": ["calendar-sync", "gnome-online-accounts", "evolution"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_101",
+    "bucket": "Life Management",
+    "sub_category": "Calendar Sync",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "GNOME Online Accounts"
+    },
+    "interaction": {
+      "user_query": "I keep getting a 'Credentials have expired' notification for Google every single day. I re-login and it happens again tomorrow.",
+      "ai_response": "This is a known bug with GNOME Online Accounts and certain keyring setups.\n\n1. Open **Passwords and Keys** (Seahorse).\n2. Ensure the 'Login' keyring is unlocked automatically on login (it should use your login password).\n3. If you use auto-login for your desktop, the keyring isn't unlocked. You must manually unlock it or turn off auto-login."
+    },
+    "technical_tags": [
+      "gnome-online-accounts",
+      "keyring",
+      "authentication-loop"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_401",
+    "bucket": "Life Management",
+    "sub_category": "Cloud Sync",
+    "complexity": "Advanced",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Rclone"
+    },
+    "interaction": {
+      "user_query": "I want to automatically backup my Documents to Google Drive every night at 3 AM.",
+      "ai_response": "1. Configure `rclone` for Google Drive.\n2. Create a script `backup.sh`:\n```bash\n#!/bin/bash\nrclone sync ~/Documents gdrive:Backups/Documents\n```\n3. Make it executable: `chmod +x backup.sh`.\n4. Edit crontab: `crontab -e`\n5. Add the line:\n`0 3 * * * /path/to/backup.sh`"
+    },
+    "technical_tags": ["rclone", "cron", "automation"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_518",
+    "bucket": "Life Management",
+    "sub_category": "Privacy & Security",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I am using Firefox to log into my bank. It keeps asking to 'Save Login'. I clicked 'Never' by mistake. How do I undo this so it asks me again?",
+      "ai_response": "You need to remove the exception in Firefox settings.\n\n1. Go to **Settings** > **Privacy & Security**.\n2. Scroll down to **Logins and Passwords**.\n3. Click the **Exceptions...** button next to 'Ask to save logins and passwords for websites'.\n4. Find your bank's URL in the list, select it, and click **Remove Website**."
+    },
+    "technical_tags": ["firefox", "password-manager", "configuration"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_618",
+    "bucket": "Life Management",
+    "sub_category": "Multi-device & Sync",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Discord"
+    },
+    "interaction": {
+      "user_query": "I'm trying to stream my browser to my friends on Discord, but there is no audio! They see the video fine.",
+      "ai_response": "Discord on Linux has long-standing issues capturing audio from other applications due to how PulseAudio/PipeWire works.\n\n**Fix:**\n1. Ensure you are using the default PipeWire setup on Fedora 40.\n2. Use a tool like **Vesktop** (a third-party Discord client) which has patches for audio screen sharing on Linux.\n3. Or, use a virtual audio cable setup, but Vesktop is the user-friendly solution."
+    },
+    "technical_tags": ["discord", "audio-routing", "pipewire"],
+    "friction_type": "protocol_mismatch"
+  },
+  {
+    "id": "LIFE_MGT_705",
+    "bucket": "Life Management",
+    "sub_category": "Work Context",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Slack"
+    },
+    "interaction": {
+      "user_query": "Slack notifications don't make a sound. I see the banner, but I miss messages when I'm not looking. Sound settings in Slack are on.",
+      "ai_response": "Check your system's sound settings for 'Notification Sounds'.\n\n1. Open **Sound** settings in Mint.\n2. Ensure **Sound Effects** volume is not muted.\n3. Also, check the notification applet settings; sometimes 'Do Not Disturb' suppresses sounds but leaves banners.\n4. In Slack: `Preferences` > `Notifications` > check `Play a sound for incoming messages`."
+    },
+    "technical_tags": ["slack", "audio", "notifications"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "LIFE_MGT_706",
+    "bucket": "Life Management",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Zoom"
+    },
+    "interaction": {
+      "user_query": "I'm using Zoom for work. When I share my screen, my computer slows to a crawl. I have an NVIDIA card. Is Zoom using it?",
+      "ai_response": "Zoom on Linux doesn't always default to hardware acceleration correctly.\n\n1. Open Zoom **Settings** > **Video** > **Advanced**.\n2. Ensure all Hardware Acceleration checkboxes are checked.\n3. **System Check:** Ensure you are using the proprietary NVIDIA drivers (check `Software & Updates` > `Additional Drivers`), not Nouveau.\n4. If on Wayland, try switching to Xorg (logout, click gear icon, select Ubuntu on Xorg), as screen sharing efficiency is better on Xorg for Zoom."
+    },
+    "technical_tags": ["zoom", "nvidia", "performance"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "LIFE_MGT_720",
+    "bucket": "Life Management",
+    "sub_category": "Work Context",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LibreOffice Writer"
+    },
+    "interaction": {
+      "user_query": "I saved my CV as a .docx file to send to a recruiter. They said the formatting is all over the place. I thought LibreOffice was compatible?",
+      "ai_response": "Compatibility is good but not perfect, especially with complex tables, floating images, or proprietary fonts.\n\n**Best Practice:**\n1. Always send a **PDF** (`File` > `Export as PDF`) unless they explicitly need to edit it.\n2. If they need editable format, use the **Microsoft Core Fonts** (Arial/Times) instead of Liberation Sans/Serif to minimize layout shifting.\n3. Avoid using 'Text Boxes'; use standard paragraphs and tables."
+    },
+    "technical_tags": ["libreoffice", "docx", "compatibility"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_002",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Fonts",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "System"
+    },
+    "interaction": {
+      "user_query": "I opened a Word doc from my boss but the fonts look wrong. It's supposed to be Times New Roman but looks like a generic typewriter font.",
+      "ai_response": "Linux distributions don't include Microsoft fonts by default due to licensing. You can install them easily.\n\nOpen a terminal and run:\n`sudo apt update`\n`sudo apt install ttf-mscorefonts-installer`\n\nYou may need to press Tab and Enter to accept the EULA during installation."
+    },
+    "technical_tags": ["fonts", "microsoft-compatibility", "ttf-mscorefonts"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_005",
+    "bucket": "Productivity & Documents",
+    "sub_category": "File Formats",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "LibreOffice Writer"
+    },
+    "interaction": {
+      "user_query": "When I save as .docx and send it to Windows users, the formatting of my images gets messed up. Should I use .odt?",
+      "ai_response": "For best compatibility with Word users, sticking to `.docx` is usually necessary, but formatting shifts happen because of font differences or anchor settings. \n\nRight-click your image > **Anchor** > **As Character** usually prevents images from jumping around when opened in Word. If they don't need to edit it, always send a PDF."
+    },
+    "technical_tags": ["interoperability", "docx-format", "image-anchoring"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "PROD_DOC_007",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "LibreOffice Calc"
+    },
+    "interaction": {
+      "user_query": "My spell check isn't working in Calc. It marks everything as wrong or does nothing.",
+      "ai_response": "This usually means the dictionary for your language isn't installed or selected.\n\n1. Check **Tools** > **Options** > **Language Settings** > **Languages**.\n2. Ensure your specific locale (e.g., English USA) has a checkmark icon next to it.\n3. If not, install the language pack: `sudo apt install hunspell-en-us` (replace en-us with your code)."
+    },
+    "technical_tags": ["spell-check", "hunspell", "localization"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_009",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Manjaro",
+      "app_version": "LibreOffice 7.5"
+    },
+    "interaction": {
+      "user_query": "LibreOffice is super slow to start up. It takes like 15 seconds to open a blank page.",
+      "ai_response": "This can happen if Java is enabled but misconfigured, or simply not needed.\n\nTry disabling Java:\n1. **Tools** > **Options** > **LibreOffice** > **Advanced**\n2. Uncheck 'Use a Java runtime environment'\n3. Restart LibreOffice.\n\nMost features don't require Java anymore, except for some database (Base) functions."
+    },
+    "technical_tags": ["performance", "java-runtime", "startup-time"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_011",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Printing",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "CUPS"
+    },
+    "interaction": {
+      "user_query": "I'm trying to print a shipping label to my Brother printer but it prints mostly blank pages or gibberish.",
+      "ai_response": "Gibberish usually indicates a driver mismatch (e.g., sending PostScript to a printer expecting PCL).\n\n1. Remove the printer in Settings.\n2. When re-adding, avoid the 'Generic' driver options.\n3. Check if your specific model requires the `printer-driver-brlaser` package or an official RPM from Brother's website."
+    },
+    "technical_tags": ["printing", "drivers", "cups"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_101",
+    "bucket": "Productivity & Documents",
+    "sub_category": "LibreOffice",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "LibreOffice 7.3"
+    },
+    "interaction": {
+      "user_query": "Why does LibreOffice look so ugly and old? It doesn't match my dark theme at all.",
+      "ai_response": "LibreOffice sometimes defaults to a generic toolkit look.\n\nTry installing the GTK integration package:\n`sudo apt install libreoffice-gtk3`\n\nThen go to **Tools** > **Options** > **View** and change the Icon Style to something modern like 'Breeze Dark' or 'Sifr Dark' to match your system theme."
+    },
+    "technical_tags": ["theming", "gtk3-integration", "visual-appearance"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_102",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Printing",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "CUPS"
+    },
+    "interaction": {
+      "user_query": "I am so done with this. My printer works fine on Windows but on Linux it says 'Processing - Not Connected' even though it's plugged in via USB.",
+      "ai_response": "This is often a permissions issue with the USB port or the `ipp-usb` service conflict.\n\n1. Try checking `lsusb` to see if the system detects the device.\n2. Sometimes `ipp-usb` claims the device, preventing the legacy USB driver from working. Try removing it: `sudo dnf remove ipp-usb` and re-plug the printer."
+    },
+    "technical_tags": ["usb-printing", "ipp-usb", "connection-error"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "PROD_DOC_106",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Compatibility",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Arch Linux",
+      "app_version": "LibreOffice"
+    },
+    "interaction": {
+      "user_query": "Why does my Resume look perfect in Writer but when I export to PDF the margins are slightly cut off?",
+      "ai_response": "This is often a paper size mismatch (Letter vs A4).\n\n1. Go to **Format** > **Page Style**.\n2. Check the **Page** tab. Ensure the paper format matches your target (likely Letter for US, A4 for rest of world).\n3. Check your printer settings too, as LibreOffice sometimes takes the printable area from the default printer driver."
+    },
+    "technical_tags": ["pdf-export", "page-formatting", "paper-size"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_301",
+    "bucket": "Productivity & Documents",
+    "sub_category": "Recommendations",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "General"
+    },
+    "interaction": {
+      "user_query": "I'm moving from Windows. Is LibreOffice really the best option or is there something closer to MS Office?",
+      "ai_response": "LibreOffice is the standard FOSS choice, but if you want the visual look and feel of MS Office, try **OnlyOffice Desktop Editors** or **WPS Office** (Note: WPS is proprietary).\n\nOnlyOffice uses .docx/.xlsx natively and has a very similar ribbon interface, which often preserves formatting better for complex MS Office files."
+    },
+    "technical_tags": ["alternatives", "onlyoffice", "wps-office"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "PROD_DOC_619",
+    "bucket": "Productivity & Documents",
+    "sub_category": "USB Drives",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Nemo"
+    },
+    "interaction": {
+      "user_query": "I saved a document to a USB stick, pulled it out, and now the file is empty (0 bytes). Why?",
+      "ai_response": "You likely removed the USB stick before the data was actually written (cached).\n\n**Always** click the 'Eject' icon next to the USB drive in the file manager and wait for the notification 'Safe to remove' or for the icon to disappear. This ensures the 'write buffer' is flushed to the disk."
+    },
+    "technical_tags": ["usb", "data-loss", "caching"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "SYS_TROUBLE_004",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Drivers",
+    "complexity": "Advanced",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "NVIDIA 535"
+    },
+    "interaction": {
+      "user_query": "NVIDIA driver isn't loading after kernel upgrade. `nvidia-smi` returns 'NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver'.",
+      "ai_response": "This happens when the kernel module wasn't rebuilt for the new kernel version.\n\n**Steps:**\n1. Check DKMS status: `dkms status`.\n2. If it says 'added' but not 'installed', build it manually:\n   ```bash\n   sudo dkms autoinstall\n   ```\n3. If it fails, check headers: `sudo apt install linux-headers-$(uname -r)`.\n4. Check Secure Boot; if enabled, the unsigned NVIDIA module won't load."
+    },
+    "technical_tags": ["nvidia", "dkms", "kernel-module", "secure-boot"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "SYS_TROUBLE_105",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Filesystem",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "mount"
+    },
+    "interaction": {
+      "user_query": "I can't unmount my external drive. `umount` says 'target is busy', but `lsof` returns absolutely nothing!",
+      "ai_response": "If `lsof` and `fuser` show nothing, the kernel might be holding the mount.\n\n**Possibilities:**\n1. You are running the command *from inside* the mount point (check your `pwd`).\n2. A loop device or a kernel thread (like NFS) is holding it.\n3. **Lazy Unmount:** If you need it gone now:\n   ```bash\n   sudo umount -l /run/media/user/drive\n   ```\n   (This detaches it from the file hierarchy immediately and cleans up references when they become free)."
+    },
+    "technical_tags": ["umount", "target-busy", "lsof", "lazy-unmount"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "SYS_TROUBLE_303",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Comparison",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Display Server"
+    },
+    "interaction": {
+      "user_query": "I have an NVIDIA 3060. Should I finally switch to Wayland on Fedora 40, or stay on X11 for gaming stability?",
+      "ai_response": "As of Driver 555+, **Wayland** is viable for NVIDIA gaming (explicit sync support fixed the flickering).\n\n* **Stay on X11 if:** You rely on color management, complex OBS setups without Pipewire support, or older games that struggle with XWayland.\n* **Switch to Wayland if:** You want mixed refresh rate support (e.g., 144Hz + 60Hz monitors) and better frame pacing.\n\n*Verdict:* Try Wayland. If you see flickering, check if `nvidia-drm.modeset=1` is set in boot params."
+    },
+    "technical_tags": ["wayland", "x11", "nvidia", "gaming"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "SYS_TROUBLE_305",
+    "bucket": "System Troubleshooting",
+    "sub_category": "Comparison",
+    "complexity": "Intermediate",
+    "user_persona": "Power User",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Snap vs Flatpak"
+    },
+    "interaction": {
+      "user_query": "My Snap Firefox startup time is slow. Should I replace it with the Flatpak version or the official tarball?",
+      "ai_response": "Snap's slow startup is often due to squashfs mounting overhead.\n\n* **Flatpak:** Generally faster startup than Snap for desktop apps, but sandboxing permissions can be tricky to debug.\n* **Tarball/PPA:** Fastest performance, but auto-updates are manual.\n\n*Recommendation:* Remove the Snap (`sudo snap remove firefox`) and use the **Mozilla Team PPA** (`ppa:mozillateam/ppa`) for a native `.deb` installation. This integrates best with system themes and has zero mount overhead."
+    },
+    "technical_tags": ["snap", "flatpak", "firefox", "performance"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_001",
+    "bucket": "Web & Research",
+    "sub_category": "Browser Performance",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Firefox 122"
+    },
+    "interaction": {
+      "user_query": "Why is my CPU at 100% when watching YouTube? My laptop gets super hot and the fans are loud.",
+      "ai_response": "Your browser is using software video decoding instead of your GPU. Enable hardware acceleration:\n\n**For Firefox:**\n1. Go to `about:config`\n2. Search for `media.ffmpeg.vaapi.enabled` and set to `true`\n3. Search for `media.rdd-vpx.enabled` and set to `false`\n4. Restart Firefox\n\n**Install VA-API drivers:**\n```bash\nsudo apt install va-driver-all\n```\n\n**Verify it's working:**\n```bash\nvainfo\n```\nYou should see your GPU listed. CPU usage should drop significantly during video playback."
+    },
+    "technical_tags": [
+      "hardware-acceleration",
+      "va-api",
+      "firefox",
+      "performance"
+    ],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_002",
+    "bucket": "Web & Research",
+    "sub_category": "Installation",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Google Chrome Stable"
+    },
+    "interaction": {
+      "user_query": "How do I install Google Chrome on Ubuntu? I can't find it in the Software Center, only Chromium.",
+      "ai_response": "Google Chrome is not in the default Ubuntu repositories. You need to download the `.deb` file from Google.\n\n**Steps:**\n1. Download the package:\n```bash\nwget [https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb](https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb)\n```\n2. Install it using `apt`:\n```bash\nsudo apt install ./google-chrome-stable_current_amd64.deb\n```\nThis command will handle any necessary dependencies automatically."
+    },
+    "technical_tags": ["chrome", "installation", "deb-package", "apt"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_006",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Debian 12",
+      "app_version": "Firefox ESR"
+    },
+    "interaction": {
+      "user_query": "How do I stop websites from tracking me on Firefox without breaking everything?",
+      "ai_response": "Firefox has built-in Enhanced Tracking Protection.\n\n1. Click the shield icon in the address bar.\n2. Go to **Protection Settings**.\n3. Set it to **Strict**.\n\n**Note:** If a site breaks, simply click the shield icon and toggle off protection for that specific site. You can also install the **uBlock Origin** extension for robust, low-overhead ad and tracker blocking."
+    },
+    "technical_tags": ["privacy", "tracking", "firefox-esr", "ublock-origin"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_007",
+    "bucket": "Web & Research",
+    "sub_category": "Updates",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox Snap"
+    },
+    "interaction": {
+      "user_query": "Firefox Snap is too slow to open. How do I switch to the .deb version?",
+      "ai_response": "You can replace the Snap version with the official Mozilla PPA version.\n\n1. **Remove the Snap:**\n```bash\nsudo snap remove firefox\n```\n2. **Add the PPA:**\n```bash\nsudo add-apt-repository ppa:mozillateam/ppa\n```\n3. **Prioritize the PPA** (Create `/etc/apt/preferences.d/mozilla-firefox`):\n```text\nPackage: *\nPin: release o=LP-PPA-mozillateam\nPin-Priority: 1001\n```\n4. **Install:**\n```bash\nsudo apt update && sudo apt install firefox\n```"
+    },
+    "technical_tags": ["snap", "firefox", "apt", "performance"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_014",
+    "bucket": "Web & Research",
+    "sub_category": "Search Engines",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I change the default search engine from Google to DuckDuckGo in Firefox?",
+      "ai_response": "1. Go to Firefox Settings -> **Search**.\n2. Under **Default Search Engine**, use the dropdown menu to select **DuckDuckGo**.\n3. You can also uncheck other search engines in the 'Search Shortcuts' list below to clean up your search bar."
+    },
+    "technical_tags": ["search-engine", "firefox", "configuration", "privacy"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_017",
+    "bucket": "Web & Research",
+    "sub_category": "Shortcuts",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "I accidentally closed a tab. What is the shortcut to reopen it?",
+      "ai_response": "The shortcut to reopen the last closed tab is **Ctrl + Shift + T**.\nYou can press it multiple times to reopen several tabs in the order they were closed."
+    },
+    "technical_tags": ["shortcuts", "productivity", "chrome", "tabs"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_020",
+    "bucket": "Web & Research",
+    "sub_category": "Performance",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Firefox uses too much RAM. Is there a way to limit it?",
+      "ai_response": "Firefox handles RAM automatically, but you can optimize it:\n\n1. **Enable Auto Tab Discard:** Go to `about:config`, set `browser.tabs.unloadOnLowMemory` to `true` (default).\n2. **Install an extension:** 'Auto Tab Discard' aggressively suspends inactive tabs.\n3. **Reduce Content Processes:** Go to Settings -> General -> Performance -> Uncheck 'Use recommended settings' -> Limit 'Content process limit' (e.g., to 2 or 4), though this may slow down browsing slightly."
+    },
+    "technical_tags": ["ram-usage", "memory", "firefox", "optimization"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_025",
+    "bucket": "Web & Research",
+    "sub_category": "File Associations",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "Chrome tries to download PDF files instead of opening them.",
+      "ai_response": "1. Open Chrome Settings.\n2. Go to **Privacy and security** -> **Site Settings**.\n3. Scroll down and click on **Additional content settings** -> **PDF documents**.\n4. Select **Open PDFs in Chrome** (make sure 'Download PDFs' is not selected)."
+    },
+    "technical_tags": ["pdf", "file-handling", "chrome", "configuration"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_043",
+    "bucket": "Web & Research",
+    "sub_category": "Installation",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Chromium"
+    },
+    "interaction": {
+      "user_query": "I want to install Chromium without Snap. Snap is too slow.",
+      "ai_response": "Ubuntu defaults to the Snap version. To get the `.deb`:\n\n1. Add the specific PPA:\n```bash\nsudo add-apt-repository ppa:savoury1/chromium\n```\n2. Update and install:\n```bash\nsudo apt update\nsudo apt install chromium-browser\n```\n**Note:** Be careful with PPAs; ensure they are maintained."
+    },
+    "technical_tags": ["snap", "chromium", "ppa", "installation"],
+    "friction_type": "legacy_dependency"
+  },
+  {
+    "id": "WEB_RES_044",
+    "bucket": "Web & Research",
+    "sub_category": "Notifications",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "KDE Neon",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "I keep getting spam notifications from a news site. How do I stop them?",
+      "ai_response": "1. Go to Chrome Settings -> **Privacy and security** -> **Site Settings**.\n2. Click on **Notifications**.\n3. Under 'Allowed to send notifications', find the news site.\n4. Click the three dots next to it and select **Remove** or **Block**."
+    },
+    "technical_tags": ["notifications", "privacy", "chrome", "spam"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_061",
+    "bucket": "Web & Research",
+    "sub_category": "Shortcuts",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "All"
+    },
+    "interaction": {
+      "user_query": "How do I clear browser history with a shortcut?",
+      "ai_response": "In almost all Linux browsers (Firefox, Chrome, Brave):\n\n**Ctrl + Shift + Delete**\n\nThis opens the 'Clear Browsing Data' dialog directly."
+    },
+    "technical_tags": ["shortcuts", "privacy", "history", "ui"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_075",
+    "bucket": "Web & Research",
+    "sub_category": "Shortcuts",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "All",
+      "app_version": "All"
+    },
+    "interaction": {
+      "user_query": "How do I quickly zoom in and out on a webpage?",
+      "ai_response": "- **Zoom In:** `Ctrl` + `+`\n- **Zoom Out:** `Ctrl` + `-`\n- **Reset Zoom:** `Ctrl` + `0`\n\nYou can also hold `Ctrl` and scroll the mouse wheel."
+    },
+    "technical_tags": ["shortcuts", "zoom", "accessibility", "ui"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_079",
+    "bucket": "Web & Research",
+    "sub_category": "DevTools",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "All",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "I pressed F12 and a weird code window opened. How do I close it?",
+      "ai_response": "You opened the Developer Tools. \n\n- Press **F12** again to close it.\n- Or click the **X** in the top right corner of that panel."
+    },
+    "technical_tags": ["devtools", "ui", "chrome", "shortcuts"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_080",
+    "bucket": "Web & Research",
+    "sub_category": "Extensions",
+    "complexity": "Intermediate",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "UBlock Origin isn't blocking YouTube ads anymore.",
+      "ai_response": "YouTube frequently updates its ad delivery.\n\n1. Open uBlock Origin dashboard (click icon -> gears).\n2. Go to **Filter lists**.\n3. Click **Purge all caches**.\n4. Click **Update now**.\n\nThis forces a download of the latest blocking rules."
+    },
+    "technical_tags": ["ublock-origin", "ads", "youtube", "troubleshooting"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_088",
+    "bucket": "Web & Research",
+    "sub_category": "History",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "All",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "I visited a site yesterday but can't remember the name. How do I find it?",
+      "ai_response": "1. Press **Ctrl + H** to open History.\n2. Use the **search box** at the top to type keywords you remember from the page title or content.\n3. Scroll down to the 'Yesterday' section."
+    },
+    "technical_tags": ["history", "search", "navigation", "chrome"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_089",
+    "bucket": "Web & Research",
+    "sub_category": "Shortcuts",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "All",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Shortcut to activate the search bar in the page (Find in page)?",
+      "ai_response": "**Ctrl + F** opens the Find bar at the bottom.\n**F3** jumps to the next match.\n**Shift + F3** jumps to the previous match."
+    },
+    "technical_tags": ["shortcuts", "search", "firefox", "productivity"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_092",
+    "bucket": "Web & Research",
+    "sub_category": "Security",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I see the saved password for a site in Firefox?",
+      "ai_response": "1. Menu -> **Settings** -> **Privacy & Security**.\n2. Scroll down to **Logins and Passwords** -> Click **Saved Logins**.\n3. Find the site, click the **Eye icon** to reveal the password (you may need to enter your OS user password)."
+    },
+    "technical_tags": ["passwords", "security", "firefox", "ui"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_095",
+    "bucket": "Web & Research",
+    "sub_category": "Shortcuts",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "All",
+      "app_version": "All"
+    },
+    "interaction": {
+      "user_query": "How do I refresh a page that is stuck?",
+      "ai_response": "- **Standard Refresh:** `F5` or `Ctrl + R`.\n- **Hard Refresh (Ignore Cache):** `Ctrl + Shift + R` or `Ctrl + F5`. This forces the browser to re-download all images and scripts."
+    },
+    "technical_tags": ["shortcuts", "troubleshooting", "cache", "navigation"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_098",
+    "bucket": "Web & Research",
+    "sub_category": "Tabs",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "All",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I closed the window with all my tabs. Can I get them back?",
+      "ai_response": "1. Open Firefox.\n2. Press **Menu** -> **History** -> **Restore Previous Session**.\n3. Alternatively, check under 'Recently Closed Windows' in the History menu."
+    },
+    "technical_tags": ["session-restore", "tabs", "recovery", "firefox"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_501",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox 115"
+    },
+    "interaction": {
+      "user_query": "I keep seeing ads on YouTube and random sites. What is the best way to block them on Firefox?",
+      "ai_response": "The standard solution is **uBlock Origin**. It is efficient and open-source.\n\n1. Open the menu (three bars) > **Add-ons and themes**.\n2. Search for `uBlock Origin`.\n3. Click **Add to Firefox**.\n\nIt works immediately without complex configuration."
+    },
+    "technical_tags": ["firefox", "ad-blocking", "ublock-origin"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_503",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Chrome 120"
+    },
+    "interaction": {
+      "user_query": "Chrome saves my history and I don't want that. How do I make it delete everything when I close it?",
+      "ai_response": "You can set Chrome to clear data on exit:\n\n1. Go to `chrome://settings/content/siteData`.\n2. Select **Delete data sites have saved to your device when you close all windows**.\n\nAlternatively, use **Incognito Mode** (Ctrl+Shift+N) for temporary browsing."
+    },
+    "technical_tags": ["chrome", "privacy", "cookies"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_511",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "Websites keep asking to send me notifications. How do I block these requests permanently?",
+      "ai_response": "1. Go to **Settings** > **Privacy & Security**.\n2. Scroll to **Permissions** > **Notifications**.\n3. Click **Settings...**\n4. Check the box **Block new requests asking to allow notifications**.\n5. Click **Save Changes**."
+    },
+    "technical_tags": ["firefox", "notifications", "ux"],
+    "friction_type": "config_issue"
+  },
+  {
+    "id": "WEB_RES_519",
+    "bucket": "Web & Research",
+    "sub_category": "Privacy",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Fedora 40",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I clear my cache in Firefox? Some pages are loading old versions.",
+      "ai_response": "1. Press `Ctrl + Shift + Delete`.\n2. Set **Time range to clear** to **Everything**.\n3. Check **Cache** (you can uncheck Cookies/History if you want to keep logins).\n4. Click **OK**."
+    },
+    "technical_tags": ["firefox", "cache", "maintenance"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_531",
+    "bucket": "Web & Research",
+    "sub_category": "Multi-device",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I'm switching from Chrome to Firefox. How do I bring my bookmarks over?",
+      "ai_response": "1. Open Firefox.\n2. Press `Ctrl + Shift + O` to open the Library.\n3. Click **Import and Backup** > **Import Data from Another Browser**.\n4. Select **Chrome**.\n5. Ensure Chrome is closed, then proceed."
+    },
+    "technical_tags": ["firefox", "migration", "bookmarks"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_534",
+    "bucket": "Web & Research",
+    "sub_category": "Multi-device",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 24.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "How do I create a backup of my bookmarks to a file? I'm reformatting my PC.",
+      "ai_response": "1. Click the three dots > **Bookmarks and lists** > **Bookmark manager**.\n2. Click the three dots in the blue bar (top right of page).\n3. Select **Export bookmarks**.\n4. Save the HTML file to a USB stick or cloud storage."
+    },
+    "technical_tags": ["chrome", "backup", "bookmarks"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_543",
+    "bucket": "Web & Research",
+    "sub_category": "Work Context",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "How do I print to PDF from Chrome? I need to save receipts.",
+      "ai_response": "1. Press `Ctrl + P`.\n2. In the **Destination** dropdown, select **Save as PDF**.\n3. Click **Save** and choose a folder."
+    },
+    "technical_tags": ["chrome", "pdf", "printing"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_548",
+    "bucket": "Web & Research",
+    "sub_category": "Personal/Home",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I make Firefox dark mode? It's blinding me at night.",
+      "ai_response": "1. Open the menu > **Add-ons and themes**.\n2. Click **Themes** on the left.\n3. Enable **Dark**.\n\nAlso, check your Mint system settings: **Themes** > **Controls**, as Firefox often respects the system theme automatically."
+    },
+    "technical_tags": ["firefox", "theming", "ux"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_553",
+    "bucket": "Web & Research",
+    "sub_category": "Personal/Home",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "I want to shop on a foreign site. How do I translate the page?",
+      "ai_response": "Firefox has a built-in translation feature now (version 118+).\n\n1. Look for the **Translation icon** (a letter 'A' symbol) in the address bar.\n2. Click **Translate**.\n\nIf you are on an older version or it's missing, install the **TWP - Translate Web Pages** extension."
+    },
+    "technical_tags": ["firefox", "translation", "extensions"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_572",
+    "bucket": "Web & Research",
+    "sub_category": "Personal/Home",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I make the text bigger on all websites? My eyes aren't what they used to be.",
+      "ai_response": "1. Go to **Settings** > **General**.\n2. Under **Language and Appearance**, look for **Zoom**.\n3. Set **Default zoom** to 110% or 120%.\n4. Check **Zoom text only** if you don't want images to scale up."
+    },
+    "technical_tags": ["firefox", "accessibility", "zoom"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_577",
+    "bucket": "Web & Research",
+    "sub_category": "Personal/Home",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Linux Mint 21",
+      "app_version": "Firefox"
+    },
+    "interaction": {
+      "user_query": "How do I set Google as my default search engine? It changed to Yahoo.",
+      "ai_response": "1. Go to **Settings** > **Search**.\n2. Under **Default Search Engine**, select **Google** from the dropdown.\n3. While there, uncheck Yahoo from 'Search Shortcuts' if you don't want to use it at all."
+    },
+    "technical_tags": ["firefox", "search", "configuration"],
+    "friction_type": "user_error"
+  },
+  {
+    "id": "WEB_RES_592",
+    "bucket": "Web & Research",
+    "sub_category": "Work Context",
+    "complexity": "Beginner",
+    "user_persona": "Everyday Consumer",
+    "system_context": {
+      "distro": "Ubuntu 22.04",
+      "app_version": "Chrome"
+    },
+    "interaction": {
+      "user_query": "I accidentally closed a tab I needed for work! How do I get it back?",
+      "ai_response": "Press `Ctrl + Shift + T`. This reopens the last closed tab. You can press it multiple times to open previously closed tabs in reverse order."
+    },
+    "technical_tags": ["chrome", "shortcuts", "productivity"],
+    "friction_type": "user_error"
+  }
+]
