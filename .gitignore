@@ -65,3 +65,4 @@ __pycache__/
 # Local scratch files (not committed)
 local/.archive/
 test_output*.txt
+packages/desktop/src-tauri/bin/
