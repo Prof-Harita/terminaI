@@ -1,6 +1,13 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 'use client'
 
-import * as React from 'react'
+import type * as React from 'react'
 import * as LabelPrimitive from '@radix-ui/react-label'
 
 import { cn } from '../../lib/utils'

@@ -88,12 +88,10 @@ export function TriPaneLayout({
     document.body.style.userSelect = 'none';
   }, [handleMouseMove, stopResizing]);
 
-  useEffect(() => {
-    return () => {
+  useEffect(() => () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', stopResizing);
-    };
-  }, [handleMouseMove, stopResizing]);
+    }, [handleMouseMove, stopResizing]);
 
   return (
     <div className="flex h-full overflow-hidden" style={{ background: 'var(--bg-primary)' }}>

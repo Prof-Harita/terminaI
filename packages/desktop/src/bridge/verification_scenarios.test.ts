@@ -100,7 +100,7 @@ class MockLockManager {
       unlock = r;
     });
 
-    this.locks[name] = { callback, resolve: unlock! };
+    this.locks[name] = { callback, resolve: unlock };
 
     // Execute callback
     const result = callback({ name });

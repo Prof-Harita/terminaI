@@ -953,8 +953,8 @@ export class Task {
       return false;
     }
 
-    const callId = part.data['callId'] as string;
-    const input = part.data['input'] as string;
+    const callId = part.data['callId'];
+    const input = part.data['input'];
 
     logger.info(`[Task] Handling tool input for callId: ${callId}`);
     try {

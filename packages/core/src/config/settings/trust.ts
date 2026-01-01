@@ -189,7 +189,7 @@ export function saveTrustedFolders(
 }
 
 export function isFolderTrustEnabled(settings: Settings): boolean {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const folderTrustSetting =
     (settings as any).security?.folderTrust?.enabled ?? false;
   return folderTrustSetting;

@@ -1,6 +1,12 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 import { HistoryView } from './views/HistoryView'
-import { ActivityView } from './ActivityBar'
+import type { ActivityView } from './ActivityBar'
 import { AssistantView } from './views/AssistantView'
 import { ConnectivityView } from './views/ConnectivityView'
 import { WorkspaceView } from './views/WorkspaceView'

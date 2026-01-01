@@ -192,7 +192,7 @@ function readSettingsFile(
  * Workspace settings are only applied if the workspace is trusted.
  */
 export class SettingsLoader {
-  constructor(public readonly options: SettingsLoaderOptions = {}) {}
+  constructor(readonly options: SettingsLoaderOptions = {}) {}
 
   load(): LoadedSettings {
     const workspaceDir = this.options.workspaceDir || process.cwd();

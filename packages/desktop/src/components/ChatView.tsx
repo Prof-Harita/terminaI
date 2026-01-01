@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 "use client"
 
 import type React from "react"
@@ -46,9 +53,7 @@ export function ChatView({
 
   const voiceState = useVoiceStore((s) => s.state);
   const voiceError = useVoiceStore((s) => s.error);
-  const [input, setInput] = useState(() => {
-    return localStorage.getItem('terminai_chat_draft') || '';
-  });
+  const [input, setInput] = useState(() => localStorage.getItem('terminai_chat_draft') || '');
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [attachments, setAttachments] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);

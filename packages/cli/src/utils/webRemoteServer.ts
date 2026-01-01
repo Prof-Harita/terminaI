@@ -139,8 +139,8 @@ export async function startWebRemoteServer(
     const handshake = {
       terminai_status: 'ready',
       port: actualPort,
-      token: token,
-      url: url,
+      token,
+      url,
     };
     // Ensure we write a single line JSON blob to stdout
     process.stdout.write(JSON.stringify(handshake) + '\n');

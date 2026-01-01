@@ -101,7 +101,7 @@ function extractTextFromParts(parts: Array<Record<string, unknown>>): string {
   let out = '';
   for (const part of parts) {
     if (part?.['kind'] === 'text' && typeof part?.['text'] === 'string') {
-      out += part['text'] as string;
+      out += part['text'];
     }
   }
   return out;
@@ -253,9 +253,7 @@ export function handleSseEvent(
 
       {
         const parts =
-          (result.status?.message?.parts as
-            | Array<Record<string, unknown>>
-            | undefined) ?? [];
+          (result.status?.message?.parts) ?? [];
 
         const text = extractTextFromParts(parts);
         if (text && onText) {
@@ -329,7 +327,7 @@ export function handleSseEvent(
         const m = /^tool-(.+)-output$/.exec(result.artifact.artifactId);
         const callId = m?.[1];
         const text = extractTextFromParts(
-          result.artifact.parts as Array<Record<string, unknown>>,
+          result.artifact.parts,
         );
         if (callId && text) {
           onToolUpdate({

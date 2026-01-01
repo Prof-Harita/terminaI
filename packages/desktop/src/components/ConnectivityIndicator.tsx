@@ -1,4 +1,11 @@
-import React from 'react';
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import type React from 'react';
 import { useSidecarStore } from '../stores/sidecarStore';
 import { useSettingsStore } from '../stores/settingsStore';
 import { useBridgeStore } from '../bridge/store';

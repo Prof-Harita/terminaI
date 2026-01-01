@@ -1,5 +1,11 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
-import React from 'react';
+import type React from 'react';
 import { RotateCcw } from 'lucide-react';
 
 export function Section({

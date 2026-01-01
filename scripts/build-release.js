@@ -1,6 +1,12 @@
 #!/usr/bin/env node
 
 /**
+ * @license
+ * Copyright 2025 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/**
  * Unified build script for TerminaI Desktop releases
  *
  * This script orchestrates the entire build pipeline:
@@ -12,9 +18,9 @@
  * Usage: node scripts/build-release.js
  */
 
-import { execSync } from 'child_process';
-import { platform, arch } from 'os';
-import { existsSync } from 'fs';
+import { execSync } from 'node:child_process';
+import { platform, arch } from 'node:os';
+import { existsSync } from 'node:fs';
 
 console.log('═══════════════════════════════════════════════════════');
 console.log('🚀 TerminaI Release Build');
