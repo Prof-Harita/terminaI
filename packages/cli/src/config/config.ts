@@ -669,6 +669,7 @@ export async function loadCliConfig(
   try {
     telemetrySettings = await resolveTelemetrySettings({
       env: process.env as unknown as Record<string, string | undefined>,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       settings: settings.telemetry as any,
     });
   } catch (err) {
@@ -859,6 +860,7 @@ export async function loadCliConfig(
       timeoutSeconds: settings.tools?.repl?.timeoutSeconds,
       dockerImage: replDockerImage,
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     eventEmitter: appEvents as any,
     useSmartEdit: argv.useSmartEdit ?? settings.useSmartEdit,
     useWriteTodos: argv.useWriteTodos ?? settings.useWriteTodos,
@@ -868,6 +870,7 @@ export async function loadCliConfig(
     fakeResponses: argv.fakeResponses,
     recordResponses: argv.recordResponses,
     ptyInfo: ptyInfo?.name,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelConfigServiceConfig: settings.modelConfigs as any,
   };
 
