@@ -392,7 +392,7 @@ sequenceDiagram
 - Token cache: `~/.config/gcloud/application_default_credentials.json` or
   `~/.terminai/auth/{authType}.json`
 - OAuth client:
-  [`packages/core/src/core/auth/oauth.ts`](../packages/core/src/core/auth/oauth.ts)
+  [`packages/core/src/code_assist/oauth2.ts`](../packages/core/src/code_assist/oauth2.ts)
 
 ### 9.3. Re-Authentication Triggers
 
