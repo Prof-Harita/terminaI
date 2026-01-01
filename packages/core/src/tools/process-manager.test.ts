@@ -69,6 +69,13 @@ describe('ProcessManagerTool', () => {
       getWorkspaceContext: vi
         .fn()
         .mockReturnValue(new WorkspaceContext(tempRootDir)),
+      getTrustedDomains: vi.fn().mockReturnValue([]),
+      getCriticalPaths: vi.fn().mockReturnValue([]),
+      getSecurityProfile: vi.fn().mockReturnValue('strict'),
+      getApprovalPin: vi.fn().mockReturnValue('000000'),
+      getBrainAuthority: vi.fn().mockReturnValue({}),
+      getAuditLedger: vi.fn().mockReturnValue({}),
+      getAuditSettings: vi.fn().mockReturnValue({}),
     } as unknown as Config;
 
     mockShellExecutionService.execute.mockImplementation(

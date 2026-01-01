@@ -28,6 +28,14 @@ describe('UI tool utils', () => {
       approvalPin: undefined,
       trustedDomains: [],
       criticalPaths: [],
+      getTrustedDomains: () => [],
+      getCriticalPaths: () => [],
+      getSecurityProfile: () => 'balanced',
+      getApprovalPin: () => '000000',
+      getTargetDir: () => '/mock/workspace',
+      getBrainAuthority: () => ({}),
+      getAuditLedger: () => ({}),
+      getAuditSettings: () => ({}),
     } as unknown as Config;
 
     const details = buildUiConfirmationDetails({

@@ -55,6 +55,13 @@ describe('ReplTool', () => {
         sandboxTier: 'tier1',
         timeoutMs: 30000,
       })),
+      getTrustedDomains: vi.fn(() => []),
+      getCriticalPaths: vi.fn(() => []),
+      getSecurityProfile: vi.fn(() => 'strict'),
+      getApprovalPin: vi.fn(() => '000000'),
+      getBrainAuthority: vi.fn(() => ({})),
+      getAuditLedger: vi.fn(() => ({})),
+      getAuditSettings: vi.fn(() => ({})),
     } as unknown as Config;
     replTool = new ReplTool(mockConfig);
   });

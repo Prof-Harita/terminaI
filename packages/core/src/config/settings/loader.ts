@@ -24,6 +24,7 @@ import {
   needsMigration,
 } from './migrate.js';
 import { updateSettingsFilePreservingFormat } from './comment-json.js';
+import { resolveEnvVars } from './env-vars.js';
 import { isWorkspaceTrusted } from './trust.js';
 import { Storage } from '../storage.js';
 import stripJsonComments from 'strip-json-comments';
@@ -146,9 +147,12 @@ function readSettingsFile(
       unknown
     >;
 
+    // Resolve environment variables
+    const resolved = resolveEnvVars(parsed);
+
     // Apply V1→V2 migration if needed
-    let settings = parsed;
-    const migrated = migrateSettingsToV2(parsed);
+    let settings = resolved;
+    const migrated = migrateSettingsToV2(resolved);
     if (migrated) {
       settings = migrated;
     }

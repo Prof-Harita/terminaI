@@ -71,6 +71,13 @@ describe('Tool Confirmation Policy Updates', () => {
         isPathWithinWorkspace: () => true,
         getDirectories: () => [rootDir],
       }),
+      getTrustedDomains: () => [],
+      getCriticalPaths: () => [],
+      getSecurityProfile: () => 'balanced',
+      getApprovalPin: () => '000000',
+      getBrainAuthority: () => ({}),
+      getAuditLedger: () => ({}),
+      getAuditSettings: () => ({}),
     };
   });
 

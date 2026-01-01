@@ -94,6 +94,10 @@ describe('webRemoteServer', () => {
     const listenSpy = vi.fn(() => ({
       address: () => ({ port: 41242 }),
       close: vi.fn(),
+      once: vi.fn((event, cb) => {
+        if (event === 'listening') cb();
+        return this;
+      }),
     }));
     createAppSpy.mockResolvedValue({ listen: listenSpy });
 

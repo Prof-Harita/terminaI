@@ -10,10 +10,16 @@ npm ci
 echo "🔹 3. Building project..."
 npm run build
 
-echo "🔹 4. Running FULL linting (matches CI exactly)..."
-echo "   This includes: ESLint, Prettier, actionlint, shellcheck, yamllint,"
-echo "   sensitive keywords, and tsconfig validation."
-node scripts/lint.js
+echo "🔹 4. Running linting..."
+if [ -z "$CI" ]; then
+  echo "   (Local environment detected: checking CHANGED files only)"
+  node scripts/lint.js --changed-only
+else
+  echo "   (CI environment detected: checking ALL files)"
+  echo "   This includes: ESLint, Prettier, actionlint, shellcheck, yamllint,"
+  echo "   sensitive keywords, and tsconfig validation."
+  node scripts/lint.js
+fi
 
 echo "🔹 4b. Verifying settings documentation is up to date..."
 npm run docs:settings -- --check

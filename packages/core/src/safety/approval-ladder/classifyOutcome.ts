@@ -56,11 +56,12 @@ export function classifyOutcome(
     return 'soft-irreversible';
   }
 
-  // Browser/UI actions are soft-irreversible
+  // Browser/UI/Process actions are soft-irreversible
   if (
     action.toolName === 'browser_action' ||
     action.toolName === 'computer' ||
-    operations.includes('ui')
+    operations.includes('ui') ||
+    operations.includes('process')
   ) {
     return 'soft-irreversible';
   }

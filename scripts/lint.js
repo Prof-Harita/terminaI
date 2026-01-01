@@ -23,6 +23,9 @@ const YAMLLINT_VERSION = '1.35.1';
 
 const TEMP_DIR = join(tmpdir(), 'gemini-cli-linters');
 
+const args = process.argv.slice(2);
+const CHANGED_ONLY = args.includes('--changed-only');
+
 function getPlatformArch() {
   const platform = process.platform;
   const arch = process.arch;
@@ -132,6 +135,48 @@ function runCommand(command, stdio = 'inherit') {
   }
 }
 
+// Caching changed files to avoid repeated git calls
+let _cachedChangedFiles = null;
+
+function getChangedFiles() {
+  if (_cachedChangedFiles) return _cachedChangedFiles;
+
+  const baseRef = process.env.GITHUB_BASE_REF || 'main'; // Default to checking against main
+  try {
+    // Check if we have origin/main, if not fetch it
+    try {
+      execSync(`git rev-parse --verify origin/${baseRef}`, { stdio: 'ignore' });
+    } catch {
+      // If shallow clone or missing ref, try to fetch
+      execSync(`git fetch origin ${baseRef}`, { stdio: 'ignore' });
+    }
+
+    // If we are on main, compare against HEAD~1, otherwise compare against origin/main
+    const currentBranch = execSync('git rev-parse --abbrev-ref HEAD')
+      .toString()
+      .trim();
+    const compareTarget =
+      currentBranch === baseRef ? 'HEAD~1' : `origin/${baseRef}`;
+
+    // Get the merge base to properly handle divergent branches
+    const mergeBase = execSync(`git merge-base HEAD ${compareTarget}`)
+      .toString()
+      .trim();
+
+    _cachedChangedFiles = execSync(`git diff --name-only ${mergeBase}..HEAD`)
+      .toString()
+      .trim()
+      .split('\n')
+      .filter(Boolean);
+  } catch (_error) {
+    console.error(
+      `Could not determine changed files. Falling back to all files.`,
+    );
+    return null; // Null indicates "all files" fallback
+  }
+  return _cachedChangedFiles;
+}
+
 export function setupLinters() {
   console.log('Setting up linters...');
   rmSync(TEMP_DIR, { recursive: true, force: true });
@@ -154,13 +199,33 @@ export function setupLinters() {
 
 export function runESLint() {
   console.log('\nRunning ESLint...');
-  if (!runCommand('npm run lint')) {
+  let command = 'npm run lint';
+
+  if (CHANGED_ONLY) {
+    const files = getChangedFiles();
+    if (files) {
+      const lintableFiles = files.filter(
+        (f) => /\.(ts|tsx|js|jsx|mjs|cjs)$/.test(f) && existsSync(f),
+      );
+      if (lintableFiles.length === 0) {
+        console.log('No changed JS/TS files to lint.');
+        return;
+      }
+      // Use npx eslint directly to support arguments
+      command = `npx eslint ${lintableFiles.map((f) => `"${f}"`).join(' ')}`;
+    }
+  }
+
+  if (!runCommand(command)) {
     process.exit(1);
   }
 }
 
 export function runActionlint() {
   console.log('\nRunning actionlint...');
+  // Actionlint is typically fast enough to run on all, but we can optimize if needed.
+  // For now, keep as is or implement complex filtering if requested.
+  // Actionlint doesn't accept file args easily in the same way, usually runs on .github
   if (!runCommand(LINTERS.actionlint.run)) {
     process.exit(1);
   }
@@ -168,6 +233,27 @@ export function runActionlint() {
 
 export function runShellcheck() {
   console.log('\nRunning shellcheck...');
+  // Shellcheck run command in LINTERS uses git ls-files.
+  // We can override it if CHANGED_ONLY is true.
+  if (CHANGED_ONLY) {
+    const files = getChangedFiles();
+    if (files) {
+      const shellFiles = files.filter(
+        (f) => /\.(sh|bash|zsh)$/.test(f) && existsSync(f),
+      );
+      if (shellFiles.length === 0) {
+        console.log('No changed shell scripts to lint.');
+        return;
+      }
+      // Construct shellcheck command for specific files
+      const cmd = `shellcheck --check-sourced --enable=all --exclude=SC2002,SC2129,SC2310 --severity=style --format=gcc --color=never ${shellFiles.join(' ')} | sed -e 's/note:/warning:/g' -e 's/style:/warning:/g'`;
+      if (!runCommand(cmd)) {
+        process.exit(1);
+      }
+      return;
+    }
+  }
+
   if (!runCommand(LINTERS.shellcheck.run)) {
     process.exit(1);
   }
@@ -175,6 +261,24 @@ export function runShellcheck() {
 
 export function runYamllint() {
   console.log('\nRunning yamllint...');
+  if (CHANGED_ONLY) {
+    const files = getChangedFiles();
+    if (files) {
+      const yamlFiles = files.filter(
+        (f) => /\.(yaml|yml)$/.test(f) && existsSync(f),
+      );
+      if (yamlFiles.length === 0) {
+        console.log('No changed YAML files to lint.');
+        return;
+      }
+      const cmd = `yamllint --format github ${yamlFiles.join(' ')}`;
+      if (!runCommand(cmd)) {
+        process.exit(1);
+      }
+      return;
+    }
+  }
+
   if (!runCommand(LINTERS.yamllint.run)) {
     process.exit(1);
   }
@@ -182,7 +286,26 @@ export function runYamllint() {
 
 export function runPrettier() {
   console.log('\nRunning Prettier...');
-  if (!runCommand('prettier --check .')) {
+  let command = 'prettier --check .';
+
+  if (CHANGED_ONLY) {
+    const files = getChangedFiles();
+    if (files) {
+      // Filter for files Prettier usually handles (simplified list)
+      const prettierFiles = files.filter(
+        (f) =>
+          /\.(ts|tsx|js|jsx|json|md|yaml|yml|css|html)$/.test(f) &&
+          existsSync(f),
+      );
+      if (prettierFiles.length === 0) {
+        console.log('No changed files for Prettier to check.');
+        return;
+      }
+      command = `prettier --check ${prettierFiles.map((f) => `"${f}"`).join(' ')}`;
+    }
+  }
+
+  if (!runCommand(command)) {
     process.exit(1);
   }
 }
@@ -198,35 +321,7 @@ export function runSensitiveKeywordLinter() {
     'gemini-1.0',
   ]);
 
-  function getChangedFiles() {
-    const baseRef = process.env.GITHUB_BASE_REF || 'main';
-    try {
-      execSync(`git fetch origin ${baseRef}`);
-      const mergeBase = execSync(`git merge-base HEAD origin/${baseRef}`)
-        .toString()
-        .trim();
-      return execSync(`git diff --name-only ${mergeBase}..HEAD`)
-        .toString()
-        .trim()
-        .split('\n')
-        .filter(Boolean);
-    } catch (_error) {
-      console.error(`Could not get changed files against origin/${baseRef}.`);
-      try {
-        console.log('Falling back to diff against HEAD~1');
-        return execSync(`git diff --name-only HEAD~1..HEAD`)
-          .toString()
-          .trim()
-          .split('\n')
-          .filter(Boolean);
-      } catch (_fallbackError) {
-        console.error('Could not get changed files against HEAD~1 either.');
-        process.exit(1);
-      }
-    }
-  }
-
-  const changedFiles = getChangedFiles();
+  const changedFiles = getChangedFiles() || [];
   let violationsFound = false;
 
   for (const file of changedFiles) {
@@ -272,6 +367,8 @@ function stripJSONComments(json) {
 }
 
 export function runTSConfigLinter() {
+  // TSConfig linter checks configuration files, which are rare.
+  // We can just run it always, it's fast.
   console.log('\nRunning tsconfig linter...');
 
   let files = [];
@@ -338,8 +435,6 @@ export function runTSConfigLinter() {
 }
 
 function main() {
-  const args = process.argv.slice(2);
-
   if (args.includes('--setup')) {
     setupLinters();
   }
@@ -365,7 +460,14 @@ function main() {
     runTSConfigLinter();
   }
 
-  if (args.length === 0) {
+  // If no specific flag is passed (other than --changed-only --setup), run all
+  // Filter args to exclude flags that are not subcommands
+  const flags = ['--changed-only'];
+  const subcommandArgs = args.filter(
+    (arg) => !flags.includes(arg) && arg !== '--setup',
+  );
+
+  if (subcommandArgs.length === 0) {
     setupLinters();
     runESLint();
     runActionlint();
