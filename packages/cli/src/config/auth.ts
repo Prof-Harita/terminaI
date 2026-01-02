@@ -17,6 +17,12 @@ export function validateAuthMethod(authMethod: string): string | null {
     return null;
   }
 
+  if (authMethod === AuthType.USE_OPENAI_COMPATIBLE) {
+    // OpenAI-compatible auth is handled via llm.openaiCompatible.* settings and env vars.
+    // No additional validation is performed here.
+    return null;
+  }
+
   if (authMethod === AuthType.USE_GEMINI) {
     if (!process.env['GEMINI_API_KEY']) {
       return (

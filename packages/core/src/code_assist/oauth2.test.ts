@@ -255,6 +255,114 @@ describeIfListen('oauth2', () => {
       expect(fs.existsSync(credsPath)).toBe(false);
     });
 
+    it('should use atomic writes for credentials', async () => {
+      // Mock crypto.randomBytes to return predictable value
+      const mockRandom = vi.fn().mockReturnValue(Buffer.from('abcd1234'));
+      vi.spyOn(crypto, 'randomBytes').mockImplementation(mockRandom);
+
+      const credsPath = path.join(tempHomeDir, GEMINI_DIR, 'oauth_creds.json');
+      const expectedTempPath = `${credsPath}.tmp.abcd1234`;
+
+      // Mock fs.rename to verify it's called
+      const mockRename = vi
+        .spyOn(fs.promises, 'rename')
+        .mockResolvedValue(undefined);
+      const mockWriteFile = vi
+        .spyOn(fs.promises, 'writeFile')
+        .mockResolvedValue(undefined);
+
+      // Perform OAuth flow that calls cacheCredentials
+      const mockAuthUrl = 'https://example.com/auth';
+      const mockCode = 'test-code';
+      const mockState = 'test-state';
+      const mockTokens = {
+        access_token: 'test-access-token',
+        refresh_token: 'test-refresh-token',
+      };
+
+      const mockOAuth2Client = {
+        generateAuthUrl: vi.fn().mockReturnValue(mockAuthUrl),
+        getToken: vi.fn().mockResolvedValue({ tokens: mockTokens }),
+        setCredentials: vi.fn(),
+        getAccessToken: vi
+          .fn()
+          .mockResolvedValue({ token: 'mock-access-token' }),
+        credentials: mockTokens,
+        on: vi.fn((event, listener) => {
+          if (event === 'tokens') {
+            listener(mockTokens);
+          }
+        }),
+      } as unknown as OAuth2Client;
+      vi.mocked(OAuth2Client).mockImplementation(() => mockOAuth2Client);
+
+      vi.mocked(open).mockImplementation(
+        async () => ({ on: vi.fn() }) as never,
+      );
+
+      vi.mocked(global.fetch).mockResolvedValue({
+        ok: true,
+        json: vi.fn().mockResolvedValue({ email: 'test@example.com' }),
+      } as unknown as Response);
+
+      let requestCallback!: http.RequestListener;
+      let serverListeningCallback: (value: unknown) => void;
+      const serverListeningPromise = new Promise(
+        (resolve) => (serverListeningCallback = resolve),
+      );
+
+      let capturedPort = 0;
+      const mockHttpServer = {
+        listen: vi.fn((port: number, _host: string, callback?: () => void) => {
+          capturedPort = port;
+          if (callback) {
+            callback();
+          }
+          serverListeningCallback(undefined);
+        }),
+        close: vi.fn((callback?: () => void) => {
+          if (callback) {
+            callback();
+          }
+        }),
+        on: vi.fn(),
+        address: () => ({ port: capturedPort }),
+      };
+      (http.createServer as Mock).mockImplementation((cb) => {
+        requestCallback = cb as http.RequestListener;
+        return mockHttpServer as unknown as http.Server;
+      });
+
+      const clientPromise = getOauthClient(
+        AuthType.LOGIN_WITH_GOOGLE,
+        mockConfig,
+      );
+
+      await serverListeningPromise;
+
+      const mockReq = {
+        url: `/oauth2callback?code=${mockCode}&state=${mockState}`,
+      } as http.IncomingMessage;
+      const mockRes = {
+        writeHead: vi.fn(),
+        end: vi.fn(),
+      } as unknown as http.ServerResponse;
+
+      requestCallback(mockReq, mockRes);
+      await clientPromise;
+
+      // Verify atomic write behavior
+      expect(mockWriteFile).toHaveBeenCalledWith(
+        expectedTempPath,
+        JSON.stringify(mockTokens, null, 2),
+        { mode: 0o600 },
+      );
+      expect(mockRename).toHaveBeenCalledWith(expectedTempPath, credsPath);
+
+      mockRename.mockRestore();
+      mockWriteFile.mockRestore();
+    });
+
     it('should emit post_auth event when loading cached credentials', async () => {
       const cachedCreds = { refresh_token: 'cached-token' };
       const credsPath = path.join(tempHomeDir, GEMINI_DIR, 'oauth_creds.json');

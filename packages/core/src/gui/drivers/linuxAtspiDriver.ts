@@ -7,6 +7,7 @@
 
 import { spawn } from 'node:child_process';
 import type { ChildProcess } from 'node:child_process';
+import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as readline from 'node:readline';
 import type {
@@ -38,6 +39,11 @@ import {
   installPythonDependencies,
 } from '../../utils/pythonDepsInstaller.js';
 
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 export class LinuxAtspiDriver implements DesktopDriver {
   readonly name = 'linux-atspi';
   readonly kind = 'native';
@@ -53,12 +59,30 @@ export class LinuxAtspiDriver implements DesktopDriver {
   private sidecarPath: string;
 
   constructor() {
-    // Assuming sidecar is peer to core or in a known location
-    // Adjust path as needed based on monorepo structure
-    this.sidecarPath = path.resolve(
-      process.cwd(),
-      'packages/desktop-linux-atspi-sidecar/src/main.py',
-    );
+    // Resolve sidecar path with fallbacks:
+    // 1. Explicit env override
+    // 2. Relative to this file (for monorepo dev)
+    // 3. Relative to cwd (legacy fallback)
+    const envPath = process.env['TERMINAI_GUI_ATSPI_SIDECAR_PATH'];
+    if (envPath && fs.existsSync(envPath)) {
+      this.sidecarPath = envPath;
+    } else {
+      // Try relative to this file (monorepo layout)
+      const relativePath = path.resolve(
+        __dirname,
+        '../../../../desktop-linux-atspi-sidecar/src/main.py',
+      );
+      if (fs.existsSync(relativePath)) {
+        this.sidecarPath = relativePath;
+      } else {
+        // Fallback: try cwd-based path (for installs from different locations)
+        const cwdPath = path.resolve(
+          process.cwd(),
+          'packages/desktop-linux-atspi-sidecar/src/main.py',
+        );
+        this.sidecarPath = cwdPath;
+      }
+    }
   }
 
   async connect(): Promise<DriverConnectionStatus> {
@@ -91,6 +115,15 @@ export class LinuxAtspiDriver implements DesktopDriver {
   }
 
   private async attemptConnection(): Promise<DriverConnectionStatus> {
+    // Check sidecar exists before trying to spawn
+    if (!fs.existsSync(this.sidecarPath)) {
+      const msg =
+        `Sidecar not found at: ${this.sidecarPath}. ` +
+        `Set TERMINAI_GUI_ATSPI_SIDECAR_PATH to the correct path, ` +
+        `or run from the TerminaI repository root.`;
+      return { connected: false, error: msg };
+    }
+
     this.process = spawn('python3', [this.sidecarPath], {
       stdio: ['pipe', 'pipe', 'pipe'], // Capture stderr to detect import errors
     });

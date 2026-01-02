@@ -31,6 +31,11 @@ export enum AuthState {
   Authenticated = 'authenticated',
 }
 
+export enum AuthWizardDialogState {
+  Provider = 'provider',
+  OpenAICompatibleSetup = 'openai_compatible_setup',
+}
+
 // Only defining the state enum needed by the UI
 export enum StreamingState {
   Idle = 'idle',

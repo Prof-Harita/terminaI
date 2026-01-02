@@ -22,16 +22,39 @@
 import type { SelectorNode, ConditionNode, SelectorPrefix } from './ast.js';
 
 export class SelectorParseError extends Error {
+  public hint?: string;
+
   constructor(
     message: string,
     public position: number,
+    hint?: string,
   ) {
     super(`Selector parse error at index ${position}: ${message}`);
+    this.hint = hint;
   }
 }
 
+/**
+ * Detect common CSS selector patterns and return a helpful hint.
+ */
+function detectCssSelectorHint(input: string): string | undefined {
+  const cssPatterns = [
+    /^\.[a-zA-Z_-]/, // .class
+    /^#[a-zA-Z_-]/, // #id
+    /^[a-z]+\s*>/, // tag >
+    /\[.*=.*\]/, // [attr=value]
+  ];
+  for (const pattern of cssPatterns) {
+    if (pattern.test(input.trim())) {
+      return 'This looks like a CSS selector. UI selectors use a different syntax: name:"...", role=..., enabled=true, etc.';
+    }
+  }
+  return undefined;
+}
+
 export function parseSelector(input: string): SelectorNode {
-  const parser = new Parser(input);
+  const hint = detectCssSelectorHint(input);
+  const parser = new Parser(input, hint);
   return parser.parse();
 }
 
@@ -39,7 +62,10 @@ class Parser {
   private pos = 0;
   private len: number;
 
-  constructor(private input: string) {
+  constructor(
+    private input: string,
+    private hint?: string,
+  ) {
     this.len = input.length;
   }
 
@@ -162,6 +188,7 @@ class Parser {
       throw new SelectorParseError(
         'Expected operator (=, ~=, ^=, $=)',
         this.pos,
+        this.hint,
       );
 
     this.skipWhitespace();
@@ -175,7 +202,11 @@ class Parser {
           return { type: 'boolean', name: key, value: true };
         if (value === 'false')
           return { type: 'boolean', name: key, value: false };
-        throw new SelectorParseError(`${key} requires boolean value`, this.pos);
+        throw new SelectorParseError(
+          `${key} requires boolean value`,
+          this.pos,
+          this.hint,
+        );
       }
       return { type: 'boolean', name: key, value };
     }
@@ -225,7 +256,7 @@ class Parser {
       }
       this.pos++;
     }
-    throw new SelectorParseError('Unterminated string', this.pos);
+    throw new SelectorParseError('Unterminated string', this.pos, this.hint);
   }
 
   private readIdentifier(): string {

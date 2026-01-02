@@ -97,4 +97,15 @@ describe('validateAuthMethod', () => {
     }
     expect(validateAuthMethod(authType)).toBe(expected);
   });
+
+  it('should allow authentication using TERMINAI_API_KEY via aliasing', () => {
+    vi.stubEnv('TERMINAI_API_KEY', 'test-terminai-key');
+    // We strictly need to simulate the side-effect here because process.env is stubbed
+    // The real app imports './utils/envAliases.js' which calls this:
+    const { applyTerminaiEnvAliases } = require('@terminai/core');
+    applyTerminaiEnvAliases();
+
+    expect(process.env['GEMINI_API_KEY']).toBe('test-terminai-key');
+    expect(validateAuthMethod(AuthType.USE_GEMINI)).toBe(null);
+  });
 });

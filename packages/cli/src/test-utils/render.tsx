@@ -136,6 +136,7 @@ const baseMockUiState = {
   terminalWidth: 120,
   currentModel: 'gemini-pro',
   terminalBackgroundColor: undefined,
+  authWizardDialog: null,
 };
 
 const mockUIActions: UIActions = {
@@ -175,6 +176,7 @@ const mockUIActions: UIActions = {
   clearInteractivePasswordPrompt: vi.fn(),
   setViewMode: vi.fn(),
   setSpotlightOpen: vi.fn(),
+  setAuthWizardDialog: vi.fn(),
 };
 
 export const renderWithProviders = (

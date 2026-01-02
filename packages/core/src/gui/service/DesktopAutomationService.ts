@@ -6,17 +6,17 @@
  */
 
 import { getDesktopDriver } from '../drivers/driverRegistry.js';
-import type { DesktopDriver } from '../drivers/types.js';
 import { resolveSelector } from '../selectors/resolve.js';
+import { SelectorParseError } from '../selectors/parser.js';
+import type { DesktopDriver } from '../drivers/types.js';
 import type {
   VisualDOMSnapshot,
   UiActionResult,
   ElementNode,
   DriverCapabilities,
   DriverDescriptor,
+  UiDiagnosticsReport,
 } from '../protocol/types.js';
-import { getGuiAutomationConfig } from '../config.js';
-import type { ResolvedElement } from '../selectors/resolve.js';
 import type {
   UiClickArgs,
   UiTypeArgs,
@@ -28,7 +28,10 @@ import type {
   UiClickXyArgs,
   UiWaitArgs,
   UiAssertArgs,
+  UiDiagnoseArgs,
 } from '../protocol/schemas.js';
+import { getGuiAutomationConfig } from '../config.js';
+import type { ResolvedElement } from '../selectors/resolve.js';
 
 export class DesktopAutomationService {
   private static instance: DesktopAutomationService;
@@ -43,6 +46,16 @@ export class DesktopAutomationService {
 
   private constructor() {
     this.driver = getDesktopDriver();
+  }
+
+  // Test-only injection
+  static setDriverForTest(driver: DesktopDriver) {
+    if (!DesktopAutomationService.instance) {
+      DesktopAutomationService.instance = new DesktopAutomationService();
+    }
+    DesktopAutomationService.instance.driver = driver;
+    // reset other state
+    DesktopAutomationService.instance.lastSnapshot = undefined;
   }
 
   static getInstance(): DesktopAutomationService {
@@ -97,26 +110,161 @@ export class DesktopAutomationService {
     }
   }
 
-  async snapshot(args: UiSnapshotArgs): Promise<VisualDOMSnapshot> {
+  private async ensureCapability(cap: keyof DriverCapabilities): Promise<void> {
     await this.ensureConnected();
-    const {
-      args: boundedArgs,
-      maxDepth,
-      maxNodes,
-    } = this.buildBoundedSnapshotArgs(args);
-    const snap = await this.driver.snapshot(boundedArgs);
-    const boundedSnapshot = this.applySnapshotBounds(snap, maxDepth, maxNodes);
-    this.lastSnapshot = boundedSnapshot;
+    const caps = await this.driver.getCapabilities();
+    if (!caps[cap]) {
+      // "GuidanceError" pattern: Clear message explaining limitation
+      throw new Error(
+        `Driver does not support '${cap}'. This action cannot be performed on the current system.`,
+      );
+    }
+  }
+
+  async snapshot(args: UiSnapshotArgs): Promise<VisualDOMSnapshot> {
+    await this.ensureCapability('canSnapshot');
+
+    // Bypass progressive logic if:
+    // 1. Specific window ID provided (targeted capture)
+    // 2. Tree disabled (nothing to graft)
+    // 3. User explicitly requesting window scope (without ID implies active window, but usually means fallback)
+    const bypassProgressive =
+      (args.scope === 'window' && args.windowId) || args.includeTree === false;
+
+    let finalSnapshot: VisualDOMSnapshot;
+
+    if (bypassProgressive) {
+      const {
+        args: boundedArgs,
+        maxDepth,
+        maxNodes,
+      } = this.buildBoundedSnapshotArgs(args);
+      const snap = await this.driver.snapshot(boundedArgs);
+      finalSnapshot = this.applySnapshotBounds(snap, maxDepth, maxNodes);
+    } else {
+      // Progressive Strategy: Outline -> Active Window Graft
+      // 1. Outline Pass
+      const {
+        args: outlineArgs,
+        maxDepth: outlineMaxDepth,
+        maxNodes: outlineMaxNodes,
+      } = this.buildBoundedSnapshotArgs({
+        ...args,
+        maxDepth: 4, // Outline depth
+        maxNodes: 500,
+        scope: 'screen',
+      });
+
+      const outline = await this.driver.snapshot(outlineArgs);
+      const boundedOutline = this.applySnapshotBounds(
+        outline,
+        outlineMaxDepth,
+        outlineMaxNodes,
+      );
+
+      finalSnapshot = boundedOutline;
+
+      if (boundedOutline.tree) {
+        // 2. Identify Active Window
+        const activeWinTitle = boundedOutline.activeApp.title;
+        const findWindow = (node: ElementNode): ElementNode | undefined => {
+          if (node.role === 'window' && node.name === activeWinTitle) {
+            return node;
+          }
+          if (node.children) {
+            for (const child of node.children) {
+              const found = findWindow(child);
+              if (found) return found;
+            }
+          }
+          return undefined;
+        };
+
+        const activeNode = findWindow(boundedOutline.tree);
+
+        // 3. Deep Pass
+        if (activeNode) {
+          try {
+            // Note: We don't apply bounds to the deep request here, we trust the driver
+            // or apply them after?
+            // If we use buildBoundedSnapshotArgs on original args, we get user's desired depth for the window.
+            const {
+              args: deepArgs,
+              maxDepth: deepMaxDepth,
+              maxNodes: deepMaxNodes,
+            } = this.buildBoundedSnapshotArgs({
+              ...args,
+              scope: 'window',
+              windowId: activeNode.id,
+            });
+
+            const deepSnap = await this.driver.snapshot(deepArgs);
+            const boundedDeep = this.applySnapshotBounds(
+              deepSnap,
+              deepMaxDepth,
+              deepMaxNodes,
+            );
+
+            if (boundedDeep.tree) {
+              const grafted = this.graftNode(
+                boundedOutline.tree,
+                activeNode.id,
+                boundedDeep.tree,
+              );
+              if (grafted) {
+                // Determine truncation status: if deep snap was truncated, outline is effectively truncated logic-wise
+                if (boundedDeep.limits?.truncated) {
+                  if (!finalSnapshot.limits) finalSnapshot.limits = {};
+                  finalSnapshot.limits.truncated = true;
+                }
+              }
+            }
+          } catch (e) {
+            console.warn('Deep snapshot pass failed, using outline:', e);
+          }
+        }
+      }
+    }
+
+    this.lastSnapshot = finalSnapshot;
     this.lastSnapshotTime = Date.now();
-    return boundedSnapshot;
+    return finalSnapshot;
+  }
+
+  // Helper to replace a node in the tree with a new version
+  private graftNode(
+    root: ElementNode,
+    targetId: string,
+    replacement: ElementNode,
+  ): boolean {
+    if (root.id === targetId) {
+      // Cannot replace root this way unless we handle it at caller
+      // But here we are searching children usually.
+      return false; // Caller should handle root replacement if needed
+    }
+
+    if (root.children) {
+      for (let i = 0; i < root.children.length; i++) {
+        const child = root.children[i];
+        if (child.id === targetId) {
+          root.children[i] = replacement;
+          return true;
+        }
+        if (this.graftNode(child, targetId, replacement)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   async query(args: UiQueryArgs): Promise<UiActionResult> {
+    // Query relies on snapshot, so capability check happens in ensureSnapshot -> snapshot
     // 1. Get snapshot
     const snap = await this.ensureSnapshot();
 
     // 2. Resolve
-    const matches = resolveSelector(snap, args.selector);
+    const matches = this.safeResolve(snap, args.selector);
 
     // Limit
     const subset = matches.slice(0, args.limit || 1);
@@ -135,6 +283,7 @@ export class DesktopAutomationService {
   }
 
   async click(args: UiClickArgs): Promise<UiActionResult> {
+    await this.ensureCapability('canClick');
     const rateLimited = await this.enforceActionRateLimit();
     if (rateLimited) {
       return rateLimited;
@@ -197,6 +346,7 @@ export class DesktopAutomationService {
   }
 
   async type(args: UiTypeArgs): Promise<UiActionResult> {
+    await this.ensureCapability('canType');
     const rateLimited = await this.enforceActionRateLimit();
     if (rateLimited) {
       return rateLimited;
@@ -219,32 +369,58 @@ export class DesktopAutomationService {
       };
     }
 
-    const { targetId } = result;
-    const refinedArgs = { ...args, target: targetId ?? args.target };
+    const { targetId, targetNode } = result;
+
+    // Smart Redaction Logic
+    // If user didn't specify redaction preference, infer from target
+    let shouldRedact = args.redactInLogs;
+    if (shouldRedact === undefined) {
+      // Check if target is a password field
+      if (targetNode?.role?.toLowerCase().includes('password')) {
+        shouldRedact = true;
+      }
+    }
+
+    const refinedArgs = {
+      ...args,
+      target: targetId ?? args.target,
+      redactInLogs: shouldRedact,
+    };
+
     const res = await this.driver.type(refinedArgs);
     if (res.status === 'success') {
       this.lastSnapshot = undefined; // Invalidate cache
     }
-    return this.buildResultWithEvidence(
+
+    // Ensure evidence reflects redaction
+    const resultWithEvidence = this.buildResultWithEvidence(
       res,
       result.snapshot,
       result.targetNode,
       result.confidence,
     );
+
+    if (shouldRedact && resultWithEvidence.evidence) {
+      resultWithEvidence.evidence.redactions = true;
+    }
+
+    return resultWithEvidence;
   }
 
   async key(args: UiKeyArgs): Promise<UiActionResult> {
+    await this.ensureCapability('canKey');
     const rateLimited = await this.enforceActionRateLimit();
     if (rateLimited) {
       return rateLimited;
     }
 
-    await this.ensureConnected();
+    await this.ensureConnected(); // Redundant given ensureCapability but explicit
     const result = await this.driver.key(args);
     return this.buildResultWithEvidence(result, this.lastSnapshot);
   }
 
   async scroll(args: UiScrollArgs): Promise<UiActionResult> {
+    await this.ensureCapability('canScroll');
     const rateLimited = await this.enforceActionRateLimit();
     if (rateLimited) {
       return rateLimited;
@@ -273,6 +449,13 @@ export class DesktopAutomationService {
   }
 
   async focus(args: UiFocusArgs): Promise<UiActionResult> {
+    // Assuming focus capability is related to interaction or general support
+    // There isn't a explicit 'canFocus' in DriverCapabilities usually, but let's check.
+    // Definition says: canSnapshot, canClick, canType, canScroll, canKey, canOcr, canScreenshot, canInjectInput.
+    // 'focus' tool usually implies activating a window.
+    // If no specific capability, maybe we don't enforce?
+    // Or maybe check 'canInjectInput'?
+    // I'll skip specific capability check for focus for now as it's not in the list I saw earlier.
     const rateLimited = await this.enforceActionRateLimit();
     if (rateLimited) {
       return rateLimited;
@@ -292,6 +475,7 @@ export class DesktopAutomationService {
   }
 
   async clickXy(args: UiClickXyArgs): Promise<UiActionResult> {
+    await this.ensureCapability('canClick'); // Assuming clickXy requires same capability
     const rateLimited = await this.enforceActionRateLimit();
     if (rateLimited) {
       return rateLimited;
@@ -315,7 +499,7 @@ export class DesktopAutomationService {
         throw new Error('Wait operation aborted');
       }
       const snapshot = await this.ensureSnapshot(true); // Force fresh
-      const matches = resolveSelector(snapshot, args.selector);
+      const matches = this.safeResolve(snapshot, args.selector);
       const exists = matches.length > 0;
 
       let pass = false;
@@ -337,7 +521,7 @@ export class DesktopAutomationService {
         );
       }
 
-      await new Promise((r) => setTimeout(r, 500));
+      await new Promise((r) => setTimeout(r, args.intervalMs || 500));
     }
 
     const snapshot = this.lastSnapshot || (await this.ensureSnapshot());
@@ -353,7 +537,7 @@ export class DesktopAutomationService {
 
   async assert(args: UiAssertArgs): Promise<UiActionResult> {
     const snapshot = await this.ensureSnapshot();
-    const matches = resolveSelector(snapshot, args.target);
+    const matches = this.safeResolve(snapshot, args.target);
     const exists = matches.length > 0;
     const node = matches[0]?.node;
 
@@ -401,6 +585,22 @@ export class DesktopAutomationService {
   }
 
   // --- Helpers ---
+
+  private safeResolve(
+    snap: VisualDOMSnapshot,
+    selector: string,
+  ): ResolvedElement[] {
+    try {
+      return resolveSelector(snap, selector);
+    } catch (e) {
+      if (e instanceof SelectorParseError) {
+        throw new Error(
+          `Invalid selector syntax: "${selector}". Error at index ${e.position}: ${e.message.replace(/Selector parse error at index \d+: /, '')}`,
+        );
+      }
+      throw e;
+    }
+  }
 
   private async enforceActionRateLimit(): Promise<UiActionResult | null> {
     const { maxActionsPerMinute } = getGuiAutomationConfig();
@@ -582,7 +782,8 @@ export class DesktopAutomationService {
     confidence?: number;
   }> {
     const snap = await this.ensureSnapshot();
-    const matches = resolveSelector(snap, target);
+    const matches = this.safeResolve(snap, target);
+
     if (matches.length === 0) {
       return { snapshot: snap, matches: [] };
     }
@@ -605,5 +806,119 @@ export class DesktopAutomationService {
       matches,
       confidence,
     };
+  }
+
+  async diagnose(args?: UiDiagnoseArgs): Promise<UiDiagnosticsReport> {
+    const connection: { connected: boolean; error?: string } = {
+      connected: false,
+    };
+    let driverDesc: DriverDescriptor = {
+      name: this.driver.name,
+      kind: this.driver.kind,
+      version: this.driver.version,
+      capabilities: {
+        canSnapshot: false,
+        canClick: false,
+        canType: false,
+        canScroll: false,
+        canKey: false,
+        canOcr: false,
+        canScreenshot: false,
+        canInjectInput: false,
+      },
+    };
+
+    try {
+      if (this.enabled) {
+        await this.ensureConnected();
+        connection.connected = true;
+        // try to get descriptor via public method if connected
+        // effectively ensures caps are fresh
+        const realDesc = await this.getDriverDescriptor();
+        driverDesc = realDesc;
+      } else {
+        connection.error = 'GUI Automation disabled in config';
+      }
+    } catch (e) {
+      connection.error = e instanceof Error ? e.message : String(e);
+      // Fallback: try to get capabilities even if health check failed (unlikely to work depending on driver)
+      try {
+        const caps = await this.driver.getCapabilities();
+        driverDesc.capabilities = caps;
+      } catch {
+        // Ignore
+      }
+    }
+
+    const report: UiDiagnosticsReport = {
+      driver: driverDesc,
+      connection,
+      snapshotSanity: {
+        desktopRootChildren: 0,
+        applicationNamesSample: [],
+        activeAppTitle: 'unknown',
+        notes: [],
+      },
+      warnings: [],
+      suggestedFixes: [],
+    };
+
+    if (!connection.connected) {
+      report.warnings.push('Driver disconnected or disabled');
+      report.suggestedFixes.push(
+        'Check "gui.automation.enabled" setting or sidecar status.',
+      );
+      return report;
+    }
+
+    // Snapshot Sanity
+    try {
+      // Shallow snapshot for sanity check
+      const snapshot = await this.driver.snapshot({
+        maxDepth: args?.depth ?? 3,
+        maxNodes: args?.sampleLimit ?? 300,
+        includeTree: true,
+        includeScreenshot: false,
+        includeTextIndex: false,
+        scope: 'screen',
+      });
+
+      const rootChildren = snapshot.tree?.children ?? [];
+      report.snapshotSanity.desktopRootChildren = rootChildren.length;
+      report.snapshotSanity.applicationNamesSample = rootChildren
+        .slice(0, 10)
+        .map((n) => n.name || n.role)
+        .filter((n) => !!n);
+      report.snapshotSanity.activeAppTitle = snapshot.activeApp.title;
+      report.snapshotSanity.activeAppId = snapshot.activeApp.appId;
+
+      // Heuristics
+      if (rootChildren.length === 0) {
+        report.warnings.push('Empty accessibility tree returned');
+        report.suggestedFixes.push(
+          'Ensure Screen Recording / Accessibility permissions are granted.',
+        );
+      }
+
+      const appNames = report.snapshotSanity.applicationNamesSample;
+      const gnomeOnly =
+        appNames.length > 0 &&
+        appNames.every((n) => n.toLowerCase().includes('gnome-shell'));
+
+      if (gnomeOnly) {
+        report.warnings.push('Only gnome-shell visible');
+        report.snapshotSanity.notes.push('Typical AT-SPI visibility issue.');
+        report.suggestedFixes.push(
+          'Check if AT-SPI bus is properly exposed or if other apps are sandboxed.',
+        );
+      }
+    } catch (e) {
+      report.warnings.push(
+        `Snapshot failed: ${e instanceof Error ? e.message : String(e)}`,
+      );
+      report.suggestedFixes.push('Check driver logs for snapshot errors.');
+    }
+
+    return report;
   }
 }

@@ -16,6 +16,8 @@ import { SettingsDialog } from './SettingsDialog.js';
 import { AuthInProgress } from '../auth/AuthInProgress.js';
 import { AuthDialog } from '../auth/AuthDialog.js';
 import { ApiAuthDialog } from '../auth/ApiAuthDialog.js';
+import { ProviderWizard } from '../auth/ProviderWizard.js';
+import { OpenAICompatibleSetupDialog } from '../auth/OpenAICompatibleSetupDialog.js';
 import { EditorSettingsDialog } from './EditorSettingsDialog.js';
 import { PrivacyNotice } from '../privacy/PrivacyNotice.js';
 import { ProQuotaDialog } from './ProQuotaDialog.js';
@@ -32,6 +34,7 @@ import { useSettings } from '../contexts/SettingsContext.js';
 import process from 'node:process';
 import { type UseHistoryManagerReturn } from '../hooks/useHistoryManager.js';
 import { IdeTrustChangeDialog } from './IdeTrustChangeDialog.js';
+import { AuthWizardDialogState, AuthState } from '../types.js';
 
 interface DialogManagerProps {
   addItem: UseHistoryManagerReturn['addItem'];
@@ -154,6 +157,42 @@ export const DialogManager = ({
   if (uiState.isModelDialogOpen) {
     return <ModelDialog onClose={uiActions.closeModelDialog} />;
   }
+
+  if (uiState.authWizardDialog === AuthWizardDialogState.Provider) {
+    return (
+      <ProviderWizard
+        settings={settings}
+        onAuthError={uiActions.onAuthError}
+        onSelectOpenAICompatible={() => {
+          uiActions.setAuthWizardDialog(
+            AuthWizardDialogState.OpenAICompatibleSetup,
+          );
+        }}
+        onProceedToGeminiAuth={() => {
+          uiActions.setAuthWizardDialog(null);
+        }}
+      />
+    );
+  }
+
+  if (
+    uiState.authWizardDialog === AuthWizardDialogState.OpenAICompatibleSetup
+  ) {
+    return (
+      <OpenAICompatibleSetupDialog
+        settings={settings}
+        onAuthError={uiActions.onAuthError}
+        onBack={() => {
+          uiActions.setAuthWizardDialog(AuthWizardDialogState.Provider);
+        }}
+        onComplete={() => {
+          uiActions.setAuthWizardDialog(null);
+          uiActions.setAuthState(AuthState.Unauthenticated);
+        }}
+      />
+    );
+  }
+
   if (uiState.isAuthenticating) {
     return (
       <AuthInProgress

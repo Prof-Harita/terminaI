@@ -14,6 +14,7 @@ import {
   loadRemoteAuthState,
   saveRemoteAuthState,
 } from '@terminai/a2a-server';
+import { checkGeminiAuthStatusNonInteractive } from '@terminai/core';
 import crypto from 'node:crypto';
 import net from 'node:net';
 import path from 'node:path';
@@ -131,17 +132,33 @@ export async function startWebRemoteServer(
     token ? `?token=${encodeURIComponent(token)}` : ''
   }`;
 
+  // Check LLM auth status for handshake (optional field)
+  let llmAuthRequired: boolean | undefined;
+  try {
+    const authCheck = await checkGeminiAuthStatusNonInteractive(
+      undefined, // Let it auto-detect
+      process.env,
+    );
+    llmAuthRequired = authCheck.status !== 'ok';
+  } catch (e) {
+    // If we can't check, leave undefined (backward compatibility)
+  }
+
   // JSON Handshake for Sidecar Mode
   if (
     options.outputFormat === 'json' ||
     options.outputFormat === 'stream-json'
   ) {
-    const handshake = {
+    const handshake: any = {
       terminai_status: 'ready',
       port: actualPort,
       token,
       url,
     };
+    // Optional: include auth status if we could determine it
+    if (llmAuthRequired !== undefined) {
+      handshake.llmAuthRequired = llmAuthRequired;
+    }
     // Ensure we write a single line JSON blob to stdout
     process.stdout.write(JSON.stringify(handshake) + '\n');
     return { server, port: actualPort, url };

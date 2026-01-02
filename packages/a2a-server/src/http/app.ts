@@ -35,6 +35,9 @@ import { GitService } from '@terminai/core';
 import { createAuthMiddleware, loadAuthVerifier } from './auth.js';
 import { createCorsAllowlist } from './cors.js';
 import { connectToRelay } from './relay.js';
+import { LlmAuthManager } from '../auth/llmAuthManager.js';
+import { createAuthRouter } from './routes/auth.js';
+import { createLlmAuthMiddleware } from './llmAuthMiddleware.js';
 // import { createReplayProtection } from './replay.js'; // TODO: Re-enable when body streaming conflict is resolved
 
 function resolveWebClientPath(): string | null {
@@ -65,6 +68,21 @@ function resolveWebClientPath(): string | null {
     }
   }
   return null;
+}
+
+export interface CreateAppOptions {
+  /**
+   * Force deferred LLM auth mode for this app instance.
+   * If unset, defaults to `TERMINAI_SIDECAR === '1'` unless explicitly overridden
+   * via `TERMINAI_A2A_DEFER_AUTH` / legacy `GEMINI_A2A_DEFER_AUTH`.
+   */
+  readonly deferLlmAuth?: boolean;
+}
+
+function parseBooleanEnv(value: string | undefined): boolean | undefined {
+  if (value === 'true') return true;
+  if (value === 'false') return false;
+  return undefined;
 }
 
 type CommandResponse = {
@@ -190,7 +208,7 @@ async function handleExecuteCommand(
   }
 }
 
-export async function createApp() {
+export async function createApp(options?: CreateAppOptions) {
   try {
     // Load the server configuration once on startup.
     const workspaceRoot = setTargetDir(undefined);
@@ -207,10 +225,22 @@ export async function createApp() {
           .filter(Boolean)
       : [];
     const extensions = loadExtensions(workspaceRoot);
+
+    const deferOverride = parseBooleanEnv(
+      process.env['TERMINAI_A2A_DEFER_AUTH'] ??
+        process.env['GEMINI_A2A_DEFER_AUTH'],
+    );
+    const deferLlmAuth =
+      options?.deferLlmAuth ??
+      deferOverride ??
+      process.env['TERMINAI_SIDECAR'] === '1';
+
     const config = await loadConfig(
       loadedSettings,
       new SimpleExtensionLoader(extensions),
       'a2a-server',
+      undefined,
+      { deferLlmAuth },
     );
 
     let git: GitService | undefined;
@@ -270,6 +300,27 @@ export async function createApp() {
       );
     }
 
+    // Task 11: Auth Manager
+    const authManager = new LlmAuthManager({
+      config,
+      getSelectedAuthType: () =>
+        loadedSettings.merged.security?.auth?.selectedType,
+    });
+
+    // Task 17: Gate all non-GET requests that may execute LLM work.
+    const llmAuthGate = createLlmAuthMiddleware(authManager);
+    expressApp.use((req, res, next) => {
+      if (req.method === 'OPTIONS') return next();
+      if (req.method === 'GET') return next();
+      if (req.path === '/healthz') return next();
+      if (req.path === '/.well-known/agent-card.json') return next();
+      if (req.path === '/whoami') return next();
+      if (req.path === '/listCommands') return next();
+      if (req.path.startsWith('/ui')) return next();
+      if (req.path.startsWith('/auth')) return next();
+      return llmAuthGate(req, res, next);
+    });
+
     const appBuilder = new A2AExpressApp(requestHandler);
     expressApp = appBuilder.setupRoutes(expressApp, '');
 
@@ -284,8 +335,14 @@ export async function createApp() {
       res.status(200).json({ status: 'ok' });
     });
 
+    // Task 12–16: Auth Routes
+    expressApp.use('/auth', createAuthRouter(authManager));
+
     expressApp.get('/whoami', (_req, res) => {
-      res.json({ targetDir: config.getTargetDir() });
+      res.json({
+        targetDir: config.getTargetDir(),
+        llmAuthRequired: true, // Task 31: Optional handshake field
+      });
     });
 
     expressApp.post('/tasks', async (req, res) => {
@@ -404,6 +461,9 @@ export async function createApp() {
     return expressApp;
   } catch (error) {
     logger.error('[CoreAgent] Error during startup:', error);
+    if (process.env['NODE_ENV'] === 'test') {
+      throw error;
+    }
     process.exit(1);
   }
 }

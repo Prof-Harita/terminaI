@@ -6,6 +6,7 @@
  */
 
 import winston from 'winston';
+import { redactSecrets } from './redactSecrets.js';
 
 const logger = winston.createLogger({
   level: 'info',
@@ -17,9 +18,10 @@ const logger = winston.createLogger({
     // Here we define the custom output format
     winston.format.printf((info) => {
       const { level, timestamp, message, ...rest } = info;
+      const sanitizedRest = redactSecrets(rest);
       return (
         `[${level.toUpperCase()}] ${timestamp} -- ${message}` +
-        `${Object.keys(rest).length > 0 ? `\n${JSON.stringify(rest, null, 2)}` : ''}`
+        `${Object.keys(sanitizedRest).length > 0 ? `\n${JSON.stringify(sanitizedRest, null, 2)}` : ''}`
       ); // Only print ...rest if present
     }),
   ),

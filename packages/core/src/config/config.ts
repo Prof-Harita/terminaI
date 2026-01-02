@@ -55,6 +55,7 @@ import { UiFocusTool } from '../tools/ui-focus.js';
 import { UiWaitTool } from '../tools/ui-wait.js';
 import { UiAssertTool } from '../tools/ui-assert.js';
 import { UiClickXyTool } from '../tools/ui-click-xy.js';
+import { UiDiagnoseTool } from '../tools/ui-diagnose.js';
 import { GeminiClient } from '../core/client.js';
 import { BaseLlmClient } from '../core/baseLlmClient.js';
 import type { HookDefinition, HookEventName } from '../hooks/types.js';
@@ -1912,6 +1913,7 @@ export class Config {
     registerCoreTool(UiWaitTool, this);
     registerCoreTool(UiAssertTool, this);
     registerCoreTool(UiClickXyTool, this);
+    registerCoreTool(UiDiagnoseTool, this);
 
     // Register Subagents as Tools
     // Register DelegateToAgentTool if agents are enabled

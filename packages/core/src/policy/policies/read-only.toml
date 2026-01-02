@@ -89,3 +89,8 @@ priority = 50
 toolName = "ui.describe"
 decision = "allow"
 priority = 50
+
+[[rule]]
+toolName = "ui.diagnose"
+decision = "allow"
+priority = 100

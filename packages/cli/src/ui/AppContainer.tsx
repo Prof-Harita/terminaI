@@ -144,6 +144,7 @@ import {
 import { ConversationStack } from '../voice/ConversationStack.js';
 import { StreamingWhisper } from '../voice/stt/StreamingWhisper.js';
 import { AudioRecorder } from '../voice/stt/AudioRecorder.js';
+import { AuthWizardDialogState } from './types.js';
 
 const WARNING_PROMPT_DURATION_MS = 1000;
 const QUEUE_ERROR_DISPLAY_DURATION_MS = 3000;
@@ -774,6 +775,9 @@ export const AppContainer = (props: AppContainerProps) => {
     reloadApiKey,
   } = useAuthCommand(settings, config);
 
+  const [authWizardDialog, setAuthWizardDialog] =
+    useState<AuthWizardDialogState | null>(null);
+
   const { proQuotaRequest, handleProQuotaChoice } = useQuotaAndFallback({
     config,
     historyManager,
@@ -784,6 +788,27 @@ export const AppContainer = (props: AppContainerProps) => {
   // Derive auth state variables for backward compatibility with UIStateContext
   const isAuthDialogOpen = authState === AuthState.Updating;
   const isAuthenticating = authState === AuthState.Unauthenticated;
+
+  useEffect(() => {
+    // Task 25: Show provider wizard before auth selection when auth is missing
+    if (
+      isAuthDialogOpen &&
+      settings.merged.security?.auth?.selectedType === undefined &&
+      authWizardDialog === null
+    ) {
+      setAuthWizardDialog(AuthWizardDialogState.Provider);
+      return;
+    }
+
+    // Once an auth type is selected (or auth dialog closes), hide the wizard.
+    if (!isAuthDialogOpen || settings.merged.security?.auth?.selectedType) {
+      setAuthWizardDialog(null);
+    }
+  }, [
+    authWizardDialog,
+    isAuthDialogOpen,
+    settings.merged.security?.auth?.selectedType,
+  ]);
 
   // Session browser and resume functionality
   const isGeminiClientInitialized = config.getGeminiClient()?.isInitialized();
@@ -2066,6 +2091,7 @@ Logging in with Google... Restarting terminaI to continue.
       isAuthenticating,
       isConfigInitialized,
       authError,
+      authWizardDialog,
       isAuthDialogOpen,
       isAwaitingApiKeyInput: authState === AuthState.AwaitingApiKeyInput,
       apiKeyDefaultValue,
@@ -2162,6 +2188,7 @@ Logging in with Google... Restarting terminaI to continue.
       isAuthenticating,
       isConfigInitialized,
       authError,
+      authWizardDialog,
       isAuthDialogOpen,
       editorError,
       isEditorDialogOpen,
@@ -2296,6 +2323,7 @@ Logging in with Google... Restarting terminaI to continue.
       clearInteractivePasswordPrompt,
       setViewMode,
       setSpotlightOpen,
+      setAuthWizardDialog,
     }),
     [
       setSpotlightOpen,
@@ -2334,6 +2362,7 @@ Logging in with Google... Restarting terminaI to continue.
       setEmbeddedShellFocused,
       clearInteractivePasswordPrompt,
       setViewMode,
+      setAuthWizardDialog,
     ],
   );
 

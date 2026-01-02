@@ -140,6 +140,7 @@ export const VisualDOMSnapshotSchema = z.object({
 
 export const UiSnapshotSchema = z.object({
   scope: z.enum(['screen', 'window']).optional(),
+  windowId: z.string().optional(),
   includeTree: z.boolean().optional().default(true),
   includeScreenshot: z.boolean().optional().default(false),
   includeTextIndex: z.boolean().optional().default(false),
@@ -198,6 +199,7 @@ export const UiWaitSchema = z.object({
     .optional()
     .default('visible'),
   timeoutMs: z.number().int().optional().default(5000),
+  intervalMs: z.number().int().optional().default(500),
 });
 
 export const UiAssertSchema = z.object({
@@ -262,3 +264,28 @@ export const UiActionResultSchema = z.object({
     .optional(),
   data: z.unknown().optional(),
 });
+
+export const UiDiagnoseSchema = z.object({
+  depth: z.number().int().optional(),
+  timeoutMs: z.number().int().optional(),
+  sampleLimit: z.number().int().optional(),
+});
+
+export const UiDiagnosticsReportSchema = z.object({
+  driver: DriverDescriptorSchema,
+  connection: z.object({
+    connected: z.boolean(),
+    error: z.string().optional(),
+  }),
+  snapshotSanity: z.object({
+    desktopRootChildren: z.number(),
+    applicationNamesSample: z.array(z.string()),
+    activeAppTitle: z.string(),
+    activeAppId: z.string().optional(),
+    notes: z.array(z.string()),
+  }),
+  warnings: z.array(z.string()),
+  suggestedFixes: z.array(z.string()),
+});
+
+export type UiDiagnoseArgs = z.infer<typeof UiDiagnoseSchema>;

@@ -51,6 +51,7 @@ export interface UIState {
   isAuthenticating: boolean;
   isConfigInitialized: boolean;
   authError: string | null;
+  authWizardDialog: import('../types.js').AuthWizardDialogState | null;
   isAuthDialogOpen: boolean;
   isAwaitingApiKeyInput: boolean;
   apiKeyDefaultValue?: string;

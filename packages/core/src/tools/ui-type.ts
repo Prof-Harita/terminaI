@@ -70,7 +70,11 @@ export class UiTypeTool extends UiToolBase<UiTypeArgs> {
         type: 'object',
         properties: {
           text: { type: 'string' },
-          target: { type: 'string' },
+          target: {
+            type: 'string',
+            description:
+              'Selector for element to type into. Examples: name:"Username", role=text && name="Input"',
+          },
           mode: { type: 'string', enum: ['insert', 'replace', 'append'] },
           redactInLogs: { type: 'boolean' },
           verify: { type: 'boolean' },

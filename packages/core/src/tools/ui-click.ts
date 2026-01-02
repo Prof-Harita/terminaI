@@ -70,7 +70,11 @@ export class UiClickTool extends UiToolBase<UiClickArgs> {
       {
         type: 'object',
         properties: {
-          target: { type: 'string', description: 'Selector string' },
+          target: {
+            type: 'string',
+            description:
+              'Selector string. Examples: name:"Submit", role=button && name="OK", ocr:"Label Text"',
+          },
           button: { type: 'string', enum: ['left', 'right', 'middle'] },
           clickCount: { type: 'number' },
           modifiers: { type: 'array', items: { type: 'string' } },

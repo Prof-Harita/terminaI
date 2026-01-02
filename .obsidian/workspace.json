@@ -20,8 +20,37 @@
               "icon": "lucide-file",
               "title": "tasks"
             }
+          },
+          {
+            "id": "50352706887dd94c",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Untitled.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Untitled"
+            }
+          },
+          {
+            "id": "082da6c797f91b00",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Auth_tasks.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Auth_tasks"
+            }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -183,53 +212,53 @@
       "bases:Create new base": false
     }
   },
-  "active": "7da86b6b1b832f11",
+  "active": "082da6c797f91b00",
   "lastOpenFiles": [
-    "packages/desktop/src-tauri/target/debug/incremental/desktop-0x2j5w3y4cl3q/s-heh39hfflw-1buk7n7-a8rbd6nmkffll77n5cmccs69n/work-products.bin",
-    "packages/desktop/src-tauri/target/debug/incremental/desktop-0x2j5w3y4cl3q/s-heh39hfflw-1buk7n7-a8rbd6nmkffll77n5cmccs69n/query-cache.bin",
-    "packages/desktop/src-tauri/target/debug/incremental/desktop-0x2j5w3y4cl3q/s-heh39hfflw-1buk7n7-a8rbd6nmkffll77n5cmccs69n/dep-graph.bin",
-    "packages/desktop/src-tauri/target/debug/incremental/desktop-0x2j5w3y4cl3q/s-heh39hfflw-1buk7n7-a8rbd6nmkffll77n5cmccs69n/d72593sidxzj5eoa8kgqgez3a.o",
-    "packages/desktop/src-tauri/target/debug/incremental/desktop-0x2j5w3y4cl3q/s-heh39hfflw-1buk7n7-a8rbd6nmkffll77n5cmccs69n/7lvfmunq5d941gbs9lsqc017p.o",
-    "packages/desktop/src-tauri/target/debug/incremental/desktop-0x2j5w3y4cl3q/s-heh39hfflw-1buk7n7-a8rbd6nmkffll77n5cmccs69n/35uqr7wo2w4oiloyygugvi3h1.o",
-    "packages/desktop/src-tauri/target/debug/incremental/desktop-0x2j5w3y4cl3q/s-heh39hfflw-1buk7n7-a8rbd6nmkffll77n5cmccs69n/14jt0a6me8xkj0a2xt7i829mx.o",
-    "packages/desktop/src-tauri/target/debug/incremental/desktop-0x2j5w3y4cl3q/s-heh39hfflw-1buk7n7-a8rbd6nmkffll77n5cmccs69n/0vwgd5omwk8x0ipk73ef2kexk.o",
-    "packages/desktop/src-tauri/target/debug/incremental/desktop-0x2j5w3y4cl3q/s-heh39hfflw-1buk7n7-a8rbd6nmkffll77n5cmccs69n",
-    "packages/desktop/src-tauri/target/debug/incremental/desktop-0x2j5w3y4cl3q/s-heh39hfflw-1buk7n7.lock",
-    "packages/desktop/src-tauri/target/debug/incremental/desktop_lib-3m66tmjyutls3/s-heh39blum3-0umql85-00scymu7trgn6lo46jb67cwce/work-products.bin",
-    "node_modules/send/node_modules/debug/node_modules/ms/readme.md",
-    "node_modules/send/node_modules/debug/node_modules/ms/license.md",
-    "node_modules/@vitest/eslint-plugin/node_modules/@typescript-eslint/visitor-keys/README.md",
-    "node_modules/@vitest/eslint-plugin/node_modules/@typescript-eslint/utils/README.md",
-    "node_modules/@vitest/eslint-plugin/node_modules/@typescript-eslint/typescript-estree/README.md",
-    "node_modules/@vitest/eslint-plugin/node_modules/@typescript-eslint/types/README.md",
-    "node_modules/@vitest/eslint-plugin/node_modules/@typescript-eslint/tsconfig-utils/README.md",
-    "node_modules/@vitest/eslint-plugin/node_modules/@typescript-eslint/scope-manager/README.md",
-    "node_modules/@vitest/eslint-plugin/node_modules/@typescript-eslint/project-service/README.md",
-    "node_modules/istanbul-reports/lib/html/assets/sort-arrow-sprite.png",
-    "node_modules/istanbul-reports/lib/html/assets/favicon.png",
-    "node_modules/istanbul-reports/lib/html-spa/assets/sort-arrow-sprite.png",
-    "node_modules/@vscode/vsce/node_modules/path-scurry/node_modules/lru-cache/README.md",
-    "node_modules/@vscode/vsce/node_modules/glob/node_modules/minimatch/README.md",
-    "node_modules/@vscode/vsce/node_modules/glob/node_modules/minimatch/LICENSE.md",
-    "node_modules/@textlint/linter-formatter/node_modules/strip-ansi/readme.md",
-    "node_modules/@textlint/linter-formatter/node_modules/string-width/readme.md",
-    "node_modules/@textlint/linter-formatter/node_modules/pluralize/Readme.md",
-    "node_modules/@textlint/linter-formatter/node_modules/js-yaml/README.md",
-    "node_modules/@textlint/linter-formatter/node_modules/emoji-regex/README.md",
-    "node_modules/@textlint/linter-formatter/node_modules/argparse/README.md",
-    "node_modules/@textlint/linter-formatter/node_modules/argparse/CHANGELOG.md",
-    "node_modules/@textlint/linter-formatter/node_modules/ansi-regex/readme.md",
-    "node_modules/@bundled-es-modules/tough-cookie/node_modules/tough-cookie/README.md",
-    "node_modules/@a2a-js/sdk/node_modules/uuid/README.md",
-    "node_modules/@a2a-js/sdk/node_modules/uuid/LICENSE.md",
-    "node_modules/zod-to-json-schema/dist-test-v3/types/node_modules/zod/README.md",
-    "node_modules/zod-to-json-schema/dist-test-v3/esm/node_modules/zod/README.md",
-    "node_modules/qrcode-terminal/example/basic.png",
-    "node_modules/highlight.js/styles/pojoaque.jpg",
-    "node_modules/highlight.js/styles/brown-papersq.png",
-    "node_modules/psl/browserstack-logo.svg",
+    "local/publishing_packages_tasks.md",
+    "packages/vscode-ide-companion/dist/extension.cjs.map",
+    "packages/vscode-ide-companion/dist/extension.cjs",
+    "packages/vscode-ide-companion/dist",
+    "packages/test-utils/dist/src/index.js.map",
+    "packages/test-utils/dist/src/index.js",
+    "packages/test-utils/dist/src/index.d.ts",
+    "packages/test-utils/dist/src/file-system-test-helpers.js.map",
+    "packages/test-utils/dist/src/file-system-test-helpers.js",
+    "packages/test-utils/dist/src/file-system-test-helpers.d.ts",
+    "packages/test-utils/dist/tsconfig.tsbuildinfo",
+    "packages/termai/dist/system.md",
+    "packages/desktop/dist/vite.svg",
+    "packages/desktop/dist/terminai-logo.svg",
+    "packages/desktop/dist/terminai-icon.svg",
+    "packages/desktop/dist/terminai-cursor.svg",
+    "packages/desktop/dist/tauri.svg",
     "packages/a2a-server/coverage/lcov-report/sort-arrow-sprite.png",
     "packages/a2a-server/coverage/lcov-report/favicon.png",
-    "packages/a2a-server/coverage/sort-arrow-sprite.png"
+    "packages/a2a-server/coverage/sort-arrow-sprite.png",
+    "packages/a2a-server/coverage/favicon.png",
+    "bundle/docs/tools/web-search.md",
+    "bundle/docs/tools/web-fetch.md",
+    "bundle/docs/tools/todos.md",
+    "bundle/docs/tools/shell.md",
+    "bundle/docs/tools/memory.md",
+    "bundle/docs/tools/mcp-server.md",
+    "bundle/docs/tools/index.md",
+    "bundle/docs/tools/file-system.md",
+    "bundle/docs/core/tools-api.md",
+    "bundle/docs/core/policy-engine.md",
+    "bundle/docs/core/memport.md",
+    "bundle/docs/core/index.md",
+    "bundle/docs/ide-integration/index.md",
+    "bundle/docs/ide-integration/ide-companion-spec.md",
+    "bundle/docs/hooks/writing-hooks.md",
+    "bundle/docs/hooks/reference.md",
+    "bundle/docs/hooks/index.md",
+    "bundle/docs/hooks/best-practices.md",
+    "bundle/docs/examples/proxy-script.md",
+    "bundle/docs/get-started/installation.md",
+    "bundle/docs/get-started/index.md",
+    "bundle/docs/get-started/gemini-2.0-flash-exp.md",
+    "bundle/docs/get-started/examples.md",
+    "bundle/docs/get-started/deployment.md",
+    "bundle/docs/assets/theme-xcode-light.png"
   ]
 }

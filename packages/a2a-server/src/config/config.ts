@@ -28,11 +28,21 @@ import { logger } from '../utils/logger.js';
 import type { LoadedSettings } from './settings.js';
 import { type AgentSettings, CoderAgentEvent } from '../types.js';
 
+export interface LoadConfigOptions {
+  /**
+   * When true, the server will start without calling `config.refreshAuth(...)`.
+   * This enables "deferred auth" flows (e.g. Desktop sidecar) where the client
+   * completes LLM auth after the server boots.
+   */
+  readonly deferLlmAuth?: boolean;
+}
+
 export async function loadConfig(
   loadedSettings: LoadedSettings,
   extensionLoader: ExtensionLoader,
   taskId: string,
   targetDirOverride?: string,
+  options?: LoadConfigOptions,
 ): Promise<Config> {
   const settings = loadedSettings.merged;
   const workspaceDir = targetDirOverride || process.cwd();
@@ -110,6 +120,14 @@ export async function loadConfig(
   await config.initialize();
   startupProfiler.flush(config);
 
+  // Task 9: Deferred auth mode (skip initial refreshAuth)
+  if (options?.deferLlmAuth === true) {
+    logger.info(
+      '[Config] Deferred auth enabled; skipping initial auth refresh.',
+    );
+    return config;
+  }
+
   if (process.env['USE_CCPA']) {
     logger.info('[Config] Using CCPA Auth:');
     try {
@@ -125,12 +143,22 @@ export async function loadConfig(
     logger.info(
       `[Config] GOOGLE_CLOUD_PROJECT: ${process.env['GOOGLE_CLOUD_PROJECT']}`,
     );
-  } else if (process.env['GEMINI_API_KEY']) {
-    logger.info('[Config] Using Gemini API Key');
-    await config.refreshAuth(AuthType.USE_GEMINI);
   } else {
-    logger.info('[Config] Using OAuth (LOGIN_WITH_GOOGLE)');
-    await config.refreshAuth(AuthType.LOGIN_WITH_GOOGLE);
+    // Task 10: Respect settings.security.auth.selectedType
+    const selectedAuthType = settings.security?.auth?.selectedType as
+      | AuthType
+      | undefined;
+
+    if (selectedAuthType) {
+      logger.info(`[Config] Using configured auth type: ${selectedAuthType}`);
+      await config.refreshAuth(selectedAuthType);
+    } else if (process.env['GEMINI_API_KEY']) {
+      logger.info('[Config] Using Gemini API Key (Implicit)');
+      await config.refreshAuth(AuthType.USE_GEMINI);
+    } else {
+      logger.info('[Config] Using OAuth (LOGIN_WITH_GOOGLE) (Default)');
+      await config.refreshAuth(AuthType.LOGIN_WITH_GOOGLE);
+    }
   }
 
   return config;

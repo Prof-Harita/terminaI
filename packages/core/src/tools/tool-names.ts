@@ -40,6 +40,7 @@ export const UI_FOCUS_TOOL_NAME = 'ui.focus';
 export const UI_WAIT_TOOL_NAME = 'ui.wait';
 export const UI_ASSERT_TOOL_NAME = 'ui.assert';
 export const UI_CLICK_XY_TOOL_NAME = 'ui.click_xy';
+export const UI_DIAGNOSE_TOOL_NAME = 'ui.diagnose';
 
 export const UI_TOOL_NAMES = [
   UI_HEALTH_TOOL_NAME,
@@ -55,6 +56,7 @@ export const UI_TOOL_NAMES = [
   UI_WAIT_TOOL_NAME,
   UI_ASSERT_TOOL_NAME,
   UI_CLICK_XY_TOOL_NAME,
+  UI_DIAGNOSE_TOOL_NAME,
 ];
 
 export const ALL_BUILTIN_TOOL_NAMES = [

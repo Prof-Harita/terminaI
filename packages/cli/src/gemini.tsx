@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import './utils/envAliases.js';
 import React from 'react';
 import { render } from 'ink';
 import { AppContainer, type VoiceOverrides } from './ui/AppContainer.js';

@@ -20,6 +20,7 @@ import { EngineRoomPane } from './components/EngineRoomPane';
 import { ResizableHandle } from './components/ResizableHandle';
 import { ThemeProvider } from './components/ThemeProvider';
 import { CommandPalette } from './components/CommandPalette';
+import { AuthWizard } from './components/AuthWizard';
 import { AuthScreen } from './components/AuthScreen';
 import { ContextPopover } from './components/ContextPopover';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
@@ -31,6 +32,7 @@ import { KeyboardCheatSheet } from './components/KeyboardCheatSheet';
 
 import { useSidecar } from './hooks/useSidecar';
 import { ConnectivityIndicator } from './components/ConnectivityIndicator';
+import { AuthClient } from './utils/authClient';
 
 function App() {
   // Use V2 Sidecar Hook (handles connection lifecycle)
@@ -53,6 +55,7 @@ function App() {
 
   const { currentToolStatus, contextUsed, contextLimit, contextFiles } =
     useExecutionStore();
+  const agentUrl = useSettingsStore((s) => s.agentUrl);
   const agentToken = useSettingsStore((s) => s.agentToken);
   const theme = useSettingsStore((s) => s.theme);
   const setTheme = useSettingsStore((s) => s.setTheme);
@@ -71,9 +74,40 @@ function App() {
   // We can derive showAuth locally or keep it simple.
   const [showAuth, setShowAuth] = useState(!agentToken);
 
+  // Task 20: LLM Auth Wizard Overlay state
+  const [llmAuthStatus, setLlmAuthStatus] = useState<
+    'unknown' | 'ok' | 'required' | 'in_progress' | 'error'
+  >('unknown');
+  const [llmAuthMessage, setLlmAuthMessage] = useState<string | null>(null);
+
+  const refreshLlmAuthStatus = useCallback(async () => {
+    if (!agentUrl || !agentToken) {
+      setLlmAuthStatus('unknown');
+      setLlmAuthMessage(null);
+      return;
+    }
+    try {
+      const client = new AuthClient(agentUrl, agentToken);
+      const status = await client.getStatus();
+      setLlmAuthStatus(status.status);
+      setLlmAuthMessage(status.message ?? null);
+    } catch (e) {
+      setLlmAuthStatus('error');
+      setLlmAuthMessage(
+        e instanceof Error
+          ? e.message
+          : 'Failed to check authentication status',
+      );
+    }
+  }, [agentToken, agentUrl]);
+
   useEffect(() => {
     if (agentToken) setShowAuth(false);
   }, [agentToken]);
+
+  useEffect(() => {
+    void refreshLlmAuthStatus();
+  }, [refreshLlmAuthStatus]);
 
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [isSettingsOpen] = useState(false);
@@ -435,6 +469,14 @@ function App() {
             setTimeout(() => chatInputRef.current?.focus(), 0);
           }}
         />
+
+        {agentToken && llmAuthStatus !== 'ok' && (
+          <AuthWizard
+            status={llmAuthStatus}
+            message={llmAuthMessage}
+            onComplete={() => void refreshLlmAuthStatus()}
+          />
+        )}
       </div>
     </ThemeProvider>
   );

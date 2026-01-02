@@ -149,3 +149,20 @@ export interface UiVerification {
   target?: string; // selector or text
   expected?: string | boolean;
 }
+
+export interface UiDiagnosticsReport {
+  driver: DriverDescriptor;
+  connection: {
+    connected: boolean;
+    error?: string;
+  };
+  snapshotSanity: {
+    desktopRootChildren: number;
+    applicationNamesSample: string[];
+    activeAppTitle: string;
+    activeAppId?: string;
+    notes: string[];
+  };
+  warnings: string[];
+  suggestedFixes: string[];
+}

@@ -99,6 +99,7 @@ const SIGN_IN_FAILURE_URL =
 export interface OauthWebLogin {
   authUrl: string;
   loginCompletePromise: Promise<void>;
+  cancel: () => void;
 }
 
 const oauthClientPromises = new Map<AuthType, Promise<AuthClient>>();
@@ -440,8 +441,22 @@ async function authWithWeb(client: OAuth2Client): Promise<OauthWebLogin> {
     state,
   });
 
+  let cancel: () => void = () => {};
+
   const loginCompletePromise = new Promise<void>((resolve, reject) => {
-    const server = http.createServer(async (req, res) => {
+    // We need to assign server later, but scope it here
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let server: any; // http.Server
+
+    // Cancellation function
+    cancel = () => {
+      if (server) {
+        server.close();
+      }
+      reject(new FatalCancellationError('User cancelled authentication.'));
+    };
+
+    server = http.createServer(async (req, res) => {
       try {
         if (req.url!.indexOf('/oauth2callback') === -1) {
           res.writeHead(HTTP_REDIRECT, { Location: SIGN_IN_FAILURE_URL });
@@ -532,7 +547,7 @@ async function authWithWeb(client: OAuth2Client): Promise<OauthWebLogin> {
       // Server started successfully
     });
 
-    server.on('error', (err) => {
+    server.on('error', (err: Error) => {
       reject(
         new FatalAuthenticationError(
           `OAuth callback server error: ${getErrorMessage(err)}`,
@@ -544,6 +559,7 @@ async function authWithWeb(client: OAuth2Client): Promise<OauthWebLogin> {
   return {
     authUrl,
     loginCompletePromise,
+    cancel,
   };
 }
 
@@ -597,11 +613,24 @@ async function fetchCachedCredentials(): Promise<
       const keyFileString = await fs.readFile(keyFile, 'utf-8');
       return JSON.parse(keyFileString);
     } catch (error) {
-      // Log specific error for debugging, but continue trying other paths
+      // Log specific error for debugging
       debugLogger.debug(
         `Failed to load credentials from ${keyFile}:`,
         getErrorMessage(error),
       );
+
+      // If the file exists but is corrupted (syntax error), delete it to allow fresh auth
+      if (error instanceof SyntaxError) {
+        debugLogger.warn(`Deleting corrupted credentials file: ${keyFile}`);
+        try {
+          await fs.unlink(keyFile);
+        } catch (unlinkError) {
+          debugLogger.debug(
+            `Failed to delete corrupted file: ${keyFile}`,
+            getErrorMessage(unlinkError),
+          );
+        }
+      }
     }
   }
 
@@ -671,10 +700,53 @@ async function cacheCredentials(credentials: Credentials) {
   await fs.mkdir(path.dirname(filePath), { recursive: true });
 
   const credString = JSON.stringify(credentials, null, 2);
-  await fs.writeFile(filePath, credString, { mode: 0o600 });
+  const tempFilePath = `${filePath}.tmp.${crypto.randomBytes(4).toString('hex')}`;
+
   try {
-    await fs.chmod(filePath, 0o600);
-  } catch {
-    /* empty */
+    await fs.writeFile(tempFilePath, credString, { mode: 0o600 });
+    await fs.rename(tempFilePath, filePath);
+  } catch (e) {
+    try {
+      await fs.unlink(tempFilePath);
+    } catch {
+      // ignore
+    }
+    throw e;
   }
+}
+
+/**
+ * Starts the Gemini OAuth loopback flow without automatically opening the browser.
+ * Returns the auth URL to display to the user and controls to manage the flow.
+ */
+export async function beginGeminiOAuthLoopbackFlow(config: Config): Promise<{
+  authUrl: string;
+  waitForCompletion: Promise<void>;
+  cancel: () => void;
+}> {
+  const client = new OAuth2Client({
+    clientId: OAUTH_CLIENT_ID,
+    clientSecret: OAUTH_CLIENT_SECRET,
+    transporterOptions: {
+      proxy: config.getProxy(),
+    },
+  });
+
+  const useEncryptedStorage = getUseEncryptedStorageFlag();
+  client.on('tokens', async (tokens: Credentials) => {
+    if (useEncryptedStorage) {
+      await OAuthCredentialStorage.saveCredentials(tokens);
+    } else {
+      await cacheCredentials(tokens);
+    }
+    await triggerPostAuthCallbacks(tokens);
+  });
+
+  const webLogin = await authWithWeb(client);
+
+  return {
+    authUrl: webLogin.authUrl,
+    waitForCompletion: webLogin.loginCompletePromise,
+    cancel: webLogin.cancel,
+  };
 }

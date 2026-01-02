@@ -79,8 +79,13 @@ export * from './code_assist/server.js';
 export * from './code_assist/types.js';
 export * from './code_assist/telemetry.js';
 export * from './core/apiKeyCredentialStorage.js';
+export * from './auth/wizardState.js';
+export * from './auth/providerRegistry.js';
+export * from './auth/wizardSettings.js';
+export * from './auth/geminiAuthStatus.js';
 
 // Export utilities
+
 export * from './utils/paths.js';
 export * from './utils/deepMerge.js';
 export * from './utils/envVarResolver.js';

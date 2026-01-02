@@ -35,19 +35,39 @@ class UiHealthToolInvocation extends BaseToolInvocation<
 
   async execute(_signal: AbortSignal): Promise<ToolResult> {
     const svc = DesktopAutomationService.getInstance();
-    // We try to get descriptor which ensures connection
 
     try {
-      const descriptor = await svc.getDriverDescriptor();
-      // Also explicitly check health if available on driver interface
-      // But getDriverDescriptor calls ensureConnected which calls getHealth
+      // Use diagnose for deep health check
+      const report = await svc.diagnose();
+
+      if (!report.connection.connected) {
+        throw new Error(report.connection.error || 'Driver disconnected');
+      }
+
+      const hasWarnings = report.warnings.length > 0;
+      // const status = hasWarnings ? 'mixed' : 'success';
+      // Actually protocol says status: 'success' | 'error'.
+
+      let message = 'Driver is healthy and connected.';
+      if (hasWarnings) {
+        message = `Driver connected but has warnings: ${report.warnings.join('; ')}`;
+      }
+
+      // Readiness Audit Log
+      console.info(
+        `[UI:Readiness] Health check: ${hasWarnings ? 'degraded' : 'healthy'}, warnings: ${report.warnings.length}`,
+      );
 
       return formatUiResult(
         {
           status: 'success',
-          driver: descriptor,
-          message: 'Driver is healthy and connected.',
-          data: { health: 'healthy', ...descriptor },
+          driver: report.driver,
+          message,
+          data: {
+            health: hasWarnings ? 'degraded' : 'healthy',
+            ...report.driver,
+            warnings: report.warnings,
+          },
         },
         'UiHealth',
       );

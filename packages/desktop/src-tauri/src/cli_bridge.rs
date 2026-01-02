@@ -62,6 +62,7 @@ impl CliBridge {
             ])
             .env("TERMINAI_SIDECAR", "1") // V2 Signal
             .env("GEMINI_WEB_CLIENT_PATH", &web_ui_path)
+            .env("GEMINI_A2A_DEFER_AUTH", "true") // Task 18: Enable Deferred Auth
             .spawn()
             .map_err(|e| format!("Failed to spawn sidecar: {}", e))?;
 

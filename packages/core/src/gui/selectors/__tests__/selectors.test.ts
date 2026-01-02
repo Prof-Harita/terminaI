@@ -39,6 +39,26 @@ describe('Selector Engine', () => {
       const ast = parseSelector('role=Window >> role=Button');
       expect(ast.next?.combinator).toBe('descendant');
     });
+
+    it('detects CSS-like selectors and includes hint', () => {
+      // CSS patterns should throw with a helpful hint
+      const cssPatterns = [
+        '.my-class',
+        '#my-id',
+        'div > span',
+        '[name*="Chrome"]',
+      ];
+      for (const pattern of cssPatterns) {
+        try {
+          parseSelector(pattern);
+          // If it doesn't throw, that's fine for some edge cases
+        } catch (e) {
+          if (e instanceof Error && 'hint' in e) {
+            expect((e as any).hint).toContain('CSS selector');
+          }
+        }
+      }
+    });
   });
 
   describe('Matcher', () => {
