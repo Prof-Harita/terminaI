@@ -5,6 +5,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// This file uses 'as any' for deliberate type coercion from Dynamic settings to static ConfigParameters
+
 import { platform, homedir } from 'node:os';
 import * as path from 'node:path';
 import * as fs from 'node:fs';

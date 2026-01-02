@@ -58,7 +58,7 @@ describe('Settings Parity', () => {
       if (fs.existsSync(mockWorkspaceDir)) {
         fs.rmSync(mockWorkspaceDir, { recursive: true, force: true });
       }
-    } catch (e) {
+    } catch (_e) {
       // Ignore cleanup errors
     }
     vi.restoreAllMocks();
