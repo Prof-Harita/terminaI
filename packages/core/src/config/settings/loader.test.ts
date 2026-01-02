@@ -105,6 +105,7 @@ describe('LoadedSettings', () => {
       workspace,
       true,
     );
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- intentional invalid type for error test
     expect(() => loaded.forScope('invalid' as any)).toThrow(
       'Invalid scope: invalid',
     );
