@@ -33,11 +33,9 @@ nightly) or the release branch (for preview/stable).
 
 ### 2. End-to-end (E2E) tests
 
-All workflows in `.github/workflows/chained_e2e.yml` must pass.
-
-- **Platforms:** **Linux, macOS and Windows**.
-- **Sandboxing:** Tests must pass with both `sandbox:none` and `sandbox:docker`
-  on Linux.
+> **TerminaI Note:** Integration/E2E tests are covered by upstream Gemini CLI.
+> TerminaI syncs weekly and relies on their testing. See
+> [upstream_maintenance.md](../docs-terminai/upstream_maintenance.md).
 
 ### 3. Post-deployment smoke tests
 

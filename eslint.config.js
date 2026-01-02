@@ -33,7 +33,7 @@ export default tseslint.config(
       'packages/**/dist/**',
       'bundle/**',
       'package/bundle/**',
-      '.integration-tests/**',
+
       'dist/**',
       'opencode/**',
       'open-interpreter/**',
@@ -242,7 +242,7 @@ export default tseslint.config(
     files: [
       'esbuild.config.js',
       'scripts/**/*.{js,ts}',
-      'integration-tests/**/*.{js,ts}',
+
       'packages/desktop/*.config.js',
       'packages/vscode-ide-companion/**/*.js',
     ],
@@ -346,24 +346,5 @@ export default tseslint.config(
   // Prettier config must be last
   prettierConfig,
   // extra settings for scripts that we run directly with node
-  {
-    files: ['./integration-tests/**/*.js'],
-    languageOptions: {
-      globals: {
-        ...globals.node,
-        process: 'readonly',
-        console: 'readonly',
-      },
-    },
-    rules: {
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
-        },
-      ],
-    },
-  },
+
 );

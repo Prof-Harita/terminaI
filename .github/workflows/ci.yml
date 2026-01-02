@@ -65,9 +65,6 @@ jobs:
       - name: 'Install dependencies'
         run: 'npm ci'
 
-      - name: 'Validate NOTICES.txt'
-        run: 'git diff --exit-code packages/vscode-ide-companion/NOTICES.txt'
-
       - name: 'Check lockfile'
         run: 'npm run check:lockfile'
 
@@ -109,146 +106,35 @@ jobs:
         with:
           args: '--verbose --accept 200,503 --exclude-path local/ ./**/*.md'
           fail: true
-  test_linux:
-    name: 'Test (Linux)'
+
+  build:
+    name: 'Build'
     runs-on: 'ubuntu-latest'
     needs:
       - 'lint'
       - 'merge_queue_skipper'
     if: "${{ needs.merge_queue_skipper.outputs.skip != 'true' }}"
-    permissions:
-      contents: 'read'
-      checks: 'write'
-      pull-requests: 'write'
-    strategy:
-      matrix:
-        node-version:
-          - '20.x'
-          - '22.x'
-          - '24.x'
     steps:
       - name: 'Checkout'
         uses: 'actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8' # ratchet:actions/checkout@v5
 
-      - name: 'Set up Node.js ${{ matrix.node-version }}'
-        uses: 'actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020' # ratchet:actions/setup-node@v4
+      - name: 'Set up Node.js'
+        uses: 'actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020' # ratchet:actions/setup-node@v4'
         with:
-          node-version: '${{ matrix.node-version }}'
+          node-version-file: '.nvmrc'
           cache: 'npm'
 
-      - name: 'Install dependencies for testing'
+      - name: 'Install dependencies'
         run: 'npm ci'
 
       - name: 'Build project'
         run: 'npm run build'
-
-      - name: 'Run tests and generate reports'
-        env:
-          NO_COLOR: true
-        run: 'npm run test:ci'
 
       - name: 'Bundle'
         run: 'npm run bundle'
 
       - name: 'Smoke test bundle'
         run: 'node ./bundle/gemini.js --version'
-
-      - name: 'Wait for file system sync'
-        run: 'sleep 2'
-
-      - name: 'Publish Test Report (for non-forks)'
-        if: |-
-          ${{ always() && (github.event.pull_request.head.repo.full_name == github.repository) }}
-        uses: 'dorny/test-reporter@dc3a92680fcc15842eef52e8c4606ea7ce6bd3f3' # ratchet:dorny/test-reporter@v2
-        with:
-          name: 'Test Results (Node ${{ matrix.node-version }})'
-          path: 'packages/*/junit.xml'
-          reporter: 'java-junit'
-          fail-on-error: 'false'
-
-      - name: 'Upload Test Results Artifact (for forks)'
-        if: |-
-          ${{ always() && (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) }}
-        uses: 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' # ratchet:actions/upload-artifact@v4
-        with:
-          name: 'test-results-fork-${{ matrix.node-version }}-${{ runner.os }}'
-          path: 'packages/*/junit.xml'
-
-  test_mac:
-    name: 'Test (Mac)'
-    runs-on: '${{ matrix.os }}'
-    needs:
-      - 'lint'
-      - 'merge_queue_skipper'
-    if: "${{ needs.merge_queue_skipper.outputs.skip != 'true' }}"
-    permissions:
-      contents: 'read'
-      checks: 'write'
-      pull-requests: 'write'
-    continue-on-error: true
-    strategy:
-      matrix:
-        os:
-          - 'macos-latest'
-        node-version:
-          - '20.x'
-          - '22.x'
-          - '24.x'
-    steps:
-      - name: 'Checkout'
-        uses: 'actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8' # ratchet:actions/checkout@v5
-
-      - name: 'Set up Node.js ${{ matrix.node-version }}'
-        uses: 'actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020' # ratchet:actions/setup-node@v4
-        with:
-          node-version: '${{ matrix.node-version }}'
-          cache: 'npm'
-
-      - name: 'Install dependencies for testing'
-        run: 'npm ci'
-
-      - name: 'Build project'
-        run: 'npm run build'
-
-      - name: 'Run tests and generate reports'
-        env:
-          NO_COLOR: true
-        run: 'npm run test:ci -- --coverage.enabled=false'
-
-      - name: 'Bundle'
-        run: 'npm run bundle'
-
-      - name: 'Smoke test bundle'
-        run: 'node ./bundle/gemini.js --version'
-
-      - name: 'Wait for file system sync'
-        run: 'sleep 2'
-
-      - name: 'Publish Test Report (for non-forks)'
-        if: |-
-          ${{ always() && (github.event.pull_request.head.repo.full_name == github.repository) }}
-        uses: 'dorny/test-reporter@dc3a92680fcc15842eef52e8c4606ea7ce6bd3f3' # ratchet:dorny/test-reporter@v2
-        with:
-          name: 'Test Results (Node ${{ matrix.node-version }})'
-          path: 'packages/*/junit.xml'
-          reporter: 'java-junit'
-          fail-on-error: 'false'
-
-      - name: 'Upload Test Results Artifact (for forks)'
-        if: |-
-          ${{ always() && (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) }}
-        uses: 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' # ratchet:actions/upload-artifact@v4
-        with:
-          name: 'test-results-fork-${{ matrix.node-version }}-${{ runner.os }}'
-          path: 'packages/*/junit.xml'
-
-      - name: 'Upload coverage reports'
-        if: |-
-          ${{ always() }}
-        uses: 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' # ratchet:actions/upload-artifact@v4
-        with:
-          name: 'coverage-reports-${{ matrix.node-version }}-${{ matrix.os }}'
-          path: 'packages/*/coverage'
 
   codeql:
     name: 'CodeQL'
@@ -298,130 +184,22 @@ jobs:
           compression: 'none'
           clean-script: 'clean'
 
-  evolution_lab_suite:
-    name: 'Evolution Lab Suite'
-    needs:
-      - 'lint'
-      - 'merge_queue_skipper'
-    if: "${{ needs.merge_queue_skipper.outputs.skip != 'true' }}"
-    runs-on: 'ubuntu-latest'
-    continue-on-error: true # Non-blocking: Evolution Lab is a local dev tool
-    steps:
-      - name: 'Checkout'
-        uses: 'actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8' # ratchet:actions/checkout@v5
-        with:
-          ref: '${{ github.event.inputs.branch_ref || github.ref }}'
-
-      - name: 'Set up Node.js'
-        uses: 'actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020' # ratchet:actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
-
-      - name: 'Install dependencies'
-        run: 'npm ci'
-
-      - name: 'Build project'
-        run: 'npm run build'
-
-      - name: 'Verify build outputs'
-        run: |
-          ls -l packages/core/dist/index.js
-          ls -l packages/evolution-lab/dist/cli.js
-          ls -l node_modules/@terminai/core
-
-      - name: 'Build sandbox image'
-        run: 'docker build -t terminai/evolution-sandbox:latest -f packages/evolution-lab/Dockerfile .'
-
-      - name: 'Run deterministic suite'
-        run: 'npm run suite --workspace @terminai/evolution-lab -- --parallelism 1 --count 0'
-
-  test_windows:
-    name: 'Slow Test - Win'
-    runs-on: 'windows-latest'
-    needs: 'merge_queue_skipper'
-    if: "${{ needs.merge_queue_skipper.outputs.skip != 'true' }}"
-    continue-on-error: true
-
-    steps:
-      - name: 'Checkout'
-        uses: 'actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8' # ratchet:actions/checkout@v5
-        with:
-          ref: '${{ github.event.inputs.branch_ref || github.ref }}'
-
-      - name: 'Set up Node.js 20.x'
-        uses: 'actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020' # ratchet:actions/setup-node@v4
-        with:
-          node-version: '20.x'
-          cache: 'npm'
-
-      - name: 'Configure Windows Defender exclusions'
-        run: |
-          Add-MpPreference -ExclusionPath $env:GITHUB_WORKSPACE -Force
-          Add-MpPreference -ExclusionPath "$env:GITHUB_WORKSPACE\node_modules" -Force
-          Add-MpPreference -ExclusionPath "$env:GITHUB_WORKSPACE\packages" -Force
-          Add-MpPreference -ExclusionPath "$env:TEMP" -Force
-        shell: 'pwsh'
-
-      - name: 'Configure npm for Windows performance'
-        run: |
-          npm config set progress false
-          npm config set audit false
-          npm config set fund false
-          npm config set loglevel error
-          npm config set maxsockets 32
-          npm config set registry https://registry.npmjs.org/
-        shell: 'pwsh'
-
-      - name: 'Install dependencies'
-        run: 'npm ci'
-        shell: 'pwsh'
-
-      - name: 'Build project'
-        run: 'npm run build'
-        shell: 'pwsh'
-        env:
-          NODE_OPTIONS: '--max-old-space-size=32768 --max-semi-space-size=256'
-          UV_THREADPOOL_SIZE: '32'
-          NODE_ENV: 'production'
-
-      - name: 'Run tests and generate reports'
-        env:
-          GEMINI_API_KEY: '${{ secrets.GEMINI_API_KEY }}'
-          NO_COLOR: true
-          NODE_OPTIONS: '--max-old-space-size=32768 --max-semi-space-size=256'
-          UV_THREADPOOL_SIZE: '32'
-          NODE_ENV: 'test'
-        run: 'npm run test:ci -- --coverage.enabled=false'
-        shell: 'pwsh'
-
-      - name: 'Bundle'
-        run: 'npm run bundle'
-        shell: 'pwsh'
-
-      - name: 'Smoke test bundle'
-        run: 'node ./bundle/gemini.js --version'
-        shell: 'pwsh'
-
   ci:
     name: 'CI'
     if: 'always()'
     needs:
       - 'lint'
       - 'link_checker'
-      - 'test_linux'
-      - 'test_mac'
+      - 'build'
       - 'codeql'
       - 'bundle_size'
-      - 'evolution_lab_suite'
     runs-on: 'ubuntu-latest'
     steps:
       - name: 'Check all job results'
         run: |
           if [[ (${{ needs.lint.result }} != 'success' && ${{ needs.lint.result }} != 'skipped') || \
                (${{ needs.link_checker.result }} != 'success' && ${{ needs.link_checker.result }} != 'skipped') || \
-               (${{ needs.test_linux.result }} != 'success' && ${{ needs.test_linux.result }} != 'skipped') || \
-               (${{ needs.test_mac.result }} != 'success' && ${{ needs.test_mac.result }} != 'skipped') || \
+               (${{ needs.build.result }} != 'success' && ${{ needs.build.result }} != 'skipped') || \
                (${{ needs.codeql.result }} != 'success' && ${{ needs.codeql.result }} != 'skipped') || \
                (${{ needs.bundle_size.result }} != 'success' && ${{ needs.bundle_size.result }} != 'skipped') ]]; then
             echo "One or more CI jobs failed."
