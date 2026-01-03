@@ -74,8 +74,17 @@ if command -v terminai &> /dev/null; then
     terminai --version
 else
     echo -e "${YELLOW}⚠${NC} 'terminai' command not found in PATH."
-    echo "  You may need to add npm global bin to your PATH."
-    echo "  Run: npm bin -g"
+    echo ""
+    echo "  This usually means npm's global bin directory is not in your PATH."
+    echo ""
+    echo "  Your npm global prefix: $(npm prefix -g)"
+    echo "  Your npm global bin:    $(npm bin -g)"
+    echo ""
+    echo "  Add to PATH by running:"
+    echo "    export PATH=\"\$(npm bin -g):\$PATH\""
+    echo ""
+    echo "  Or add this to your ~/.bashrc or ~/.zshrc:"
+    echo "    export PATH=\"\$(npm prefix -g)/bin:\$PATH\""
 fi
 
 echo ""

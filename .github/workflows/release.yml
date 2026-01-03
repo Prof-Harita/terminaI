@@ -6,7 +6,10 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'npm tag (e.g. latest, beta)'
+        description: 'Release tag (e.g. v1.0.0) - required for preflight validation'
+        required: true
+      npm_tag:
+        description: 'npm dist-tag (e.g. latest, beta)'
         required: true
         default: 'latest'
 
@@ -27,6 +30,25 @@ jobs:
       - name: 'Install Dependencies'
         run: 'npm ci'
 
+      - name: 'Determine Release Tag'
+        id: release-tag
+        run: |
+          if [ "${{ github.event_name }}" == "release" ]; then
+            TAG="${{ github.event.release.tag_name }}"
+          else
+            TAG="${{ github.event.inputs.tag }}"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Release tag: $TAG"
+
+      - name: 'Release Preflight - Assert Versions'
+        run: 'node scripts/releasing/assert-release-version.js --tag "${{ steps.release-tag.outputs.tag }}"'
+
+      - name: 'Release Preflight - Pin Internal Dependencies'
+        run: |
+          node scripts/releasing/pin-internal-deps.js
+          node scripts/releasing/pin-internal-deps.js --check
+
       - name: 'Build'
         run: 'npm run build'
 
@@ -35,27 +57,30 @@ jobs:
         env:
           NO_COLOR: true
 
-      # Publish Core (dependency of others)
+      - name: 'Release Preflight - Dry Run Pack'
+        run: |
+          echo "::group::Pack @terminai/core"
+          npm pack --workspace @terminai/core --dry-run
+          echo "::endgroup::"
+          echo "::group::Pack @terminai/a2a-server"
+          npm pack --workspace @terminai/a2a-server --dry-run
+          echo "::endgroup::"
+          echo "::group::Pack @terminai/cli"
+          npm pack --workspace @terminai/cli --dry-run
+          echo "::endgroup::"
+
+      # Publish in dependency order: core → a2a-server → cli
       - name: 'Publish @terminai/core'
-        run: "npm publish -w @terminai/core --tag ${{ github.event.inputs.tag || 'latest' }} --access public"
+        run: "npm publish -w @terminai/core --tag ${{ github.event.inputs.npm_tag || 'latest' }} --access public"
         env:
           NODE_AUTH_TOKEN: '${{ secrets.NPM_TOKEN }}'
 
-      # Publish A2A Server (dependency of CLI)
       - name: 'Publish @terminai/a2a-server'
-        run: "npm publish -w @terminai/a2a-server --tag ${{ github.event.inputs.tag || 'latest' }} --access public"
+        run: "npm publish -w @terminai/a2a-server --tag ${{ github.event.inputs.npm_tag || 'latest' }} --access public"
         env:
           NODE_AUTH_TOKEN: '${{ secrets.NPM_TOKEN }}'
 
-      # Publish CLI
       - name: 'Publish @terminai/cli'
-        run: "npm publish -w @terminai/cli --tag ${{ github.event.inputs.tag || 'latest' }} --access public"
-        env:
-          NODE_AUTH_TOKEN: '${{ secrets.NPM_TOKEN }}'
-
-      # Publish CLI Wrapper (the main 'terminai' package?)
-      # Note: checking if this is intended to be published
-      - name: 'Publish @terminai/cli-wrapper'
-        run: "npm publish -w @terminai/cli-wrapper --tag ${{ github.event.inputs.tag || 'latest' }} --access public"
+        run: "npm publish -w @terminai/cli --tag ${{ github.event.inputs.npm_tag || 'latest' }} --access public"
         env:
           NODE_AUTH_TOKEN: '${{ secrets.NPM_TOKEN }}'

@@ -14,7 +14,22 @@ const __dirname = path.dirname(__filename);
 
 const rootDir = path.resolve(__dirname, '..');
 
-function copyFiles(packageName, filesToCopy) {
+function copyFileIfMissing(sourcePath, destPath, fileName) {
+  // Don't overwrite existing package-specific files
+  if (fs.existsSync(destPath)) {
+    console.log(`  Skipped ${fileName} (package-specific file exists)`);
+    return;
+  }
+  try {
+    fs.copyFileSync(sourcePath, destPath);
+    console.log(`  Copied ${fileName}`);
+  } catch (err) {
+    console.error(`Error copying ${fileName}:`, err);
+    process.exit(1);
+  }
+}
+
+function preparePackage(packageName) {
   const packageDir = path.resolve(rootDir, 'packages', packageName);
   if (!fs.existsSync(packageDir)) {
     console.error(`Error: Package directory not found at ${packageDir}`);
@@ -22,30 +37,24 @@ function copyFiles(packageName, filesToCopy) {
   }
 
   console.log(`Preparing package: ${packageName}`);
-  for (const [source, dest] of Object.entries(filesToCopy)) {
-    const sourcePath = path.resolve(rootDir, source);
-    const destPath = path.resolve(packageDir, dest);
-    try {
-      fs.copyFileSync(sourcePath, destPath);
-      console.log(`Copied ${source} to packages/${packageName}/`);
-    } catch (err) {
-      console.error(`Error copying ${source}:`, err);
-      process.exit(1);
-    }
-  }
+
+  // Always copy LICENSE (required for publishing)
+  const licenseDest = path.resolve(packageDir, 'LICENSE');
+  fs.copyFileSync(path.resolve(rootDir, 'LICENSE'), licenseDest);
+  console.log(`  Copied LICENSE`);
+
+  // Copy README only if package doesn't have its own
+  const readmeDest = path.resolve(packageDir, 'README.md');
+  copyFileIfMissing(
+    path.resolve(rootDir, 'README.md'),
+    readmeDest,
+    'README.md',
+  );
 }
 
-// Prepare 'core' package
-copyFiles('core', {
-  'README.md': 'README.md',
-  LICENSE: 'LICENSE',
-  '.npmrc': '.npmrc',
-});
-
-// Prepare 'cli' package
-copyFiles('cli', {
-  'README.md': 'README.md',
-  LICENSE: 'LICENSE',
-});
+// Prepare all publishable packages (no .npmrc - do not ship registry overrides)
+preparePackage('core');
+preparePackage('a2a-server');
+preparePackage('cli');
 
 console.log('Successfully prepared all packages.');
