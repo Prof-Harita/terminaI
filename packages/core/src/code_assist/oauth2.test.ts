@@ -19,44 +19,55 @@ import { UserAccountManager } from '../utils/userAccountManager.js';
 import { OAuth2Client, Compute, GoogleAuth } from 'google-auth-library';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import http from 'node:http';
+import * as http from 'node:http';
 import open from 'open';
-import crypto from 'node:crypto';
+import * as crypto from 'node:crypto';
 import * as os from 'node:os';
-import net from 'node:net';
 import { AuthType } from '../core/contentGenerator.js';
 import type { Config } from '../config/config.js';
-import readline from 'node:readline';
+import * as readline from 'node:readline';
 import { FORCE_ENCRYPTED_FILE_ENV_VAR } from '../mcp/token-storage/index.js';
 import { GEMINI_DIR } from '../utils/paths.js';
 import { debugLogger } from '../utils/debugLogger.js';
 import { writeToStdout } from '../utils/stdio.js';
 
-const CAN_LISTEN = await new Promise<boolean>((resolve) => {
-  try {
-    const server = net.createServer();
-    server.once('error', () => resolve(false));
-    server.listen(0, '127.0.0.1', () => {
-      server.close(() => resolve(true));
-    });
-  } catch (_error) {
-    resolve(false);
-  }
-});
-const describeIfListen = CAN_LISTEN ? describe : describe.skip;
-
-vi.mock('os', async (importOriginal) => {
-  const os = await importOriginal<typeof import('os')>();
+vi.mock('node:os', async (importOriginal) => {
+  const os = await importOriginal<typeof import('node:os')>();
   return {
     ...os,
     homedir: vi.fn(),
   };
 });
 
+vi.mock('node:crypto', async (importOriginal) => {
+  const crypto = await importOriginal<typeof import('node:crypto')>();
+  return {
+    ...crypto,
+    randomBytes: vi.fn((size: number) => Buffer.alloc(size)),
+  };
+});
+
 vi.mock('google-auth-library');
-vi.mock('http');
 vi.mock('open');
-vi.mock('crypto');
+vi.mock('node:http', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('node:http')>();
+  return {
+    ...actual,
+    createServer: vi.fn(() => {
+      const defaultServer = {
+        listen: vi.fn((_port: number, _host: string, callback?: () => void) => {
+          callback?.();
+        }),
+        close: vi.fn((callback?: () => void) => {
+          callback?.();
+        }),
+        on: vi.fn(),
+        address: () => ({ port: 31337 }),
+      };
+      return defaultServer as unknown as http.Server;
+    }),
+  };
+});
 vi.mock('node:readline');
 vi.mock('../utils/browser.js', () => ({
   shouldAttemptBrowserLaunch: () => true,
@@ -92,12 +103,13 @@ const mockConfig = {
 // Mock fetch globally
 global.fetch = vi.fn();
 
-describeIfListen('oauth2', () => {
+describe('oauth2', () => {
   describe('with encrypted flag false', () => {
     let tempHomeDir: string;
 
     beforeEach(() => {
-      process.env[FORCE_ENCRYPTED_FILE_ENV_VAR] = 'false';
+      vi.stubEnv(FORCE_ENCRYPTED_FILE_ENV_VAR, 'false');
+      vi.stubEnv('OAUTH_CALLBACK_PORT', '31337');
       tempHomeDir = fs.mkdtempSync(
         path.join(os.tmpdir(), 'gemini-cli-test-home-'),
       );
@@ -105,7 +117,7 @@ describeIfListen('oauth2', () => {
     });
     afterEach(() => {
       fs.rmSync(tempHomeDir, { recursive: true, force: true });
-      vi.clearAllMocks();
+      vi.resetAllMocks();
       resetOauthClientForTesting();
       vi.unstubAllEnvs();
     });
@@ -113,7 +125,8 @@ describeIfListen('oauth2', () => {
     it('should perform a web login', async () => {
       const mockAuthUrl = 'https://example.com/auth';
       const mockCode = 'test-code';
-      const mockState = 'test-state';
+      const mockStateBytes = Buffer.alloc(32, 0x22);
+      const mockState = mockStateBytes.toString('hex');
       const mockTokens = {
         access_token: 'test-access-token',
         refresh_token: 'test-refresh-token',
@@ -140,7 +153,9 @@ describeIfListen('oauth2', () => {
       } as unknown as OAuth2Client;
       vi.mocked(OAuth2Client).mockImplementation(() => mockOAuth2Client);
 
-      vi.spyOn(crypto, 'randomBytes').mockReturnValue(mockState as never);
+      vi.mocked(
+        crypto.randomBytes as unknown as (size: number) => Buffer,
+      ).mockReturnValue(mockStateBytes);
       vi.mocked(open).mockImplementation(
         async () => ({ on: vi.fn() }) as never,
       );
@@ -256,9 +271,19 @@ describeIfListen('oauth2', () => {
     });
 
     it('should use atomic writes for credentials', async () => {
-      // Mock crypto.randomBytes to return predictable value
-      const mockRandom = vi.fn().mockReturnValue(Buffer.from('abcd1234'));
-      vi.spyOn(crypto, 'randomBytes').mockImplementation(mockRandom);
+      const stateBytes = Buffer.alloc(32, 0x11);
+      const tempSuffixBytes = Buffer.from([0xab, 0xcd, 0x12, 0x34]);
+      vi.mocked(
+        crypto.randomBytes as unknown as (size: number) => Buffer,
+      ).mockImplementation((size: number) => {
+        if (size === 4) {
+          return tempSuffixBytes;
+        }
+        if (size === 32) {
+          return stateBytes;
+        }
+        return Buffer.alloc(size);
+      });
 
       const credsPath = path.join(tempHomeDir, GEMINI_DIR, 'oauth_creds.json');
       const expectedTempPath = `${credsPath}.tmp.abcd1234`;
@@ -274,12 +299,15 @@ describeIfListen('oauth2', () => {
       // Perform OAuth flow that calls cacheCredentials
       const mockAuthUrl = 'https://example.com/auth';
       const mockCode = 'test-code';
-      const mockState = 'test-state';
+      const mockState = stateBytes.toString('hex');
       const mockTokens = {
         access_token: 'test-access-token',
         refresh_token: 'test-refresh-token',
       };
 
+      let tokensListener:
+        | ((tokens: Credentials) => Promise<void> | void)
+        | undefined;
       const mockOAuth2Client = {
         generateAuthUrl: vi.fn().mockReturnValue(mockAuthUrl),
         getToken: vi.fn().mockResolvedValue({ tokens: mockTokens }),
@@ -290,7 +318,7 @@ describeIfListen('oauth2', () => {
         credentials: mockTokens,
         on: vi.fn((event, listener) => {
           if (event === 'tokens') {
-            listener(mockTokens);
+            tokensListener = listener as (tokens: Credentials) => Promise<void>;
           }
         }),
       } as unknown as OAuth2Client;
@@ -350,6 +378,10 @@ describeIfListen('oauth2', () => {
 
       requestCallback(mockReq, mockRes);
       await clientPromise;
+
+      if (tokensListener) {
+        await tokensListener(mockTokens);
+      }
 
       // Verify atomic write behavior
       expect(mockWriteFile).toHaveBeenCalledWith(
@@ -498,8 +530,6 @@ describeIfListen('oauth2', () => {
         mockOAuth2Client.credentials = creds;
       });
       vi.mocked(OAuth2Client).mockImplementation(() => mockOAuth2Client);
-
-      vi.spyOn(crypto, 'randomBytes').mockReturnValue('test-state' as never);
 
       const mockReadline = {
         question: vi.fn((_query, callback) => callback(mockCode)),
@@ -1024,7 +1054,8 @@ describeIfListen('oauth2', () => {
       it('should handle token exchange failure with descriptive error', async () => {
         const mockAuthUrl = 'https://example.com/auth';
         const mockCode = 'test-code';
-        const mockState = 'test-state';
+        const mockStateBytes = Buffer.alloc(32, 0x44);
+        const mockState = mockStateBytes.toString('hex');
 
         const mockOAuth2Client = {
           generateAuthUrl: vi.fn().mockReturnValue(mockAuthUrl),
@@ -1035,7 +1066,9 @@ describeIfListen('oauth2', () => {
         } as unknown as OAuth2Client;
         vi.mocked(OAuth2Client).mockImplementation(() => mockOAuth2Client);
 
-        vi.spyOn(crypto, 'randomBytes').mockReturnValue(mockState as never);
+        vi.mocked(
+          crypto.randomBytes as unknown as (size: number) => Buffer,
+        ).mockReturnValue(mockStateBytes);
         vi.mocked(open).mockImplementation(
           async () => ({ on: vi.fn() }) as never,
         );
@@ -1087,7 +1120,8 @@ describeIfListen('oauth2', () => {
       it('should handle fetchAndCacheUserInfo failure gracefully', async () => {
         const mockAuthUrl = 'https://example.com/auth';
         const mockCode = 'test-code';
-        const mockState = 'test-state';
+        const mockStateBytes = Buffer.alloc(32, 0x55);
+        const mockState = mockStateBytes.toString('hex');
         const mockTokens = {
           access_token: 'test-access-token',
           refresh_token: 'test-refresh-token',
@@ -1109,7 +1143,9 @@ describeIfListen('oauth2', () => {
           });
         vi.mocked(OAuth2Client).mockImplementation(() => mockOAuth2Client);
 
-        vi.spyOn(crypto, 'randomBytes').mockReturnValue(mockState as never);
+        vi.mocked(
+          crypto.randomBytes as unknown as (size: number) => Buffer,
+        ).mockReturnValue(mockStateBytes);
         vi.mocked(open).mockImplementation(
           async () => ({ on: vi.fn() }) as never,
         );
@@ -1308,7 +1344,8 @@ describeIfListen('oauth2', () => {
   describe('with encrypted flag true', () => {
     let tempHomeDir: string;
     beforeEach(() => {
-      process.env[FORCE_ENCRYPTED_FILE_ENV_VAR] = 'true';
+      vi.stubEnv(FORCE_ENCRYPTED_FILE_ENV_VAR, 'true');
+      vi.stubEnv('OAUTH_CALLBACK_PORT', '31337');
       tempHomeDir = fs.mkdtempSync(
         path.join(os.tmpdir(), 'gemini-cli-test-home-'),
       );
@@ -1317,7 +1354,7 @@ describeIfListen('oauth2', () => {
 
     afterEach(() => {
       fs.rmSync(tempHomeDir, { recursive: true, force: true });
-      vi.clearAllMocks();
+      vi.resetAllMocks();
       resetOauthClientForTesting();
       vi.unstubAllEnvs();
     });
@@ -1328,7 +1365,8 @@ describeIfListen('oauth2', () => {
       );
       const mockAuthUrl = 'https://example.com/auth';
       const mockCode = 'test-code';
-      const mockState = 'test-state';
+      const mockStateBytes = Buffer.alloc(32, 0x66);
+      const mockState = mockStateBytes.toString('hex');
       const mockTokens = {
         access_token: 'test-access-token',
         refresh_token: 'test-refresh-token',
@@ -1358,7 +1396,9 @@ describeIfListen('oauth2', () => {
       } as unknown as OAuth2Client;
       vi.mocked(OAuth2Client).mockImplementation(() => mockOAuth2Client);
 
-      vi.spyOn(crypto, 'randomBytes').mockReturnValue(mockState as never);
+      vi.mocked(
+        crypto.randomBytes as unknown as (size: number) => Buffer,
+      ).mockReturnValue(mockStateBytes);
       vi.mocked(open).mockImplementation(
         async () => ({ on: vi.fn() }) as never,
       );
@@ -1465,7 +1505,8 @@ describeIfListen('oauth2', () => {
         './oauth-credential-storage.js'
       );
 
-      // Create a dummy unencrypted credential file. It should not be deleted.
+      // Create a dummy unencrypted credential file. It should be deleted when clearing
+      // encrypted credentials (migration cleanup).
       const credsPath = path.join(tempHomeDir, GEMINI_DIR, 'oauth_creds.json');
       await fs.promises.mkdir(path.dirname(credsPath), { recursive: true });
       await fs.promises.writeFile(credsPath, '{}');
@@ -1475,7 +1516,7 @@ describeIfListen('oauth2', () => {
       expect(
         OAuthCredentialStorage.clearCredentials as Mock,
       ).toHaveBeenCalled();
-      expect(fs.existsSync(credsPath)).toBe(true); // The unencrypted file should remain
+      expect(fs.existsSync(credsPath)).toBe(false);
     });
   });
 });

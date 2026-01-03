@@ -145,9 +145,7 @@ export async function loadConfig(
     );
   } else {
     // Task 10: Respect settings.security.auth.selectedType
-    const selectedAuthType = settings.security?.auth?.selectedType as
-      | AuthType
-      | undefined;
+    const selectedAuthType = settings.security?.auth?.selectedType;
 
     if (selectedAuthType) {
       logger.info(`[Config] Using configured auth type: ${selectedAuthType}`);

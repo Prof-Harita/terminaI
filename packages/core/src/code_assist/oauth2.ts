@@ -14,7 +14,7 @@ import {
 } from 'google-auth-library';
 import * as http from 'node:http';
 import url from 'node:url';
-import crypto from 'node:crypto';
+import * as crypto from 'node:crypto';
 import * as net from 'node:net';
 import { EventEmitter } from 'node:events';
 import open from 'open';
@@ -28,7 +28,7 @@ import {
 } from '../utils/errors.js';
 import { UserAccountManager } from '../utils/userAccountManager.js';
 import { AuthType } from '../core/contentGenerator.js';
-import readline from 'node:readline';
+import * as readline from 'node:readline';
 import { Storage } from '../config/storage.js';
 import { OAuthCredentialStorage } from './oauth-credential-storage.js';
 import { FORCE_ENCRYPTED_FILE_ENV_VAR } from '../mcp/token-storage/index.js';
@@ -444,19 +444,7 @@ async function authWithWeb(client: OAuth2Client): Promise<OauthWebLogin> {
   let cancel: () => void = () => {};
 
   const loginCompletePromise = new Promise<void>((resolve, reject) => {
-    // We need to assign server later, but scope it here
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let server: any; // http.Server
-
-    // Cancellation function
-    cancel = () => {
-      if (server) {
-        server.close();
-      }
-      reject(new FatalCancellationError('User cancelled authentication.'));
-    };
-
-    server = http.createServer(async (req, res) => {
+    const server = http.createServer(async (req, res) => {
       try {
         if (req.url!.indexOf('/oauth2callback') === -1) {
           res.writeHead(HTTP_REDIRECT, { Location: SIGN_IN_FAILURE_URL });
@@ -542,6 +530,12 @@ async function authWithWeb(client: OAuth2Client): Promise<OauthWebLogin> {
         server.close();
       }
     });
+
+    // Cancellation function
+    cancel = () => {
+      server.close();
+      reject(new FatalCancellationError('User cancelled authentication.'));
+    };
 
     server.listen(port, host, () => {
       // Server started successfully
@@ -646,6 +640,7 @@ export async function clearCachedCredentialFile() {
     const useEncryptedStorage = getUseEncryptedStorageFlag();
     if (useEncryptedStorage) {
       await OAuthCredentialStorage.clearCredentials();
+      await fs.rm(Storage.getOAuthCredsPath(), { force: true });
     } else {
       await fs.rm(Storage.getOAuthCredsPath(), { force: true });
     }

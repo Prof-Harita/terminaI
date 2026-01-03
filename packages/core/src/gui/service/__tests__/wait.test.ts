@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { DesktopAutomationService } from '../DesktopAutomationService.js';
 import { MockDriver } from '../../drivers/mockDriver.js';
@@ -42,15 +49,25 @@ describe('DesktopAutomationService - waitFor', () => {
           name: 'mock',
           kind: 'mock',
           version: '1.0',
-          capabilities: { canSnapshot: true } as any,
+          capabilities: {
+            canSnapshot: true,
+            canClick: true,
+            canType: true,
+            canScroll: true,
+            canKey: true,
+            canOcr: false,
+            canScreenshot: false,
+            canInjectInput: false,
+          },
         },
       }));
 
     const waitPromise = svc.waitFor({
       selector: 'name:"btn"',
+      state: 'visible',
       timeoutMs: 1000,
       intervalMs: 200,
-    } as any);
+    });
 
     // Run timers until timeout
     await vi.runAllTimersAsync();
@@ -81,14 +98,25 @@ describe('DesktopAutomationService - waitFor', () => {
         name: 'mock',
         kind: 'mock',
         version: '1.0',
-        capabilities: { canSnapshot: true } as any,
+        capabilities: {
+          canSnapshot: true,
+          canClick: true,
+          canType: true,
+          canScroll: true,
+          canKey: true,
+          canOcr: false,
+          canScreenshot: false,
+          canInjectInput: false,
+        },
       },
     });
 
     const result = await svc.waitFor({
       selector: 'name:"btn"',
+      state: 'visible',
       timeoutMs: 1000,
-    } as any); // "btn" logic assumed name
+      intervalMs: 200,
+    }); // "btn" logic assumed name
     expect(result.status).toBe('success');
   });
 });

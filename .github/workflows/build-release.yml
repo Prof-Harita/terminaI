@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 name: Build Release Installers
 
 on:
@@ -11,10 +12,16 @@ on:
         required: false
         default: 'dev'
 
+permissions:
+  contents: write
+
 jobs:
   build-linux:
     name: Build Linux Installers
     runs-on: ubuntu-latest
+    outputs:
+      deb-artifact: ${{ steps.upload-deb.outputs.artifact-id }}
+      appimage-artifact: ${{ steps.upload-appimage.outputs.artifact-id }}
 
     steps:
       - name: Checkout code
@@ -39,16 +46,34 @@ jobs:
         with:
           toolchain: stable
 
+      - name: Sync desktop version
+        run: node scripts/releasing/sync-desktop-version.js
+
       - name: Build installers
         run: node scripts/build-release.js
 
+      - name: Verify sidecar binary
+        run: |
+          SIDECAR="packages/desktop/src-tauri/bin/terminai-cli"
+          if [ ! -f "$SIDECAR" ]; then
+            echo "❌ Sidecar binary not found at $SIDECAR"
+            exit 1
+          fi
+          echo "✅ Sidecar binary exists"
+          if ! "$SIDECAR" --version; then
+            echo "❌ Sidecar --version failed"
+            exit 1
+          fi
+
       - name: Upload .deb
+        id: upload-deb
         uses: actions/upload-artifact@v4
         with:
           name: terminai-linux-deb
           path: packages/desktop/src-tauri/target/release/bundle/deb/*.deb
 
       - name: Upload AppImage
+        id: upload-appimage
         uses: actions/upload-artifact@v4
         with:
           name: terminai-linux-appimage
@@ -57,6 +82,8 @@ jobs:
   build-windows:
     name: Build Windows Installer
     runs-on: windows-latest
+    outputs:
+      msi-artifact: ${{ steps.upload-msi.outputs.artifact-id }}
 
     steps:
       - name: Checkout code
@@ -76,11 +103,92 @@ jobs:
         with:
           toolchain: stable
 
+      - name: Sync desktop version
+        run: node scripts/releasing/sync-desktop-version.js
+
       - name: Build installer
         run: node scripts/build-release.js
 
+      - name: Verify sidecar binary
+        shell: bash
+        run: |
+          SIDECAR="packages/desktop/src-tauri/bin/terminai-cli.exe"
+          if [ ! -f "$SIDECAR" ]; then
+            echo "❌ Sidecar binary not found at $SIDECAR"
+            exit 1
+          fi
+          echo "✅ Sidecar binary exists"
+          if ! "$SIDECAR" --version; then
+            echo "❌ Sidecar --version failed"
+            exit 1
+          fi
+
       - name: Upload MSI
+        id: upload-msi
         uses: actions/upload-artifact@v4
         with:
           name: terminai-windows-msi
           path: packages/desktop/src-tauri/target/release/bundle/msi/*.msi
+
+  upload-release-assets:
+    name: Upload Release Assets
+    needs: [build-linux, build-windows]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-artifacts
+
+      - name: Prepare release files
+        id: prepare
+        run: |
+          mkdir -p release-upload
+          find release-artifacts -type f \( -name "*.deb" -o -name "*.AppImage" -o -name "*.msi" \) -exec cp {} release-upload/ \;
+          find release-upload -maxdepth 1 -type f -print
+          files="$(find release-upload -maxdepth 1 -type f -printf '%f\n' | tr '\n' ' ')"
+          echo "files=${files}" >> "$GITHUB_OUTPUT"
+
+      - name: Generate SHA256SUMS
+        run: |
+          cd release-upload
+          node ../scripts/releasing/generate-sha256sums.js --output SHA256SUMS ./*.deb ./*.AppImage ./*.msi
+          cat SHA256SUMS
+
+      - name: Generate release manifest
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          cd release-upload
+          node ../scripts/releasing/generate-release-manifest.js \
+            --version "$VERSION" \
+            --sha256sums SHA256SUMS \
+            --output release-manifest.json \
+            ./*.deb ./*.AppImage ./*.msi
+          cat release-manifest.json
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release-upload/*.deb
+            release-upload/*.AppImage
+            release-upload/*.msi
+            release-upload/SHA256SUMS
+            release-upload/release-manifest.json
+          fail_on_unmatched_files: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

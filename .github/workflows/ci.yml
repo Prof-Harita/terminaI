@@ -95,6 +95,12 @@ jobs:
       - name: 'Run sensitive keyword linter'
         run: 'node scripts/lint.js --sensitive-keywords'
 
+      - name: 'Check version alignment (workspaces)'
+        run: 'node scripts/releasing/assert-release-version.js'
+
+      - name: 'Check version alignment (desktop)'
+        run: 'node scripts/releasing/sync-desktop-version.js --check'
+
   link_checker:
     name: 'Link Checker'
     runs-on: 'ubuntu-latest'
@@ -184,6 +190,53 @@ jobs:
           compression: 'none'
           clean-script: 'clean'
 
+  npm_pack_smoke_test:
+    name: 'npm Pack Smoke Test'
+    runs-on: 'ubuntu-latest'
+    needs:
+      - 'build'
+      - 'merge_queue_skipper'
+    if: "${{ needs.merge_queue_skipper.outputs.skip != 'true' }}"
+    steps:
+      - name: 'Checkout'
+        uses: 'actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8' # ratchet:actions/checkout@v5
+        with:
+          ref: '${{ github.event.inputs.branch_ref || github.ref }}'
+
+      - name: 'Set up Node.js'
+        uses: 'actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020' # ratchet:actions/setup-node@v4.4.0
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: 'Install dependencies'
+        run: 'npm ci'
+
+      - name: 'Build project'
+        run: 'npm run build'
+
+      - name: 'Pack @terminai/cli'
+        run: |
+          npm pack --workspace @terminai/cli
+          find . -maxdepth 1 -type f -name 'terminai-cli-*.tgz' -print
+
+      - name: 'Install from tarball to isolated prefix'
+        run: |
+          TARBALL="$(find . -maxdepth 1 -type f -name 'terminai-cli-*.tgz' -print -quit)"
+          if [[ -z "$TARBALL" ]]; then
+            echo "No terminai-cli tarball found" >&2
+            exit 1
+          fi
+          mkdir -p /tmp/smoke-test-prefix
+          npm install --global --prefix /tmp/smoke-test-prefix "$TARBALL"
+          find /tmp/smoke-test-prefix/bin -maxdepth 1 -type f -print
+
+      - name: 'Run terminai --version from isolated prefix'
+        run: |
+          export PATH="/tmp/smoke-test-prefix/bin:$PATH"
+          which terminai
+          terminai --version
+
   ci:
     name: 'CI'
     if: 'always()'
@@ -193,6 +246,7 @@ jobs:
       - 'build'
       - 'codeql'
       - 'bundle_size'
+      - 'npm_pack_smoke_test'
     runs-on: 'ubuntu-latest'
     steps:
       - name: 'Check all job results'
@@ -201,7 +255,8 @@ jobs:
                (${{ needs.link_checker.result }} != 'success' && ${{ needs.link_checker.result }} != 'skipped') || \
                (${{ needs.build.result }} != 'success' && ${{ needs.build.result }} != 'skipped') || \
                (${{ needs.codeql.result }} != 'success' && ${{ needs.codeql.result }} != 'skipped') || \
-               (${{ needs.bundle_size.result }} != 'success' && ${{ needs.bundle_size.result }} != 'skipped') ]]; then
+               (${{ needs.bundle_size.result }} != 'success' && ${{ needs.bundle_size.result }} != 'skipped') || \
+               (${{ needs.npm_pack_smoke_test.result }} != 'success' && ${{ needs.npm_pack_smoke_test.result }} != 'skipped') ]]; then
             echo "One or more CI jobs failed."
             exit 1
           fi

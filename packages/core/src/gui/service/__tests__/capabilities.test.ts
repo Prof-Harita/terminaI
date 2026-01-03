@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { describe, it, expect, beforeEach } from 'vitest';
 import { DesktopAutomationService } from '../DesktopAutomationService.js';
 import { MockDriver } from '../../drivers/mockDriver.js';
@@ -49,12 +56,20 @@ describe('DesktopAutomationService - Capabilities Enforcement', () => {
           canType: true,
           canScroll: true,
           canKey: true,
-        } as any,
+          canOcr: false,
+          canScreenshot: false,
+          canInjectInput: false,
+        },
       },
     });
 
     await expect(
-      svc.click({ target: 'name:"Click Me"' } as any),
+      svc.click({
+        target: 'name:"Click Me"',
+        button: 'left',
+        clickCount: 1,
+        verify: true,
+      }),
     ).resolves.not.toThrow();
   });
 
@@ -71,9 +86,14 @@ describe('DesktopAutomationService - Capabilities Enforcement', () => {
       canInjectInput: false,
     });
 
-    await expect(svc.click({ target: 'Click Me' } as any)).rejects.toThrow(
-      "Driver does not support 'canClick'.",
-    );
+    await expect(
+      svc.click({
+        target: 'Click Me',
+        button: 'left',
+        clickCount: 1,
+        verify: true,
+      }),
+    ).rejects.toThrow("Driver does not support 'canClick'.");
   });
 
   it('throws when canType is false', async () => {
@@ -89,9 +109,14 @@ describe('DesktopAutomationService - Capabilities Enforcement', () => {
       canInjectInput: false,
     });
 
-    await expect(svc.type({ text: 'hello' } as any)).rejects.toThrow(
-      "Driver does not support 'canType'.",
-    );
+    await expect(
+      svc.type({
+        text: 'hello',
+        mode: 'insert',
+        verify: true,
+        redactInLogs: false,
+      }),
+    ).rejects.toThrow("Driver does not support 'canType'.");
   });
 
   it('throws when canScroll is false', async () => {
@@ -107,8 +132,12 @@ describe('DesktopAutomationService - Capabilities Enforcement', () => {
       canInjectInput: false,
     });
 
-    await expect(svc.scroll({ direction: 'down' } as any)).rejects.toThrow(
-      "Driver does not support 'canScroll'.",
-    );
+    await expect(
+      svc.scroll({
+        deltaX: 0,
+        deltaY: 100,
+        verify: true,
+      }),
+    ).rejects.toThrow("Driver does not support 'canScroll'.");
   });
 });

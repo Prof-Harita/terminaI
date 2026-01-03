@@ -14,12 +14,7 @@ import type {
   Histogram,
 } from '@opentelemetry/api';
 import type { Config } from '../config/config.js';
-import {
-  FileOperation,
-  MemoryMetricType,
-  ToolExecutionPhase,
-  ApiRequestPhase,
-} from './metrics.js';
+import type { FileOperation, MemoryMetricType } from './metrics.js';
 import { makeFakeConfig } from '../test-utils/config.js';
 import { ModelRoutingEvent, AgentFinishEvent } from './types.js';
 import { AgentTerminateMode } from '../agents/types.js';
@@ -75,6 +70,10 @@ vi.mock('@opentelemetry/api');
 vi.mock('./telemetryAttributes.js');
 
 describe('Telemetry Metrics', () => {
+  let FileOperationEnum: typeof import('./metrics.js').FileOperation;
+  let MemoryMetricTypeEnum: typeof import('./metrics.js').MemoryMetricType;
+  let ToolExecutionPhaseEnum: typeof import('./metrics.js').ToolExecutionPhase;
+  let ApiRequestPhaseEnum: typeof import('./metrics.js').ApiRequestPhase;
   let initializeMetricsModule: typeof import('./metrics.js').initializeMetrics;
   let recordTokenUsageMetricsModule: typeof import('./metrics.js').recordTokenUsageMetrics;
   let recordFileOperationMetricModule: typeof import('./metrics.js').recordFileOperationMetric;
@@ -114,6 +113,10 @@ describe('Telemetry Metrics', () => {
     });
 
     const metricsJsModule = await import('./metrics.js');
+    FileOperationEnum = metricsJsModule.FileOperation;
+    MemoryMetricTypeEnum = metricsJsModule.MemoryMetricType;
+    ToolExecutionPhaseEnum = metricsJsModule.ToolExecutionPhase;
+    ApiRequestPhaseEnum = metricsJsModule.ApiRequestPhase;
     initializeMetricsModule = metricsJsModule.initializeMetrics;
     recordTokenUsageMetricsModule = metricsJsModule.recordTokenUsageMetrics;
     recordFileOperationMetricModule = metricsJsModule.recordFileOperationMetric;
@@ -363,63 +366,22 @@ describe('Telemetry Metrics', () => {
       getTelemetryEnabled: () => true,
     } as unknown as Config;
 
-    type FileOperationTestCase = {
-      name: string;
-      initialized: boolean;
-      attributes: {
-        operation: FileOperation;
-        lines?: number;
-        mimetype?: string;
-        extension?: string;
-      };
-      shouldCall: boolean;
+    type FileOperationAttributes = {
+      operation: FileOperation;
+      lines?: number;
+      mimetype?: string;
+      extension?: string;
     };
 
-    it.each<FileOperationTestCase>([
-      {
-        name: 'should not record metrics if not initialized',
-        initialized: false,
-        attributes: {
-          operation: FileOperation.CREATE,
-          lines: 10,
-          mimetype: 'text/plain',
-          extension: 'txt',
-        },
-        shouldCall: false,
-      },
-      {
-        name: 'should record file creation with all attributes',
-        initialized: true,
-        attributes: {
-          operation: FileOperation.CREATE,
-          lines: 10,
-          mimetype: 'text/plain',
-          extension: 'txt',
-        },
-        shouldCall: true,
-      },
-      {
-        name: 'should record file read with minimal attributes',
-        initialized: true,
-        attributes: { operation: FileOperation.READ },
-        shouldCall: true,
-      },
-      {
-        name: 'should record file update with some attributes',
-        initialized: true,
-        attributes: {
-          operation: FileOperation.UPDATE,
-          mimetype: 'application/javascript',
-        },
-        shouldCall: true,
-      },
-      {
-        name: 'should record file update with no optional attributes',
-        initialized: true,
-        attributes: { operation: FileOperation.UPDATE },
-        shouldCall: true,
-      },
-    ])('$name', ({ initialized, attributes, shouldCall }) => {
+    function runTestCase({
+      initialized,
+      attributes,
+      shouldCall,
+    }: {
+      initialized: boolean;
+      attributes: FileOperationAttributes;
+      shouldCall: boolean;
+    }) {
       if (initialized) {
         initializeMetricsModule(mockConfig);
         // The session start event also calls the counter.
@@ -438,6 +400,59 @@ describe('Telemetry Metrics', () => {
       } else {
         expect(mockCounterAddFn).not.toHaveBeenCalled();
       }
+    }
+
+    it('should not record metrics if not initialized', () => {
+      runTestCase({
+        initialized: false,
+        attributes: {
+          operation: FileOperationEnum.CREATE,
+          lines: 10,
+          mimetype: 'text/plain',
+          extension: 'txt',
+        },
+        shouldCall: false,
+      });
+    });
+
+    it('should record file creation with all attributes', () => {
+      runTestCase({
+        initialized: true,
+        attributes: {
+          operation: FileOperationEnum.CREATE,
+          lines: 10,
+          mimetype: 'text/plain',
+          extension: 'txt',
+        },
+        shouldCall: true,
+      });
+    });
+
+    it('should record file read with minimal attributes', () => {
+      runTestCase({
+        initialized: true,
+        attributes: { operation: FileOperationEnum.READ },
+        shouldCall: true,
+      });
+    });
+
+    it('should record file update with some attributes', () => {
+      runTestCase({
+        initialized: true,
+        attributes: {
+          operation: FileOperationEnum.UPDATE,
+          mimetype: 'application/javascript',
+        },
+        shouldCall: true,
+      });
+    });
+
+    it('should record file update with no optional attributes', () => {
+      runTestCase({
+        initialized: true,
+        attributes: { operation: FileOperationEnum.UPDATE },
+        shouldCall: true,
+      });
     });
   });
 
@@ -859,60 +874,79 @@ describe('Telemetry Metrics', () => {
     });
 
     describe('recordMemoryUsage', () => {
-      it.each([
-        {
-          memory_type: MemoryMetricType.HEAP_USED,
+      function assertMemoryUsage({
+        memory_type,
+        component,
+        value,
+      }: {
+        memory_type: MemoryMetricType;
+        component?: string;
+        value: number;
+      }) {
+        initializeMetricsModule(mockConfig);
+        mockHistogramRecordFn.mockClear();
+
+        recordMemoryUsageModule(mockConfig, value, {
+          memory_type,
+          component,
+        });
+
+        const expectedAttributes: Record<string, unknown> = {
+          'session.id': 'test-session-id',
+          'installation.id': 'test-installation-id',
+          'user.email': 'test@example.com',
+          memory_type,
+        };
+
+        if (component) {
+          expectedAttributes['component'] = component;
+        }
+
+        expect(mockHistogramRecordFn).toHaveBeenCalledWith(
+          value,
+          expectedAttributes,
+        );
+      }
+
+      it('should record heap used memory usage', () => {
+        assertMemoryUsage({
+          memory_type: MemoryMetricTypeEnum.HEAP_USED,
           component: 'startup',
           value: 15728640,
-        },
-        {
-          memory_type: MemoryMetricType.HEAP_TOTAL,
+        });
+      });
+
+      it('should record heap total memory usage', () => {
+        assertMemoryUsage({
+          memory_type: MemoryMetricTypeEnum.HEAP_TOTAL,
           component: 'api_call',
           value: 31457280,
-        },
-        {
-          memory_type: MemoryMetricType.EXTERNAL,
+        });
+      });
+
+      it('should record external memory usage', () => {
+        assertMemoryUsage({
+          memory_type: MemoryMetricTypeEnum.EXTERNAL,
           component: 'tool_execution',
           value: 2097152,
-        },
-        {
-          memory_type: MemoryMetricType.RSS,
+        });
+      });
+
+      it('should record RSS memory usage', () => {
+        assertMemoryUsage({
+          memory_type: MemoryMetricTypeEnum.RSS,
           component: 'memory_monitor',
           value: 41943040,
-        },
-        {
-          memory_type: MemoryMetricType.HEAP_USED,
+        });
+      });
+
+      it('should record memory usage without component', () => {
+        assertMemoryUsage({
+          memory_type: MemoryMetricTypeEnum.HEAP_USED,
           component: undefined,
           value: 15728640,
-        },
-      ])(
-        'should record memory usage for $memory_type',
-        ({ memory_type, component, value }) => {
-          initializeMetricsModule(mockConfig);
-          mockHistogramRecordFn.mockClear();
-
-          recordMemoryUsageModule(mockConfig, value, {
-            memory_type,
-            component,
-          });
-
-          const expectedAttributes: Record<string, unknown> = {
-            'session.id': 'test-session-id',
-            'installation.id': 'test-installation-id',
-            'user.email': 'test@example.com',
-            memory_type,
-          };
-
-          if (component) {
-            expectedAttributes['component'] = component;
-          }
-
-          expect(mockHistogramRecordFn).toHaveBeenCalledWith(
-            value,
-            expectedAttributes,
-          );
-        },
-      );
+        });
+      });
     });
 
     describe('recordCpuUsage', () => {
@@ -981,7 +1015,7 @@ describe('Telemetry Metrics', () => {
 
         recordToolExecutionBreakdownModule(mockConfig, 25, {
           function_name: 'Read',
-          phase: ToolExecutionPhase.VALIDATION,
+          phase: ToolExecutionPhaseEnum.VALIDATION,
         });
 
         expect(mockHistogramRecordFn).toHaveBeenCalledWith(25, {
@@ -999,15 +1033,15 @@ describe('Telemetry Metrics', () => {
 
         recordToolExecutionBreakdownModule(mockConfig, 50, {
           function_name: 'Bash',
-          phase: ToolExecutionPhase.PREPARATION,
+          phase: ToolExecutionPhaseEnum.PREPARATION,
         });
         recordToolExecutionBreakdownModule(mockConfig, 1500, {
           function_name: 'Bash',
-          phase: ToolExecutionPhase.EXECUTION,
+          phase: ToolExecutionPhaseEnum.EXECUTION,
         });
         recordToolExecutionBreakdownModule(mockConfig, 75, {
           function_name: 'Bash',
-          phase: ToolExecutionPhase.RESULT_PROCESSING,
+          phase: ToolExecutionPhaseEnum.RESULT_PROCESSING,
         });
 
         expect(mockHistogramRecordFn).toHaveBeenCalledTimes(3); // One for each call
@@ -1082,7 +1116,7 @@ describe('Telemetry Metrics', () => {
 
         recordApiRequestBreakdownModule(mockConfig, 15, {
           model: 'gemini-pro',
-          phase: ApiRequestPhase.REQUEST_PREPARATION,
+          phase: ApiRequestPhaseEnum.REQUEST_PREPARATION,
         });
 
         expect(mockHistogramRecordFn).toHaveBeenCalledWith(15, {
@@ -1100,15 +1134,15 @@ describe('Telemetry Metrics', () => {
 
         recordApiRequestBreakdownModule(mockConfig, 250, {
           model: 'gemini-pro',
-          phase: ApiRequestPhase.NETWORK_LATENCY,
+          phase: ApiRequestPhaseEnum.NETWORK_LATENCY,
         });
         recordApiRequestBreakdownModule(mockConfig, 100, {
           model: 'gemini-pro',
-          phase: ApiRequestPhase.RESPONSE_PROCESSING,
+          phase: ApiRequestPhaseEnum.RESPONSE_PROCESSING,
         });
         recordApiRequestBreakdownModule(mockConfig, 50, {
           model: 'gemini-pro',
-          phase: ApiRequestPhase.TOKEN_PROCESSING,
+          phase: ApiRequestPhaseEnum.TOKEN_PROCESSING,
         });
 
         expect(mockHistogramRecordFn).toHaveBeenCalledTimes(3); // One for each call

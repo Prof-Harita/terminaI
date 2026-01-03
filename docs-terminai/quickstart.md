@@ -1,32 +1,48 @@
 # Quickstart Guide
 
-Get up and running with terminaI in 5 minutes.
+Get up and running with TerminaI in 5 minutes.
 
 ## Installation
 
-### From Source (Recommended)
+### CLI (npm) — recommended
+
+```bash
+npm install -g @terminai/cli
+terminai --version
+terminai
+```
+
+### Desktop (Linux/Windows)
+
+Download installers from
+[GitHub Releases](https://github.com/Prof-Harita/terminaI/releases):
+
+| Platform | Installer             |
+| -------- | --------------------- |
+| Linux    | `.deb` or `.AppImage` |
+| Windows  | `.msi`                |
+| macOS    | Coming soon           |
+
+> [!NOTE] Desktop installers bundle the CLI as an internal sidecar. For CLI
+> access from your terminal, install via npm separately.
+
+### From source (contributors)
 
 ```bash
 # From the repo root
 npm ci
 npm run build
-npm link --workspace packages/termai
+
+# Link the CLI for local development
+npm link --workspace packages/cli
 
 # Run it
 terminai
 ```
 
-### Optional: Add `gemini` Alias
-
-For muscle memory compatibility:
-
-```bash
-./scripts/termai-install.sh --alias-gemini
-```
-
 ## Authentication
 
-terminaI uses Google OAuth (browser flow) or an API key for model access.
+TerminaI uses OAuth (browser flow) or an API key for model access.
 
 ### Option 1: Login with Google (Recommended)
 
@@ -59,6 +75,19 @@ terminai
 - `/sessions` - List background processes
 - `/exit` - Exit terminaI
 
+## Verification
+
+After installation, verify your setup:
+
+```bash
+# CLI verification
+terminai --version
+# Should print: terminai vX.Y.Z
+
+# Desktop verification
+# Launch the app and check About → version matches release
+```
+
 ## Next Steps
 
 - [Voice Guide](./voice.md) - Offline voice install + usage
@@ -69,10 +98,11 @@ terminai
 
 ## Optional: Run the Desktop App (Tauri)
 
-The Desktop app is an A2A client (it does not spawn the CLI).
+The Desktop app can run an embedded agent (via a bundled CLI sidecar) or connect
+to an external agent.
 
 ```bash
-npm -w packages/desktop dev
+npm -w packages/desktop run dev
 ```
 
 In the Desktop app, set:

@@ -140,7 +140,7 @@ export async function startWebRemoteServer(
       process.env,
     );
     llmAuthRequired = authCheck.status !== 'ok';
-  } catch (e) {
+  } catch (_e) {
     // If we can't check, leave undefined (backward compatibility)
   }
 
@@ -149,16 +149,21 @@ export async function startWebRemoteServer(
     options.outputFormat === 'json' ||
     options.outputFormat === 'stream-json'
   ) {
-    const handshake: any = {
+    type SidecarHandshake = {
+      readonly terminai_status: 'ready';
+      readonly port: number;
+      readonly token?: string;
+      readonly url: string;
+      readonly llmAuthRequired?: boolean;
+    };
+
+    const handshake: SidecarHandshake = {
       terminai_status: 'ready',
       port: actualPort,
-      token,
       url,
+      ...(token ? { token } : {}),
+      ...(llmAuthRequired !== undefined ? { llmAuthRequired } : {}),
     };
-    // Optional: include auth status if we could determine it
-    if (llmAuthRequired !== undefined) {
-      handshake.llmAuthRequired = llmAuthRequired;
-    }
     // Ensure we write a single line JSON blob to stdout
     process.stdout.write(JSON.stringify(handshake) + '\n');
     return { server, port: actualPort, url };

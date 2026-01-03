@@ -1,7 +1,7 @@
 /**
  * @license
- * Copyright 2026 Google LLC
- * Portions Copyright 2026 TerminaI Authors
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -114,8 +114,7 @@ describe('Linux Sidecar Contract Tests', () => {
     });
 
     it('requires driver field in snapshot', () => {
-      const invalidResponse = { ...sampleSnapshotResponse };
-      delete (invalidResponse as any).driver;
+      const { driver: _driver, ...invalidResponse } = sampleSnapshotResponse;
       const result = SnapshotResponseSchema.safeParse(invalidResponse);
       expect(result.success).toBe(false);
     });

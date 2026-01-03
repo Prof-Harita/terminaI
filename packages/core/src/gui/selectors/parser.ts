@@ -22,14 +22,12 @@
 import type { SelectorNode, ConditionNode, SelectorPrefix } from './ast.js';
 
 export class SelectorParseError extends Error {
-  public hint?: string;
+  hint?: string;
+  position: number;
 
-  constructor(
-    message: string,
-    public position: number,
-    hint?: string,
-  ) {
+  constructor(message: string, position: number, hint?: string) {
     super(`Selector parse error at index ${position}: ${message}`);
+    this.position = position;
     this.hint = hint;
   }
 }

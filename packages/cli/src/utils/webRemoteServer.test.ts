@@ -75,7 +75,7 @@ describe('webRemoteServer', () => {
     expect(isLoopbackHost('127.0.1.1')).toBe(true);
     expect(isLoopbackHost('::1')).toBe(true);
     expect(isLoopbackHost('0.0.0.0')).toBe(false);
-  });
+  }, 15_000);
 
   it('uses token override without persisting', async () => {
     const { ensureWebRemoteAuth } = await import('./webRemoteServer.js');

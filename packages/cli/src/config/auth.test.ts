@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { AuthType } from '@terminai/core';
+import { AuthType, applyTerminaiEnvAliases } from '@terminai/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { validateAuthMethod } from './auth.js';
 
@@ -102,7 +102,6 @@ describe('validateAuthMethod', () => {
     vi.stubEnv('TERMINAI_API_KEY', 'test-terminai-key');
     // We strictly need to simulate the side-effect here because process.env is stubbed
     // The real app imports './utils/envAliases.js' which calls this:
-    const { applyTerminaiEnvAliases } = require('@terminai/core');
     applyTerminaiEnvAliases();
 
     expect(process.env['GEMINI_API_KEY']).toBe('test-terminai-key');

@@ -74,7 +74,7 @@ describe('checkGeminiAuthStatusNonInteractive', () => {
   it('should return ok for LOGIN_WITH_GOOGLE if oauth file exists', async () => {
     vi.mocked(Storage.getOAuthCredsPath).mockReturnValue('/fake/path.json');
     vi.mocked(fs.existsSync).mockReturnValue(true);
-    vi.mocked(fs.readFileSync).mockReturnValue('{}');
+    vi.mocked(fs.readFileSync).mockReturnValue('{"refresh_token":"test"}');
 
     const result = await checkGeminiAuthStatusNonInteractive(
       AuthType.LOGIN_WITH_GOOGLE,

@@ -202,5 +202,9 @@ export function mapGeminiAuthMethodToAuthType(
       return AuthType.USE_GEMINI;
     case 'vertex_ai':
       return AuthType.USE_VERTEX_AI;
+    default: {
+      const exhaustiveCheck: never = method;
+      throw new Error(`Unhandled Gemini auth method: ${exhaustiveCheck}`);
+    }
   }
 }

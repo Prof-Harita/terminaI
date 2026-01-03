@@ -1,7 +1,14 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { DesktopAutomationService } from '../DesktopAutomationService.js';
 import { MockDriver } from '../../drivers/mockDriver.js';
-import type { ElementNode } from '../../protocol/types.js';
+import type { DriverDescriptor, ElementNode } from '../../protocol/types.js';
 
 describe('DesktopAutomationService - Progressive Snapshot', () => {
   let mockDriver: MockDriver;
@@ -54,11 +61,20 @@ describe('DesktopAutomationService - Progressive Snapshot', () => {
       ],
     };
 
-    const driverShim = {
+    const driverShim: DriverDescriptor = {
       name: 'mock',
       kind: 'native' as const,
       version: '1.0',
-      capabilities: { canSnapshot: true, canClick: true } as any,
+      capabilities: {
+        canSnapshot: true,
+        canClick: true,
+        canType: true,
+        canScroll: true,
+        canKey: true,
+        canOcr: false,
+        canScreenshot: false,
+        canInjectInput: false,
+      },
     };
 
     mockDriver.snapshot = async (args) => {
@@ -82,7 +98,13 @@ describe('DesktopAutomationService - Progressive Snapshot', () => {
       };
     };
 
-    const result = await svc.snapshot({ includeTree: true } as any);
+    const result = await svc.snapshot({
+      includeTree: true,
+      includeScreenshot: false,
+      includeTextIndex: false,
+      maxDepth: 10,
+      maxNodes: 100,
+    });
 
     // Verify grafting happened
     const appNode = result.tree?.children?.[0]; // app1
@@ -98,7 +120,13 @@ describe('DesktopAutomationService - Progressive Snapshot', () => {
     const svc = DesktopAutomationService.getInstance();
     const snapSpy = vi.spyOn(mockDriver, 'snapshot');
 
-    await svc.snapshot({ includeTree: false } as any);
+    await svc.snapshot({
+      includeTree: false,
+      includeScreenshot: false,
+      includeTextIndex: false,
+      maxDepth: 10,
+      maxNodes: 100,
+    });
 
     expect(snapSpy).toHaveBeenCalledTimes(1);
     const callArgs = snapSpy.mock.calls[0][0];

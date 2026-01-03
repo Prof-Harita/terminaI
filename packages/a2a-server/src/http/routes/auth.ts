@@ -6,10 +6,8 @@
  */
 
 import { Router } from 'express';
-import {
-  AuthConflictError,
-  LlmAuthManager,
-} from '../../auth/llmAuthManager.js';
+import { AuthConflictError } from '../../auth/llmAuthManager.js';
+import type { LlmAuthManager } from '../../auth/llmAuthManager.js';
 import { logger } from '../../utils/logger.js';
 
 export function createAuthRouter(authManager: LlmAuthManager): Router {

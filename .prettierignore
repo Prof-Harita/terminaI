@@ -5,6 +5,7 @@
 **/node_modules
 .docker
 .DS_Store
+.obsidian/
 .env
 .gemini/
 .idea
@@ -22,3 +23,4 @@ Thumbs.db
 opencode/
 open-interpreter/
 packages/desktop/src-tauri/target/
+packages/desktop/src-tauri/gen/

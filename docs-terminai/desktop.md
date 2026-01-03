@@ -1,7 +1,16 @@
 # Desktop App (Tauri) Guide
 
-The Desktop app is a client for the **A2A server**. It does not spawn the CLI
-and it does not implement its own OAuth.
+The Desktop app provides a GUI for TerminaI.
+
+It supports two modes:
+
+1. **Embedded agent (recommended)**: Desktop spawns a bundled `terminai-cli`
+   sidecar and connects to it automatically.
+2. **External agent**: Desktop connects to an A2A/Web Remote server you started
+   yourself.
+
+Desktop does not implement its own OAuth. Authentication is handled by the agent
+backend (embedded sidecar or external server).
 
 ## Status
 
@@ -19,6 +28,46 @@ and it does not implement its own OAuth.
 | Windows  | ✅ Supported   |
 | macOS    | 🚧 Coming Soon |
 
+## Installation
+
+### Linux
+
+Download from
+[GitHub Releases](https://github.com/Prof-Harita/terminaI/releases):
+
+- `.deb` for Debian/Ubuntu: `sudo dpkg -i terminai_*.deb`
+- `.AppImage` for other distros:
+  `chmod +x TerminaI*.AppImage && ./TerminaI*.AppImage`
+
+### Windows
+
+Download the `.msi` installer from
+[GitHub Releases](https://github.com/Prof-Harita/terminaI/releases) and run it.
+
+> [!NOTE] Desktop installers bundle the CLI as an internal sidecar
+> (`terminai-cli`). They do **not** install `terminai` onto your system PATH.
+> For CLI access, use `npm i -g @terminai/cli` separately.
+
+## Verification Checklist
+
+After installation, verify your setup:
+
+### Linux
+
+```bash
+# 1. Launch the Desktop app
+# 2. Check "About" → version should match the release
+# 3. Enter a prompt and verify the embedded sidecar responds
+```
+
+### Windows
+
+```powershell
+# 1. Launch TerminaI from Start Menu
+# 2. Check Help → About → version should match the release
+# 3. Enter a prompt and verify the embedded sidecar responds
+```
+
 ## Accessibility
 
 The Desktop app strives for WCAG compliance:
@@ -31,26 +80,29 @@ The Desktop app strives for WCAG compliance:
 ## Run (from repo)
 
 ```bash
-npm -w packages/desktop dev
+npm -w packages/desktop run dev
 ```
 
-## Connect to a local agent
+## Embedded agent (default)
 
-1. Start the A2A server via the CLI:
+On first launch, Desktop starts an embedded agent (the bundled sidecar). If the
+agent cannot reach the model (OAuth not completed yet), run `terminai` once in a
+terminal and finish the browser auth flow (or set `TERMINAI_API_KEY`).
+
+## Connect to an external agent
+
+1. Start the server in a terminal:
 
 ```bash
 terminai --web-remote --web-remote-port 41242
 ```
 
-2. In the Desktop app:
+2. In the Desktop app, set:
 
 - **Agent URL**: `http://127.0.0.1:41242`
 - **Token**: the token printed by the CLI (rotate with
   `terminai --web-remote-rotate-token` if needed)
 - **Workspace Path**: server-side path the agent should operate in
-
-If the agent cannot reach the model (OAuth not completed yet), run `terminai`
-once in a terminal and finish the browser auth flow.
 
 ## Connect to a remote agent
 

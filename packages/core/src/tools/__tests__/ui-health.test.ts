@@ -1,12 +1,16 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { UiHealthTool } from '../ui-health.js';
 import { DesktopAutomationService } from '../../gui/service/DesktopAutomationService.js';
 import { MockDriver } from '../../gui/drivers/mockDriver.js';
-import { Config } from '../../config/config.js';
-
-vi.mock('../../config/config.js', () => ({
-  Config: vi.fn(),
-}));
+import { makeFakeConfig } from '../../test-utils/config.js';
+import type { UiDiagnosticsReport } from '../../gui/protocol/types.js';
 
 describe('UiHealthTool', () => {
   let mockDriver: MockDriver;
@@ -21,20 +25,25 @@ describe('UiHealthTool', () => {
     vi.clearAllMocks();
   });
 
-  it('reports healthy when diagnose returns no warnings', async () => {
-    const config = new Config({} as any);
-    const tool = new UiHealthTool(config);
-    const invocation = (tool as any).createInvocation({});
-
-    // Mock diagnose to return clean report
-    const svc = DesktopAutomationService.getInstance();
-    vi.spyOn(svc, 'diagnose').mockResolvedValue({
+  function makeReport(
+    overrides: Partial<UiDiagnosticsReport> = {},
+  ): UiDiagnosticsReport {
+    return {
       connection: { connected: true },
       driver: {
         name: 'mock',
         kind: 'mock',
         version: '1.0',
-        capabilities: {} as any,
+        capabilities: {
+          canSnapshot: true,
+          canClick: true,
+          canType: true,
+          canScroll: true,
+          canKey: true,
+          canOcr: false,
+          canScreenshot: false,
+          canInjectInput: false,
+        },
       },
       snapshotSanity: {
         desktopRootChildren: 1,
@@ -44,7 +53,18 @@ describe('UiHealthTool', () => {
       },
       warnings: [],
       suggestedFixes: [],
-    });
+      ...overrides,
+    };
+  }
+
+  it('reports healthy when diagnose returns no warnings', async () => {
+    const config = makeFakeConfig();
+    const tool = new UiHealthTool(config);
+    const invocation = tool.build({});
+
+    // Mock diagnose to return clean report
+    const svc = DesktopAutomationService.getInstance();
+    vi.spyOn(svc, 'diagnose').mockResolvedValue(makeReport());
 
     const result = await invocation.execute(new AbortController().signal);
     const content = JSON.parse(result.llmContent as string);
@@ -53,28 +73,22 @@ describe('UiHealthTool', () => {
   });
 
   it('reports degraded when warnings exist', async () => {
-    const config = new Config({} as any);
+    const config = makeFakeConfig();
     const tool = new UiHealthTool(config);
-    const invocation = (tool as any).createInvocation({});
+    const invocation = tool.build({});
 
     const svc = DesktopAutomationService.getInstance();
-    vi.spyOn(svc, 'diagnose').mockResolvedValue({
-      connection: { connected: true },
-      driver: {
-        name: 'mock',
-        kind: 'mock',
-        version: '1.0',
-        capabilities: {} as any,
-      },
-      snapshotSanity: {
-        desktopRootChildren: 0,
-        applicationNamesSample: [],
-        activeAppTitle: 'MockApp',
-        notes: [],
-      },
-      warnings: ['Something is wrong'],
-      suggestedFixes: [],
-    });
+    vi.spyOn(svc, 'diagnose').mockResolvedValue(
+      makeReport({
+        snapshotSanity: {
+          desktopRootChildren: 0,
+          applicationNamesSample: [],
+          activeAppTitle: 'MockApp',
+          notes: [],
+        },
+        warnings: ['Something is wrong'],
+      }),
+    );
 
     const result = await invocation.execute(new AbortController().signal);
     const content = JSON.parse(result.llmContent as string);
@@ -96,23 +110,17 @@ describe('UiHealthTool', () => {
   });
 
   it('reports error when disconnected', async () => {
-    const config = new Config({} as any);
+    const config = makeFakeConfig();
     const tool = new UiHealthTool(config);
-    const invocation = (tool as any).createInvocation({});
+    const invocation = tool.build({});
 
     const svc = DesktopAutomationService.getInstance();
-    vi.spyOn(svc, 'diagnose').mockResolvedValue({
-      connection: { connected: false, error: 'Disconnected' },
-      driver: {
-        name: 'mock',
-        kind: 'mock',
-        version: '1.0',
-        capabilities: {} as any,
-      },
-      snapshotSanity: {} as any,
-      warnings: ['Driver disconnected or disabled'],
-      suggestedFixes: [],
-    });
+    vi.spyOn(svc, 'diagnose').mockResolvedValue(
+      makeReport({
+        connection: { connected: false, error: 'Disconnected' },
+        warnings: ['Driver disconnected or disabled'],
+      }),
+    );
 
     const result = await invocation.execute(new AbortController().signal);
     const content = JSON.parse(result.llmContent as string);

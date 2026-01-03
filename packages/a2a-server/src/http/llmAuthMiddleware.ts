@@ -6,7 +6,7 @@
  */
 
 import type { Request, Response, NextFunction } from 'express';
-import { LlmAuthManager } from '../auth/llmAuthManager.js';
+import type { LlmAuthManager } from '../auth/llmAuthManager.js';
 
 export function createLlmAuthMiddleware(authManager: LlmAuthManager) {
   return (_req: Request, res: Response, next: NextFunction) => {

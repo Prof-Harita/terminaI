@@ -52,9 +52,12 @@ describe('Selector Engine', () => {
         try {
           parseSelector(pattern);
           // If it doesn't throw, that's fine for some edge cases
-        } catch (e) {
-          if (e instanceof Error && 'hint' in e) {
-            expect((e as any).hint).toContain('CSS selector');
+        } catch (e: unknown) {
+          if (typeof e === 'object' && e !== null && 'hint' in e) {
+            const hint = (e as { hint?: unknown }).hint;
+            if (typeof hint === 'string') {
+              expect(hint).toContain('CSS selector');
+            }
           }
         }
       }

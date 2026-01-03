@@ -14,6 +14,7 @@ import { theme } from '../semantic-colors.js';
 import { useUIState } from '../contexts/UIStateContext.js';
 import { useTextBuffer } from '../components/shared/text-buffer.js';
 import { TextInput } from '../components/shared/TextInput.js';
+import { checkExhaustive } from '../../utils/checks.js';
 
 type Step = 'base_url' | 'model' | 'env_var';
 
@@ -131,6 +132,18 @@ export function OpenAICompatibleSetupDialog({
             onComplete();
           },
         };
+      default:
+        checkExhaustive(step);
+        return {
+          title: 'OpenAI Compatible setup',
+          description:
+            'Enter the base URL for your provider (http:// allowed for local).',
+          buffer: baseUrlBuffer,
+          onSubmit: () => {
+            onAuthError(null);
+            setStep('model');
+          },
+        };
     }
   }, [
     baseUrlBuffer,
@@ -140,6 +153,7 @@ export function OpenAICompatibleSetupDialog({
     settings,
     step,
     onComplete,
+    setStep,
   ]);
 
   return (
@@ -177,7 +191,7 @@ export function OpenAICompatibleSetupDialog({
             Export it before running TerminaI:
           </Text>
           <Text color={theme.text.link}>
-            export {envVarBuffer.text || 'OPENAI_API_KEY'}="YOUR_KEY"
+            {`export ${envVarBuffer.text || 'OPENAI_API_KEY'}='YOUR_KEY'`}
           </Text>
         </Box>
       )}

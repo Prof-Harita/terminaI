@@ -6,13 +6,13 @@
  */
 
 import {
-  Config,
   checkGeminiAuthStatusNonInteractive,
   beginGeminiOAuthLoopbackFlow,
   AuthType,
   saveApiKey,
   clearCachedCredentialFile,
 } from '@terminai/core';
+import type { Config } from '@terminai/core';
 import { logger } from '../utils/logger.js';
 
 export type LlmAuthStatus = 'ok' | 'required' | 'in_progress' | 'error';
@@ -33,7 +33,7 @@ export interface LlmAuthStatusResult {
 }
 
 export class AuthConflictError extends Error {
-  public readonly statusCode = 409;
+  readonly statusCode = 409;
 }
 
 export class LlmAuthManager {
@@ -59,7 +59,7 @@ export class LlmAuthManager {
     this.effectiveAuthType = this.getSelectedAuthType();
   }
 
-  public async getStatus(): Promise<LlmAuthStatusResult> {
+  async getStatus(): Promise<LlmAuthStatusResult> {
     const authType = this.effectiveAuthType ?? this.getSelectedAuthType();
 
     if (this.oauthFlow) {
@@ -96,9 +96,7 @@ export class LlmAuthManager {
     };
   }
 
-  public async submitGeminiApiKey(
-    apiKey: string,
-  ): Promise<LlmAuthStatusResult> {
+  async submitGeminiApiKey(apiKey: string): Promise<LlmAuthStatusResult> {
     const trimmed = apiKey.trim();
     if (trimmed.length === 0) {
       return {
@@ -115,7 +113,7 @@ export class LlmAuthManager {
     return this.getStatus();
   }
 
-  public async startGeminiOAuth(): Promise<{ authUrl: string }> {
+  async startGeminiOAuth(): Promise<{ authUrl: string }> {
     if (this.oauthFlow) {
       throw new AuthConflictError('OAuth already in progress');
     }
@@ -152,7 +150,7 @@ export class LlmAuthManager {
     return { authUrl };
   }
 
-  public async cancelGeminiOAuth(): Promise<LlmAuthStatusResult> {
+  async cancelGeminiOAuth(): Promise<LlmAuthStatusResult> {
     if (this.oauthFlow) {
       const cancel = this.oauthFlow.cancel;
       this.oauthFlow = null;
@@ -167,7 +165,7 @@ export class LlmAuthManager {
     return this.getStatus();
   }
 
-  public async useGeminiVertex(): Promise<LlmAuthStatusResult> {
+  async useGeminiVertex(): Promise<LlmAuthStatusResult> {
     this.effectiveAuthType = AuthType.USE_VERTEX_AI;
 
     const hasVertexEnv =
@@ -188,7 +186,7 @@ export class LlmAuthManager {
     return this.getStatus();
   }
 
-  public async clearGeminiAuth(): Promise<LlmAuthStatusResult> {
+  async clearGeminiAuth(): Promise<LlmAuthStatusResult> {
     // Cancel any in-progress OAuth flow
     if (this.oauthFlow) {
       const cancel = this.oauthFlow.cancel;
@@ -211,13 +209,6 @@ export class LlmAuthManager {
     this.effectiveAuthType = undefined;
     this.lastErrorMessage = null;
     this.lastErrorCode = undefined;
-
-    // Try to refresh with undefined auth type, which should fail gracefully
-    try {
-      await this.config.refreshAuth(undefined as any);
-    } catch (err) {
-      // Expected to fail when no auth is configured
-    }
 
     return this.getStatus();
   }

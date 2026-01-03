@@ -6,7 +6,7 @@
  */
 
 import type { ProviderId } from './wizardState.js';
-import { AuthType } from '../core/contentGenerator.js';
+import type { AuthType } from '../core/contentGenerator.js';
 
 export interface WizardSettingsInput {
   provider: ProviderId;

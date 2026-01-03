@@ -19,11 +19,19 @@ vi.mock('node:http', async () => {
   };
 });
 
+type MockFn = ReturnType<typeof vi.fn>;
+interface MockHttpServer {
+  listen: MockFn;
+  close: MockFn;
+  on: MockFn;
+}
+
 describe('beginGeminiOAuthLoopbackFlow', () => {
   let mockConfig: Config;
-  let mockServer: any;
+  let mockServer: MockHttpServer;
 
   beforeEach(() => {
+    vi.stubEnv('OAUTH_CALLBACK_PORT', '31337');
     mockConfig = {
       getProxy: () => undefined,
     } as unknown as Config;
@@ -34,10 +42,14 @@ describe('beginGeminiOAuthLoopbackFlow', () => {
       on: vi.fn(),
     };
 
-    vi.mocked(http.createServer).mockReturnValue(mockServer);
+    // The production function expects an http.Server; we only need a small subset for testing.
+    vi.mocked(http.createServer).mockReturnValue(
+      mockServer as unknown as http.Server,
+    );
   });
 
   afterEach(() => {
+    vi.unstubAllEnvs();
     vi.resetAllMocks();
   });
 
@@ -60,7 +72,7 @@ describe('beginGeminiOAuthLoopbackFlow', () => {
     // Trigger cancel
     try {
       result.cancel();
-    } catch (e) {
+    } catch (_e) {
       // It might reject the promise, but cancel itself is sync-ish or void
     }
 

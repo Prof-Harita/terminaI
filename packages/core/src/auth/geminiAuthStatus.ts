@@ -89,7 +89,7 @@ export async function checkGeminiAuthStatusNonInteractive(
           }
           return { status: 'ok' };
         }
-      } catch (e) {
+      } catch (_e) {
         return { status: 'error', message: 'OAuth credentials corrupted' };
       }
       return { status: 'required', message: 'OAuth credentials missing' };

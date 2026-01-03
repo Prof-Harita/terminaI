@@ -1,6 +1,14 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { DesktopAutomationService } from '../DesktopAutomationService.js';
 import { MockDriver } from '../../drivers/mockDriver.js';
+import type { UiTypeArgs } from '../../protocol/schemas.js';
 
 describe('DesktopAutomationService - Smart Redaction', () => {
   let mockDriver: MockDriver;
@@ -44,11 +52,22 @@ describe('DesktopAutomationService - Smart Redaction', () => {
           canSnapshot: true,
           canClick: true,
           canType: true,
-        } as any,
+          canScroll: true,
+          canKey: true,
+          canOcr: false,
+          canScreenshot: false,
+          canInjectInput: false,
+        },
       },
     });
 
-    await svc.type({ target: 'name:"Password"', text: 'secret' } as any);
+    await svc.type({
+      target: 'name:"Password"',
+      text: 'secret',
+      mode: 'insert',
+      verify: true,
+      // Intentionally omit `redactInLogs` to exercise smart-redaction inference.
+    } as unknown as UiTypeArgs);
 
     expect(typeSpy).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -78,7 +97,12 @@ describe('DesktopAutomationService - Smart Redaction', () => {
           canSnapshot: true,
           canClick: true,
           canType: true,
-        } as any,
+          canScroll: true,
+          canKey: true,
+          canOcr: false,
+          canScreenshot: false,
+          canInjectInput: false,
+        },
       },
     });
 
@@ -87,7 +111,9 @@ describe('DesktopAutomationService - Smart Redaction', () => {
       target: 'name:"Username"',
       text: 'user',
       redactInLogs: false,
-    } as any);
+      mode: 'insert',
+      verify: true,
+    });
     expect(typeSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         redactInLogs: false,
@@ -99,7 +125,9 @@ describe('DesktopAutomationService - Smart Redaction', () => {
       target: 'name:"Username"',
       text: 'user',
       redactInLogs: true,
-    } as any);
+      mode: 'insert',
+      verify: true,
+    });
     expect(typeSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         redactInLogs: true,

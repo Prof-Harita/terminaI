@@ -1,12 +1,15 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { UiDiagnoseTool } from '../ui-diagnose.js';
 import { DesktopAutomationService } from '../../gui/service/DesktopAutomationService.js';
 import { MockDriver } from '../../gui/drivers/mockDriver.js';
-import { Config } from '../../config/config.js';
-
-vi.mock('../../config/config.js', () => ({
-  Config: vi.fn(),
-}));
+import { makeFakeConfig } from '../../test-utils/config.js';
 
 describe('UiDiagnoseTool', () => {
   let mockDriver: MockDriver;
@@ -22,9 +25,9 @@ describe('UiDiagnoseTool', () => {
   });
 
   it('executes diagnose successfully', async () => {
-    const config = new Config({} as any);
+    const config = makeFakeConfig();
     const tool = new UiDiagnoseTool(config);
-    const invocation = (tool as any).createInvocation({});
+    const invocation = tool.build({});
 
     // Override snapshot to return minimal tree
     mockDriver.snapshot = async () => ({
@@ -60,9 +63,9 @@ describe('UiDiagnoseTool', () => {
   });
 
   it('handles exceptions gracefully', async () => {
-    const config = new Config({} as any);
+    const config = makeFakeConfig();
     const tool = new UiDiagnoseTool(config);
-    const invocation = (tool as any).createInvocation({});
+    const invocation = tool.build({});
 
     // Force an error in snapshot provided by mockDriver to simulate service failure?
     // Or easier: Mock implementation of diagnose on service
