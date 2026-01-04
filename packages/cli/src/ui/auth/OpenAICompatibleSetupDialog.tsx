@@ -11,15 +11,16 @@ import { AuthType, buildWizardSettingsPatch } from '@terminai/core';
 import type { LoadedSettings } from '../../config/settings.js';
 import { SettingScope } from '../../config/settings.js';
 import { theme } from '../semantic-colors.js';
-import { useUIState } from '../contexts/UIStateContext.js';
 import { useTextBuffer } from '../components/shared/text-buffer.js';
 import { TextInput } from '../components/shared/TextInput.js';
 import { checkExhaustive } from '../../utils/checks.js';
+import process from 'node:process';
 
 type Step = 'base_url' | 'model' | 'env_var';
 
 interface Props {
   settings: LoadedSettings;
+  terminalWidth?: number;
   onBack: () => void;
   onComplete: () => void;
   onAuthError: (error: string | null) => void;
@@ -27,12 +28,15 @@ interface Props {
 
 export function OpenAICompatibleSetupDialog({
   settings,
+  terminalWidth,
   onBack,
   onComplete,
   onAuthError,
 }: Props) {
-  const { mainAreaWidth } = useUIState();
-  const viewportWidth = Math.max(20, mainAreaWidth - 8);
+  const viewportWidth = Math.max(
+    20,
+    (terminalWidth ?? process.stdout.columns ?? 80) - 8,
+  );
 
   const [step, setStep] = useState<Step>('base_url');
 
