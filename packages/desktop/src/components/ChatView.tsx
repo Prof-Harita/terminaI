@@ -46,6 +46,8 @@ interface ChatViewProps {
   ) => void;
   voiceEnabled?: boolean;
   onStop?: () => void;
+  onOpenSettings?: () => void;
+  onSwitchProvider?: () => void;
 }
 
 // ... ToolResult component ...
@@ -61,6 +63,8 @@ export function ChatView({
   onPendingConfirmation,
   voiceEnabled,
   onStop,
+  onOpenSettings,
+  onSwitchProvider,
 }: ChatViewProps) {
   // ... existing hooks ...
 
@@ -297,9 +301,7 @@ export function ChatView({
               </p>
               <button
                 onClick={() => {
-                  // Navigate to settings - this would typically use a router
-                  // For now, dispatch an event or use a callback
-                  window.dispatchEvent(new CustomEvent('open-settings'));
+                  onOpenSettings?.();
                 }}
                 className="inline-block px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm hover:opacity-90 cursor-pointer"
               >
@@ -426,6 +428,40 @@ export function ChatView({
           );
         })}
       </div>
+
+      {displayMessages[displayMessages.length - 1]?.role === 'assistant' &&
+        (displayMessages[displayMessages.length - 1].content.includes('429') ||
+          displayMessages[displayMessages.length - 1].content
+            .toLowerCase()
+            .includes('quota') ||
+          displayMessages[displayMessages.length - 1].content.includes(
+            'Too Many Requests',
+          ) ||
+          displayMessages[displayMessages.length - 1].content.includes(
+            'Resource has been exhausted',
+          )) && (
+          <div className="mx-4 mb-2 p-3 bg-red-500/10 border border-red-500/30 rounded-md flex items-center justify-between animate-in fade-in slide-in-from-bottom-2">
+            <div className="flex items-center gap-3">
+              <span className="text-red-500 font-bold text-lg">!</span>
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold text-red-500">
+                  Out of Credits
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  Your API quota has been exhausted.
+                </span>
+              </div>
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              className="text-xs h-8 border-red-500/30 hover:bg-red-500/10 hover:text-red-500"
+              onClick={() => onSwitchProvider?.()}
+            >
+              Switch Provider
+            </Button>
+          </div>
+        )}
 
       {/* Agent thinking indicator */}
       {isProcessing && (

@@ -138,9 +138,13 @@ export class Runner {
 
     const escapedPrompt = prompt.replace(/"/g, '\\"').replace(/`/g, '\\`');
 
+    const approvalModeFlag = this.config.approvalMode
+      ? ` --approval-mode ${this.config.approvalMode}`
+      : '';
+
     return this.sandboxController.exec(sandbox, 'sh', [
       '-c',
-      `${terminaiPath} "${escapedPrompt}" --session-id ${sessionId} 2>&1`,
+      `${terminaiPath} "${escapedPrompt}"${approvalModeFlag} --session-id ${sessionId} 2>&1`,
     ]);
   }
 

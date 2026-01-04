@@ -112,11 +112,14 @@ interface CalculatedEdit {
   isNewFile: boolean;
 }
 
+import { BrainRiskManager } from '../brain/toolIntegration.js';
+
 class EditToolInvocation
   extends BaseToolInvocation<EditToolParams, ToolResult>
   implements ToolInvocation<EditToolParams, ToolResult>
 {
   private readonly resolvedPath: string;
+  private brainManager: BrainRiskManager;
 
   constructor(
     private readonly config: Config,
@@ -126,6 +129,7 @@ class EditToolInvocation
     displayName?: string,
   ) {
     super(params, messageBus, toolName, displayName);
+    this.brainManager = new BrainRiskManager(this.config);
     this.resolvedPath = path.resolve(
       this.config.getTargetDir(),
       this.params.file_path,
@@ -295,7 +299,41 @@ class EditToolInvocation
       config: this.config,
       provenance: this.getProvenance(),
     });
-    const reviewResult = computeMinimumReviewLevel(actionProfile, this.config);
+    let reviewResult = computeMinimumReviewLevel(actionProfile, this.config);
+    let reasons: string[] = reviewResult.reasons
+      ? [...reviewResult.reasons]
+      : [];
+
+    // Brain Risk Assessment Integration
+    const brainAuthority = this.config.getBrainAuthority();
+    if (reviewResult.level !== 'A' || brainAuthority !== 'advisory') {
+      const relativePath = shortenPath(
+        makeRelative(this.params.file_path, this.config.getTargetDir()),
+      );
+      const request = `Edit ${relativePath}`;
+      // Metadata-only summary for risk assessment (no raw content to avoid secret exfiltration)
+      const isNewFile = this.params.old_string === '';
+      const fileExt = path.extname(this.resolvedPath) || 'unknown';
+      const editSummary = isNewFile
+        ? `Creating new file (${fileExt}), content length: ${this.params.new_string.length} chars`
+        : `Replacing ${this.params.old_string.length} chars with ${this.params.new_string.length} chars in ${fileExt} file`;
+
+      await this.brainManager.evaluateBrain(
+        request,
+        editSummary, // Metadata-only description for risk assessment
+        this.resolvedPath,
+        abortSignal,
+      );
+
+      if (brainAuthority !== 'advisory') {
+        reviewResult = this.brainManager.applyBrainAuthority(
+          reviewResult,
+          brainAuthority,
+        );
+        reasons = reviewResult.reasons;
+      }
+    }
+
     if (reviewResult.level === 'A') {
       return false;
     }
@@ -326,7 +364,7 @@ class EditToolInvocation
       reviewLevel: reviewResult.level,
       requiresPin: reviewResult.requiresPin,
       pinLength: reviewResult.requiresPin ? 6 : undefined,
-      explanation: reviewResult.reasons.join('; '),
+      explanation: reasons.join('; '),
       onConfirm: async (outcome: ToolConfirmationOutcome) => {
         if (outcome === ToolConfirmationOutcome.ProceedAlways) {
           // No need to publish a policy update as the default policy for
@@ -387,6 +425,12 @@ class EditToolInvocation
         throw error;
       }
       const errorMsg = error instanceof Error ? error.message : String(error);
+      this.brainManager.recordOutcome(
+        `Edit ${shortenPath(makeRelative(this.params.file_path, this.config.getTargetDir()))}`,
+        'failure',
+        true, // userApproved - if we got here, user approved
+        errorMsg,
+      );
       return {
         llmContent: `Error preparing edit: ${errorMsg}`,
         returnDisplay: `Error preparing edit: ${errorMsg}`,
@@ -398,6 +442,12 @@ class EditToolInvocation
     }
 
     if (editData.error) {
+      this.brainManager.recordOutcome(
+        `Edit ${shortenPath(makeRelative(this.params.file_path, this.config.getTargetDir()))}`,
+        'failure',
+        true, // userApproved - if we got here, user approved
+        editData.error.raw,
+      );
       return {
         llmContent: editData.error.raw,
         returnDisplay: `Error: ${editData.error.display}`,
@@ -471,12 +521,33 @@ class EditToolInvocation
         );
       }
 
+      this.brainManager.recordOutcome(
+        `Edit ${shortenPath(makeRelative(this.params.file_path, this.config.getTargetDir()))}`,
+        'success',
+      );
+
+      let llmContent = llmSuccessMessageParts.join(' ');
+      const brainPreamble = this.brainManager.formatRiskPreamble();
+      if (brainPreamble.text) {
+        llmContent = `${brainPreamble.text}\n\n${llmContent}`;
+      }
+
       return {
-        llmContent: llmSuccessMessageParts.join(' '),
+        llmContent,
         returnDisplay: displayResult,
+        // Surface brain warnings to user if warranted (non-trivial risk, warnings, etc.)
+        userWarning: brainPreamble.surfaceToUser
+          ? brainPreamble.text
+          : undefined,
       };
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
+      this.brainManager.recordOutcome(
+        `Edit ${shortenPath(makeRelative(this.params.file_path, this.config.getTargetDir()))}`,
+        'failure',
+        true, // userApproved - if we got here, user approved
+        errorMsg,
+      );
       return {
         llmContent: `Error executing edit: ${errorMsg}`,
         returnDisplay: `Error writing file: ${errorMsg}`,

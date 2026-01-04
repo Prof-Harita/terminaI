@@ -8,7 +8,7 @@
 import * as path from 'node:path';
 import * as dotenv from 'dotenv';
 
-import type { TelemetryTarget } from '@terminai/core';
+import type { TelemetryTarget, ProviderConfig } from '@terminai/core';
 import {
   AuthType,
   Config,
@@ -22,6 +22,7 @@ import {
   startupProfiler,
   PREVIEW_GEMINI_MODEL,
   findEnvFile,
+  LlmProviderId,
 } from '@terminai/core';
 
 import { logger } from '../utils/logger.js';
@@ -37,6 +38,51 @@ export interface LoadConfigOptions {
   readonly deferLlmAuth?: boolean;
 }
 
+/**
+ * 3.3 Fix: Compute ProviderConfig from settings to persist provider across restarts.
+ * Mirrors CLI's settingsToProviderConfig behavior.
+ */
+function settingsToProviderConfig(settings: LoadedSettings['merged']): {
+  providerConfig: ProviderConfig;
+  resolvedModel?: string;
+} {
+  let providerConfig: ProviderConfig = { provider: LlmProviderId.GEMINI };
+  let resolvedModel: string | undefined;
+
+  if (settings.llm?.provider === 'openai_compatible') {
+    const s = settings.llm.openaiCompatible;
+    const openaiModel = s?.model;
+    if (s?.baseUrl && openaiModel) {
+      let authType: 'none' | 'api-key' | 'bearer' = 'none';
+      const auth = s.auth as
+        | { type?: 'none' | 'api-key' | 'bearer'; envVarName?: string }
+        | undefined;
+      if (auth?.type === 'api-key') authType = 'api-key';
+      else if (auth?.type === 'bearer') authType = 'bearer';
+
+      providerConfig = {
+        provider: LlmProviderId.OPENAI_COMPATIBLE,
+        baseUrl: s.baseUrl,
+        model: openaiModel,
+        auth: {
+          type: authType,
+          apiKey: auth?.envVarName ? process.env[auth.envVarName] : undefined,
+          envVarName: auth?.envVarName,
+        },
+      };
+      resolvedModel = openaiModel;
+    } else {
+      logger.warn(
+        '[Config] llm.provider is openai_compatible but baseUrl/model missing, falling back to Gemini',
+      );
+    }
+  } else if (settings.llm?.provider === 'anthropic') {
+    providerConfig = { provider: LlmProviderId.ANTHROPIC };
+  }
+
+  return { providerConfig, resolvedModel };
+}
+
 export async function loadConfig(
   loadedSettings: LoadedSettings,
   extensionLoader: ExtensionLoader,
@@ -48,15 +94,23 @@ export async function loadConfig(
   const workspaceDir = targetDirOverride || process.cwd();
   const adcFilePath = process.env['GOOGLE_APPLICATION_CREDENTIALS'];
 
+  // 3.3 Fix: Compute providerConfig from persisted settings
+  const { providerConfig, resolvedModel } = settingsToProviderConfig(settings);
+
   const configParams: ConfigParameters = {
     sessionId: taskId,
-    model: settings.general?.previewFeatures
-      ? PREVIEW_GEMINI_MODEL
-      : DEFAULT_GEMINI_MODEL,
+    // Use OpenAI model if set, otherwise Gemini model
+    model:
+      resolvedModel ||
+      (settings.general?.previewFeatures
+        ? PREVIEW_GEMINI_MODEL
+        : DEFAULT_GEMINI_MODEL),
     embeddingModel: DEFAULT_GEMINI_EMBEDDING_MODEL,
     sandbox: undefined,
     targetDir: workspaceDir,
     debugMode: process.env['DEBUG'] === 'true' || false,
+    // 3.3 Fix: Pass provider config from settings
+    providerConfig,
     question: '',
 
     // CRITICAL FIX: V2 nested paths (not V1 flat paths)

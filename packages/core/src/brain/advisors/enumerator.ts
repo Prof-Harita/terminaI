@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { debugLogger } from '../../utils/debugLogger.js';
 import type { SystemSpec } from '../systemSpec.js';
 import type { Advisor, AdvisorProposal } from './types.js';
 import type { GenerativeModelAdapter } from '../riskAssessor.js';
@@ -58,9 +59,9 @@ Respond with ONLY a structured JSON proposal for the BEST overall approach you i
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
       }
-      console.warn('EnumeratorAdvisor: No JSON found in response');
+      debugLogger.warn('EnumeratorAdvisor: No JSON found in response');
     } catch (error) {
-      console.error('EnumeratorAdvisor Error:', error);
+      debugLogger.error('EnumeratorAdvisor Error:', error);
     }
 
     return {

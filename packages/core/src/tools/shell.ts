@@ -9,9 +9,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os, { EOL } from 'node:os';
 import crypto from 'node:crypto';
-import type { GenerativeModelAdapter } from '../brain/index.js';
+
 import type { Config } from '../config/config.js';
-import type { BrainAuthority } from '../config/brainAuthority.js';
+
 import { debugLogger, type AnyToolInvocation } from '../index.js';
 import { ToolErrorType } from './tool-error.js';
 import type {
@@ -49,31 +49,13 @@ import {
 } from '../utils/shell-permissions.js';
 import { SHELL_TOOL_NAME } from './tool-names.js';
 import type { MessageBus } from '../confirmation-bus/message-bus.js';
-import { classifyRisk } from '../safety/risk-classifier.js';
+
 import { checkDestructive } from '../safety/built-in.js';
-import { getResponseText } from '../utils/partUtils.js';
-import {
-  assessRisk,
-  handleConfidence,
-  logOutcome,
-  routeExecution,
-  type ConfidenceAction,
-  type ExecutionDecision,
-  type RiskAssessment,
-} from '../brain/index.js';
-import type {
-  DeterministicReviewResult,
-  ReviewLevel,
-} from '../safety/approval-ladder/types.js';
+
+import type { DeterministicReviewResult } from '../safety/approval-ladder/types.js';
+import { BrainRiskManager } from '../brain/toolIntegration.js';
 
 export const OUTPUT_UPDATE_INTERVAL_MS = 1000;
-
-interface BrainContext {
-  assessment: RiskAssessment;
-  decision: ExecutionDecision;
-  confidenceAction: ConfidenceAction;
-  request: string;
-}
 
 export interface ShellToolParams {
   command: string;
@@ -85,18 +67,18 @@ export class ShellToolInvocation extends BaseToolInvocation<
   ShellToolParams,
   ToolResult
 > {
+  private brainManager: BrainRiskManager;
+
   constructor(
     private readonly config: Config,
     params: ShellToolParams,
-    private readonly allowlist: Set<string>,
     messageBus?: MessageBus,
     _toolName?: string,
     _toolDisplayName?: string,
   ) {
     super(params, messageBus, _toolName, _toolDisplayName);
+    this.brainManager = new BrainRiskManager(this.config);
   }
-
-  private brainContext: BrainContext | null = null;
 
   getDescription(): string {
     let description = `${this.params.command}`;
@@ -127,8 +109,6 @@ export class ShellToolInvocation extends BaseToolInvocation<
     _abortSignal: AbortSignal,
   ): Promise<ToolCallConfirmationDetails | false> {
     const command = stripShellWrapper(this.params.command);
-    const rootCommands = [...new Set(getCommandRoots(command))];
-    const risk = classifyRisk(command);
 
     // In non-interactive mode, we need to prevent the tool from hanging while
     // waiting for user input. If a tool is not fully allowed (e.g. via
@@ -147,10 +127,6 @@ export class ShellToolInvocation extends BaseToolInvocation<
         `Command "${command}" is not in the list of allowed tools for non-interactive mode.`,
       );
     }
-
-    const commandsToConfirm = rootCommands.filter(
-      (command) => !this.allowlist.has(command),
-    );
 
     // Build deterministic action profile for approval ladder
     const { buildShellActionProfile } = await import(
@@ -176,257 +152,45 @@ export class ShellToolInvocation extends BaseToolInvocation<
     };
 
     const brainAuthority = this.config.getBrainAuthority();
-    let brainContext: BrainContext | null = null;
     if (reviewResult.level !== 'A' || brainAuthority !== 'advisory') {
-      brainContext = await this.evaluateBrain(command);
+      const request = this.params.description ?? command;
+      const systemContext = this.params.dir_path ?? this.config.getTargetDir();
+
+      await this.brainManager.evaluateBrain(
+        request,
+        command,
+        systemContext,
+        _abortSignal,
+      );
+
       if (brainAuthority !== 'advisory') {
-        effectiveReview = this.applyBrainAuthority(
+        effectiveReview = this.brainManager.applyBrainAuthority(
           effectiveReview,
-          brainContext,
           brainAuthority,
         );
       }
     }
 
-    // Skip confirmation for Level A (no approval needed).
     if (effectiveReview.level === 'A') {
       return false;
     }
 
     const confirmationDetails: ToolExecuteConfirmationDetails = {
       type: 'exec',
-      title: 'Confirm Shell Command (risk-aware)',
-      command:
-        brainContext?.decision.confirmationMessage && commandsToConfirm.length
-          ? `${this.params.command}\n\n${brainContext.decision.confirmationMessage}`
-          : (brainContext?.decision.confirmationMessage ?? this.params.command),
-      rootCommand: commandsToConfirm.length
-        ? commandsToConfirm.join(', ')
-        : rootCommands.join(', '),
-      risk,
-      provenance:
-        invocationProvenance.length > 0 ? invocationProvenance : undefined,
+      title: 'Confirm Execution',
+      command,
+      rootCommand: getCommandRoots(command)[0] || command,
       reviewLevel: effectiveReview.level,
       requiresPin: effectiveReview.requiresPin,
       pinLength: effectiveReview.requiresPin ? 6 : undefined,
       explanation: effectiveReview.reasons.join('; '),
-      onConfirm: async (
-        outcome: ToolConfirmationOutcome,
-        _payload?: { pin?: string },
-      ) => {
-        // Existing allowlist logic
-        if (outcome === ToolConfirmationOutcome.ProceedAlways) {
-          commandsToConfirm.forEach((command) => this.allowlist.add(command));
-        }
+      provenance: this.getProvenance(),
+      onConfirm: async (outcome: ToolConfirmationOutcome) => {
         await this.publishPolicyUpdate(outcome);
       },
     };
+
     return confirmationDetails;
-  }
-
-  private async evaluateBrain(command: string): Promise<BrainContext | null> {
-    if (this.brainContext) {
-      return this.brainContext;
-    }
-
-    const request = this.params.description ?? command;
-    const systemContext = this.params.dir_path ?? this.config.getTargetDir();
-    const model = this.buildGenerativeModelAdapter();
-
-    try {
-      const assessment = await assessRisk(
-        request,
-        command,
-        systemContext,
-        model ?? undefined,
-      );
-      const decision = routeExecution(assessment);
-      const confidenceAction = handleConfidence(
-        assessment.dimensions.confidence,
-        request,
-      );
-      this.brainContext = { assessment, decision, confidenceAction, request };
-      return this.brainContext;
-    } catch (error) {
-      debugLogger.error(
-        `Failed to run risk assessment: ${getErrorMessage(error)}`,
-      );
-      return null;
-    }
-  }
-
-  private applyBrainAuthority(
-    review: DeterministicReviewResult,
-    brainContext: BrainContext | null,
-    authority: BrainAuthority,
-  ): DeterministicReviewResult {
-    if (!brainContext) {
-      return review;
-    }
-
-    const requiredLevel = this.getBrainReviewLevel(authority, brainContext);
-    if (!requiredLevel) {
-      return review;
-    }
-
-    if (this.isReviewLevelAtLeast(review.level, requiredLevel)) {
-      return review;
-    }
-
-    const nextReasons = [
-      ...review.reasons,
-      `Brain risk assessment marked this as ${brainContext.assessment.overallRisk}; require ${requiredLevel} review.`,
-    ];
-
-    return {
-      level: requiredLevel,
-      reasons: nextReasons,
-      requiresClick: requiredLevel !== 'A',
-      requiresPin: requiredLevel === 'C',
-    };
-  }
-
-  private getBrainReviewLevel(
-    authority: BrainAuthority,
-    brainContext: BrainContext,
-  ): ReviewLevel | undefined {
-    const risk = brainContext.assessment.overallRisk;
-
-    if (authority === 'advisory') {
-      return undefined;
-    }
-
-    if (authority === 'escalate-only') {
-      if (!brainContext.decision.requiresConfirmation) {
-        return undefined;
-      }
-      return risk === 'critical' ? 'C' : 'B';
-    }
-
-    if (risk === 'critical') {
-      return 'C';
-    }
-    if (risk === 'elevated' || risk === 'normal') {
-      return 'B';
-    }
-
-    return undefined;
-  }
-
-  private isReviewLevelAtLeast(
-    current: ReviewLevel,
-    required: ReviewLevel,
-  ): boolean {
-    const rank: Record<ReviewLevel, number> = { A: 0, B: 1, C: 2 };
-    return rank[current] >= rank[required];
-  }
-
-  private buildGenerativeModelAdapter(): GenerativeModelAdapter | null {
-    try {
-      if (
-        typeof (this.config as unknown as { getBaseLlmClient?: unknown })
-          .getBaseLlmClient !== 'function'
-      ) {
-        return null;
-      }
-
-      const baseLlm = this.config.getBaseLlmClient();
-      const abortController = new AbortController();
-      const modelConfigKey = { model: this.config.getActiveModel() };
-
-      return {
-        generateContent: async (prompt: string) => {
-          const response = await baseLlm.generateContent({
-            modelConfigKey,
-            contents: [{ role: 'user', parts: [{ text: prompt }] }],
-            abortSignal: abortController.signal,
-            promptId: this.config.getSessionId(),
-          });
-
-          const text = getResponseText(response) ?? '';
-          return {
-            response: {
-              text: () => text,
-            },
-          } as unknown as { response: { text: () => string } };
-        },
-      };
-    } catch (error) {
-      debugLogger.error(
-        `Failed to build LLM adapter for risk assessment: ${getErrorMessage(error)}`,
-      );
-      return null;
-    }
-  }
-
-  private formatRiskPreamble(context: BrainContext): {
-    text: string;
-    surfaceToUser: boolean;
-  } {
-    const { assessment, decision, confidenceAction } = context;
-    const lines = [
-      `Risk: ${assessment.overallRisk} (${assessment.reasoning})`,
-      `Environment: ${assessment.dimensions.environment}`,
-      `Suggested strategy: ${assessment.suggestedStrategy}`,
-    ];
-
-    if (decision.shouldWarn && decision.warningMessage) {
-      lines.push(decision.warningMessage);
-    }
-
-    if (confidenceAction.type === 'narrate-uncertainty') {
-      if (confidenceAction.message) {
-        lines.push(confidenceAction.message);
-      }
-    }
-
-    if (confidenceAction.type === 'diagnostic-first') {
-      if (confidenceAction.message) {
-        lines.push(confidenceAction.message);
-      }
-      if (confidenceAction.diagnosticCommand) {
-        lines.push(`Diagnostic: ${confidenceAction.diagnosticCommand}`);
-      }
-    }
-
-    if (confidenceAction.type === 'ask-clarification') {
-      if (confidenceAction.clarificationQuestion) {
-        lines.push(confidenceAction.clarificationQuestion);
-      }
-    }
-
-    const surfaceToUser =
-      decision.shouldWarn ||
-      assessment.overallRisk !== 'trivial' ||
-      confidenceAction.type !== 'proceed';
-    return { text: lines.filter(Boolean).join('\n'), surfaceToUser };
-  }
-
-  private recordOutcome(
-    context: BrainContext | null,
-    command: string,
-    outcome: 'success' | 'failure' | 'cancelled',
-    errorMessage?: string,
-  ): void {
-    if (!context) {
-      return;
-    }
-
-    try {
-      logOutcome({
-        timestamp: new Date().toISOString(),
-        request: context.request,
-        command,
-        assessedRisk: context.assessment.overallRisk,
-        actualOutcome: outcome,
-        userApproved: true,
-        errorMessage,
-      });
-    } catch (error) {
-      debugLogger.error(
-        `Failed to log shell outcome: ${getErrorMessage(error)}`,
-      );
-    }
   }
 
   async execute(
@@ -436,12 +200,11 @@ export class ShellToolInvocation extends BaseToolInvocation<
     setPidCallback?: (pid: number) => void,
   ): Promise<ToolResult> {
     const strippedCommand = stripShellWrapper(this.params.command);
-    const brainContext = this.brainContext;
     const applyRisk = (result: ToolResult): ToolResult => {
-      if (!brainContext) {
+      if (!this.brainManager.getBrainContext()) {
         return result;
       }
-      const { text, surfaceToUser } = this.formatRiskPreamble(brainContext);
+      const { text, surfaceToUser } = this.brainManager.formatRiskPreamble();
       if (!text) {
         return result;
       }
@@ -461,7 +224,7 @@ export class ShellToolInvocation extends BaseToolInvocation<
         llmContent: 'Command was cancelled by user before it could start.',
         returnDisplay: 'Command cancelled by user.',
       };
-      this.recordOutcome(brainContext, strippedCommand, 'cancelled');
+      this.brainManager.recordOutcome(strippedCommand, 'cancelled');
       return applyRisk(result);
     }
 
@@ -479,7 +242,12 @@ export class ShellToolInvocation extends BaseToolInvocation<
           type: ToolErrorType.PERMISSION_DENIED,
         },
       };
-      this.recordOutcome(brainContext, strippedCommand, 'cancelled', message);
+      this.brainManager.recordOutcome(
+        strippedCommand,
+        'cancelled',
+        false,
+        message,
+      );
       return applyRisk(result);
     }
 
@@ -488,7 +256,7 @@ export class ShellToolInvocation extends BaseToolInvocation<
         llmContent: `[PREVIEW] Would execute:\n$ ${this.params.command}\n\nIn directory: ${cwd}`,
         returnDisplay: `[PREVIEW] ${this.params.command}`,
       };
-      this.recordOutcome(brainContext, strippedCommand, 'cancelled');
+      this.brainManager.recordOutcome(strippedCommand, 'cancelled');
       return applyRisk(result);
     }
 
@@ -695,8 +463,8 @@ export class ShellToolInvocation extends BaseToolInvocation<
         }
       }
 
-      if (brainContext) {
-        const { text, surfaceToUser } = this.formatRiskPreamble(brainContext);
+      if (this.brainManager.getBrainContext()) {
+        const { text, surfaceToUser } = this.brainManager.formatRiskPreamble();
         if (text) {
           llmContent = `${text}\n\n${llmContent}`;
           if (surfaceToUser) {
@@ -735,10 +503,10 @@ export class ShellToolInvocation extends BaseToolInvocation<
             ? 'failure'
             : 'success';
 
-      this.recordOutcome(
-        brainContext,
+      this.brainManager.recordOutcome(
         strippedCommand,
         outcome,
+        outcome !== 'cancelled',
         (result.error?.message ?? timeoutMessage) || undefined,
       );
 
@@ -803,8 +571,6 @@ export class ShellTool extends BaseDeclarativeTool<
   ToolResult
 > {
   static readonly Name = SHELL_TOOL_NAME;
-
-  private allowlist: Set<string> = new Set();
 
   constructor(
     private readonly config: Config,
@@ -886,7 +652,6 @@ export class ShellTool extends BaseDeclarativeTool<
     return new ShellToolInvocation(
       this.config,
       params,
-      this.allowlist,
       messageBus,
       _toolName,
       _toolDisplayName,

@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { debugLogger } from '../utils/debugLogger.js';
 import type { SystemSpec } from './systemSpec.js';
 import type { Advisor, AdvisorProposal } from './advisors/types.js';
 import { EnumeratorAdvisor } from './advisors/enumerator.js';
@@ -53,7 +54,9 @@ export class ConsensusOrchestrator {
     // Race for early high-confidence result vs waiting for all
     const earlyResult = await this.raceForHighConfidence(advisorPromises);
     if (earlyResult) {
-      console.log(`[Consensus] Early return from ${earlyResult.approach}`);
+      debugLogger.debug(
+        `[Consensus] Early return from ${earlyResult.approach}`,
+      );
       return earlyResult;
     }
 

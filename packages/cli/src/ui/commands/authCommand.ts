@@ -46,11 +46,37 @@ const authLogoutCommand: SlashCommand = {
   },
 };
 
+const authWizardCommand: SlashCommand = {
+  name: 'wizard',
+  description: 'Open the provider selection wizard to switch LLM providers',
+  kind: CommandKind.BUILT_IN,
+  autoExecute: true,
+  action: (context, _args) => {
+    // Check for enforced auth type guardrail
+    const enforcedType =
+      context.services.settings.merged.security?.auth?.enforcedType;
+    if (enforcedType) {
+      return {
+        type: 'message',
+        messageType: 'error',
+        content: `Provider switching is blocked: authentication type is enforced to "${enforcedType}" by policy. Contact your administrator to change this setting.`,
+      };
+    }
+
+    // Interactive-only check is handled by the CLI context
+    // If we reach here, open the auth wizard dialog
+    return {
+      type: 'dialog',
+      dialog: 'authWizard',
+    } as OpenDialogActionReturn;
+  },
+};
+
 export const authCommand: SlashCommand = {
   name: 'auth',
   description: 'Manage authentication',
   kind: CommandKind.BUILT_IN,
-  subCommands: [authLoginCommand, authLogoutCommand],
+  subCommands: [authLoginCommand, authLogoutCommand, authWizardCommand],
   action: (context, args) =>
     // Default to login if no subcommand is provided
     authLoginCommand.action!(context, args),

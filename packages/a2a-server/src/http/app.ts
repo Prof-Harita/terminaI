@@ -305,6 +305,8 @@ export async function createApp(options?: CreateAppOptions) {
       config,
       getSelectedAuthType: () =>
         loadedSettings.merged.security?.auth?.selectedType,
+      // 3.2 Fix: Pass settings loader so /auth/provider can work
+      getLoadedSettings: () => loadedSettings,
     });
 
     // Task 17: Gate all non-GET requests that may execute LLM work.

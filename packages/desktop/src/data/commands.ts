@@ -119,4 +119,11 @@ export const COMMANDS: Command[] = [
     action: 'frontend:shortcuts',
     shortcut: 'Ctrl+/',
   },
+  {
+    id: 'auth-switch',
+    name: 'Auth: Switch Provider',
+    description: 'Change AI model provider',
+    category: 'System',
+    action: 'frontend:auth-switch',
+  },
 ];

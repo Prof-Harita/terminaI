@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { debugLogger } from '../utils/debugLogger.js';
 import type { ConsensusOrchestrator } from './consensus.js';
 import type { SystemSpec } from './systemSpec.js';
 import type { AdvisorProposal } from './advisors/types.js';
@@ -38,7 +39,7 @@ export class StepBackEvaluator {
     orchestrator: ConsensusOrchestrator,
     systemSpec: SystemSpec,
   ): Promise<AdvisorProposal> {
-    console.log(
+    debugLogger.debug(
       `Approach "${failedApproach}" failed twice. Re-evaluating strategy...`,
     );
 

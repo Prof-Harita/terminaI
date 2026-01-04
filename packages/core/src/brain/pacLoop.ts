@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { debugLogger } from '../utils/debugLogger.js';
 import type { GenerativeModelAdapter } from './riskAssessor.js';
 
 /**
@@ -126,7 +127,7 @@ Respond in JSON:
         }
       }
     } catch (error) {
-      console.error('PACLoop Verification Error:', error);
+      debugLogger.error('PACLoop Verification Error:', error);
     }
 
     // Fallback: if verification fails or errors out, trust the tool result but log it

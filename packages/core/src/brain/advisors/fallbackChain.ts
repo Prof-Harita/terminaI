@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { debugLogger } from '../../utils/debugLogger.js';
 import type { SystemSpec } from '../systemSpec.js';
 import type { Advisor, AdvisorProposal } from './types.js';
 import type { GenerativeModelAdapter } from '../riskAssessor.js';
@@ -59,9 +60,9 @@ Respond with ONLY a structured JSON proposal for the BEST (first) approach in th
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
       }
-      console.warn('FallbackChainAdvisor: No JSON found in response');
+      debugLogger.warn('FallbackChainAdvisor: No JSON found in response');
     } catch (error) {
-      console.error('FallbackChainAdvisor Error:', error);
+      debugLogger.error('FallbackChainAdvisor Error:', error);
     }
 
     return {

@@ -106,6 +106,7 @@ export interface OpenDialogActionReturn {
   dialog:
     | 'help'
     | 'auth'
+    | 'authWizard'
     | 'theme'
     | 'editor'
     | 'privacy'

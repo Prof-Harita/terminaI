@@ -8,6 +8,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import type { AuthClient } from '../../utils/authClient';
+import { useSettingsStore } from '../../stores/settingsStore';
 import { Button } from '../ui/button';
 
 interface Props {
@@ -37,6 +38,11 @@ export function GeminiOAuthStep({ client, onDone, onCancel, onError }: Props) {
       const status = await client.getStatus();
       if (status.status === 'ok') {
         stopPolling();
+        // 3.4 Fix: Switch server provider to Gemini before updating local state
+        await client.switchProvider({ provider: 'gemini' }).catch(() => {
+          // Server may already be on Gemini, ignore errors
+        });
+        useSettingsStore.getState().setProvider('gemini');
         onDone();
         return;
       }

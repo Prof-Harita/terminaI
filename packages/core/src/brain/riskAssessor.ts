@@ -161,13 +161,17 @@ export async function assessRiskWithLLM(
   request: string,
   systemContext: string,
   model: GenerativeModelAdapter,
+  options?: { abortSignal?: AbortSignal },
 ): Promise<RiskDimensions & { reasoning: string }> {
   const prompt = RISK_ASSESSMENT_PROMPT.replace('{request}', request).replace(
     '{systemContext}',
     systemContext,
   );
 
-  const result = await model.generateContent(prompt);
+  const result = await model.generateContent(prompt, {
+    tier: 'flash',
+    abortSignal: options?.abortSignal,
+  });
   const { text, reasoning: defaultReasoning } = readResponseText(
     result,
     'LLM returned empty response',
@@ -226,6 +230,7 @@ export async function assessRisk(
   command: string | null,
   systemContext: string,
   model?: GenerativeModelAdapter,
+  options?: { abortSignal?: AbortSignal },
 ): Promise<RiskAssessment> {
   const environment = detectEnvironment();
   const heuristic = command ? assessRiskHeuristic(command) : null;
@@ -251,7 +256,12 @@ export async function assessRisk(
 
   if (model) {
     try {
-      const llmResult = await assessRiskWithLLM(request, systemContext, model);
+      const llmResult = await assessRiskWithLLM(
+        request,
+        systemContext,
+        model,
+        options,
+      );
       dimensions = applyDefaults(llmResult, environment);
       reasoning = llmResult.reasoning;
     } catch (error) {

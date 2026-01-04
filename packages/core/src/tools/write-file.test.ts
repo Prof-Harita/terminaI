@@ -107,6 +107,7 @@ const mockConfigInternal = {
   getApprovalPin: vi.fn(() => undefined),
   getTrustedDomains: vi.fn(() => []),
   getCriticalPaths: vi.fn(() => []),
+  getBrainAuthority: vi.fn(() => 'advisory'),
 };
 const mockConfig = mockConfigInternal as unknown as Config;
 

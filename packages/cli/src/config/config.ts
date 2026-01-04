@@ -38,9 +38,6 @@ import {
   WEB_FETCH_TOOL_NAME,
   getVersion,
   PREVIEW_GEMINI_MODEL_AUTO,
-  LlmProviderId,
-  type ProviderConfig,
-  type OpenAICompatibleConfig,
   type OutputFormat,
   type ConfigParameters,
 } from '@terminai/core';
@@ -62,6 +59,7 @@ import { requestConsentNonInteractive } from './extensions/consent.js';
 import { promptForSetting } from './extensions/extensionSettings.js';
 import type { EventEmitter } from 'node:stream';
 import { runExitCleanup } from '../utils/cleanup.js';
+import { settingsToProviderConfig } from './settingsToProviderConfig.js';
 
 export interface CliArgs {
   query: string | undefined;
@@ -763,62 +761,12 @@ export async function loadCliConfig(
 
   const ptyInfo = await getPty();
 
-  let providerConfig: ProviderConfig = { provider: LlmProviderId.GEMINI };
-  if (settings.llm?.provider === 'openai_compatible') {
-    const s = settings.llm.openaiCompatible;
-    const openaiModel = argv.model || s?.model;
-    if (s?.baseUrl && openaiModel) {
-      let authType: NonNullable<OpenAICompatibleConfig['auth']>['type'] =
-        'none';
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const auth = s.auth as any;
-      if (auth?.type === 'api-key') authType = 'api-key';
-      else if (auth?.type === 'bearer') authType = 'bearer';
-
-      const headers: Record<string, string> = {};
-      if (settings.llm.headers) {
-        for (const [k, v] of Object.entries(settings.llm.headers)) {
-          if (typeof v === 'string') headers[k] = v;
-        }
-      }
-
-      providerConfig = {
-        provider: LlmProviderId.OPENAI_COMPATIBLE,
-        baseUrl: s.baseUrl,
-        model: openaiModel,
-        auth: {
-          type: authType,
-          apiKey: undefined, // Will be resolved by environment variable in core if needed, or we can pass it here.
-          // Plan says "apiKey: string (generally via env var)".
-          // If we want to support direct key in settings (bad practice), we could.
-          // For now, let's rely on envVarName lookup which the Core client will do, or pass the value if available in Env.
-          // Actually, Config object usually resolves Env vars?
-          // Let's pass the env var name and let the client resolve it, OR resolve it here.
-          // Core's OpenAICompatibleConfig has `apiKey?: string`.
-          envVarName: s.auth?.envVarName,
-        },
-        headers,
-      };
-
-      // Resolve API Key here if env var name is provided
-      if (
-        providerConfig.provider === LlmProviderId.OPENAI_COMPATIBLE &&
-        s.auth?.envVarName &&
-        process.env[s.auth.envVarName]
-      ) {
-        providerConfig.auth!.apiKey = process.env[s.auth.envVarName];
-      }
-
-      // In OpenAI-compatible mode, the effective model should be the OpenAI model.
-      // This ensures the UI and request pipeline agree on the model being used.
-      resolvedModel = openaiModel;
-    } else {
-      throw new FatalConfigError(
-        'llm.provider is set to openai_compatible, but llm.openaiCompatible.baseUrl and a model (llm.openaiCompatible.model or --model) are required.',
-      );
-    }
-  } else if (settings.llm?.provider === 'anthropic') {
-    providerConfig = { provider: LlmProviderId.ANTHROPIC };
+  const providerResult = settingsToProviderConfig(settings, {
+    modelOverride: argv.model,
+  });
+  const providerConfig = providerResult.providerConfig;
+  if (providerResult.resolvedModel) {
+    resolvedModel = providerResult.resolvedModel;
   }
 
   const builder = new ConfigBuilder(sessionId);
@@ -839,6 +787,7 @@ export async function loadCliConfig(
     },
     telemetry: telemetrySettings,
     model: resolvedModel, // Use the CLI-resolved model (respects --model)
+    providerConfig, // Task 2.3: support runtime reconfigure
     experimentalZedIntegration: argv.experimentalAcp || false,
     listExtensions: argv.listExtensions || false,
     listSessions: argv.listSessions || false,

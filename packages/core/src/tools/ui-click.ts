@@ -20,10 +20,14 @@ import { buildUiConfirmationDetails, formatUiResult } from './ui-tool-utils.js';
 import { DesktopAutomationService } from '../gui/service/DesktopAutomationService.js';
 import type { Config } from '../config/config.js';
 
+import { BrainRiskManager } from '../brain/toolIntegration.js';
+
 class UiClickToolInvocation extends BaseToolInvocation<
   UiClickArgs,
   ToolResult
 > {
+  private brainManager: BrainRiskManager;
+
   constructor(
     params: UiClickArgs,
     private readonly config: Config,
@@ -32,6 +36,7 @@ class UiClickToolInvocation extends BaseToolInvocation<
     toolDisplayName?: string,
   ) {
     super(params, messageBus, toolName, toolDisplayName);
+    this.brainManager = new BrainRiskManager(this.config);
   }
 
   getDescription(): string {
@@ -39,9 +44,22 @@ class UiClickToolInvocation extends BaseToolInvocation<
   }
 
   protected override async getConfirmationDetails(
-    _abortSignal: AbortSignal,
+    abortSignal: AbortSignal,
   ): Promise<ToolCallConfirmationDetails | false> {
-    return buildUiConfirmationDetails({
+    // Brain integration - always evaluate risk for UI tools as they interact with the system
+    const brainAuthority = this.config.getBrainAuthority();
+    const request = `UI Click on ${this.params.target}`;
+
+    // Evaluate brain risk for UI automation (consider potentially dangerous actions like "Delete" buttons)
+    await this.brainManager.evaluateBrain(
+      request,
+      this.getDescription(),
+      'Desktop UI',
+      abortSignal,
+    );
+
+    // Get base confirmation details
+    const baseDetails = buildUiConfirmationDetails({
       toolName: this._toolName ?? UI_CLICK_TOOL_NAME,
       description: this.getDescription(),
       provenance: this.getProvenance(),
@@ -51,12 +69,85 @@ class UiClickToolInvocation extends BaseToolInvocation<
       },
       config: this.config,
     });
+
+    // If no confirmation needed from deterministic rules, we still might escalate via brain
+    if (baseDetails === false) {
+      // Check if brain authority requires escalation
+      if (brainAuthority !== 'advisory') {
+        const dummyReview = {
+          level: 'A' as const,
+          reasons: [],
+          requiresClick: false,
+          requiresPin: false,
+        };
+        const escalatedReview = this.brainManager.applyBrainAuthority(
+          dummyReview,
+          brainAuthority,
+        );
+        if (escalatedReview.level !== 'A') {
+          // Brain escalated - construct confirmation details manually
+          return {
+            type: 'exec',
+            title: 'Confirm UI Click',
+            command: this.getDescription(),
+            rootCommand: this._toolName ?? UI_CLICK_TOOL_NAME,
+            provenance: this.getProvenance(),
+            reviewLevel: escalatedReview.level,
+            requiresPin: escalatedReview.requiresPin,
+            pinLength: escalatedReview.requiresPin ? 6 : undefined,
+            explanation: escalatedReview.reasons.join('; '),
+            onConfirm: async (outcome) => {
+              await this.publishPolicyUpdate(outcome);
+            },
+          };
+        }
+      }
+      return false;
+    }
+
+    // Apply brain authority escalation to existing confirmation details
+    if (brainAuthority !== 'advisory') {
+      const currentReview = {
+        level: baseDetails.reviewLevel ?? ('B' as const),
+        reasons: baseDetails.explanation ? [baseDetails.explanation] : [],
+        requiresClick: true,
+        requiresPin: baseDetails.requiresPin ?? false,
+      };
+      const escalatedReview = this.brainManager.applyBrainAuthority(
+        currentReview,
+        brainAuthority,
+      );
+      baseDetails.reviewLevel = escalatedReview.level;
+      baseDetails.requiresPin = escalatedReview.requiresPin;
+      baseDetails.pinLength = escalatedReview.requiresPin ? 6 : undefined;
+      baseDetails.explanation = escalatedReview.reasons.join('; ');
+    }
+
+    return baseDetails;
   }
 
   async execute(_signal: AbortSignal): Promise<ToolResult> {
     const svc = DesktopAutomationService.getInstance();
     const result = await svc.click(this.params);
-    return formatUiResult(result, 'UiClick');
+
+    // Record outcome
+    const outcome = result.status === 'success' ? 'success' : 'failure';
+    this.brainManager.recordOutcome(
+      this.getDescription(),
+      outcome,
+      true, // userApproved - if we got here, user approved the action
+      outcome === 'failure' ? result.message : undefined,
+    );
+
+    const baseResult = formatUiResult(result, 'UiClick');
+
+    const brainPreamble = this.brainManager.formatRiskPreamble();
+    if (brainPreamble.text) {
+      if (typeof baseResult.llmContent === 'string') {
+        baseResult.llmContent = `${brainPreamble.text}\n\n${baseResult.llmContent}`;
+      }
+    }
+    return baseResult;
   }
 }
 

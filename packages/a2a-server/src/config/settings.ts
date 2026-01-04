@@ -8,15 +8,15 @@
 import {
   SettingsLoader,
   Storage,
+  type LoadedSettings,
   type Settings,
   type SettingsError,
-  type LoadedSettings,
-  type SettingScope,
+  SettingScope,
   isLoadableSettingScope,
 } from '@terminai/core';
 
-export type { Settings, SettingsError, SettingScope, LoadedSettings };
-export { isLoadableSettingScope };
+export type { Settings, SettingsError, LoadedSettings };
+export { SettingScope, isLoadableSettingScope };
 
 export const USER_SETTINGS_PATH = Storage.getGlobalSettingsPath();
 

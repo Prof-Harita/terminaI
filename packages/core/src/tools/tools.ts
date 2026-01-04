@@ -573,6 +573,12 @@ export interface ToolResult {
    * Additional metadata about the tool execution (e.g. audit hashes, verification details).
    */
   metadata?: Record<string, unknown>;
+
+  /**
+   * Optional warning from brain risk assessment to surface to users.
+   * Only set when surfaceToUser is true (non-trivial risk, warnings, low confidence).
+   */
+  userWarning?: string;
 }
 
 /**

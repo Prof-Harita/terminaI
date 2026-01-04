@@ -28,6 +28,7 @@ describe('Auth routes contract (Task 33)', () => {
       cancelGeminiOAuth: vi.fn(),
       useGeminiVertex: vi.fn(),
       clearGeminiAuth: vi.fn(),
+      applyProviderSwitch: vi.fn(),
     } as unknown as LlmAuthManager;
 
     app = express();
@@ -66,6 +67,59 @@ describe('Auth routes contract (Task 33)', () => {
       });
       expect(res.body).not.toHaveProperty('message');
       expect(res.body).not.toHaveProperty('errorCode');
+    });
+  });
+
+  describe('POST /auth/provider', () => {
+    it('validates provider field', async () => {
+      await request(app)
+        .post('/auth/provider')
+        .send({ provider: 'invalid' })
+        .expect(400);
+      expect(manager.applyProviderSwitch).not.toHaveBeenCalled();
+    });
+
+    it('returns error when applyProviderSwitch returns statusCode/error', async () => {
+      manager.applyProviderSwitch = vi.fn().mockResolvedValue({
+        error: 'Blocked by enforcedType',
+        statusCode: 403,
+      });
+
+      const res = await request(app)
+        .post('/auth/provider')
+        .send({ provider: 'gemini' })
+        .expect(403);
+      expect(res.body).toEqual({ error: 'Blocked by enforcedType' });
+    });
+
+    it('returns status on success', async () => {
+      manager.applyProviderSwitch = vi.fn().mockResolvedValue({
+        status: 'ok',
+        authType: AuthType.USE_OPENAI_COMPATIBLE,
+      });
+
+      const res = await request(app)
+        .post('/auth/provider')
+        .send({
+          provider: 'openai_compatible',
+          openaiCompatible: {
+            baseUrl: 'http://localhost',
+            model: 'test-model',
+          },
+        })
+        .expect(200);
+
+      expect(manager.applyProviderSwitch).toHaveBeenCalledWith({
+        provider: 'openai_compatible',
+        openaiCompatible: {
+          baseUrl: 'http://localhost',
+          model: 'test-model',
+        },
+      });
+      expect(res.body).toEqual({
+        status: 'ok',
+        authType: AuthType.USE_OPENAI_COMPATIBLE,
+      });
     });
   });
 

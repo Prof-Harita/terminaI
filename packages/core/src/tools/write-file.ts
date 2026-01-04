@@ -142,11 +142,14 @@ export async function getCorrectedFileContent(
   return { originalContent, correctedContent, fileExists };
 }
 
+import { BrainRiskManager } from '../brain/toolIntegration.js';
+
 class WriteFileToolInvocation extends BaseToolInvocation<
   WriteFileToolParams,
   ToolResult
 > {
   private readonly resolvedPath: string;
+  private brainManager: BrainRiskManager;
 
   constructor(
     private readonly config: Config,
@@ -156,6 +159,7 @@ class WriteFileToolInvocation extends BaseToolInvocation<
     displayName?: string,
   ) {
     super(params, messageBus, toolName, displayName);
+    this.brainManager = new BrainRiskManager(this.config);
     this.resolvedPath = path.resolve(
       this.config.getTargetDir(),
       this.params.file_path,
@@ -201,7 +205,31 @@ class WriteFileToolInvocation extends BaseToolInvocation<
       config: this.config,
       provenance: this.getProvenance(),
     });
-    const reviewResult = computeMinimumReviewLevel(actionProfile, this.config);
+    let reviewResult = computeMinimumReviewLevel(actionProfile, this.config);
+    let reasons = [...reviewResult.reasons];
+
+    // Brain Risk Assessment Integration
+    const brainAuthority = this.config.getBrainAuthority();
+    if (reviewResult.level !== 'A' || brainAuthority !== 'advisory') {
+      const request = `Write file ${shortenPath(makeRelative(this.params.file_path, this.config.getTargetDir()))}`;
+      const summary = `Writing ${this.params.content.length} characters to ${this.resolvedPath}`;
+
+      await this.brainManager.evaluateBrain(
+        request,
+        summary,
+        this.resolvedPath,
+        abortSignal,
+      );
+
+      if (brainAuthority !== 'advisory') {
+        reviewResult = this.brainManager.applyBrainAuthority(
+          reviewResult,
+          brainAuthority,
+        );
+        reasons = reviewResult.reasons;
+      }
+    }
+
     if (reviewResult.level === 'A') {
       return false;
     }
@@ -238,7 +266,7 @@ class WriteFileToolInvocation extends BaseToolInvocation<
       reviewLevel: reviewResult.level,
       requiresPin: reviewResult.requiresPin,
       pinLength: reviewResult.requiresPin ? 6 : undefined,
-      explanation: reviewResult.reasons.join('; '),
+      explanation: reasons.join('; '),
       onConfirm: async (outcome: ToolConfirmationOutcome) => {
         if (outcome === ToolConfirmationOutcome.ProceedAlways) {
           // No need to publish a policy update as the default policy for
@@ -274,6 +302,12 @@ class WriteFileToolInvocation extends BaseToolInvocation<
       const errorMsg = errDetails.code
         ? `Error checking existing file '${this.resolvedPath}': ${errDetails.message} (${errDetails.code})`
         : `Error checking existing file: ${errDetails.message}`;
+      this.brainManager.recordOutcome(
+        `Write ${shortenPath(makeRelative(this.params.file_path, this.config.getTargetDir()))}`,
+        'failure',
+        true, // userApproved - if we got here, user approved
+        errorMsg,
+      );
       return {
         llmContent: errorMsg,
         returnDisplay: errorMsg,
@@ -369,9 +403,24 @@ class WriteFileToolInvocation extends BaseToolInvocation<
         diffStat,
       };
 
+      this.brainManager.recordOutcome(
+        `Write ${shortenPath(makeRelative(this.params.file_path, this.config.getTargetDir()))}`,
+        'success',
+      );
+
+      let llmContent = llmSuccessMessageParts.join(' ');
+      const brainPreamble = this.brainManager.formatRiskPreamble();
+      if (brainPreamble.text) {
+        llmContent = `${brainPreamble.text}\n\n${llmContent}`;
+      }
+
       return {
-        llmContent: llmSuccessMessageParts.join(' '),
+        llmContent,
         returnDisplay: displayResult,
+        // Surface brain warnings to user if warranted (non-trivial risk, warnings, etc.)
+        userWarning: brainPreamble.surfaceToUser
+          ? brainPreamble.text
+          : undefined,
       };
     } catch (error) {
       // Capture detailed error information for debugging
@@ -403,6 +452,13 @@ class WriteFileToolInvocation extends BaseToolInvocation<
       } else {
         errorMsg = `Error writing to file: ${String(error)}`;
       }
+
+      this.brainManager.recordOutcome(
+        `Write ${shortenPath(makeRelative(this.params.file_path, this.config.getTargetDir()))}`,
+        'failure',
+        true, // userApproved - if we got here, user approved
+        errorMsg,
+      );
 
       return {
         llmContent: errorMsg,

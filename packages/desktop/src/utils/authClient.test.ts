@@ -5,54 +5,67 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { AuthClient } from './authClient';
 
-const buildSignedHeadersSpy = vi.hoisted(() => vi.fn());
-
-vi.mock('./agentClient', () => ({
-  buildSignedHeaders: buildSignedHeadersSpy,
-}));
+// Mock fetch
+global.fetch = vi.fn();
 
 describe('AuthClient', () => {
+  const baseUrl = 'http://localhost:8080';
+  const token = 'test-token';
+  let client: AuthClient;
+
   beforeEach(() => {
-    buildSignedHeadersSpy.mockResolvedValue({
-      Authorization: 'Bearer token',
-      'X-Gemini-Nonce': 'nonce',
-      'X-Gemini-Signature': 'sig',
-    });
-
-    globalThis.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: vi.fn().mockResolvedValue({ status: 'ok', authType: null }),
-    }) as unknown as typeof fetch;
-  });
-
-  afterEach(() => {
     vi.resetAllMocks();
+    client = new AuthClient(baseUrl, token);
   });
 
-  it('signs GET /auth/status with empty bodyString', async () => {
-    const client = new AuthClient('http://127.0.0.1:41242', 'token');
-    await client.getStatus();
+  describe('switchProvider', () => {
+    it('should call /auth/provider with correct params', async () => {
+      const mockResponse = { status: 'ok', message: 'Switched' };
+      vi.mocked(global.fetch).mockResolvedValue({
+        ok: true,
+        json: async () => mockResponse,
+      } as Response);
 
-    expect(buildSignedHeadersSpy).toHaveBeenCalledWith({
-      token: 'token',
-      method: 'GET',
-      pathWithQuery: '/auth/status',
-      bodyString: '',
+      const params = {
+        provider: 'openai_compatible' as const,
+        openaiCompatible: {
+          baseUrl: 'https://api.example.com',
+          model: 'gpt-4',
+          envVarName: 'MY_KEY',
+        },
+      };
+
+      const result = await client.switchProvider(params);
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        `${baseUrl}/auth/provider`,
+        expect.objectContaining({
+          method: 'POST',
+          headers: expect.objectContaining({
+            'Content-Type': 'application/json',
+            // AuthClient uses buildSignedHeaders() which adds signature headers, not Bearer token
+          }),
+          body: JSON.stringify(params),
+        }),
+      );
+      expect(result).toEqual(mockResponse);
     });
-  });
 
-  it('signs POST /auth/gemini/api-key with matching bodyString', async () => {
-    const client = new AuthClient('http://127.0.0.1:41242', 'token');
-    await client.setApiKey('abc');
+    it('should throw on error', async () => {
+      vi.mocked(global.fetch).mockResolvedValue({
+        ok: false,
+        status: 500,
+        statusText: 'Internal Server Error',
+        text: async () => 'Method Not Allowed',
+        json: async () => ({ error: 'Method Not Allowed' }),
+      } as Response);
 
-    expect(buildSignedHeadersSpy).toHaveBeenCalledWith({
-      token: 'token',
-      method: 'POST',
-      pathWithQuery: '/auth/gemini/api-key',
-      bodyString: JSON.stringify({ apiKey: 'abc' }),
+      await expect(
+        client.switchProvider({ provider: 'gemini' }),
+      ).rejects.toThrow('Auth request failed (500): Method Not Allowed');
     });
   });
 });

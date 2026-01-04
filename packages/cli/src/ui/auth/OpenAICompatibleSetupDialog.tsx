@@ -22,7 +22,7 @@ interface Props {
   settings: LoadedSettings;
   terminalWidth?: number;
   onBack: () => void;
-  onComplete: () => void;
+  onComplete: () => void | Promise<void>;
   onAuthError: (error: string | null) => void;
 }
 
@@ -40,9 +40,15 @@ export function OpenAICompatibleSetupDialog({
 
   const [step, setStep] = useState<Step>('base_url');
 
+  // Prefill from settings if available
+  const openaiSettings = settings.merged.llm?.openaiCompatible;
+  const defaultBaseUrl = openaiSettings?.baseUrl || 'http://localhost:11434/v1';
+  const defaultModel = openaiSettings?.model || '';
+  const defaultEnvVar = openaiSettings?.auth?.envVarName || 'OPENAI_API_KEY';
+
   const baseUrlBuffer = useTextBuffer({
-    initialText: 'http://localhost:11434/v1',
-    initialCursorOffset: 'http://localhost:11434/v1'.length,
+    initialText: defaultBaseUrl,
+    initialCursorOffset: defaultBaseUrl.length,
     viewport: { width: viewportWidth, height: 3 },
     isValidPath: () => false,
     inputFilter: (text) => text.replace(/[\r\n]/g, ''),
@@ -50,8 +56,8 @@ export function OpenAICompatibleSetupDialog({
   });
 
   const modelBuffer = useTextBuffer({
-    initialText: '',
-    initialCursorOffset: 0,
+    initialText: defaultModel,
+    initialCursorOffset: defaultModel.length,
     viewport: { width: viewportWidth, height: 3 },
     isValidPath: () => false,
     inputFilter: (text) => text.replace(/[\r\n]/g, ''),
@@ -59,8 +65,8 @@ export function OpenAICompatibleSetupDialog({
   });
 
   const envVarBuffer = useTextBuffer({
-    initialText: 'OPENAI_API_KEY',
-    initialCursorOffset: 'OPENAI_API_KEY'.length,
+    initialText: defaultEnvVar,
+    initialCursorOffset: defaultEnvVar.length,
     viewport: { width: viewportWidth, height: 3 },
     isValidPath: () => false,
     inputFilter: (text) => text.replace(/[\r\n]/g, ''),
@@ -133,7 +139,7 @@ export function OpenAICompatibleSetupDialog({
               AuthType.USE_OPENAI_COMPATIBLE,
             );
 
-            onComplete();
+            void onComplete();
           },
         };
       default:

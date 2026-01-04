@@ -7,6 +7,7 @@
 
 import { useCallback, useState } from 'react';
 import type { AuthClient } from '../../utils/authClient';
+import { useSettingsStore } from '../../stores/settingsStore';
 import { Button } from '../ui/button';
 
 interface Props {
@@ -24,6 +25,11 @@ export function GeminiVertexStep({ client, onDone, onError }: Props) {
     try {
       const status = await client.useGeminiVertex();
       if (status.status === 'ok') {
+        // 3.4 Fix: Switch server provider to Gemini before updating local state
+        await client.switchProvider({ provider: 'gemini' }).catch(() => {
+          // Server may already be on Gemini, ignore errors
+        });
+        useSettingsStore.getState().setProvider('gemini');
         onDone();
         return;
       }

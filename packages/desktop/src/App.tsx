@@ -110,6 +110,7 @@ function App() {
   }, [refreshLlmAuthStatus]);
 
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+  const [isSwitchProviderOpen, setIsSwitchProviderOpen] = useState(false);
   const [isSettingsOpen] = useState(false);
   const [isCheatSheetOpen, setIsCheatSheetOpen] = useState(false);
   const [activeActivity, setActiveActivity] = useState<ActivityView | null>(
@@ -125,6 +126,7 @@ function App() {
     useState(false);
   const [pendingConfirmationPinReady, setPendingConfirmationPinReady] =
     useState(false);
+  const openaiConfig = useSettingsStore((s) => s.openaiConfig);
 
   const resolvedTheme =
     theme === 'system'
@@ -245,6 +247,9 @@ function App() {
         case 'shortcuts':
           setIsCheatSheetOpen(true);
           break;
+        case 'auth-switch':
+          setIsSwitchProviderOpen(true);
+          break;
         default:
           break;
       }
@@ -278,13 +283,23 @@ function App() {
             {/* Model Dropdown */}
             <select
               value={provider}
-              onChange={(e) =>
-                setProvider(e.target.value as 'gemini' | 'ollama')
-              }
+              onChange={(e) => {
+                const newProvider = e.target.value as
+                  | 'gemini'
+                  | 'ollama'
+                  | 'openai_compatible';
+                if (newProvider === 'openai_compatible') {
+                  // Open wizard to configure OpenAI-compatible provider properly
+                  setIsSwitchProviderOpen(true);
+                } else {
+                  setProvider(newProvider);
+                }
+              }}
               className="bg-transparent border border-border rounded px-2 py-1 text-xs text-foreground cursor-pointer hover:bg-muted/50 transition-colors"
             >
               <option value="gemini">Gemini</option>
               <option value="ollama">Ollama</option>
+              <option value="openai_compatible">OpenAI</option>
             </select>
             {/* Context Usage Indicator with Popover */}
             <ContextPopover
@@ -429,6 +444,8 @@ function App() {
                 setPendingConfirmationPinReady(pinReady ?? false);
               }}
               onStop={stop}
+              onOpenSettings={() => setActiveActivity('preference')}
+              onSwitchProvider={() => setIsSwitchProviderOpen(true)}
             />
           </div>
 
@@ -470,11 +487,24 @@ function App() {
           }}
         />
 
-        {agentToken && llmAuthStatus !== 'ok' && (
+        {agentToken && llmAuthStatus !== 'ok' && !isSwitchProviderOpen && (
           <AuthWizard
             status={llmAuthStatus}
             message={llmAuthMessage}
             onComplete={() => void refreshLlmAuthStatus()}
+          />
+        )}
+
+        {isSwitchProviderOpen && (
+          <AuthWizard
+            status="ok"
+            message={null}
+            onComplete={() => {
+              setIsSwitchProviderOpen(false);
+              void refreshLlmAuthStatus();
+            }}
+            mode="switch_provider"
+            initialOpenAIValues={openaiConfig}
           />
         )}
       </div>

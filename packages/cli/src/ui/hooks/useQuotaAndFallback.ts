@@ -72,6 +72,8 @@ export function useQuotaAndFallback({
           `/stats for usage details`,
           `/model to switch models.`,
           `/auth to switch to API key.`,
+          `/auth wizard to switch providers.`,
+          `/settings to access settings.`,
         ].filter(Boolean);
         message = messageLines.join('\n');
       } else if (

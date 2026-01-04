@@ -27,11 +27,19 @@ describe('ShellToolInvocation provenance', () => {
     const invocation = new ShellToolInvocation(
       mockConfig as unknown as Config,
       { command: 'touch /workspace/test.txt', dir_path: '/workspace' },
-      new Set<string>(),
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    vi.spyOn(invocation as any, 'evaluateBrain').mockResolvedValue(null);
+    // Directly mock the private brainManager property
+    (invocation as unknown as { brainManager: unknown }).brainManager = {
+      evaluateBrain: vi.fn().mockResolvedValue(null),
+      applyBrainAuthority: vi.fn((r) => r),
+      getBrainContext: vi.fn().mockReturnValue(null),
+      formatRiskPreamble: vi
+        .fn()
+        .mockReturnValue({ text: '', surfaceToUser: false }),
+      recordOutcome: vi.fn(),
+    };
+    // Set provenance via the public setter
     invocation.setProvenance(['web_remote_user']);
 
     const details = await invocation.shouldConfirmExecute(

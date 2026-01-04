@@ -15,7 +15,7 @@ import { buildWizardSettingsPatch, type ProviderId } from '@terminai/core';
 interface Props {
   settings: LoadedSettings;
   onSelectOpenAICompatible: () => void;
-  onProceedToGeminiAuth: () => void;
+  onProceedToGeminiAuth: () => void | Promise<void>;
   onAuthError: (error: string | null) => void;
 }
 
@@ -82,7 +82,19 @@ export function ProviderWizard({
 
             // Gemini: persist provider selection, then proceed to existing auth dialog.
             applyPatches(buildWizardSettingsPatch({ provider: 'gemini' }));
-            onProceedToGeminiAuth();
+
+            // 2.2 Fix: Clear OpenAI auth type if present to avoid inconsistent state
+            const currentAuthType =
+              settings.merged.security?.auth?.selectedType;
+            if (currentAuthType === 'openai-compatible') {
+              settings.setValue(
+                SettingScope.User,
+                'security.auth.selectedType',
+                undefined,
+              );
+            }
+
+            void onProceedToGeminiAuth();
           }}
           onHighlight={() => {
             onAuthError(null);

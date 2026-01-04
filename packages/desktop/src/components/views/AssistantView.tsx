@@ -5,11 +5,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { useState } from 'react';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { Section, SettingRow } from '../settings/Shared';
+import { AuthWizard } from '../AuthWizard';
+import { Button } from '../ui/button';
 
 export function AssistantView() {
   const settings = useSettingsStore();
+  const [isWizardOpen, setIsWizardOpen] = useState(false);
 
   return (
     <div className="h-full overflow-y-auto p-6">
@@ -52,23 +56,20 @@ export function AssistantView() {
           />
         </SettingRow>
         <SettingRow label="Provider">
-          <select
-            value={settings.provider}
-            onChange={(e) =>
-              settings.setProvider(e.target.value as 'gemini' | 'ollama')
-            }
-            style={{
-              background: 'var(--bg-tertiary)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-md)',
-              padding: 'var(--space-2) var(--space-3)',
-              color: 'var(--text-primary)',
-              fontSize: 'var(--text-sm)',
-            }}
-          >
-            <option value="gemini">Gemini</option>
-            <option value="ollama">Ollama (Local)</option>
-          </select>
+          <div className="flex gap-2 items-center w-full justify-between">
+            <div className="text-sm font-medium uppercase tracking-wide px-2 py-1 bg-secondary rounded text-secondary-foreground">
+              {settings.provider === 'openai_compatible'
+                ? 'OpenAI'
+                : settings.provider.toUpperCase()}
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsWizardOpen(true)}
+            >
+              Change provider...
+            </Button>
+          </div>
         </SettingRow>
       </Section>
 
@@ -103,6 +104,16 @@ export function AssistantView() {
           </span>
         </SettingRow>
       </Section>
+
+      {isWizardOpen && (
+        <AuthWizard
+          status="ok"
+          message={null}
+          onComplete={() => setIsWizardOpen(false)}
+          mode="switch_provider"
+          initialOpenAIValues={settings.openaiConfig}
+        />
+      )}
     </div>
   );
 }
