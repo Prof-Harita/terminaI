@@ -25,6 +25,7 @@ import { validateAuthMethodWithSettings } from './useAuth.js';
 import { runExitCleanup } from '../../utils/cleanup.js';
 import { Text } from 'ink';
 import { RELAUNCH_EXIT_CODE } from '../../utils/processUtils.js';
+import { act } from 'react';
 
 // Mocks
 vi.mock('@terminai/core', async (importOriginal) => {
@@ -291,9 +292,15 @@ describe('AuthDialog', () => {
       renderWithProviders(<AuthDialog {...props} />);
       const { onSelect: handleAuthSelect } =
         mockedRadioButtonSelect.mock.calls[0][0];
-      await handleAuthSelect(AuthType.LOGIN_WITH_GOOGLE);
+      await act(async () => {
+        handleAuthSelect(AuthType.LOGIN_WITH_GOOGLE);
+        await Promise.resolve();
+      });
 
-      await vi.runAllTimersAsync();
+      await act(async () => {
+        await vi.runAllTimersAsync();
+        await Promise.resolve();
+      });
 
       expect(mockedRunExitCleanup).toHaveBeenCalled();
       expect(exitSpy).toHaveBeenCalledWith(RELAUNCH_EXIT_CODE);

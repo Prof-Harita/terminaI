@@ -215,20 +215,35 @@ jobs:
       - name: 'Build project'
         run: 'npm run build'
 
-      - name: 'Pack @terminai/cli'
+      - name: 'Pack workspaces'
         run: |
+          npm pack --workspace @terminai/core
+          npm pack --workspace @terminai/a2a-server
           npm pack --workspace @terminai/cli
+          ls -la ./*.tgz
           find . -maxdepth 1 -type f -name 'terminai-cli-*.tgz' -print
 
       - name: 'Install from tarball to isolated prefix'
         run: |
-          TARBALL="$(find . -maxdepth 1 -type f -name 'terminai-cli-*.tgz' -print -quit)"
-          if [[ -z "$TARBALL" ]]; then
+          TARBALL_CLI="$(find . -maxdepth 1 -type f -name 'terminai-cli-*.tgz' -print -quit)"
+          TARBALL_CORE="$(find . -maxdepth 1 -type f -name 'terminai-core-*.tgz' -print -quit)"
+          TARBALL_A2A="$(find . -maxdepth 1 -type f -name 'terminai-a2a-server-*.tgz' -print -quit)"
+
+          if [[ -z "$TARBALL_CLI" ]]; then
             echo "No terminai-cli tarball found" >&2
             exit 1
           fi
+          if [[ -z "$TARBALL_CORE" ]]; then
+            echo "No terminai-core tarball found" >&2
+            exit 1
+          fi
+          if [[ -z "$TARBALL_A2A" ]]; then
+            echo "No terminai-a2a-server tarball found" >&2
+            exit 1
+          fi
+
           mkdir -p /tmp/smoke-test-prefix
-          npm install --global --prefix /tmp/smoke-test-prefix "$TARBALL"
+          npm install --global --prefix /tmp/smoke-test-prefix "$TARBALL_CORE" "$TARBALL_A2A" "$TARBALL_CLI"
           find /tmp/smoke-test-prefix/bin -maxdepth 1 -type f -print
 
       - name: 'Run terminai --version from isolated prefix'

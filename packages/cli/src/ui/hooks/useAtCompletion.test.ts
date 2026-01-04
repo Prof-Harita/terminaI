@@ -180,6 +180,14 @@ describe('useAtCompletion', () => {
 
   describe('MCP resource suggestions', () => {
     it('should include MCP resources in the suggestion list using fuzzy matching', async () => {
+      testRootDir = await createTmpDir({});
+
+      const mockFileSearch: FileSearch = {
+        initialize: vi.fn().mockResolvedValue(undefined),
+        search: vi.fn().mockResolvedValue([]),
+      };
+      vi.spyOn(FileSearchFactory, 'create').mockReturnValue(mockFileSearch);
+
       mockConfig.getResourceRegistry = vi.fn().mockReturnValue({
         getAllResources: () => [
           {
@@ -192,7 +200,7 @@ describe('useAtCompletion', () => {
       });
 
       const { result } = renderHook(() =>
-        useTestHarnessForAtCompletion(true, 'logs', mockConfig, '/tmp'),
+        useTestHarnessForAtCompletion(true, 'logs', mockConfig, testRootDir),
       );
 
       await waitFor(() => {
@@ -269,73 +277,77 @@ describe('useAtCompletion', () => {
       const structure: FileSystemStructure = { 'a.txt': '', 'b.txt': '' };
       testRootDir = await createTmpDir(structure);
 
-      const realFileSearch = FileSearchFactory.create({
-        projectRoot: testRootDir,
-        ignoreDirs: [],
-        useGitignore: true,
-        useGeminiignore: true,
-        cache: false,
-        cacheTtl: 0,
-        enableRecursiveFileSearch: true,
-        disableFuzzySearch: false,
-      });
-      await realFileSearch.initialize();
-
-      // Mock that returns results immediately but we'll control timing with fake timers
-      const mockFileSearch: FileSearch = {
-        initialize: vi.fn().mockResolvedValue(undefined),
-        search: vi
-          .fn()
-          .mockImplementation(async (pattern, options) =>
-            realFileSearch.search(pattern, options),
+      vi.useFakeTimers();
+      try {
+        const mockFileSearch: FileSearch = {
+          initialize: vi
+            .fn()
+            .mockImplementation(
+              async () => new Promise((resolve) => setTimeout(resolve, 0)),
+            ),
+          search: vi.fn().mockImplementation(
+            async (pattern: string) =>
+              new Promise<string[]>((resolve) => {
+                const delayMs = pattern === 'a' ? 50 : 250;
+                setTimeout(() => resolve([`${pattern}.txt`]), delayMs);
+              }),
           ),
-      };
-      vi.spyOn(FileSearchFactory, 'create').mockReturnValue(mockFileSearch);
+        };
+        vi.spyOn(FileSearchFactory, 'create').mockReturnValue(mockFileSearch);
 
-      const { result, rerender } = renderHook(
-        ({ pattern }) =>
-          useTestHarnessForAtCompletion(true, pattern, mockConfig, testRootDir),
-        { initialProps: { pattern: 'a' } },
-      );
+        const { result, rerender } = renderHook(
+          ({ pattern }) =>
+            useTestHarnessForAtCompletion(
+              true,
+              pattern,
+              mockConfig,
+              testRootDir,
+            ),
+          { initialProps: { pattern: 'a' } },
+        );
 
-      // Wait for the initial search to complete (using real timers)
-      await waitFor(() => {
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(1);
+        });
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(50);
+        });
+
         expect(result.current.suggestions.map((s) => s.value)).toEqual([
           'a.txt',
         ]);
-      });
 
-      // Now switch to fake timers for precise control of the loading behavior
-      vi.useFakeTimers();
+        // Trigger the second search
+        await act(async () => {
+          rerender({ pattern: 'b' });
+        });
 
-      // Trigger the second search
-      act(() => {
-        rerender({ pattern: 'b' });
-      });
+        // Initially, loading should be false (before 200ms timer)
+        expect(result.current.isLoadingSuggestions).toBe(false);
+        expect(result.current.suggestions.map((s) => s.value)).toEqual([
+          'a.txt',
+        ]);
 
-      // Initially, loading should be false (before 200ms timer)
-      expect(result.current.isLoadingSuggestions).toBe(false);
+        // Advance time by exactly 200ms to trigger the loading state
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(200);
+        });
 
-      // Advance time by exactly 200ms to trigger the loading state
-      act(() => {
-        vi.advanceTimersByTime(200);
-      });
+        // Now loading should be true and suggestions should be cleared
+        expect(result.current.isLoadingSuggestions).toBe(true);
+        expect(result.current.suggestions).toEqual([]);
 
-      // Now loading should be true and suggestions should be cleared
-      expect(result.current.isLoadingSuggestions).toBe(true);
-      expect(result.current.suggestions).toEqual([]);
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(50);
+        });
 
-      // Switch back to real timers for the final waitFor
-      vi.useRealTimers();
-
-      // Wait for the search results to be processed
-      await waitFor(() => {
         expect(result.current.suggestions.map((s) => s.value)).toEqual([
           'b.txt',
         ]);
-      });
-
-      expect(result.current.isLoadingSuggestions).toBe(false);
+        expect(result.current.isLoadingSuggestions).toBe(false);
+      } finally {
+        vi.useRealTimers();
+      }
     });
 
     it('should abort the previous search when a new one starts', async () => {
