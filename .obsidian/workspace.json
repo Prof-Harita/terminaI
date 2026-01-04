@@ -8,49 +8,20 @@
         "type": "tabs",
         "children": [
           {
-            "id": "7da86b6b1b832f11",
+            "id": "679bc035dcce914a",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "tasks.md",
+                "file": "README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "tasks"
-            }
-          },
-          {
-            "id": "50352706887dd94c",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Untitled.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Untitled"
-            }
-          },
-          {
-            "id": "082da6c797f91b00",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Auth_tasks.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Auth_tasks"
+              "title": "README"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -212,53 +183,53 @@
       "bases:Create new base": false
     }
   },
-  "active": "082da6c797f91b00",
+  "active": "679bc035dcce914a",
   "lastOpenFiles": [
-    "local/publishing_packages_tasks.md",
+    "docs/assets/image.png",
+    "local/planning/MERGE_DEPLOY_PROMPT.md",
+    "local/planning/tasks.md",
+    "local/planning/Auth_tasks.md",
+    "local/planning",
     "packages/vscode-ide-companion/dist/extension.cjs.map",
     "packages/vscode-ide-companion/dist/extension.cjs",
     "packages/vscode-ide-companion/dist",
+    "packages/test-utils/dist/src/index.d.ts",
+    "packages/test-utils/dist/src/file-system-test-helpers.js",
     "packages/test-utils/dist/src/index.js.map",
     "packages/test-utils/dist/src/index.js",
-    "packages/test-utils/dist/src/index.d.ts",
     "packages/test-utils/dist/src/file-system-test-helpers.js.map",
-    "packages/test-utils/dist/src/file-system-test-helpers.js",
     "packages/test-utils/dist/src/file-system-test-helpers.d.ts",
-    "packages/test-utils/dist/tsconfig.tsbuildinfo",
     "packages/termai/dist/system.md",
+    "packages/desktop/dist/terminai-icon.svg",
     "packages/desktop/dist/vite.svg",
     "packages/desktop/dist/terminai-logo.svg",
-    "packages/desktop/dist/terminai-icon.svg",
     "packages/desktop/dist/terminai-cursor.svg",
     "packages/desktop/dist/tauri.svg",
-    "packages/a2a-server/coverage/lcov-report/sort-arrow-sprite.png",
-    "packages/a2a-server/coverage/lcov-report/favicon.png",
-    "packages/a2a-server/coverage/sort-arrow-sprite.png",
-    "packages/a2a-server/coverage/favicon.png",
-    "bundle/docs/tools/web-search.md",
-    "bundle/docs/tools/web-fetch.md",
-    "bundle/docs/tools/todos.md",
-    "bundle/docs/tools/shell.md",
-    "bundle/docs/tools/memory.md",
-    "bundle/docs/tools/mcp-server.md",
-    "bundle/docs/tools/index.md",
-    "bundle/docs/tools/file-system.md",
-    "bundle/docs/core/tools-api.md",
-    "bundle/docs/core/policy-engine.md",
-    "bundle/docs/core/memport.md",
-    "bundle/docs/core/index.md",
-    "bundle/docs/ide-integration/index.md",
-    "bundle/docs/ide-integration/ide-companion-spec.md",
-    "bundle/docs/hooks/writing-hooks.md",
-    "bundle/docs/hooks/reference.md",
-    "bundle/docs/hooks/index.md",
-    "bundle/docs/hooks/best-practices.md",
-    "bundle/docs/examples/proxy-script.md",
-    "bundle/docs/get-started/installation.md",
-    "bundle/docs/get-started/index.md",
-    "bundle/docs/get-started/gemini-2.0-flash-exp.md",
-    "bundle/docs/get-started/examples.md",
-    "bundle/docs/get-started/deployment.md",
-    "bundle/docs/assets/theme-xcode-light.png"
+    "packages/cli/dist/src/commands/extensions/examples/context/terminaI.md",
+    "packages/core/dist/docs/tools/web-search.md",
+    "packages/core/dist/docs/tools/web-fetch.md",
+    "packages/core/dist/docs/tools/todos.md",
+    "packages/core/dist/docs/tools/shell.md",
+    "packages/core/dist/docs/tools/memory.md",
+    "packages/core/dist/docs/tools/mcp-server.md",
+    "packages/core/dist/docs/tools/index.md",
+    "packages/core/dist/docs/tools/file-system.md",
+    "packages/core/dist/docs/ide-integration/index.md",
+    "packages/core/dist/docs/ide-integration/ide-companion-spec.md",
+    "packages/core/dist/docs/get-started/installation.md",
+    "packages/core/dist/docs/get-started/index.md",
+    "packages/core/dist/docs/get-started/gemini-2.0-flash-exp.md",
+    "packages/core/dist/docs/get-started/examples.md",
+    "packages/core/dist/docs/get-started/deployment.md",
+    "packages/core/dist/docs/get-started/configuration.md",
+    "packages/core/dist/docs/get-started/configuration-v1.md",
+    "packages/core/dist/docs/get-started/authentication.md",
+    "packages/core/dist/docs/hooks/writing-hooks.md",
+    "packages/core/dist/docs/hooks/reference.md",
+    "packages/core/dist/docs/assets/theme-xcode-light.png",
+    "packages/core/dist/docs/assets/theme-google-light.png",
+    "packages/core/dist/docs/assets/theme-github.png",
+    "packages/core/dist/docs/assets/theme-github-light.png",
+    "packages/core/dist/docs/assets/theme-dracula.png"
   ]
 }

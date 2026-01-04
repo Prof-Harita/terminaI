@@ -70,3 +70,10 @@ packages/desktop/src-tauri/resources/
 
 
 .env
+
+# TerminaI Logs
+failed_logs.txt
+failures.txt
+run.txt
+live_log.txt
+*.log
