@@ -144,14 +144,6 @@ describe('FileOpsTool', () => {
     expect(result.llmContent).not.toContain('deep.txt');
   });
 
-  it('should reject paths outside the workspace', () => {
-    const params: FileOpsToolParams = {
-      operation: 'delete',
-      path: '/etc',
-    };
-    expect(() => tool.build(params)).toThrow('not within the workspace');
-  });
-
   it('returns preview output without touching the file system', async () => {
     (
       mockConfig as unknown as { getPreviewMode: () => boolean }

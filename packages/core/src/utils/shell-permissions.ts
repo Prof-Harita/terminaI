@@ -54,7 +54,7 @@ export function checkCommandPermissions(
       allAllowed: false,
       disallowedCommands: [command],
       blockReason: 'Command rejected because it could not be parsed safely',
-      isHardDenial: true,
+      isHardDenial: false,
     };
   }
 
@@ -189,13 +189,16 @@ export function checkCommandPermissions(
 export function isCommandAllowed(
   command: string,
   config: Config,
-): { allowed: boolean; reason?: string } {
+): { allowed: boolean; reason?: string; isHardDenial?: boolean } {
   // By not providing a sessionAllowlist, we invoke "default allow" behavior.
-  const { allAllowed, blockReason } = checkCommandPermissions(command, config);
+  const { allAllowed, blockReason, isHardDenial } = checkCommandPermissions(
+    command,
+    config,
+  );
   if (allAllowed) {
     return { allowed: true };
   }
-  return { allowed: false, reason: blockReason };
+  return { allowed: false, reason: blockReason, isHardDenial };
 }
 
 /**

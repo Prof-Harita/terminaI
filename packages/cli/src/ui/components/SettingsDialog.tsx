@@ -188,7 +188,8 @@ export function SettingsDialog({
         updated = setPendingSettingValue(key, value, updated);
       } else if (
         (def?.type === 'number' && typeof value === 'number') ||
-        (def?.type === 'string' && typeof value === 'string')
+        (def?.type === 'string' && typeof value === 'string') ||
+        (def?.type === 'enum' && typeof value === 'string')
       ) {
         updated = setPendingSettingValueAny(key, value, updated);
       }
@@ -1040,6 +1041,36 @@ export function SettingsDialog({
                     : defaultValue;
                 const isDifferentFromDefault =
                   effectiveCurrentValue !== defaultValue;
+
+                if (isDifferentFromDefault || isModified) {
+                  displayValue += '*';
+                }
+              } else if (item.type === 'enum') {
+                // For enums, get the actual current value from pending settings
+                const definition = getSettingDefinition(item.value);
+                const path = item.value.split('.');
+                const currentValue = getNestedValue(pendingSettings, path);
+                const defaultValue = getDefaultValue(item.value);
+
+                // Get effective value (pending or default)
+                const effectiveValue =
+                  currentValue !== undefined && currentValue !== null
+                    ? currentValue
+                    : defaultValue;
+
+                // Convert to label if available
+                if (definition?.options) {
+                  const option = definition.options.find(
+                    (opt) => opt.value === effectiveValue,
+                  );
+                  displayValue = option?.label ?? String(effectiveValue);
+                } else {
+                  displayValue = String(effectiveValue);
+                }
+
+                // Add * if modified or different from default
+                const isModified = modifiedSettings.has(item.value);
+                const isDifferentFromDefault = effectiveValue !== defaultValue;
 
                 if (isDifferentFromDefault || isModified) {
                   displayValue += '*';

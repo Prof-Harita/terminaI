@@ -554,7 +554,7 @@ function getShellToolDescription(): string {
   if (os.platform() === 'win32') {
     return `This tool executes a given shell command as \`powershell.exe -NoProfile -Command <command>\`. Command can start background processes using PowerShell constructs such as \`Start-Process -NoNewWindow\` or \`Start-Job\`.${returnedInfo}`;
   } else {
-    return `This tool executes a given shell command as \`bash -c <command>\`. Command can start background processes using \`&\`. Command is executed as a subprocess that leads its own process group. Command process group can be terminated as \`kill -- -PGID\` or signaled as \`kill -s SIGNAL -- -PGID\`.${returnedInfo}`;
+    return `This tool executes a given shell command as \`bash -c <command>\`. Use this tool to perform system discovery (e.g., checking available printers via \`lpstat\`, listing hardware), manage files, or run scripts. Command can start background processes using \`&\`. Command is executed as a subprocess that leads its own process group. Command process group can be terminated as \`kill -- -PGID\` or signaled as \`kill -s SIGNAL -- -PGID\`.${returnedInfo}`;
   }
 }
 
@@ -625,11 +625,15 @@ export class ShellTool extends BaseDeclarativeTool<
         );
         return `Command is not allowed: ${params.command}`;
       }
-      return commandCheck.reason;
+      // If it's a hard denial (e.g. blocklist), fail validation.
+      // If it's a soft denial (e.g. parsing error), proceed to confirmation flow.
+      if (commandCheck.isHardDenial !== false) {
+        return commandCheck.reason;
+      }
     }
-    if (getCommandRoots(params.command).length === 0) {
-      return 'Could not identify command root to obtain permission from user.';
-    }
+    // We no longer strictly block empty roots here. If parsing fails, we treat it as
+    // an "unknown" command which will trigger a high-risk review in getConfirmationDetails.
+    // This enables "Fail Safe" behavior (ask user) instead of "Fail Stop" (crash/block).
     if (params.dir_path) {
       const resolvedPath = path.resolve(
         this.config.getTargetDir(),

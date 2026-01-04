@@ -16,6 +16,7 @@ import type { Config } from '../config/config.js';
 import {
   DEFAULT_GEMINI_MODEL_AUTO,
   DEFAULT_GEMINI_MODEL,
+  DEFAULT_GEMINI_FLASH_MODEL,
   PREVIEW_GEMINI_FLASH_MODEL,
 } from '../config/models.js';
 
@@ -55,7 +56,7 @@ describe('policyHelpers', () => {
       // Expect default chain [Pro, Flash]
       expect(chain).toHaveLength(2);
       expect(chain[0]?.model).toBe(DEFAULT_GEMINI_MODEL);
-      expect(chain[1]?.model).toBe(PREVIEW_GEMINI_FLASH_MODEL);
+      expect(chain[1]?.model).toBe(DEFAULT_GEMINI_FLASH_MODEL);
     });
 
     it('starts chain from preferredModel when model is "auto"', () => {
@@ -73,11 +74,11 @@ describe('policyHelpers', () => {
       });
       const chain = resolvePolicyChain(
         config,
-        PREVIEW_GEMINI_FLASH_MODEL,
+        DEFAULT_GEMINI_FLASH_MODEL,
         true,
       );
       expect(chain).toHaveLength(2);
-      expect(chain[0]?.model).toBe(PREVIEW_GEMINI_FLASH_MODEL);
+      expect(chain[0]?.model).toBe(DEFAULT_GEMINI_FLASH_MODEL);
       expect(chain[1]?.model).toBe(DEFAULT_GEMINI_MODEL);
     });
   });

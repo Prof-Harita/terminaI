@@ -117,51 +117,6 @@ export const DialogManager = ({
       />
     );
   }
-  if (uiState.isThemeDialogOpen) {
-    return (
-      <Box flexDirection="column">
-        {uiState.themeError && (
-          <Box marginBottom={1}>
-            <Text color={theme.status.error}>{uiState.themeError}</Text>
-          </Box>
-        )}
-        <ThemeDialog
-          onSelect={uiActions.handleThemeSelect}
-          onCancel={uiActions.closeThemeDialog}
-          onHighlight={uiActions.handleThemeHighlight}
-          settings={settings}
-          availableTerminalHeight={
-            constrainHeight ? terminalHeight - staticExtraHeight : undefined
-          }
-          terminalWidth={mainAreaWidth}
-        />
-      </Box>
-    );
-  }
-  if (uiState.isSettingsDialogOpen) {
-    return (
-      <Box flexDirection="column">
-        <SettingsDialog
-          settings={settings}
-          onSelect={() => uiActions.closeSettingsDialog()}
-          onRestartRequest={async () => {
-            await runExitCleanup();
-            process.exit(RELAUNCH_EXIT_CODE);
-          }}
-          availableTerminalHeight={terminalHeight - staticExtraHeight}
-          config={config}
-          onOpenAuthWizard={() => {
-            uiActions.closeSettingsDialog();
-            uiActions.setAuthWizardDialog(AuthWizardDialogState.Provider);
-          }}
-        />
-      </Box>
-    );
-  }
-  if (uiState.isModelDialogOpen) {
-    return <ModelDialog onClose={uiActions.closeModelDialog} />;
-  }
-
   if (uiState.authWizardDialog === AuthWizardDialogState.Provider) {
     return (
       <ProviderWizard
@@ -183,6 +138,7 @@ export const DialogManager = ({
             );
             await config.reconfigureProvider(providerConfig, undefined);
             uiActions.setAuthWizardDialog(null);
+            uiActions.closeSettingsDialog();
             // T2.3: For Gemini, open AuthDialog so user can authenticate
             uiActions.setAuthState(AuthState.Updating);
           } catch (error) {
@@ -221,6 +177,7 @@ export const DialogManager = ({
               AuthType.USE_OPENAI_COMPATIBLE,
             );
             uiActions.setAuthWizardDialog(null);
+            uiActions.closeSettingsDialog();
             // T2.3: For OpenAI-compatible, set Unauthenticated so useAuthCommand re-runs
             uiActions.setAuthState(AuthState.Unauthenticated);
           } catch (error) {
@@ -233,6 +190,50 @@ export const DialogManager = ({
         }}
       />
     );
+  }
+
+  if (uiState.isThemeDialogOpen) {
+    return (
+      <Box flexDirection="column">
+        {uiState.themeError && (
+          <Box marginBottom={1}>
+            <Text color={theme.status.error}>{uiState.themeError}</Text>
+          </Box>
+        )}
+        <ThemeDialog
+          onSelect={uiActions.handleThemeSelect}
+          onCancel={uiActions.closeThemeDialog}
+          onHighlight={uiActions.handleThemeHighlight}
+          settings={settings}
+          availableTerminalHeight={
+            constrainHeight ? terminalHeight - staticExtraHeight : undefined
+          }
+          terminalWidth={mainAreaWidth}
+        />
+      </Box>
+    );
+  }
+  if (uiState.isSettingsDialogOpen) {
+    return (
+      <Box flexDirection="column">
+        <SettingsDialog
+          settings={settings}
+          onSelect={() => uiActions.closeSettingsDialog()}
+          onRestartRequest={async () => {
+            await runExitCleanup();
+            process.exit(RELAUNCH_EXIT_CODE);
+          }}
+          availableTerminalHeight={terminalHeight - staticExtraHeight}
+          config={config}
+          onOpenAuthWizard={() => {
+            uiActions.setAuthWizardDialog(AuthWizardDialogState.Provider);
+          }}
+        />
+      </Box>
+    );
+  }
+  if (uiState.isModelDialogOpen) {
+    return <ModelDialog onClose={uiActions.closeModelDialog} />;
   }
 
   if (uiState.isAuthenticating) {

@@ -8,17 +8,17 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { readFile, writeFile } from 'node:fs/promises';
 
-import type { KeyBinding } from '../packages/cli/src/config/keyBindings.js';
+import type { KeyBinding } from '../packages/cli/src/config/keyBindings.ts';
 import {
   commandCategories,
   commandDescriptions,
   defaultKeyBindings,
-} from '../packages/cli/src/config/keyBindings.js';
+} from '../packages/cli/src/config/keyBindings.ts';
 import {
   formatWithPrettier,
   injectBetweenMarkers,
   normalizeForCompare,
-} from './utils/autogen.js';
+} from './utils/autogen.ts';
 
 const START_MARKER = '<!-- KEYBINDINGS-AUTOGEN:START -->';
 const END_MARKER = '<!-- KEYBINDINGS-AUTOGEN:END -->';
@@ -26,6 +26,7 @@ const OUTPUT_RELATIVE_PATH = ['docs', 'cli', 'keyboard-shortcuts.md'];
 
 const KEY_NAME_OVERRIDES: Record<string, string> = {
   return: 'Enter',
+  enter: 'Enter',
   escape: 'Esc',
   tab: 'Tab',
   backspace: 'Backspace',

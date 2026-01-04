@@ -138,6 +138,17 @@ export const Footer: React.FC = () => {
       {!hideModelInfo && (
         <Box alignItems="center" justifyContent="flex-end">
           <Box alignItems="center">
+            {/* Brain Mode Indicator */}
+            <Text
+              color={
+                config.experimentalBrainFrameworks
+                  ? theme.text.accent
+                  : theme.text.secondary
+              }
+            >
+              {config.experimentalBrainFrameworks ? 'Deep' : 'Fast'}
+              <Text color={theme.text.secondary}> /think </Text>
+            </Text>
             <Text color={theme.text.accent}>
               {getDisplayString(model, config.getPreviewFeatures())}
               <Text color={theme.text.secondary}> /model</Text>

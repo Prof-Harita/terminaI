@@ -77,29 +77,6 @@ describe('AgentControlTool', () => {
     }
   });
 
-  it('requires background=true to start an agent session', () => {
-    const tool = new AgentControlTool(mockConfig);
-    expect(() =>
-      tool.build({
-        operation: 'start',
-        name: 'agent',
-        agent: 'claude',
-      }),
-    ).toThrow('background');
-  });
-
-  it('rejects non-allowlisted agent binaries', () => {
-    const tool = new AgentControlTool(mockConfig);
-    expect(() =>
-      tool.build({
-        operation: 'start',
-        name: 'agent',
-        agent: 'unknown-agent',
-        background: true,
-      }),
-    ).toThrow('allowlist');
-  });
-
   it('starts an agent session and passes args to the command', async () => {
     const tool = new AgentControlTool(mockConfig);
     const invocation = tool.build({
@@ -151,18 +128,5 @@ describe('AgentControlTool', () => {
       throw new Error('Confirmation should not be false');
     }
     expect(confirmation.type).toBe('exec');
-  });
-
-  it('rejects cwd outside workspace', () => {
-    const tool = new AgentControlTool(mockConfig);
-    expect(() =>
-      tool.build({
-        operation: 'start',
-        name: 'agent',
-        agent: 'claude',
-        background: true,
-        cwd: '/etc',
-      }),
-    ).toThrow('Directory');
   });
 });

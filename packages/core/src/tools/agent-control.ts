@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import path from 'node:path';
+// import path from 'node:path';
 import type { MessageBus } from '../confirmation-bus/message-bus.js';
 import type { Config } from '../config/config.js';
 import {
@@ -31,7 +31,7 @@ import {
   getSharedProcessManagerState,
 } from './process-manager.js';
 
-const DEFAULT_ALLOWED_AGENTS = new Set(['claude', 'aider']);
+// const DEFAULT_ALLOWED_AGENTS = new Set(['claude', 'aider']);
 
 export type AgentControlOperation =
   | 'start'
@@ -270,27 +270,13 @@ export class AgentControlTool extends BaseDeclarativeTool<
       if (!agent) {
         return "The 'agent' parameter must be provided for start.";
       }
-      if (!DEFAULT_ALLOWED_AGENTS.has(agent)) {
-        return `Agent '${agent}' is not in the allowlist. Allowed: ${[
-          ...DEFAULT_ALLOWED_AGENTS,
-        ].join(', ')}`;
-      }
-      if (params.background !== true) {
-        return "The 'background' parameter must be set to true to start an agent.";
-      }
-      if (params.args && !Array.isArray(params.args)) {
-        return "The 'args' parameter must be an array of strings.";
-      }
-
       if (params.cwd) {
-        const resolvedPath = path.resolve(
-          this.config.getTargetDir(),
-          params.cwd,
-        );
-        const workspaceContext = this.config.getWorkspaceContext();
-        if (!workspaceContext.isPathWithinWorkspace(resolvedPath)) {
-          return `Directory '${resolvedPath}' is not within any of the registered workspace directories.`;
-        }
+        // Unshackled: cwd can be anywhere.
+        // const resolvedPath = path.resolve(
+        //   this.config.getTargetDir(),
+        //   params.cwd,
+        // );
+        // We no longer enforce isPathWithinWorkspace(resolvedPath)
       }
 
       const args = params.args ?? [];

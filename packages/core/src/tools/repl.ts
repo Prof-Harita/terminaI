@@ -304,8 +304,8 @@ export class ReplTool extends BaseDeclarativeTool<ReplToolParams, ToolResult> {
   }
 }
 
-const NETWORK_BLOCK_MESSAGE =
-  'Network access is disabled in this REPL sandbox.';
+// const NETWORK_BLOCK_MESSAGE =
+//   'Network access is disabled in this REPL sandbox.';
 
 function clampTimeout(requested: number | undefined, max: number): number {
   if (!requested || requested <= 0) {
@@ -314,12 +314,12 @@ function clampTimeout(requested: number | undefined, max: number): number {
   return Math.min(requested, max);
 }
 
-function appendNodeOption(
-  existing: string | undefined,
-  addition: string,
-): string {
-  return existing ? `${existing} ${addition}`.trim() : addition;
-}
+// function appendNodeOption(
+//   existing: string | undefined,
+//   addition: string,
+// ): string {
+//   return existing ? `${existing} ${addition}`.trim() : addition;
+// }
 
 function createTier1Sandbox(language: ReplToolParams['language']): {
   cwd: string;
@@ -327,69 +327,21 @@ function createTier1Sandbox(language: ReplToolParams['language']): {
   cleanupPaths: string[];
 } {
   const sandboxRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'terminai-repl-'));
+  // Unshackled: Network access is enabled.
+  // Removed TERMINAI_REPL_NO_NETWORK and blocking scripts.
   const env: Record<string, string> = {
     HOME: sandboxRoot,
     TMPDIR: sandboxRoot,
     TMP: sandboxRoot,
     TEMP: sandboxRoot,
-    TERMINAI_REPL_NO_NETWORK: '1',
   };
 
   if (language === 'python') {
-    const startupPath = path.join(sandboxRoot, 'disable-network.py');
-    fs.writeFileSync(
-      startupPath,
-      [
-        'import socket',
-        'import ssl',
-        'def _blocked(*_args, **_kwargs):',
-        `    raise RuntimeError("${NETWORK_BLOCK_MESSAGE}")`,
-        'socket.socket = _blocked',
-        'socket.create_connection = _blocked',
-        'socket.getaddrinfo = _blocked',
-        'ssl.wrap_socket = _blocked',
-      ].join('\n'),
-    );
-    env['PYTHONSTARTUP'] = startupPath;
     env['PYTHONNOUSERSITE'] = '1';
     env['PIP_CACHE_DIR'] = path.join(sandboxRoot, '.pip-cache');
   }
 
   if (language === 'node') {
-    const blockerPath = path.join(sandboxRoot, 'disable-network.js');
-    fs.writeFileSync(
-      blockerPath,
-      [
-        `const message = ${JSON.stringify(NETWORK_BLOCK_MESSAGE)};`,
-        'const block = () => { throw new Error(message); };',
-        'const blockAsync = async () => { throw new Error(message); };',
-        "const net = require('net');",
-        'net.connect = block;',
-        'net.createConnection = block;',
-        "const tls = require('tls');",
-        'tls.connect = block;',
-        "const dgram = require('dgram');",
-        'dgram.createSocket = block;',
-        "const dns = require('dns');",
-        'dns.lookup = block;',
-        'dns.resolve = block;',
-        'dns.resolve4 = block;',
-        'dns.resolve6 = block;',
-        "const http = require('http');",
-        'http.request = block;',
-        'http.get = block;',
-        "const https = require('https');",
-        'https.request = block;',
-        'https.get = block;',
-        'if (global.fetch) {',
-        '  global.fetch = blockAsync;',
-        '}',
-      ].join('\n'),
-    );
-    env['NODE_OPTIONS'] = appendNodeOption(
-      process.env['NODE_OPTIONS'],
-      `--require ${blockerPath}`,
-    );
     env['NODE_REPL_HISTORY'] = path.join(sandboxRoot, '.node_repl_history');
     env['NPM_CONFIG_CACHE'] = path.join(sandboxRoot, '.npm-cache');
     env['NPM_CONFIG_PREFIX'] = path.join(sandboxRoot, '.npm-prefix');

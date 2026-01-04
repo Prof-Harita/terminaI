@@ -109,7 +109,7 @@ export type KeyBindingConfig = {
  */
 export const defaultKeyBindings: KeyBindingConfig = {
   // Basic bindings
-  [Command.RETURN]: [{ key: 'return' }],
+  [Command.RETURN]: [{ key: 'return' }, { key: 'enter' }],
   [Command.ESCAPE]: [{ key: 'escape' }],
 
   // Cursor movement
@@ -156,7 +156,11 @@ export const defaultKeyBindings: KeyBindingConfig = {
   ],
 
   // Auto-completion
-  [Command.ACCEPT_SUGGESTION]: [{ key: 'tab' }, { key: 'return', ctrl: false }],
+  [Command.ACCEPT_SUGGESTION]: [
+    { key: 'tab' },
+    { key: 'return', ctrl: false },
+    { key: 'enter', ctrl: false },
+  ],
   // Completion navigation (arrow or Ctrl+P/N)
   [Command.COMPLETION_UP]: [
     { key: 'up', shift: false },
@@ -177,6 +181,13 @@ export const defaultKeyBindings: KeyBindingConfig = {
       paste: false,
       shift: false,
     },
+    {
+      key: 'enter',
+      ctrl: false,
+      command: false,
+      paste: false,
+      shift: false,
+    },
   ],
   // Split into multiple data-driven bindings
   // Now also includes shift+enter for multi-line input
@@ -185,6 +196,10 @@ export const defaultKeyBindings: KeyBindingConfig = {
     { key: 'return', command: true },
     { key: 'return', paste: true },
     { key: 'return', shift: true },
+    { key: 'enter', ctrl: true },
+    { key: 'enter', command: true },
+    { key: 'enter', paste: true },
+    { key: 'enter', shift: true },
     { key: 'j', ctrl: true },
   ],
 
@@ -211,7 +226,10 @@ export const defaultKeyBindings: KeyBindingConfig = {
   // Shell commands
   [Command.REVERSE_SEARCH]: [{ key: 'r', ctrl: true }],
   // Note: original logic ONLY checked ctrl=false, ignored meta/shift/paste
-  [Command.SUBMIT_REVERSE_SEARCH]: [{ key: 'return', ctrl: false }],
+  [Command.SUBMIT_REVERSE_SEARCH]: [
+    { key: 'return', ctrl: false },
+    { key: 'enter', ctrl: false },
+  ],
   [Command.ACCEPT_SUGGESTION_REVERSE_SEARCH]: [{ key: 'tab' }],
   [Command.TOGGLE_SHELL_INPUT_FOCUS]: [{ key: 'f', ctrl: true }],
 

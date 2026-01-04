@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`ShellTool > getDescription > should return the non-windows description when not on windows 1`] = `
-"This tool executes a given shell command as \`bash -c <command>\`. Command can start background processes using \`&\`. Command is executed as a subprocess that leads its own process group. Command process group can be terminated as \`kill -- -PGID\` or signaled as \`kill -s SIGNAL -- -PGID\`.
+"This tool executes a given shell command as \`bash -c <command>\`. Use this tool to perform system discovery (e.g., checking available printers via \`lpstat\`, listing hardware), manage files, or run scripts. Command can start background processes using \`&\`. Command is executed as a subprocess that leads its own process group. Command process group can be terminated as \`kill -- -PGID\` or signaled as \`kill -s SIGNAL -- -PGID\`.
 
       The following information is returned:
 

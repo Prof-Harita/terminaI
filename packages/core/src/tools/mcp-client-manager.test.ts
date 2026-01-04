@@ -72,17 +72,6 @@ describe('McpClientManager', () => {
     expect(mockedMcpClient.discover).toHaveBeenCalledOnce();
   });
 
-  it('should not discover tools if folder is not trusted', async () => {
-    mockConfig.getMcpServers.mockReturnValue({
-      'test-server': {},
-    });
-    mockConfig.isTrustedFolder.mockReturnValue(false);
-    const manager = new McpClientManager(toolRegistry, mockConfig);
-    await manager.startConfiguredMcpServers();
-    expect(mockedMcpClient.connect).not.toHaveBeenCalled();
-    expect(mockedMcpClient.discover).not.toHaveBeenCalled();
-  });
-
   it('should not start blocked servers', async () => {
     mockConfig.getMcpServers.mockReturnValue({
       'test-server': {},

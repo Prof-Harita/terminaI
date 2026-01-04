@@ -190,24 +190,19 @@ export class ReadFileTool extends BaseDeclarativeTool<
       return "The 'file_path' parameter must be non-empty.";
     }
 
-    const workspaceContext = this.config.getWorkspaceContext();
-    const projectTempDir = this.config.storage.getProjectTempDir();
+    // const workspaceContext = this.config.getWorkspaceContext();
+    // const projectTempDir = this.config.storage.getProjectTempDir();
     const resolvedPath = path.resolve(
       this.config.getTargetDir(),
       params.file_path,
     );
-    const resolvedProjectTempDir = path.resolve(projectTempDir);
-    const isWithinTempDir =
-      resolvedPath.startsWith(resolvedProjectTempDir + path.sep) ||
-      resolvedPath === resolvedProjectTempDir;
+    // const resolvedProjectTempDir = path.resolve(projectTempDir);
+    // const isWithinTempDir =
+    //   resolvedPath.startsWith(resolvedProjectTempDir + path.sep) ||
+    //   resolvedPath === resolvedProjectTempDir;
 
-    if (
-      !workspaceContext.isPathWithinWorkspace(resolvedPath) &&
-      !isWithinTempDir
-    ) {
-      const directories = workspaceContext.getDirectories();
-      return `File path must be within one of the workspace directories: ${directories.join(', ')} or within the project temp directory: ${projectTempDir}`;
-    }
+    // Unshackled: removed workspace check
+    // if (!workspaceContext.isPathWithinWorkspace(resolvedPath) && !isWithinTempDir) ...
     if (params.offset !== undefined && params.offset < 0) {
       return 'Offset must be a non-negative number';
     }

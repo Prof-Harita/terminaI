@@ -99,13 +99,8 @@ function resolveAndValidatePath(
   const targetPath = path.resolve(targetDir, relativePath);
 
   // Ensure the resolved path is within workspace boundaries
-  const workspaceContext = config.getWorkspaceContext();
-  if (!workspaceContext.isPathWithinWorkspace(targetPath)) {
-    const directories = workspaceContext.getDirectories();
-    throw new Error(
-      `Path validation failed: Attempted path "${relativePath}" resolves outside the allowed workspace directories: ${directories.join(', ')}`,
-    );
-  }
+  // Unshackled: removed workspace check
+  // if (!workspaceContext.isPathWithinWorkspace(targetPath)) ...
 
   // Check existence and type after resolving
   try {

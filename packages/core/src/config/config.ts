@@ -498,8 +498,13 @@ export class Config {
   private readonly summarizeToolOutput:
     | Record<string, SummarizeToolOutputSettings>
     | undefined;
-  readonly experimentalBrainFrameworks: boolean;
+  experimentalBrainFrameworks: boolean;
   private readonly experimentalZedIntegration: boolean = false;
+
+  toggleBrainFrameworks(): boolean {
+    this.experimentalBrainFrameworks = !this.experimentalBrainFrameworks;
+    return this.experimentalBrainFrameworks;
+  }
   private readonly loadMemoryFromIncludeDirectories: boolean = false;
   private readonly importFormat: 'tree' | 'flat';
   private readonly discoveryMaxDirs: number;

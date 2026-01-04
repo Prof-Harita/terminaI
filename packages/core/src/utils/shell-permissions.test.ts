@@ -351,7 +351,7 @@ describe('checkCommandPermissions', () => {
         allAllowed: false,
         disallowedCommands: ['ls &&'],
         blockReason: 'Command rejected because it could not be parsed safely',
-        isHardDenial: true,
+        isHardDenial: false,
       });
     });
 
