@@ -4,40 +4,28 @@ Get up and running with TerminaI in 5 minutes.
 
 ## Installation
 
-### CLI (npm) — recommended
+### From Source (Recommended for now)
 
 ```bash
-npm install -g @terminai/cli
-terminai --version
-terminai
-```
+# Clone the repo
+git clone https://github.com/Prof-Harita/terminaI.git
+cd terminaI
 
-### Desktop (Linux/Windows)
-
-Download installers from
-[GitHub Releases](https://github.com/Prof-Harita/terminaI/releases):
-
-| Platform | Installer             |
-| -------- | --------------------- |
-| Linux    | `.deb` or `.AppImage` |
-| Windows  | `.msi`                |
-| macOS    | Coming soon           |
-
-> [!NOTE] Desktop installers bundle the CLI as an internal sidecar. For CLI
-> access from your terminal, install via npm separately.
-
-### From source (contributors)
-
-```bash
-# From the repo root
+# Install dependencies and build
 npm ci
 npm run build
 
-# Link the CLI for local development
+# Link the CLI
 npm link --workspace packages/cli
 
 # Run it
 terminai
+```
+
+### NPM (Coming Soon)
+
+```bash
+npm install -g @terminai/cli
 ```
 
 ## Authentication

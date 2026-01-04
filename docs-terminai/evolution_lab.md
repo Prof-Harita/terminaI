@@ -233,7 +233,8 @@ For scenarios requiring:
       "file_management": 0.15,
       "web_automation": 0.15,
       "coding": 0.2
-    }
+    },
+    "approvalMode": "default"
   }
 }
 ```

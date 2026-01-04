@@ -41,9 +41,7 @@ to sysadmins — built on a stable upstream core.
 - [Why the Gemini CLI core?](./why-gemini.md)
 - [System Operator Recipes](./recipes.md)
 - [A2A Protocol](./a2a.md)
-- [Case studies](./case-studies.md)
 - [Developer API reference](./api-reference.md)
-- [Comprehensive Use Case Commands](./use_cases.md)
 
 ## Architecture
 
