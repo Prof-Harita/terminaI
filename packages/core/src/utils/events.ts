@@ -68,12 +68,23 @@ export interface MemoryChangedPayload {
   fileCount: number;
 }
 
+export interface ThoughtPayload {
+  frameworkId?: string;
+  reasoning: string;
+  task?: string;
+  approach?: string;
+  confidence?: number;
+  explanation?: string;
+  suggestedAction?: string;
+}
+
 export enum CoreEvent {
   UserFeedback = 'user-feedback',
   ModelChanged = 'model-changed',
   ConsoleLog = 'console-log',
   Output = 'output',
   MemoryChanged = 'memory-changed',
+  Thought = 'thought',
   ExternalEditorClosed = 'external-editor-closed',
 }
 
@@ -83,6 +94,7 @@ export interface CoreEvents {
   [CoreEvent.ConsoleLog]: [ConsoleLogPayload];
   [CoreEvent.Output]: [OutputPayload];
   [CoreEvent.MemoryChanged]: [MemoryChangedPayload];
+  [CoreEvent.Thought]: [ThoughtPayload];
   [CoreEvent.ExternalEditorClosed]: never[];
 }
 

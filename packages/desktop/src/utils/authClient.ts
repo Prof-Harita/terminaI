@@ -21,6 +21,15 @@ export interface OAuthStartResponse {
   authUrl: string;
 }
 
+export interface SwitchProviderParams {
+  provider: 'gemini' | 'openai_compatible';
+  openaiCompatible?: {
+    baseUrl: string;
+    model: string;
+    envVarName?: string;
+  };
+}
+
 export class AuthClient {
   constructor(
     private baseUrl: string,
@@ -89,5 +98,11 @@ export class AuthClient {
 
   async clearGeminiAuth(): Promise<AuthStatusResponse> {
     return this.fetch<AuthStatusResponse>('/auth/gemini/clear', 'POST', {});
+  }
+
+  async switchProvider(
+    params: SwitchProviderParams,
+  ): Promise<AuthStatusResponse> {
+    return this.fetch<AuthStatusResponse>('/auth/provider', 'POST', params);
   }
 }

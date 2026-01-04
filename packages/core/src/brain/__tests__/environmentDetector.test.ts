@@ -35,11 +35,13 @@ vi.mock('node:child_process', () => ({
 import {
   detectEnvironment,
   getCeremonyMultiplier,
+  resetEnvironmentCache,
 } from '../environmentDetector.js';
 
 describe('environmentDetector', () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    resetEnvironmentCache();
     process.env['NODE_ENV'] = undefined;
     process.env['HOME'] = '/home/test';
     mockHostname.mockReturnValue('dev-machine');

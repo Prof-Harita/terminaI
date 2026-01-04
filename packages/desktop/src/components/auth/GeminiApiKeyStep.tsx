@@ -7,6 +7,7 @@
 
 import { useCallback, useState } from 'react';
 import type { AuthClient } from '../../utils/authClient';
+import { useSettingsStore } from '../../stores/settingsStore';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 
@@ -33,6 +34,11 @@ export function GeminiApiKeyStep({ client, onDone, onError }: Props) {
       const status = await client.setApiKey(trimmed);
       if (status.status === 'ok') {
         setApiKey('');
+        // 3.4 Fix: Switch server provider to Gemini before updating local state
+        await client.switchProvider({ provider: 'gemini' }).catch(() => {
+          // Server may already be on Gemini, ignore errors
+        });
+        useSettingsStore.getState().setProvider('gemini');
         onDone();
         return;
       }

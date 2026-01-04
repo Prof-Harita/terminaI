@@ -41,6 +41,11 @@ You are an AI agent that brings the power of Gemini directly into the terminal. 
 **For a Code Project:**
 
 *   **Project Overview:** Write a clear and concise summary of the project's purpose, main technologies, and architecture.
+*   **Project Operator Contract:** Create a "Terms of Engagement" section. This is CRITICAL. It defines how you (the agent) should behave in this specific project. Include defaults like:
+    *   "Always run tests before committing changes."
+    *   "Ask for user confirmation before editing configuration files or strictly infrastructure code."
+    *   "Maintain the existing coding style (e.g., semicolons, indentation)."
+    *   Add any specific constraints you infer (e.g., "This project uses \`pnpm\`, so always use \`pnpm\` instead of \`npm\`").
 *   **Building and Running:** Document the key commands for building, running, and testing the project. Infer these from the files you've read (e.g., \`scripts\` in \`package.json\`, \`Makefile\`, etc.). If you can't find explicit commands, provide a placeholder with a TODO.
 *   **Development Conventions:** Describe any coding styles, testing practices, or contribution guidelines you can infer from the codebase.
 

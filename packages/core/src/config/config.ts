@@ -320,6 +320,7 @@ export interface ConfigParameters {
   bugCommand?: BugCommandSettings;
   model: string;
   maxSessionTurns?: number;
+  experimentalBrainFrameworks?: boolean;
   experimentalZedIntegration?: boolean;
   listSessions?: boolean;
   deleteSession?: string;
@@ -497,6 +498,7 @@ export class Config {
   private readonly summarizeToolOutput:
     | Record<string, SummarizeToolOutputSettings>
     | undefined;
+  readonly experimentalBrainFrameworks: boolean;
   private readonly experimentalZedIntegration: boolean = false;
   private readonly loadMemoryFromIncludeDirectories: boolean = false;
   private readonly importFormat: 'tree' | 'flat';
@@ -628,6 +630,8 @@ export class Config {
     this.modelAvailabilityService = new ModelAvailabilityService();
     this.previewFeatures = params.previewFeatures ?? undefined;
     this.maxSessionTurns = params.maxSessionTurns ?? -1;
+    this.experimentalBrainFrameworks =
+      params.experimentalBrainFrameworks ?? false;
     this.experimentalZedIntegration =
       params.experimentalZedIntegration ?? false;
     this.listSessions = params.listSessions ?? false;

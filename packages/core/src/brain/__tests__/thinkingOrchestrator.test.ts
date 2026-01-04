@@ -22,6 +22,7 @@ describe('ThinkingOrchestrator', () => {
 
   const mockConfig = {
     getDebugMode: () => false,
+    experimentalBrainFrameworks: true,
   } as unknown as Config;
 
   it('should route to consensus for complex tasks via LLM', async () => {

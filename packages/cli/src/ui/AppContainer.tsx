@@ -27,8 +27,10 @@ import {
   ToolCallStatus,
   type HistoryItemWithoutId,
   AuthState,
+  AuthWizardDialogState,
+  MessageType,
+  StreamingState,
 } from './types.js';
-import { MessageType, StreamingState } from './types.js';
 import {
   type EditorType,
   type Config,
@@ -144,7 +146,6 @@ import {
 import { ConversationStack } from '../voice/ConversationStack.js';
 import { StreamingWhisper } from '../voice/stt/StreamingWhisper.js';
 import { AudioRecorder } from '../voice/stt/AudioRecorder.js';
-import { AuthWizardDialogState } from './types.js';
 
 const WARNING_PROMPT_DURATION_MS = 1000;
 const QUEUE_ERROR_DISPLAY_DURATION_MS = 3000;
@@ -789,26 +790,9 @@ export const AppContainer = (props: AppContainerProps) => {
   const isAuthDialogOpen = authState === AuthState.Updating;
   const isAuthenticating = authState === AuthState.Unauthenticated;
 
-  useEffect(() => {
-    // Task 25: Show provider wizard before auth selection when auth is missing
-    if (
-      isAuthDialogOpen &&
-      settings.merged.security?.auth?.selectedType === undefined &&
-      authWizardDialog === null
-    ) {
-      setAuthWizardDialog(AuthWizardDialogState.Provider);
-      return;
-    }
-
-    // Once an auth type is selected (or auth dialog closes), hide the wizard.
-    if (!isAuthDialogOpen || settings.merged.security?.auth?.selectedType) {
-      setAuthWizardDialog(null);
-    }
-  }, [
-    authWizardDialog,
-    isAuthDialogOpen,
-    settings.merged.security?.auth?.selectedType,
-  ]);
+  // NOTE: Task 25 (auto-open provider wizard during auth-missing) was removed
+  // per requirement R0: "No startup wizard". Provider switching is now
+  // available only via Settings -> "Change Authentication Provider" or /auth wizard.
 
   // Session browser and resume functionality
   const isGeminiClientInitialized = config.getGeminiClient()?.isInitialized();
@@ -964,6 +948,8 @@ Logging in with Google... Restarting terminaI to continue.
   const slashCommandActions = useMemo(
     () => ({
       openAuthDialog: () => setAuthState(AuthState.Updating),
+      openAuthWizardDialog: () =>
+        setAuthWizardDialog(AuthWizardDialogState.Provider),
       openThemeDialog,
       openEditorDialog,
       openPrivacyNotice: () => setShowPrivacyNotice(true),
@@ -987,6 +973,7 @@ Logging in with Google... Restarting terminaI to continue.
     }),
     [
       setAuthState,
+      setAuthWizardDialog,
       openThemeDialog,
       openEditorDialog,
       openSettingsDialog,

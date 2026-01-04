@@ -9,8 +9,10 @@ import {
   checkGeminiAuthStatusNonInteractive,
   beginGeminiOAuthLoopbackFlow,
   AuthType,
+  type ProviderConfig,
   saveApiKey,
   clearCachedCredentialFile,
+  LlmProviderId,
 } from '@terminai/core';
 import type { Config } from '@terminai/core';
 import { logger } from '../utils/logger.js';
@@ -28,6 +30,8 @@ export type OAuthErrorCode =
 export interface LlmAuthStatusResult {
   readonly status: LlmAuthStatus;
   readonly authType: AuthType | undefined;
+  /** 3.5: Provider ID for Desktop to determine correct auth UI */
+  readonly provider?: 'gemini' | 'openai_compatible' | 'anthropic';
   readonly message?: string;
   readonly errorCode?: OAuthErrorCode;
 }
@@ -50,12 +54,18 @@ export class LlmAuthManager {
   private lastErrorMessage: string | null = null;
   private lastErrorCode: OAuthErrorCode | undefined;
 
+  private readonly getLoadedSettings:
+    | (() => import('../config/settings.js').LoadedSettings)
+    | undefined;
+
   constructor(input: {
     config: Config;
     getSelectedAuthType: () => AuthType | undefined;
+    getLoadedSettings?: () => import('../config/settings.js').LoadedSettings;
   }) {
     this.config = input.config;
     this.getSelectedAuthType = input.getSelectedAuthType;
+    this.getLoadedSettings = input.getLoadedSettings;
     this.effectiveAuthType = this.getSelectedAuthType();
   }
 
@@ -66,23 +76,48 @@ export class LlmAuthManager {
       return {
         status: 'in_progress',
         authType,
+        provider: 'gemini', // OAuth is Gemini-only
         message: 'OAuth sign-in in progress',
       };
     }
 
+    // T3.1: Branch on provider
+    const providerConfig = this.config.getProviderConfig();
+    if (providerConfig.provider === LlmProviderId.OPENAI_COMPATIBLE) {
+      // For OpenAI-compatible, check if the required env var is present
+      const envVarName = providerConfig.auth?.envVarName || 'OPENAI_API_KEY';
+      const hasApiKey = Boolean(process.env[envVarName]);
+      if (hasApiKey) {
+        return {
+          status: 'ok',
+          authType: AuthType.USE_OPENAI_COMPATIBLE,
+          provider: 'openai_compatible',
+        };
+      } else {
+        return {
+          status: 'required',
+          authType: AuthType.USE_OPENAI_COMPATIBLE,
+          provider: 'openai_compatible',
+          message: `OpenAI-compatible provider requires the ${envVarName} environment variable to be set.`,
+        };
+      }
+    }
+
+    // Gemini provider: use existing checkGeminiAuthStatusNonInteractive
     const check = await checkGeminiAuthStatusNonInteractive(
       authType,
       process.env,
     );
 
     if (check.status === 'ok') {
-      return { status: 'ok', authType };
+      return { status: 'ok', authType, provider: 'gemini' };
     }
 
     if (check.status === 'required') {
       return {
         status: 'required',
         authType,
+        provider: 'gemini',
         message: check.message ?? this.lastErrorMessage ?? undefined,
         errorCode: this.lastErrorCode,
       };
@@ -91,6 +126,7 @@ export class LlmAuthManager {
     return {
       status: 'error',
       authType,
+      provider: 'gemini',
       message: check.message ?? this.lastErrorMessage ?? undefined,
       errorCode: this.lastErrorCode,
     };
@@ -281,5 +317,97 @@ export class LlmAuthManager {
       message: 'An unexpected error occurred during sign-in. Please try again.',
       code: 'network_error',
     };
+  }
+
+  /**
+   * T3.2: Apply provider switch from Desktop.
+   * Validates enforcedType, applies patches, reconfigures the provider.
+   */
+  async applyProviderSwitch(params: {
+    provider: 'gemini' | 'openai_compatible';
+    openaiCompatible?: {
+      baseUrl: string;
+      model: string;
+      envVarName?: string;
+    };
+  }): Promise<LlmAuthStatusResult | { error: string; statusCode: number }> {
+    const { buildWizardSettingsPatch, LlmProviderId } = await import(
+      '@terminai/core'
+    );
+    const { SettingScope } = await import('../config/settings.js');
+
+    if (!this.getLoadedSettings) {
+      return {
+        error: 'Provider switching requires a settings loader',
+        statusCode: 500,
+      };
+    }
+
+    const loadedSettings = this.getLoadedSettings();
+
+    // 1. Validate enforcedType
+    const enforcedType = loadedSettings.merged.security?.auth?.enforcedType;
+    if (enforcedType) {
+      return {
+        error: `Provider switching is blocked by enforcedType setting (${enforcedType}).`,
+        statusCode: 403,
+      };
+    }
+
+    // 2. Apply patches via buildWizardSettingsPatch
+    const patches = buildWizardSettingsPatch({
+      provider: params.provider,
+      openaiCompatible: params.openaiCompatible,
+    });
+    for (const patch of patches) {
+      loadedSettings.setValue(SettingScope.User, patch.path, patch.value);
+    }
+
+    // 3. Auth type consistency rules
+    let selectedAuthType: AuthType | undefined;
+    if (params.provider === 'openai_compatible') {
+      selectedAuthType = AuthType.USE_OPENAI_COMPATIBLE;
+      loadedSettings.setValue(
+        SettingScope.User,
+        'security.auth.selectedType',
+        selectedAuthType,
+      );
+    } else {
+      // Switching to Gemini: clear selectedType if it was OpenAI-compatible
+      const currentSelectedType =
+        loadedSettings.merged.security?.auth?.selectedType;
+      if (currentSelectedType === AuthType.USE_OPENAI_COMPATIBLE) {
+        loadedSettings.setValue(
+          SettingScope.User,
+          'security.auth.selectedType',
+          undefined,
+        );
+      }
+    }
+
+    // 4. Compute ProviderConfig
+    let providerConfig: ProviderConfig;
+    if (params.provider === 'openai_compatible' && params.openaiCompatible) {
+      providerConfig = {
+        provider: LlmProviderId.OPENAI_COMPATIBLE,
+        baseUrl: params.openaiCompatible.baseUrl,
+        model: params.openaiCompatible.model,
+        auth: {
+          type: 'api-key' as const,
+          envVarName: params.openaiCompatible.envVarName || 'OPENAI_API_KEY',
+          apiKey:
+            process.env[params.openaiCompatible.envVarName || 'OPENAI_API_KEY'],
+        },
+      };
+    } else {
+      providerConfig = { provider: LlmProviderId.GEMINI };
+    }
+
+    // 5. Call reconfigureProvider
+    await this.config.reconfigureProvider(providerConfig, selectedAuthType);
+    this.effectiveAuthType = selectedAuthType;
+
+    // 6. Return updated status
+    return this.getStatus();
   }
 }

@@ -31,6 +31,63 @@ export function createAuthRouter(authManager: LlmAuthManager): Router {
     })();
   });
 
+  // Task T3.2: POST /auth/provider - Switch provider from Desktop
+  router.post('/provider', (req, res) => {
+    void (async () => {
+      try {
+        const body = req.body as {
+          provider: 'gemini' | 'openai_compatible';
+          openaiCompatible?: {
+            baseUrl: string;
+            model: string;
+            envVarName?: string;
+          };
+        };
+
+        if (
+          body.provider !== 'gemini' &&
+          body.provider !== 'openai_compatible'
+        ) {
+          return res.status(400).json({
+            error: "Invalid provider. Must be 'gemini' or 'openai_compatible'.",
+          });
+        }
+
+        // Validate OpenAI-compatible provider has required fields
+        if (body.provider === 'openai_compatible') {
+          if (
+            !body.openaiCompatible?.baseUrl ||
+            !body.openaiCompatible?.model
+          ) {
+            return res.status(400).json({
+              error:
+                "OpenAI-compatible provider requires 'openaiCompatible.baseUrl' and 'openaiCompatible.model'.",
+            });
+          }
+        }
+
+        const result = await authManager.applyProviderSwitch(body);
+
+        if ('statusCode' in result && typeof result.statusCode === 'number') {
+          return res.status(result.statusCode).json({ error: result.error });
+        }
+
+        // Result is LlmAuthStatusResult
+        const status =
+          result as import('../../auth/llmAuthManager.js').LlmAuthStatusResult;
+        return res.json({
+          status: status.status,
+          authType: status.authType ?? null,
+          ...(status.message ? { message: status.message } : {}),
+          ...(status.errorCode ? { errorCode: status.errorCode } : {}),
+        });
+      } catch (e) {
+        logger.error('[AuthRouter] Error switching provider:', e);
+        return res.status(500).json({ error: 'Failed to switch provider' });
+      }
+    })();
+  });
+
   // Task 13: POST /gemini/api-key
   router.post('/gemini/api-key', (req, res) => {
     void (async () => {

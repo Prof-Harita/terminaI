@@ -164,6 +164,20 @@ function computeNewContent(currentContent: string, fact: string): string {
       .trimEnd();
     const afterSectionMarker = currentContent.substring(endOfSectionIndex);
 
+    // DEDUPLICATION CHECK:
+    // We try to match the exact line. This is a basic check.
+    const lines = sectionContent
+      .split('\n')
+      .map((l) => l.trim())
+      .filter((l) => l.length > 0);
+    const isDuplicate = lines.some(
+      (line) => line === newMemoryItem || line === processedText,
+    );
+
+    if (isDuplicate) {
+      return currentContent;
+    }
+
     sectionContent += `\n${newMemoryItem}`;
     return (
       `${beforeSectionMarker}\n${sectionContent.trimStart()}\n${afterSectionMarker}`.trimEnd() +

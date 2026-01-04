@@ -30,8 +30,19 @@ interface SettingsState {
   setPreviewMode: (enabled: boolean) => void;
 
   // Model
-  provider: 'gemini' | 'ollama';
-  setProvider: (provider: 'gemini' | 'ollama') => void;
+  // Model
+  provider: 'gemini' | 'ollama' | 'openai_compatible';
+  setProvider: (provider: 'gemini' | 'ollama' | 'openai_compatible') => void;
+  openaiConfig?: {
+    baseUrl: string;
+    model: string;
+    envVarName?: string;
+  };
+  setOpenAIConfig: (config: {
+    baseUrl: string;
+    model: string;
+    envVarName?: string;
+  }) => void;
 
   // Voice
   voiceEnabled: boolean;
@@ -192,6 +203,7 @@ export const useSettingsStore = create<SettingsState>()(
         set({ provider });
         syncToCli('provider', provider);
       },
+      setOpenAIConfig: (openaiConfig) => set({ openaiConfig }),
 
       // Voice
       voiceEnabled: false,

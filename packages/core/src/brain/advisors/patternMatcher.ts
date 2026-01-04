@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { debugLogger } from '../../utils/debugLogger.js';
 import type { SystemSpec } from '../systemSpec.js';
 import type { Advisor, AdvisorProposal } from './types.js';
 import type { GenerativeModelAdapter } from '../riskAssessor.js';
@@ -58,9 +59,9 @@ Respond with ONLY a structured JSON proposal:
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
       }
-      console.warn('PatternMatcherAdvisor: No JSON found in response');
+      debugLogger.warn('PatternMatcherAdvisor: No JSON found in response');
     } catch (error) {
-      console.error('PatternMatcherAdvisor Error:', error);
+      debugLogger.error('PatternMatcherAdvisor Error:', error);
     }
 
     return {

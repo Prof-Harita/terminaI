@@ -64,6 +64,7 @@ interface SettingsDialogProps {
   onRestartRequest?: () => void;
   availableTerminalHeight?: number;
   config?: Config;
+  onOpenAuthWizard?: () => void;
 }
 
 const maxItemsToShow = 8;
@@ -74,6 +75,7 @@ export function SettingsDialog({
   onRestartRequest,
   availableTerminalHeight,
   config,
+  onOpenAuthWizard,
 }: SettingsDialogProps): React.JSX.Element {
   // Get vim mode context to sync vim mode changes
   const { vimEnabled, toggleVimEnabled } = useVimMode();
@@ -101,6 +103,10 @@ export function SettingsDialog({
     const keys = getDialogSettingKeys();
     const map = new Map<string, string>();
     const searchItems: string[] = [];
+
+    // Add pseudo-items for search
+    searchItems.push('Change Authentication Provider');
+    map.set('change authentication provider', 'action.changeProvider');
 
     keys.forEach((key) => {
       const def = getSettingDefinition(key);
@@ -198,7 +204,30 @@ export function SettingsDialog({
   const generateSettingsItems = () => {
     const settingKeys = searchQuery ? filteredKeys : getDialogSettingKeys();
 
-    return settingKeys.map((key: string) => {
+    const items = settingKeys.map((key: string) => {
+      // Handle the pseudo-item for changing provider
+      if (key === 'action.changeProvider') {
+        return {
+          label: 'Change Authentication Provider',
+          value: key,
+          type: 'action',
+          toggle: () => {
+            // Check if auth type is enforced (2.1 guardrail)
+            const enforcedType = settings.merged.security?.auth?.enforcedType;
+            if (enforcedType) {
+              // Cannot open wizard when auth type is enforced
+              debugLogger.log(
+                '[SettingsDialog] Provider change blocked by enforcedType:',
+                enforcedType,
+              );
+              // TODO: Surface this error to user via a banner/toast in future
+              return;
+            }
+            onOpenAuthWizard?.();
+          },
+        };
+      }
+
       const definition = getSettingDefinition(key);
 
       return {
@@ -314,6 +343,30 @@ export function SettingsDialog({
         },
       };
     });
+
+    // If no search query, prepend the "Change Provider" action to specific location
+    // or just prepend it to the list.
+    if (!searchQuery) {
+      items.unshift({
+        label: 'Change Authentication Provider',
+        value: 'action.changeProvider',
+        type: 'action', // Custom type
+        toggle: () => {
+          // Check if auth type is enforced (2.1 guardrail)
+          const enforcedType = settings.merged.security?.auth?.enforcedType;
+          if (enforcedType) {
+            debugLogger.log(
+              '[SettingsDialog] Provider change blocked by enforcedType:',
+              enforcedType,
+            );
+            return;
+          }
+          onOpenAuthWizard?.();
+        },
+      });
+    }
+
+    return items;
   };
 
   const items = generateSettingsItems();
@@ -896,6 +949,45 @@ export function SettingsDialog({
               const isActive =
                 focusSection === 'settings' &&
                 activeSettingIndex === idx + scrollOffset;
+
+              // Handle action items explicitly - no default/scope logic
+              if (item.type === 'action') {
+                return (
+                  <React.Fragment key={item.value}>
+                    <Box marginX={1} flexDirection="row" alignItems="center">
+                      <Box minWidth={2} flexShrink={0}>
+                        <Text
+                          color={
+                            isActive
+                              ? theme.status.success
+                              : theme.text.secondary
+                          }
+                        >
+                          {isActive ? '●' : ''}
+                        </Text>
+                      </Box>
+                      <Box minWidth={50}>
+                        <Text
+                          color={
+                            isActive ? theme.status.success : theme.text.primary
+                          }
+                        >
+                          {item.label}
+                        </Text>
+                      </Box>
+                      <Box minWidth={3} />
+                      <Text
+                        color={
+                          isActive ? theme.status.success : theme.text.secondary
+                        }
+                      >
+                        {'›'}
+                      </Text>
+                    </Box>
+                    <Box height={1} />
+                  </React.Fragment>
+                );
+              }
 
               const scopeSettings = settings.forScope(selectedScope).settings;
               const mergedSettings = settings.merged;

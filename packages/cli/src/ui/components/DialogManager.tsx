@@ -150,6 +150,10 @@ export const DialogManager = ({
           }}
           availableTerminalHeight={terminalHeight - staticExtraHeight}
           config={config}
+          onOpenAuthWizard={() => {
+            uiActions.closeSettingsDialog();
+            uiActions.setAuthWizardDialog(AuthWizardDialogState.Provider);
+          }}
         />
       </Box>
     );
@@ -168,8 +172,24 @@ export const DialogManager = ({
             AuthWizardDialogState.OpenAICompatibleSetup,
           );
         }}
-        onProceedToGeminiAuth={() => {
-          uiActions.setAuthWizardDialog(null);
+        onProceedToGeminiAuth={async () => {
+          // T2.3: Compute new ProviderConfig and reconfigure
+          try {
+            const { settingsToProviderConfig } = await import(
+              '../../config/settingsToProviderConfig.js'
+            );
+            const { providerConfig } = settingsToProviderConfig(
+              settings.merged,
+            );
+            await config.reconfigureProvider(providerConfig, undefined);
+            uiActions.setAuthWizardDialog(null);
+            // T2.3: For Gemini, open AuthDialog so user can authenticate
+            uiActions.setAuthState(AuthState.Updating);
+          } catch (error) {
+            const message =
+              error instanceof Error ? error.message : String(error);
+            uiActions.onAuthError(`Failed to switch provider: ${message}`);
+          }
         }}
       />
     );
@@ -186,9 +206,30 @@ export const DialogManager = ({
         onBack={() => {
           uiActions.setAuthWizardDialog(AuthWizardDialogState.Provider);
         }}
-        onComplete={() => {
-          uiActions.setAuthWizardDialog(null);
-          uiActions.setAuthState(AuthState.Unauthenticated);
+        onComplete={async () => {
+          // T2.3: Compute new ProviderConfig and reconfigure
+          try {
+            const { settingsToProviderConfig } = await import(
+              '../../config/settingsToProviderConfig.js'
+            );
+            const { AuthType } = await import('@terminai/core');
+            const { providerConfig } = settingsToProviderConfig(
+              settings.merged,
+            );
+            await config.reconfigureProvider(
+              providerConfig,
+              AuthType.USE_OPENAI_COMPATIBLE,
+            );
+            uiActions.setAuthWizardDialog(null);
+            // T2.3: For OpenAI-compatible, set Unauthenticated so useAuthCommand re-runs
+            uiActions.setAuthState(AuthState.Unauthenticated);
+          } catch (error) {
+            const message =
+              error instanceof Error ? error.message : String(error);
+            uiActions.onAuthError(
+              `Failed to configure OpenAI provider: ${message}`,
+            );
+          }
         }}
       />
     );

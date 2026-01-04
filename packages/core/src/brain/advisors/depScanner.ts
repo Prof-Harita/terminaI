@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { debugLogger } from '../../utils/debugLogger.js';
 import type { SystemSpec } from '../systemSpec.js';
 import type { Advisor, AdvisorProposal } from './types.js';
 import type { GenerativeModelAdapter } from '../riskAssessor.js';
@@ -62,9 +63,9 @@ Respond with ONLY a structured JSON proposal:
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
       }
-      console.warn('DepScannerAdvisor: No JSON found in response');
+      debugLogger.warn('DepScannerAdvisor: No JSON found in response');
     } catch (error) {
-      console.error('DepScannerAdvisor Error:', error);
+      debugLogger.error('DepScannerAdvisor Error:', error);
     }
 
     // Heuristic fallback if LLM or parsing fails

@@ -47,6 +47,7 @@ import {
   getOauthClient,
   UserPromptEvent,
   debugLogger,
+  Logger,
   recordSlowRender,
   coreEvents,
   CoreEvent,
@@ -502,6 +503,19 @@ export async function main() {
       DesktopAutomationService.getInstance().setEnabled(true);
       debugLogger.log('GUI Automation enabled');
     }
+
+    // Connect structured thought events to the logger
+    coreEvents.on(CoreEvent.Thought, (payload) => {
+      // We cast payload to Record<string, unknown> because logEventFull expects that,
+      // and ThoughtPayload is compatible (it's just a specific shape of object).
+      const logger = new Logger(config.getSessionId(), config.storage);
+      void logger.initialize().then(() => {
+        void logger.logEventFull(
+          'thought',
+          payload as unknown as Record<string, unknown>,
+        );
+      });
+    });
 
     let onboardingVoiceOverrides: VoiceOverrides | undefined;
     if (config.isInteractive() && isFirstRun()) {

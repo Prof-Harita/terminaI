@@ -98,6 +98,7 @@ export interface EvolutionLabConfig {
     monthlyTasks: number;
   };
   categories: Record<TaskCategory, number>; // Distribution weights
+  approvalMode?: string;
 }
 
 /**
@@ -130,4 +131,5 @@ export const DEFAULT_CONFIG: EvolutionLabConfig = {
     web_automation: 0.15,
     coding: 0.2,
   },
+  approvalMode: 'default',
 };

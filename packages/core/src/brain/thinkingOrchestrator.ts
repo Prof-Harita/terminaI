@@ -18,7 +18,8 @@ import { PACLoop } from './pacLoop.js';
 import { StepBackEvaluator } from './stepBackEvaluator.js';
 import type { GenerativeModelAdapter } from './riskAssessor.js';
 import { loadSystemSpec } from './systemSpec.js';
-import type { Logger } from '../core/logger.js';
+import { type Logger } from '../core/logger.js';
+import { debugLogger } from '../utils/debugLogger.js';
 import type { ToolCallRequestInfo } from '../core/turn.js';
 import { REPL_TOOL_NAME } from '../tools/tool-names.js';
 
@@ -79,6 +80,17 @@ export class ThinkingOrchestrator {
       throw new Error('System spec not initialized. Run initialization first.');
     }
 
+    if (!this.config.experimentalBrainFrameworks) {
+      return {
+        frameworkId: 'FW_DIRECT',
+        approach: 'Direct',
+        reasoning: 'Experimental brain frameworks are disabled.',
+        suggestedAction: 'fallback_to_direct',
+        explanation: 'Standard tool execution path.',
+        confidence: 100,
+      };
+    }
+
     // Phase 3: Use Flash for selection
     let selection = selectFrameworkHeuristic(task);
     if (!selection) {
@@ -90,7 +102,7 @@ export class ThinkingOrchestrator {
     const frameworkId = selection?.frameworkId || 'FW_DIRECT';
 
     if (this.config.getDebugMode()) {
-      console.log(
+      debugLogger.debug(
         `[Thinking] Selected framework: ${frameworkId} (${selection?.reasoning || 'Default'})`,
       );
     }
@@ -181,6 +193,55 @@ export class ThinkingOrchestrator {
           confidence: 100,
         };
     }
+  }
+
+  /**
+   * Attempts to recover from repeated failures using Step-Back logic.
+   * @param task Original user task
+   * @param failedApproach The approach that failed
+   * @param failureCount Number of consecutive failures
+   * @returns New execution plan or null if recovery not triggered
+   */
+  async recoverFromFailure(
+    task: string,
+    failedApproach: string,
+    failureCount: number,
+  ): Promise<BrainExecutionPlan | null> {
+    if (!this.config.experimentalBrainFrameworks) {
+      return null;
+    }
+
+    if (this.stepBack.shouldStepBack(failureCount)) {
+      const systemSpec = loadSystemSpec();
+      if (!systemSpec) {
+        return null;
+      }
+
+      const proposal = await this.stepBack.handleStepBack(
+        task,
+        failedApproach,
+        this.consensus,
+        systemSpec,
+      );
+
+      // Log the recovery thought
+      await this.logger?.logEventFull('thought', {
+        frameworkId: 'FW_SC_RECOVERY',
+        reasoning: `Step-Back triggered after ${failureCount} failures. New approach: ${proposal.approach}`,
+        task,
+      });
+
+      return {
+        frameworkId: 'FW_CONSENSUS', // We piggyback on consensus for the new plan
+        approach: proposal.approach,
+        reasoning: proposal.reasoning,
+        suggestedAction: 'inject_prompt',
+        explanation: `Recovery Strategy: ${proposal.approach}`,
+        confidence: proposal.confidence,
+      };
+    }
+
+    return null;
   }
 
   // Exposed for PAC loop and StepBack usage in the future

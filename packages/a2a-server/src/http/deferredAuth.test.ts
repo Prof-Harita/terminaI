@@ -31,7 +31,6 @@ describe('deferred auth default (Task 18)', () => {
     loadConfigSpy.mockResolvedValue(
       createMockConfig({
         refreshAuth: vi.fn().mockResolvedValue(undefined),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         getWebRemoteRelayUrl: vi.fn().mockReturnValue(undefined),
       }) as Config,
     );

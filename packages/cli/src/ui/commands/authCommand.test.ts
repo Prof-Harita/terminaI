@@ -35,11 +35,12 @@ describe('authCommand', () => {
     vi.clearAllMocks();
   });
 
-  it('should have subcommands: login and logout', () => {
+  it('should have subcommands: login, logout, and wizard', () => {
     expect(authCommand.subCommands).toBeDefined();
-    expect(authCommand.subCommands).toHaveLength(2);
+    expect(authCommand.subCommands).toHaveLength(3);
     expect(authCommand.subCommands?.[0]?.name).toBe('login');
     expect(authCommand.subCommands?.[1]?.name).toBe('logout');
+    expect(authCommand.subCommands?.[2]?.name).toBe('wizard');
   });
 
   it('should return a dialog action to open the auth dialog when called with no args', () => {
@@ -125,6 +126,41 @@ describe('authCommand', () => {
       const result = await logoutCommand!.action!(mockContext, '');
 
       expect(result).toEqual({ type: 'logout' });
+    });
+  });
+
+  describe('auth wizard subcommand', () => {
+    it('should return authWizard dialog action when no enforcedType', () => {
+      const wizardCommand = authCommand.subCommands?.[2];
+      expect(wizardCommand?.name).toBe('wizard');
+
+      // Ensure no enforced type is set
+      (mockContext.services.settings as unknown as { merged: object }).merged =
+        {
+          ...mockContext.services.settings.merged,
+          security: { auth: {} },
+        };
+
+      const result = wizardCommand!.action!(mockContext, '');
+      expect(result).toEqual({ type: 'dialog', dialog: 'authWizard' });
+    });
+
+    it('should return error message when enforcedType is set', () => {
+      const wizardCommand = authCommand.subCommands?.[2];
+
+      // Set enforced type
+      (mockContext.services.settings as unknown as { merged: object }).merged =
+        {
+          ...mockContext.services.settings.merged,
+          security: { auth: { enforcedType: 'USE_API_KEY' } },
+        };
+
+      const result = wizardCommand!.action!(mockContext, '');
+      expect(result).toEqual({
+        type: 'message',
+        messageType: 'error',
+        content: expect.stringContaining('enforced'),
+      });
     });
   });
 });
