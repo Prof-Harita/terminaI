@@ -10,6 +10,7 @@ import React from 'react';
 import { render } from 'ink';
 import { AppContainer, type VoiceOverrides } from './ui/AppContainer.js';
 import { Onboarding, type OnboardingResult } from './ui/Onboarding.js';
+import { AuthProviderWizardFlow } from './ui/auth/AuthProviderWizardFlow.js';
 import { RemoteConsent } from './ui/RemoteConsent.js';
 import { loadCliConfig, parseArguments } from './config/config.js';
 import * as cliConfig from './config/config.js';
@@ -383,6 +384,26 @@ export async function main() {
         AuthType.COMPUTE_ADC,
       );
     }
+  }
+
+  const shouldRunProviderWizardPreflight =
+    process.stdin.isTTY &&
+    isFirstRun() &&
+    !argv.query &&
+    !argv.prompt &&
+    !argv.promptInteractive &&
+    !argv.experimentalAcp &&
+    !argv.webRemote &&
+    !argv.webRemoteRotateToken &&
+    !argv.listExtensions &&
+    !argv.listSessions &&
+    !argv.deleteSession &&
+    !argv.dumpConfig;
+  if (
+    shouldRunProviderWizardPreflight &&
+    settings.merged.llm?.provider === undefined
+  ) {
+    await runAuthProviderWizardFlow(settings, process.stdout.columns ?? 80);
   }
 
   // hop into sandbox if we are outside and sandboxing is enabled
@@ -943,6 +964,24 @@ async function runOnboardingFlow(): Promise<OnboardingResult> {
       <Onboarding
         onComplete={(result) => {
           resolve(result);
+          unmount();
+        }}
+      />,
+    );
+  });
+}
+
+async function runAuthProviderWizardFlow(
+  settings: LoadedSettings,
+  terminalWidth: number,
+): Promise<void> {
+  return new Promise<void>((resolve) => {
+    const { unmount } = render(
+      <AuthProviderWizardFlow
+        settings={settings}
+        terminalWidth={terminalWidth}
+        onComplete={() => {
+          resolve();
           unmount();
         }}
       />,

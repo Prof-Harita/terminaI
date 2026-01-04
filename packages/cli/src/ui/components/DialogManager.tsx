@@ -181,6 +181,7 @@ export const DialogManager = ({
     return (
       <OpenAICompatibleSetupDialog
         settings={settings}
+        terminalWidth={terminalWidth}
         onAuthError={uiActions.onAuthError}
         onBack={() => {
           uiActions.setAuthWizardDialog(AuthWizardDialogState.Provider);
