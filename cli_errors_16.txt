@@ -1,5 +1,0 @@
-
-> @terminai/cli@0.21.0 typecheck
-> tsc --noEmit
-
-src/config/settings.test.ts(2113,1): error TS1005: '}' expected.
