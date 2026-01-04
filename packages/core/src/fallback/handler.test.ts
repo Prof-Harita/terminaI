@@ -23,6 +23,7 @@ import { AuthType } from '../core/contentGenerator.js';
 import {
   DEFAULT_GEMINI_MODEL,
   DEFAULT_GEMINI_MODEL_AUTO,
+  DEFAULT_GEMINI_FLASH_MODEL,
   PREVIEW_GEMINI_FLASH_MODEL,
   PREVIEW_GEMINI_MODEL,
   PREVIEW_GEMINI_MODEL_AUTO,
@@ -56,7 +57,7 @@ vi.mock('../utils/debugLogger.js', () => ({
 }));
 
 const MOCK_PRO_MODEL = DEFAULT_GEMINI_MODEL;
-const FALLBACK_MODEL = PREVIEW_GEMINI_FLASH_MODEL;
+const FALLBACK_MODEL = DEFAULT_GEMINI_FLASH_MODEL;
 const AUTH_OAUTH = AuthType.LOGIN_WITH_GOOGLE;
 const AUTH_API_KEY = AuthType.USE_GEMINI;
 
@@ -154,7 +155,7 @@ describe('handleFallback', () => {
       await handleFallback(policyConfig, DEFAULT_GEMINI_MODEL, AUTH_OAUTH);
 
       expect(availability.selectFirstAvailable).toHaveBeenCalledWith([
-        PREVIEW_GEMINI_FLASH_MODEL,
+        DEFAULT_GEMINI_FLASH_MODEL,
       ]);
     });
 
@@ -171,14 +172,14 @@ describe('handleFallback', () => {
 
       expect(policyHandler).toHaveBeenCalledWith(
         MOCK_PRO_MODEL,
-        PREVIEW_GEMINI_FLASH_MODEL,
+        DEFAULT_GEMINI_FLASH_MODEL,
         undefined,
       );
     });
 
     it('executes silent policy action without invoking UI handler', async () => {
       const proPolicy = createDefaultPolicy(MOCK_PRO_MODEL);
-      const flashPolicy = createDefaultPolicy(PREVIEW_GEMINI_FLASH_MODEL);
+      const flashPolicy = createDefaultPolicy(DEFAULT_GEMINI_FLASH_MODEL);
       flashPolicy.actions = {
         ...flashPolicy.actions,
         terminal: 'silent',
@@ -193,7 +194,7 @@ describe('handleFallback', () => {
 
       try {
         availability.selectFirstAvailable = vi.fn().mockReturnValue({
-          selectedModel: PREVIEW_GEMINI_FLASH_MODEL,
+          selectedModel: DEFAULT_GEMINI_FLASH_MODEL,
           skipped: [],
         });
 
@@ -206,7 +207,7 @@ describe('handleFallback', () => {
         expect(result).toBe(true);
         expect(policyConfig.getFallbackModelHandler).not.toHaveBeenCalled();
         expect(policyConfig.setActiveModel).toHaveBeenCalledWith(
-          PREVIEW_GEMINI_FLASH_MODEL,
+          DEFAULT_GEMINI_FLASH_MODEL,
         );
       } finally {
         chainSpy.mockRestore();
@@ -215,7 +216,7 @@ describe('handleFallback', () => {
 
     it('does not wrap around to upgrade candidates if the current model was selected at the end (e.g. by router)', async () => {
       // Last-resort failure (Flash) in [Preview, Pro, Flash] checks Preview then Pro (all upstream).
-      vi.mocked(policyConfig.getPreviewFeatures).mockReturnValue(true);
+      vi.mocked(policyConfig.getPreviewFeatures).mockReturnValue(false);
       vi.mocked(policyConfig.getModel).mockReturnValue(
         DEFAULT_GEMINI_MODEL_AUTO,
       );
@@ -228,14 +229,14 @@ describe('handleFallback', () => {
 
       await handleFallback(
         policyConfig,
-        PREVIEW_GEMINI_FLASH_MODEL,
+        DEFAULT_GEMINI_FLASH_MODEL,
         AUTH_OAUTH,
       );
 
       expect(availability.selectFirstAvailable).not.toHaveBeenCalled();
       expect(policyHandler).toHaveBeenCalledWith(
-        PREVIEW_GEMINI_FLASH_MODEL,
-        PREVIEW_GEMINI_FLASH_MODEL,
+        DEFAULT_GEMINI_FLASH_MODEL,
+        DEFAULT_GEMINI_FLASH_MODEL,
         undefined,
       );
     });
@@ -325,7 +326,7 @@ describe('handleFallback', () => {
 
       expect(policyHandler).toHaveBeenCalledWith(
         MOCK_PRO_MODEL,
-        PREVIEW_GEMINI_FLASH_MODEL,
+        DEFAULT_GEMINI_FLASH_MODEL,
         terminalError,
       );
     });
@@ -355,7 +356,7 @@ describe('handleFallback', () => {
 
       expect(policyHandler).toHaveBeenCalledWith(
         MOCK_PRO_MODEL,
-        PREVIEW_GEMINI_FLASH_MODEL,
+        DEFAULT_GEMINI_FLASH_MODEL,
         retryableError,
       );
     });
@@ -371,7 +372,7 @@ describe('handleFallback', () => {
 
       const result = await handleFallback(
         policyConfig,
-        PREVIEW_GEMINI_FLASH_MODEL,
+        DEFAULT_GEMINI_FLASH_MODEL,
         AUTH_OAUTH,
       );
 
@@ -379,8 +380,8 @@ describe('handleFallback', () => {
 
       expect(result).not.toBeNull();
       expect(policyHandler).toHaveBeenCalledWith(
-        PREVIEW_GEMINI_FLASH_MODEL,
-        PREVIEW_GEMINI_FLASH_MODEL,
+        DEFAULT_GEMINI_FLASH_MODEL,
+        DEFAULT_GEMINI_FLASH_MODEL,
         undefined,
       );
     });

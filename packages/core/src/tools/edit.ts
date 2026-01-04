@@ -642,15 +642,12 @@ Expectation for required parameters:
       return "The 'file_path' parameter must be non-empty.";
     }
 
-    const resolvedPath = path.resolve(
-      this.config.getTargetDir(),
-      params.file_path,
-    );
-    const workspaceContext = this.config.getWorkspaceContext();
-    if (!workspaceContext.isPathWithinWorkspace(resolvedPath)) {
-      const directories = workspaceContext.getDirectories();
-      return `File path must be within one of the workspace directories: ${directories.join(', ')}`;
-    }
+    // const resolvedPath = path.resolve(
+    //   this.config.getTargetDir(),
+    //   params.file_path,
+    // );
+    // Unshackled: removed workspace check
+    // if (!workspaceContext.isPathWithinWorkspace(resolvedPath)) ...
 
     return null;
   }

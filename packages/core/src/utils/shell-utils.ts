@@ -104,8 +104,14 @@ async function loadBashLanguage(): Promise<void> {
 export async function initializeShellParsers(): Promise<void> {
   if (!treeSitterInitialization) {
     treeSitterInitialization = loadBashLanguage().catch((error) => {
-      treeSitterInitialization = null;
-      throw error;
+      // Don't fail the initialization promise, just log it.
+      // The unavailability of the parser is handled by checking bashLanguage/treeSitterInitializationError.
+      const normalized = toError(error);
+      treeSitterInitializationError = normalized;
+      debugLogger.warn(
+        'Failed to initialize tree-sitter parser, falling back to regex:',
+        normalized.message,
+      );
     });
   }
 
@@ -298,7 +304,7 @@ function hasPromptCommandTransform(root: Node): boolean {
 
 function parseBashCommandDetails(command: string): CommandParseResult | null {
   if (treeSitterInitializationError) {
-    throw treeSitterInitializationError;
+    return fallbackParseBashCommandDetails(command);
   }
 
   if (!bashLanguage) {

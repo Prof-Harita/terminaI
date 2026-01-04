@@ -147,7 +147,7 @@ describe('resolveClassifierModel', () => {
         PREVIEW_GEMINI_MODEL_AUTO,
         GEMINI_MODEL_ALIAS_FLASH,
       ),
-    ).toBe(DEFAULT_GEMINI_FLASH_MODEL);
+    ).toBe(PREVIEW_GEMINI_FLASH_MODEL);
   });
 
   it('should return pro model when alias is pro', () => {

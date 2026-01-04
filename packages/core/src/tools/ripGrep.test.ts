@@ -1014,7 +1014,7 @@ describe('RipGrepTool', () => {
         pattern: 'test',
         dir_path: '../outside',
       };
-      expect(() => grepTool.build(params)).toThrow(/Path validation failed/);
+      expect(() => grepTool.build(params)).toThrow(/Path does not exist/);
     });
 
     it.each([

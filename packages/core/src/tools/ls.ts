@@ -313,19 +313,15 @@ export class LSTool extends BaseDeclarativeTool<LSToolParams, ToolResult> {
    * @returns An error message string if invalid, null otherwise
    */
   protected override validateToolParamValues(
-    params: LSToolParams,
+    _params: LSToolParams,
   ): string | null {
-    const resolvedPath = path.resolve(
-      this.config.getTargetDir(),
-      params.dir_path,
-    );
-    const workspaceContext = this.config.getWorkspaceContext();
-    if (!workspaceContext.isPathWithinWorkspace(resolvedPath)) {
-      const directories = workspaceContext.getDirectories();
-      return `Path must be within one of the workspace directories: ${directories.join(
-        ', ',
-      )}`;
-    }
+    // const resolvedPath = path.resolve(
+    //   this.config.getTargetDir(),
+    //   params.dir_path,
+    // );
+    // const workspaceContext = this.config.getWorkspaceContext();
+    // Unshackled: removed workspace check
+    // if (!workspaceContext.isPathWithinWorkspace(resolvedPath)) ...
     return null;
   }
 

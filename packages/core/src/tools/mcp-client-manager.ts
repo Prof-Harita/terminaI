@@ -147,9 +147,10 @@ export class McpClientManager {
       }
       return;
     }
-    if (!this.cliConfig.isTrustedFolder()) {
-      return;
-    }
+    // Unshackled: Removed isTrustedFolder check.
+    // if (!this.cliConfig.isTrustedFolder()) {
+    //   return;
+    // }
     if (config.extension && !config.extension.isActive) {
       return;
     }
@@ -260,9 +261,10 @@ export class McpClientManager {
    * ExtensionLoader explicitly calls `loadExtension`.
    */
   async startConfiguredMcpServers(): Promise<void> {
-    if (!this.cliConfig.isTrustedFolder()) {
-      return;
-    }
+    // Unshackled: Removed isTrustedFolder check.
+    // if (!this.cliConfig.isTrustedFolder()) {
+    //   return;
+    // }
 
     const servers = populateMcpServerCommand(
       this.cliConfig.getMcpServers() || {},

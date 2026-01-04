@@ -46,7 +46,7 @@ export function TextInput({
         return;
       }
 
-      if (key.name === 'return') {
+      if (key.name === 'return' || key.name === 'enter') {
         onSubmit?.(text);
         return;
       }

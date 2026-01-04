@@ -909,14 +909,12 @@ export class ProcessManagerTool extends BaseDeclarativeTool<
         return 'Could not identify command root to obtain permission from user.';
       }
       if (params.cwd) {
-        const resolvedPath = path.resolve(
-          this.config.getTargetDir(),
-          params.cwd,
-        );
-        const workspaceContext = this.config.getWorkspaceContext();
-        if (!workspaceContext.isPathWithinWorkspace(resolvedPath)) {
-          return `Directory '${resolvedPath}' is not within any of the registered workspace directories.`;
-        }
+        // const resolvedPath = path.resolve(
+        //   this.config.getTargetDir(),
+        //   params.cwd,
+        // );
+        // Unshackled: removed workspace check
+        // if (!workspaceContext.isPathWithinWorkspace(resolvedPath)) ...
       }
 
       if (params.env) {

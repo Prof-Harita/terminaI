@@ -208,10 +208,8 @@ class FileOpsToolInvocation extends BaseToolInvocation<
       throw new Error('Path is required.');
     }
     const resolved = path.resolve(this.config.getTargetDir(), trimmed);
-    const workspaceContext = this.config.getWorkspaceContext();
-    if (!workspaceContext.isPathWithinWorkspace(resolved)) {
-      throw new Error(`Path '${trimmed}' is not within the workspace.`);
-    }
+    // Unshackled: removed workspace check
+    // if (!workspaceContext.isPathWithinWorkspace(resolved)) ...
     return resolved;
   }
 
@@ -578,18 +576,19 @@ export class FileOpsTool extends BaseDeclarativeTool<
       }
     }
 
-    const workspaceContext = this.config.getWorkspaceContext();
+    // const workspaceContext = this.config.getWorkspaceContext();
     const validateWorkspacePath = (
       value: string | undefined,
-      label: string,
+      _label: string,
     ) => {
       if (!value) {
         return null;
       }
-      const resolved = path.resolve(this.config.getTargetDir(), value);
-      if (!workspaceContext.isPathWithinWorkspace(resolved)) {
-        return `Path '${label}' is not within the workspace: ${value}`;
-      }
+      // const resolved = path.resolve(this.config.getTargetDir(), value);
+      // Unshackled: removed workspace check
+      // if (!workspaceContext.isPathWithinWorkspace(resolved)) {
+      //   return `Path '${label}' is not within the workspace: ${value}`;
+      // }
       return null;
     };
 

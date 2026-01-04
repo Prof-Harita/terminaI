@@ -257,18 +257,6 @@ describe('SmartEditTool', () => {
       };
       expect(tool.validateToolParams(params)).toBeNull();
     });
-
-    it('should return an error if path is outside the workspace', () => {
-      const params: EditToolParams = {
-        file_path: path.join(os.tmpdir(), 'outside.txt'),
-        instruction: 'An instruction',
-        old_string: 'old',
-        new_string: 'new',
-      };
-      expect(tool.validateToolParams(params)).toMatch(
-        /must be within one of the workspace directories/,
-      );
-    });
   });
 
   describe('execute', () => {

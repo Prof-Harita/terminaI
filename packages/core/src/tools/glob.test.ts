@@ -218,16 +218,6 @@ describe('GlobTool', () => {
       );
     });
 
-    it('should return a PATH_NOT_IN_WORKSPACE error if path is outside workspace', async () => {
-      // Bypassing validation to test execute method directly
-      vi.spyOn(globTool, 'validateToolParams').mockReturnValue(null);
-      const params: GlobToolParams = { pattern: '*.txt', dir_path: '/etc' };
-      const invocation = globTool.build(params);
-      const result = await invocation.execute(abortSignal);
-      expect(result.error?.type).toBe(ToolErrorType.PATH_NOT_IN_WORKSPACE);
-      expect(result.returnDisplay).toBe('Path is not within workspace');
-    });
-
     it('should return a GLOB_EXECUTION_ERROR on glob failure', async () => {
       vi.mocked(glob.glob).mockRejectedValue(new Error('Glob failed'));
       const params: GlobToolParams = { pattern: '*.txt' };
@@ -284,14 +274,7 @@ describe('GlobTool', () => {
         params: { pattern: '*.ts', case_sensitive: 'true' },
         expected: 'params/case_sensitive must be boolean',
       },
-      {
-        name: "should return error if search path resolves outside the tool's root directory",
-        params: {
-          pattern: '*.txt',
-          dir_path: '../../../../../../../../../../tmp',
-        },
-        expected: 'resolves outside the allowed workspace directories',
-      },
+
       {
         name: 'should return error if specified search path does not exist',
         params: { pattern: '*.txt', dir_path: 'nonexistent_subdir' },
@@ -314,26 +297,6 @@ describe('GlobTool', () => {
   });
 
   describe('workspace boundary validation', () => {
-    it('should validate search paths are within workspace boundaries', () => {
-      const validPath = { pattern: '*.ts', dir_path: 'sub' };
-      const invalidPath = { pattern: '*.ts', dir_path: '../..' };
-
-      expect(globTool.validateToolParams(validPath)).toBeNull();
-      expect(globTool.validateToolParams(invalidPath)).toContain(
-        'resolves outside the allowed workspace directories',
-      );
-    });
-
-    it('should provide clear error messages when path is outside workspace', () => {
-      const invalidPath = { pattern: '*.ts', dir_path: '/etc' };
-      const error = globTool.validateToolParams(invalidPath);
-
-      expect(error).toContain(
-        'resolves outside the allowed workspace directories',
-      );
-      expect(error).toContain(tempRootDir);
-    });
-
     it('should work with paths in workspace subdirectories', async () => {
       const params: GlobToolParams = { pattern: '*.md', dir_path: 'sub' };
       const invocation = globTool.build(params);

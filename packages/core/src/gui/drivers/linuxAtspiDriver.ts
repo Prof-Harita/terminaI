@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { spawn } from 'node:child_process';
+import { safeSpawn } from '../../utils/processUtils.js';
 import type { ChildProcess } from 'node:child_process';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
@@ -124,9 +124,15 @@ export class LinuxAtspiDriver implements DesktopDriver {
       return { connected: false, error: msg };
     }
 
-    this.process = spawn('python3', [this.sidecarPath], {
-      stdio: ['pipe', 'pipe', 'pipe'], // Capture stderr to detect import errors
-    });
+    try {
+      this.process = await safeSpawn('python3', [this.sidecarPath], {
+        stdio: ['pipe', 'pipe', 'pipe'], // Capture stderr to detect import errors
+      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error('Failed to spawn Linux sidecar process:', msg);
+      return { connected: false, error: `Failed to launch sidecar: ${msg}` };
+    }
 
     if (!this.process.stdout || !this.process.stdin || !this.process.stderr) {
       throw new Error('Failed to spawn sidecar with stdio');

@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { spawn } from 'node:child_process';
+import { safeSpawn } from '../../utils/processUtils.js';
 import type { ChildProcess } from 'node:child_process';
 import * as path from 'node:path';
 import * as readline from 'node:readline';
@@ -52,7 +52,7 @@ export class WindowsUiaDriver implements DesktopDriver {
 
   async connect(): Promise<DriverConnectionStatus> {
     try {
-      this.process = spawn(this.binaryPath, [], {
+      this.process = await safeSpawn(this.binaryPath, [], {
         stdio: ['pipe', 'pipe', 'inherit'],
       });
 

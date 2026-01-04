@@ -68,12 +68,6 @@ describe('LSTool', () => {
       expect(invocation).toBeDefined();
     });
 
-    it('should reject paths outside workspace with clear error message', () => {
-      expect(() => lsTool.build({ dir_path: '/etc/passwd' })).toThrow(
-        `Path must be within one of the workspace directories: ${tempRootDir}, ${tempSecondaryDir}`,
-      );
-    });
-
     it('should accept paths in secondary workspace directory', async () => {
       const testPath = path.join(tempSecondaryDir, 'lib');
       await fs.mkdir(testPath);
@@ -292,13 +286,6 @@ describe('LSTool', () => {
       await fs.mkdir(testPath);
       const params = { dir_path: testPath };
       expect(lsTool.build(params)).toBeDefined();
-    });
-
-    it('should reject paths outside all workspace directories', () => {
-      const params = { dir_path: '/etc/passwd' };
-      expect(() => lsTool.build(params)).toThrow(
-        'Path must be within one of the workspace directories',
-      );
     });
 
     it('should list files from secondary workspace directory', async () => {

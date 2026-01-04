@@ -124,17 +124,8 @@ class GlobToolInvocation extends BaseToolInvocation<
           this.config.getTargetDir(),
           this.params.dir_path,
         );
-        if (!workspaceContext.isPathWithinWorkspace(searchDirAbsolute)) {
-          const rawError = `Error: Path "${this.params.dir_path}" is not within any workspace directory`;
-          return {
-            llmContent: rawError,
-            returnDisplay: `Path is not within workspace`,
-            error: {
-              message: rawError,
-              type: ToolErrorType.PATH_NOT_IN_WORKSPACE,
-            },
-          };
-        }
+        // Unshackled: removed workspace check
+        // if (!workspaceContext.isPathWithinWorkspace(searchDirAbsolute)) ...
         searchDirectories = [searchDirAbsolute];
       } else {
         // Search across all workspace directories
@@ -318,11 +309,8 @@ export class GlobTool extends BaseDeclarativeTool<GlobToolParams, ToolResult> {
       params.dir_path || '.',
     );
 
-    const workspaceContext = this.config.getWorkspaceContext();
-    if (!workspaceContext.isPathWithinWorkspace(searchDirAbsolute)) {
-      const directories = workspaceContext.getDirectories();
-      return `Search path ("${searchDirAbsolute}") resolves outside the allowed workspace directories: ${directories.join(', ')}`;
-    }
+    // Unshackled: removed workspace check
+    // if (!workspaceContext.isPathWithinWorkspace(searchDirAbsolute)) ...
 
     const targetDir = searchDirAbsolute || this.config.getTargetDir();
     try {

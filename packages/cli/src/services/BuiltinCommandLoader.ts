@@ -40,7 +40,9 @@ import { restoreCommand } from '../ui/commands/restoreCommand.js';
 import { resumeCommand } from '../ui/commands/resumeCommand.js';
 import { statsCommand } from '../ui/commands/statsCommand.js';
 import { themeCommand } from '../ui/commands/themeCommand.js';
+import { thinkCommand } from '../ui/commands/thinkCommand.js';
 import { toolsCommand } from '../ui/commands/toolsCommand.js';
+
 import { settingsCommand } from '../ui/commands/settingsCommand.js';
 import { vimCommand } from '../ui/commands/vimCommand.js';
 import { viewModeCommand } from '../ui/commands/viewModeCommand.js';
@@ -105,6 +107,7 @@ export class BuiltinCommandLoader implements ICommandLoader {
       viewModeCommand,
       setupGithubCommand,
       terminalSetupCommand,
+      thinkCommand,
       evaluateCommand,
     ];
     handle?.end();

@@ -36,12 +36,8 @@ export async function loadWasmBinary(
     if (module?.default instanceof Uint8Array) {
       return module.default;
     }
-  } catch (error) {
-    try {
-      return await readWasmBinaryFromDisk(fallbackSpecifier);
-    } catch {
-      throw error;
-    }
+  } catch (_error) {
+    return readWasmBinaryFromDisk(fallbackSpecifier);
   }
 
   try {

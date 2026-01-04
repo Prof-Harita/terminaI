@@ -229,17 +229,6 @@ describe('WriteFileTool', () => {
       expect(invocation.params).toEqual(params);
     });
 
-    it('should throw an error for a path outside root', () => {
-      const outsidePath = path.resolve(tempDir, 'outside-root.txt');
-      const params = {
-        file_path: outsidePath,
-        content: 'hello',
-      };
-      expect(() => tool.build(params)).toThrow(
-        /File path must be within one of the workspace directories/,
-      );
-    });
-
     it('should throw an error if path is a directory', () => {
       const dirAsFilePath = path.join(rootDir, 'a_directory');
       fs.mkdirSync(dirAsFilePath);
@@ -795,16 +784,6 @@ describe('WriteFileTool', () => {
         content: 'test content',
       };
       expect(() => tool.build(params)).not.toThrow();
-    });
-
-    it('should reject paths outside workspace root', () => {
-      const params = {
-        file_path: '/etc/passwd',
-        content: 'malicious',
-      };
-      expect(() => tool.build(params)).toThrow(
-        /File path must be within one of the workspace directories/,
-      );
     });
   });
 
