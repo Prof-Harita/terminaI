@@ -25,7 +25,7 @@ import {
   AuthType,
   createContentGeneratorConfig,
 } from '../core/contentGenerator.js';
-import { LlmProviderId } from '../core/providerTypes.js';
+import { LlmProviderId, type ProviderConfig } from '../core/providerTypes.js';
 import { GeminiClient } from '../core/client.js';
 import { GitService } from '../services/gitService.js';
 import { ShellTool } from '../tools/shell.js';
@@ -431,6 +431,83 @@ describe('Server Config (config.ts)', () => {
       expect(
         config.getGeminiClient().stripThoughtsFromHistory,
       ).not.toHaveBeenCalledWith();
+    });
+  });
+
+  describe('reconfigureProvider', () => {
+    it('should update providerConfig and call refreshAuth for OpenAI-compatible', async () => {
+      const config = new Config(baseParams);
+
+      vi.mocked(createContentGeneratorConfig).mockImplementation(
+        async (_: Config, authType: AuthType | undefined) =>
+          ({ authType }) as unknown as ContentGeneratorConfig,
+      );
+
+      const newProviderConfig = {
+        provider: LlmProviderId.OPENAI_COMPATIBLE,
+        baseUrl: 'http://localhost:11434/v1',
+        model: 'llama3',
+        auth: { type: 'none' as const },
+      };
+
+      await config.reconfigureProvider(newProviderConfig, undefined);
+
+      expect(config.getProviderConfig()).toEqual(newProviderConfig);
+      expect(createContentGeneratorConfig).toHaveBeenCalledWith(
+        config,
+        AuthType.USE_OPENAI_COMPATIBLE,
+      );
+    });
+
+    it('should update providerConfig and call refreshAuth for Gemini', async () => {
+      const config = new Config({
+        ...baseParams,
+        providerConfig: {
+          provider: LlmProviderId.OPENAI_COMPATIBLE,
+          baseUrl: 'http://localhost:11434/v1',
+          model: 'llama3',
+          auth: { type: 'none' as const },
+        },
+      });
+
+      vi.mocked(createContentGeneratorConfig).mockImplementation(
+        async (_: Config, authType: AuthType | undefined) =>
+          ({ authType }) as unknown as ContentGeneratorConfig,
+      );
+
+      const newProviderConfig: ProviderConfig = {
+        provider: LlmProviderId.GEMINI,
+      };
+
+      await config.reconfigureProvider(
+        newProviderConfig,
+        AuthType.LOGIN_WITH_GOOGLE,
+      );
+
+      expect(config.getProviderConfig()).toEqual(newProviderConfig);
+      expect(createContentGeneratorConfig).toHaveBeenCalledWith(
+        config,
+        AuthType.LOGIN_WITH_GOOGLE,
+      );
+    });
+
+    it('should default to USE_GEMINI auth when switching to Gemini without explicit authType', async () => {
+      const config = new Config(baseParams);
+
+      vi.mocked(createContentGeneratorConfig).mockImplementation(
+        async (_: Config, authType: AuthType | undefined) =>
+          ({ authType }) as unknown as ContentGeneratorConfig,
+      );
+
+      await config.reconfigureProvider(
+        { provider: LlmProviderId.GEMINI } as ProviderConfig,
+        undefined,
+      );
+
+      expect(createContentGeneratorConfig).toHaveBeenCalledWith(
+        config,
+        AuthType.USE_GEMINI,
+      );
     });
   });
 

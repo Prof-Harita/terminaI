@@ -557,7 +557,7 @@ export class Config {
   private readonly securityProfile: SecurityProfile;
   private readonly trustedDomains: string[];
   private readonly criticalPaths: string[];
-  private readonly providerConfig: ProviderConfig;
+  private providerConfig: ProviderConfig;
   private readonly logsRetentionDays: number;
   private readonly replToolConfig: ReplToolConfig;
 
@@ -969,6 +969,32 @@ export class Config {
     if (!this.hasAccessToPreviewModel && isPreviewModel(this.model)) {
       this.setModel(DEFAULT_GEMINI_MODEL_AUTO);
     }
+  }
+
+  /**
+   * Reconfigure the LLM provider at runtime without restarting.
+   * This updates the providerConfig and rebuilds the content generator.
+   *
+   * @param providerConfig - The new provider configuration
+   * @param authType - The authentication type to use (required for Gemini providers)
+   */
+  async reconfigureProvider(
+    providerConfig: ProviderConfig,
+    authType: AuthType | undefined,
+  ): Promise<void> {
+    // Update the provider configuration
+    this.providerConfig = providerConfig;
+
+    // Determine the auth type to use
+    const effectiveAuthType =
+      providerConfig.provider === LlmProviderId.OPENAI_COMPATIBLE
+        ? AuthType.USE_OPENAI_COMPATIBLE
+        : (authType ?? AuthType.USE_GEMINI);
+
+    // Rebuild the content generator with the new provider
+    await this.refreshAuth(effectiveAuthType);
+
+    debugLogger.log(`Provider reconfigured to: ${providerConfig.provider}`);
   }
 
   async getExperimentsAsync(): Promise<Experiments | undefined> {

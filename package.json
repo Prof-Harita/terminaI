@@ -74,6 +74,10 @@
   ],
   "devDependencies": {
     "@octokit/rest": "^22.0.0",
+    "@terminai/a2a-server": "file:./packages/a2a-server",
+    "@terminai/cli": "file:./packages/cli",
+    "@terminai/cloud-relay": "file:./packages/cloud-relay",
+    "@terminai/core": "file:./packages/core",
     "@types/marked": "^5.0.2",
     "@types/mime-types": "^3.0.1",
     "@types/minimatch": "^5.1.2",
@@ -106,6 +110,7 @@
     "mock-fs": "^5.5.0",
     "msw": "^2.10.4",
     "npm-run-all": "^4.1.5",
+    "pathe": "^2.0.3",
     "prettier": "^3.5.3",
     "react-devtools-core": "^6.1.2",
     "semver": "^7.7.2",
@@ -114,10 +119,6 @@
     "tsx": "^4.20.3",
     "typescript-eslint": "^8.30.1",
     "vitest": "^3.1.1",
-    "@terminai/cli": "file:./packages/cli",
-    "@terminai/a2a-server": "file:./packages/a2a-server",
-    "@terminai/core": "file:./packages/core",
-    "@terminai/cloud-relay": "file:./packages/cloud-relay",
     "yargs": "^17.7.2"
   },
   "dependencies": {
