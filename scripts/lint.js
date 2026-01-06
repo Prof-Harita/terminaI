@@ -15,7 +15,7 @@ import {
   lstatSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, delimiter } from 'node:path';
 
 const ACTIONLINT_VERSION = '1.7.7';
 const SHELLCHECK_VERSION = '0.11.0';
@@ -47,12 +47,22 @@ function getPlatformArch() {
       shellcheck: 'darwin.aarch64',
     };
   }
+  if (platform === 'win32') {
+    return {
+      actionlint: 'unsupported',
+      shellcheck: 'unsupported',
+    };
+  }
   throw new Error(`Unsupported platform/architecture: ${platform}/${arch}`);
 }
 
 const platformArch = getPlatformArch();
 
 const PYTHON_VENV_PATH = join(TEMP_DIR, 'python_venv');
+const VENV_BIN_DIR = join(
+  PYTHON_VENV_PATH,
+  process.platform === 'win32' ? 'Scripts' : 'bin',
+);
 
 const pythonVenvPythonPath = join(
   PYTHON_VENV_PATH,
@@ -126,8 +136,10 @@ const LINTERS = {
 function runCommand(command, stdio = 'inherit') {
   try {
     const env = { ...process.env };
+    const pathKey = Object.keys(env).find((k) => k.match(/^path$/i)) || 'PATH';
     const nodeBin = join(process.cwd(), 'node_modules', '.bin');
-    env.PATH = `${nodeBin}:${TEMP_DIR}/actionlint:${TEMP_DIR}/shellcheck:${PYTHON_VENV_PATH}/bin:${env.PATH}`;
+    env[pathKey] =
+      `${nodeBin}${delimiter}${TEMP_DIR}/actionlint${delimiter}${TEMP_DIR}/shellcheck${delimiter}${VENV_BIN_DIR}${delimiter}${env[pathKey]}`;
     execSync(command, { stdio, env });
     return true;
   } catch (_e) {
@@ -183,6 +195,10 @@ export function setupLinters() {
   mkdirSync(TEMP_DIR, { recursive: true });
 
   for (const linter in LINTERS) {
+    if (platformArch[linter] === 'unsupported') {
+      console.log(`Skipping ${linter} (unsupported on this platform)...`);
+      continue;
+    }
     const { check, installer } = LINTERS[linter];
     if (!runCommand(check, 'ignore')) {
       console.log(`Installing ${linter}...`);
@@ -222,6 +238,10 @@ export function runESLint() {
 }
 
 export function runActionlint() {
+  if (platformArch.actionlint === 'unsupported') {
+    console.log('\nSkipping actionlint (unsupported on this platform)...');
+    return;
+  }
   console.log('\nRunning actionlint...');
   // Actionlint is typically fast enough to run on all, but we can optimize if needed.
   // For now, keep as is or implement complex filtering if requested.
@@ -232,6 +252,10 @@ export function runActionlint() {
 }
 
 export function runShellcheck() {
+  if (platformArch.shellcheck === 'unsupported') {
+    console.log('\nSkipping shellcheck (unsupported on this platform)...');
+    return;
+  }
   console.log('\nRunning shellcheck...');
   // Shellcheck run command in LINTERS uses git ls-files.
   // We can override it if CHANGED_ONLY is true.
