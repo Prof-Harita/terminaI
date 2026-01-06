@@ -29,10 +29,14 @@ Not just suggesting commands. Not just generating scripts. Actually operating
 your system: diagnosing issues, fixing problems, and orchestrating workflows —
 **with guardrails that make execution trustworthy.**
 
-For years, “AI help” meant copy instructions from a chat window, paste into your
-terminal, and hope you didn’t miss a step. Coding tools like Cursor and Aider
-largely eliminated that inside the IDE — but the rest of your computer is still
-stuck in the copy/paste era.
+For years, “internet help” meant copy instructions from a chat window, paste
+into your terminal, and hope you didn’t miss a step. Coding tools beginning with
+Cursor and Aider largely eliminated that for software development — but the rest
+of your computer is still stuck in the copy/paste era.
+
+Resolving computer issues or setting up servers or doing end-to-end automated
+workflows or doing anything on computer beyond coding ??? Majority of users
+still just copy paste instructions from ChatGPT.
 
 TerminaI is the next interface: you state intent, it proposes a governed plan,
 you approve at the right level, and it executes with an audit trail. Less
@@ -55,14 +59,21 @@ turning your machine into an uncontrolled “agent.”
 
 ## Who it’s for
 
+- **Generalist users** — “Review the largest files in my downloads folder,
+  prioritizing the oldest first, i need to free up 200 GB of space.” “What is
+  wrong with my internet; reset my adapter.” “Setup a HP printer.” "Monitor the
+  stock price of NVDA and alert me when it hits xx$". "Why is my system so slow?
+  Can you free up memory" "Can you install the best markdown viewer on my linux
+  machine?". "I just re-installed Windows. Find specific drivers for my GPU and
+  install them".
 - **Newbie developers** — “Set up my machine for this repo.” “Fix my dev
-  environment.” “Explain what broke and how to recover.”
-- **AI enthusiasts** — a real operator harness (tools + policy + audit) you can
-  extend with MCP and A2A.
+  environment.” “Explain what broke and how to recover.” "Install all the
+  dependencies for this project"
 - **Tech purists** — AI leverage with deterministic guardrails, explicit
   approvals, and tamper-evident logs.
-- **Professional engineers / DevOps** — repeatable workflows, headless-friendly
-  CLI, safer execution, readable audit trails.
+- **Professional engineers / DevOps** — Remotely control your servers,
+  repeatable workflows, headless-friendly CLI, safer execution, readable audit
+  trails.
 
 ---
 
@@ -126,9 +137,23 @@ Download installers from GitHub Releases:
 
 ---
 
+### Git clone and build
+
+```bash
+git clone https://github.com/terminai/terminai.git
+cd terminai
+npm install
+npm run build
+```
+
 ## Quick start
 
 TerminaI supports Gemini (default) and OpenAI-compatible providers.
+
+> **Note:** Although the authentication wizard supports multiple providers,
+> Gemini remains the most extensively tested and stable implementation. Gemini
+> was prioritized to ensure accessibility, as its free-tier credits allow for
+> broad adoption without immediate cost barriers.
 
 ### Gemini
 
@@ -144,20 +169,6 @@ Configure `llm.provider` and `llm.openaiCompatible` in
 supported).
 
 See: `docs-terminai/multi-llm-support.md`
-
----
-
-## Examples
-
-Try prompts like:
-
-- “What’s using my CPU right now? Summarize and offer safe actions.”
-- “Find the biggest folders in my home directory, but don’t delete anything
-  without asking.”
-- “Set up my coding environment for this repo. Stop and explain any failures.”
-- “Start the dev server in the background and watch for crashes.”
-- “Before changing anything, tell me what you would do and why.”
-- “Rotate logs and restart the service — ask before any destructive step.”
 
 ---
 
@@ -221,19 +232,33 @@ Prereqs:
 
 - Node.js 20+
 - Rust (latest stable) for Desktop builds
+- Platform-specific build tools (see below)
+
+**First-time setup** (auto-installs dependencies):
+
+```bash
+npm ci
+npm run setup:dev
+```
+
+This detects your OS and installs the required build tools:
+
+- **Windows**: Visual Studio Build Tools (C++ workload), WebView2
+- **Linux**: build-essential, webkit2gtk, libappindicator, librsvg
+- **macOS**: Xcode Command Line Tools
 
 Build and run the CLI from source:
 
 ```bash
-npm ci
 npm run build
-npm -w packages/cli start
+npm start
 ```
 
 Desktop dev:
 
 ```bash
-npm -w packages/desktop run tauri dev
+npm run desktop:dev
+# Or: cd packages/desktop && npm run tauri dev
 ```
 
 </details>

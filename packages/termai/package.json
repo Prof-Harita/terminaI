@@ -13,7 +13,7 @@
     "terminai": "dist/index.js"
   },
   "scripts": {
-    "build": "node ../../scripts/build_package.js && cp system.md dist/system.md",
+    "build": "node ../../scripts/build_package.js && node -e \"require('fs').copyFileSync('system.md', 'dist/system.md')\"",
     "start": "node dist/index.js",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write .",

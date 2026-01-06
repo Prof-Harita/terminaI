@@ -6,7 +6,8 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { AuthClient } from './authClient';
+import type { AuthClient} from './authClient';
+import { createAuthClient } from './authClient';
 
 // Mock fetch
 global.fetch = vi.fn();
@@ -18,7 +19,7 @@ describe('AuthClient', () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
-    client = new AuthClient(baseUrl, token);
+    client = createAuthClient(baseUrl, token);
   });
 
   describe('switchProvider', () => {

@@ -579,7 +579,7 @@ export async function loadCliConfig(
     requestSetting: promptForSetting,
     workspaceDir: cwd,
     enabledExtensionOverrides: argv.extensions,
-    eventEmitter: appEvents as EventEmitter<ExtensionEvents>,
+    eventEmitter: appEvents as unknown as EventEmitter<ExtensionEvents>,
   });
   await extensionManager.loadExtensions();
 

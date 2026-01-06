@@ -54,7 +54,10 @@
     "telemetry": "node scripts/telemetry.js",
     "check:lockfile": "node scripts/check-lockfile.js",
     "clean": "node scripts/clean.js",
-    "pre-commit": "node scripts/pre-commit.js"
+    "pre-commit": "node scripts/pre-commit.js",
+    "setup:dev": "node -e \"const {execSync}=require('child_process');const isWin=process.platform==='win32';execSync(isWin?'powershell -ExecutionPolicy Bypass -File scripts/setup-dev.ps1':'bash scripts/setup-dev.sh',{stdio:'inherit'})\"",
+    "setup:sidecar": "node scripts/setup-dev-sidecar.js",
+    "desktop:dev": "npm run setup:sidecar && npm run tauri dev --workspace @terminai/desktop"
   },
   "overrides": {
     "ink": "npm:@jrichman/ink@6.4.6",
@@ -82,6 +85,7 @@
     "@types/mime-types": "^3.0.1",
     "@types/minimatch": "^5.1.2",
     "@types/mock-fs": "^4.13.4",
+    "@types/node": "^25.0.3",
     "@types/prompts": "^2.4.9",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",

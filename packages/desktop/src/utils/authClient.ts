@@ -6,103 +6,108 @@
  */
 
 import { buildSignedHeaders } from './agentClient';
-import type { AuthType } from '@terminai/core';
 
-export type LlmAuthStatus = 'ok' | 'required' | 'in_progress' | 'error';
-
-export interface AuthStatusResponse {
-  status: LlmAuthStatus;
-  authType: AuthType | null;
+export interface AuthStatus {
+  status: 'ok' | 'required' | 'error' | 'in_progress';
   message?: string;
-  errorCode?: string;
 }
 
-export interface OAuthStartResponse {
-  authUrl: string;
+export type ProviderConfig =
+  | { provider: 'gemini' }
+  | { provider: 'ollama' }
+  | {
+      provider: 'openai_compatible';
+      openaiCompatible: {
+        baseUrl: string;
+        model: string;
+        envVarName?: string;
+      };
+    };
+
+export interface AuthClient {
+  setApiKey(key: string): Promise<AuthStatus>;
+  switchProvider(config: ProviderConfig): Promise<AuthStatus>;
+  getStatus(): Promise<AuthStatus>;
+  startOAuth(): Promise<{ authUrl: string }>;
+  cancelOAuth(): Promise<void>;
+  useGeminiVertex(projectId?: string, location?: string): Promise<AuthStatus>;
 }
 
-export interface SwitchProviderParams {
-  provider: 'gemini' | 'openai_compatible';
-  openaiCompatible?: {
-    baseUrl: string;
-    model: string;
-    envVarName?: string;
-  };
-}
-
-export class AuthClient {
-  constructor(
-    private baseUrl: string,
-    private token: string,
-  ) {}
-
-  private async fetch<T>(
+export function createAuthClient(baseUrl: string, token?: string): AuthClient {
+  const getHeaders = async (
+    method: string,
     path: string,
-    method: 'GET' | 'POST' = 'GET',
-    body?: unknown,
-  ): Promise<T> {
-    const bodyString = body !== undefined ? JSON.stringify(body) : '';
-    const headers = await buildSignedHeaders({
-      token: this.token,
+    bodyVal?: unknown,
+  ) => {
+    if (!token) return { 'Content-Type': 'application/json' };
+    const bodyString = bodyVal ? JSON.stringify(bodyVal) : '';
+    const signed = await buildSignedHeaders({
+      token,
       method,
       pathWithQuery: path,
       bodyString,
     });
+    return {
+      ...signed,
+      'Content-Type': 'application/json',
+    };
+  };
 
-    const res = await fetch(`${this.baseUrl}${path}`, {
+  const request = async <T>(
+    method: string,
+    path: string,
+    body?: unknown,
+  ): Promise<T> => {
+    const headers = await getHeaders(method, path, body);
+    const res = await fetch(`${baseUrl}${path}`, {
       method,
-      headers: {
-        ...headers,
-        'Content-Type': 'application/json',
-      },
-      body: body ? bodyString : undefined,
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
     });
 
     if (!res.ok) {
-      const errText = await res.text();
-      throw new Error(`Auth request failed (${res.status}): ${errText}`);
+      let msg = res.statusText;
+      try {
+        const json = await res.json();
+        msg = json.error || json.message || msg;
+      } catch {
+        // ignore
+      }
+      throw new Error(`Auth request failed (${res.status}): ${msg}`);
     }
+    return res.json() as Promise<T>;
+  };
 
-    return res.json();
-  }
+  return {
+    async getStatus() {
+      // GET /auth/status
+      // We need to implement GET signature or just use no body
+      // buildSignedHeaders handles empty body if passed empty string?
+      // Yes, we passed '' above.
+      return request<AuthStatus>('GET', '/auth/status');
+    },
 
-  async getStatus(): Promise<AuthStatusResponse> {
-    return this.fetch<AuthStatusResponse>('/auth/status');
-  }
+    async switchProvider(config: ProviderConfig) {
+      return request<AuthStatus>('POST', '/auth/provider', config);
+    },
 
-  async setApiKey(apiKey: string): Promise<AuthStatusResponse> {
-    return this.fetch<AuthStatusResponse>('/auth/gemini/api-key', 'POST', {
-      apiKey,
-    });
-  }
+    async setApiKey(key: string) {
+      return request<AuthStatus>('POST', '/auth/apikey', { key });
+    },
 
-  async startOAuth(): Promise<OAuthStartResponse> {
-    return this.fetch<OAuthStartResponse>(
-      '/auth/gemini/oauth/start',
-      'POST',
-      {},
-    );
-  }
+    async startOAuth() {
+      return request<{ authUrl: string }>('POST', '/auth/oauth/start');
+    },
 
-  async cancelOAuth(): Promise<AuthStatusResponse> {
-    return this.fetch<AuthStatusResponse>(
-      '/auth/gemini/oauth/cancel',
-      'POST',
-      {},
-    );
-  }
+    async cancelOAuth() {
+      await request<void>('POST', '/auth/oauth/cancel');
+    },
 
-  async useGeminiVertex(): Promise<AuthStatusResponse> {
-    return this.fetch<AuthStatusResponse>('/auth/gemini/vertex', 'POST', {});
-  }
-
-  async clearGeminiAuth(): Promise<AuthStatusResponse> {
-    return this.fetch<AuthStatusResponse>('/auth/gemini/clear', 'POST', {});
-  }
-
-  async switchProvider(
-    params: SwitchProviderParams,
-  ): Promise<AuthStatusResponse> {
-    return this.fetch<AuthStatusResponse>('/auth/provider', 'POST', params);
-  }
+    async useGeminiVertex(projectId?: string, location?: string) {
+      return request<AuthStatus>('POST', '/auth/vertex', {
+        projectId,
+        location,
+      });
+    },
+  };
 }

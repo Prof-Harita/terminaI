@@ -7,7 +7,7 @@
 
 import { useMemo, useState } from 'react';
 import { useSettingsStore } from '../stores/settingsStore';
-import { AuthClient } from '../utils/authClient';
+import { createAuthClient } from '../utils/authClient';
 import { Button } from './ui/button';
 import { GeminiOAuthStep } from './auth/GeminiOAuthStep';
 import { GeminiApiKeyStep } from './auth/GeminiApiKeyStep';
@@ -45,7 +45,7 @@ export function AuthWizard({
   const agentToken = useSettingsStore((s) => s.agentToken);
 
   const client = useMemo(
-    () => new AuthClient(agentUrl, agentToken),
+    () => createAuthClient(agentUrl, agentToken),
     [agentToken, agentUrl],
   );
 

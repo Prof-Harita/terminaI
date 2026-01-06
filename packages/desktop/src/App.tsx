@@ -32,7 +32,7 @@ import { KeyboardCheatSheet } from './components/KeyboardCheatSheet';
 
 import { useSidecar } from './hooks/useSidecar';
 import { ConnectivityIndicator } from './components/ConnectivityIndicator';
-import { AuthClient } from './utils/authClient';
+import { createAuthClient } from './utils/authClient';
 
 function App() {
   // Use V2 Sidecar Hook (handles connection lifecycle)
@@ -87,7 +87,7 @@ function App() {
       return;
     }
     try {
-      const client = new AuthClient(agentUrl, agentToken);
+      const client = createAuthClient(agentUrl, agentToken);
       const status = await client.getStatus();
       setLlmAuthStatus(status.status);
       setLlmAuthMessage(status.message ?? null);

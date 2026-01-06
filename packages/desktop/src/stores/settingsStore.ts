@@ -203,7 +203,11 @@ export const useSettingsStore = create<SettingsState>()(
         set({ provider });
         syncToCli('provider', provider);
       },
-      setOpenAIConfig: (openaiConfig) => set({ openaiConfig }),
+      openaiConfig: undefined,
+      setOpenAIConfig: (openaiConfig) => {
+        set({ openaiConfig });
+        syncToCli('openaiConfig', JSON.stringify(openaiConfig));
+      },
 
       // Voice
       voiceEnabled: false,

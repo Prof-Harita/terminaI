@@ -5,7 +5,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import * as pty from 'node-pty';
+import type { IPty } from '@lydell/node-pty';
+import { getPty, type PtyImplementation } from '../utils/getPty.js';
 
 import * as os from 'node:os';
 import * as fs from 'node:fs';
@@ -22,12 +23,31 @@ export interface PersistentShellOptions {
 }
 
 export class PersistentShell {
-  private ptyProcess: pty.IPty | null = null;
+  private ptyProcess: IPty | null = null;
   private disposables: Array<() => void> = [];
   private tempVenvPath: string | null = null;
+  private ptyModule: PtyImplementation = null;
+  private initPromise: Promise<void>;
 
   constructor(private readonly options: PersistentShellOptions) {
+    this.initPromise = this.init();
+  }
+
+  private async init(): Promise<void> {
+    this.ptyModule = await getPty();
+    if (!this.ptyModule) {
+      debugLogger.error(
+        'No PTY implementation available (node-pty or @lydell/node-pty)',
+      );
+      this.options.onExit(1, null);
+      return;
+    }
     this.spawn();
+  }
+
+  /** Wait for initialization to complete */
+  async ready(): Promise<void> {
+    return this.initPromise;
   }
 
   get pid(): number {
@@ -39,6 +59,11 @@ export class PersistentShell {
   }
 
   private spawn() {
+    if (!this.ptyModule) {
+      this.options.onExit(1, null);
+      return;
+    }
+
     const { language, cwd, env } = this.options;
     let command: string;
     let args: string[];
@@ -107,7 +132,7 @@ export class PersistentShell {
     }
 
     try {
-      this.ptyProcess = pty.spawn(command, args, {
+      this.ptyProcess = this.ptyModule.module.spawn(command, args, {
         name: 'xterm-256color',
         cols: 80,
         rows: 24,
@@ -115,15 +140,17 @@ export class PersistentShell {
         env: spawnEnv as Record<string, string>,
       });
 
-      const onData = this.ptyProcess.onData((data) => {
+      const onData = this.ptyProcess!.onData((data: string) => {
         this.options.onOutput(data);
       });
       this.disposables.push(() => onData.dispose());
 
-      const onExit = this.ptyProcess.onExit(({ exitCode, signal }) => {
-        this.options.onExit(exitCode ?? null, signal ?? null);
-        this.ptyProcess = null;
-      });
+      const onExit = this.ptyProcess!.onExit(
+        ({ exitCode, signal }: { exitCode: number; signal?: number }) => {
+          this.options.onExit(exitCode ?? null, signal ?? null);
+          this.ptyProcess = null;
+        },
+      );
       this.disposables.push(() => onExit.dispose());
     } catch (error) {
       debugLogger.error(

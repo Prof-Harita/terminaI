@@ -48,16 +48,6 @@ export class DesktopAutomationService {
     this.driver = getDesktopDriver();
   }
 
-  // Test-only injection
-  static setDriverForTest(driver: DesktopDriver) {
-    if (!DesktopAutomationService.instance) {
-      DesktopAutomationService.instance = new DesktopAutomationService();
-    }
-    DesktopAutomationService.instance.driver = driver;
-    // reset other state
-    DesktopAutomationService.instance.lastSnapshot = undefined;
-  }
-
   static getInstance(): DesktopAutomationService {
     if (!DesktopAutomationService.instance) {
       DesktopAutomationService.instance = new DesktopAutomationService();
@@ -67,6 +57,15 @@ export class DesktopAutomationService {
 
   setEnabled(enabled: boolean): void {
     this.enabled = enabled;
+  }
+
+  static setDriverForTest(driver: DesktopDriver): void {
+    if (!DesktopAutomationService.instance) {
+      DesktopAutomationService.instance = new DesktopAutomationService();
+    }
+    DesktopAutomationService.instance.driver = driver;
+    // For testing, we often want to bypass the "enabled" check or default it to true
+    DesktopAutomationService.instance.enabled = true;
   }
 
   async getCapabilities(): Promise<DriverCapabilities> {

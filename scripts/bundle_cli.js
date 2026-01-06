@@ -5,7 +5,7 @@
  */
 
 import { build } from 'esbuild';
-import { platform } from 'node:os';
+import { platform, arch } from 'node:os';
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -53,6 +53,24 @@ function createWasmPlugins() {
  */
 function getBinaryExtension() {
   return platform() === 'win32' ? '.exe' : '';
+}
+
+/**
+ * Get the Rust target triple for current platform.
+ * Tauri's externalBin requires binaries named with the target triple suffix.
+ */
+function getTargetTriple() {
+  const os = platform();
+  const cpu = arch();
+
+  if (os === 'linux' && cpu === 'x64') return 'x86_64-unknown-linux-gnu';
+  if (os === 'linux' && cpu === 'arm64') return 'aarch64-unknown-linux-gnu';
+  if (os === 'win32' && cpu === 'x64') return 'x86_64-pc-windows-msvc';
+  if (os === 'win32' && cpu === 'arm64') return 'aarch64-pc-windows-msvc';
+  if (os === 'darwin' && cpu === 'x64') return 'x86_64-apple-darwin';
+  if (os === 'darwin' && cpu === 'arm64') return 'aarch64-apple-darwin';
+
+  throw new Error(`Unsupported platform: ${os}-${cpu}`);
 }
 
 console.log('📦 Bundling CLI for Tauri sidecar...');
@@ -108,10 +126,11 @@ console.log('📦 Bundling CLI for Tauri sidecar...');
       fs.mkdirSync(binDir, { recursive: true });
     }
 
-    // Step 4: Copy Node binary with correct name (terminai-cli, no target triple)
+    // Step 4: Copy Node binary with correct Tauri naming convention (terminai-cli-{target-triple})
     const nodePath = process.execPath;
     const ext = getBinaryExtension();
-    const targetBin = `${binDir}/terminai-cli${ext}`;
+    const targetTriple = getTargetTriple();
+    const targetBin = `${binDir}/terminai-cli-${targetTriple}${ext}`;
 
     console.log(`📋 Copying Node binary to ${targetBin}...`);
     fs.copyFileSync(nodePath, targetBin);

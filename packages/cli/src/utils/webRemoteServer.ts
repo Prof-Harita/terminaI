@@ -114,7 +114,7 @@ export async function startWebRemoteServer(
 
   const app = await createApp();
 
-  const server = app.listen(options.port, options.host);
+  const server = app.listen(options.port, options.host) as unknown as Server;
 
   await new Promise<void>((resolve, reject) => {
     server.once('listening', resolve);

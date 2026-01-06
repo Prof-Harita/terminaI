@@ -6,6 +6,7 @@
  */
 
 import { Router } from 'express';
+import type { Request, Response } from 'express';
 import { AuthConflictError } from '../../auth/llmAuthManager.js';
 import type { LlmAuthManager } from '../../auth/llmAuthManager.js';
 import { logger } from '../../utils/logger.js';
@@ -14,7 +15,7 @@ export function createAuthRouter(authManager: LlmAuthManager): Router {
   const router = Router();
 
   // Task 12: GET /auth/status
-  router.get('/status', (req, res) => {
+  router.get('/status', (req: Request, res: Response) => {
     void (async () => {
       try {
         const result = await authManager.getStatus();
@@ -32,7 +33,7 @@ export function createAuthRouter(authManager: LlmAuthManager): Router {
   });
 
   // Task T3.2: POST /auth/provider - Switch provider from Desktop
-  router.post('/provider', (req, res) => {
+  router.post('/provider', (req: Request, res: Response) => {
     void (async () => {
       try {
         const body = req.body as {
@@ -89,7 +90,7 @@ export function createAuthRouter(authManager: LlmAuthManager): Router {
   });
 
   // Task 13: POST /gemini/api-key
-  router.post('/gemini/api-key', (req, res) => {
+  router.post('/gemini/api-key', (req: Request, res: Response) => {
     void (async () => {
       const apiKey = (req.body as { apiKey?: unknown }).apiKey;
       if (typeof apiKey !== 'string' || apiKey.trim().length === 0) {
@@ -111,7 +112,7 @@ export function createAuthRouter(authManager: LlmAuthManager): Router {
   });
 
   // Task 14: POST /gemini/oauth/start
-  router.post('/gemini/oauth/start', (req, res) => {
+  router.post('/gemini/oauth/start', (req: Request, res: Response) => {
     void (async () => {
       try {
         const { authUrl } = await authManager.startGeminiOAuth();
@@ -128,7 +129,7 @@ export function createAuthRouter(authManager: LlmAuthManager): Router {
   });
 
   // Task 15: POST /gemini/oauth/cancel
-  router.post('/gemini/oauth/cancel', (req, res) => {
+  router.post('/gemini/oauth/cancel', (req: Request, res: Response) => {
     void (async () => {
       try {
         const status = await authManager.cancelGeminiOAuth();
@@ -146,7 +147,7 @@ export function createAuthRouter(authManager: LlmAuthManager): Router {
   });
 
   // Task 16: POST /gemini/vertex
-  router.post('/gemini/vertex', (req, res) => {
+  router.post('/gemini/vertex', (req: Request, res: Response) => {
     void (async () => {
       try {
         const status = await authManager.useGeminiVertex();
@@ -164,7 +165,7 @@ export function createAuthRouter(authManager: LlmAuthManager): Router {
   });
 
   // Task 30: POST /gemini/clear - Clear all Gemini auth state
-  router.post('/gemini/clear', (req, res) => {
+  router.post('/gemini/clear', (req: Request, res: Response) => {
     void (async () => {
       try {
         const status = await authManager.clearGeminiAuth();
