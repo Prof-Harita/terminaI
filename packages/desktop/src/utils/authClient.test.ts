@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { AuthClient} from './authClient';
+import type { AuthClient } from './authClient';
 import { createAuthClient } from './authClient';
 
 // Mock fetch

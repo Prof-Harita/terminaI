@@ -27,8 +27,13 @@ const { mockSpawn, mockPtyProcess } = vi.hoisted(() => {
   };
 });
 
-vi.mock('node-pty', () => ({
-  spawn: mockSpawn,
+vi.mock('../utils/getPty.js', () => ({
+  getPty: vi.fn(async () => ({
+    module: {
+      spawn: mockSpawn,
+    },
+    name: 'mock-pty',
+  })),
 }));
 
 vi.mock('node:fs', async (importOriginal) => {
@@ -62,28 +67,30 @@ describe('PersistentShell', () => {
     mockPtyProcess.onExit.mockReturnValue({ dispose: vi.fn() });
   });
 
-  it('spawns a shell process', () => {
-    new PersistentShell({
+  it('spawns a shell process', async () => {
+    const shell = new PersistentShell({
       language: 'shell',
       cwd: '/tmp',
       onOutput,
       onExit,
     });
+    await shell.ready();
 
     expect(mockSpawn).toHaveBeenCalled();
     const args = mockSpawn.mock.calls[0];
     expect(args[2].cwd).toBe('/tmp');
   });
 
-  it('spawns python with venv creation', () => {
+  it('spawns python with venv creation', async () => {
     vi.mocked(fs.mkdtempSync).mockReturnValue('/tmp/venv-123');
 
-    new PersistentShell({
+    const shell = new PersistentShell({
       language: 'python',
       cwd: '/tmp',
       onOutput,
       onExit,
     });
+    await shell.ready();
 
     expect(fs.mkdtempSync).toHaveBeenCalled();
     expect(cp.execSync).toHaveBeenCalledWith(
@@ -101,56 +108,60 @@ describe('PersistentShell', () => {
     }
   });
 
-  it('writes to the pty process', () => {
+  it('writes to the pty process', async () => {
     const shell = new PersistentShell({
       language: 'shell',
       cwd: '/tmp',
       onOutput,
       onExit,
     });
+    await shell.ready();
 
     shell.write('ls -la');
     expect(mockPtyProcess.write).toHaveBeenCalledWith('ls -la\n');
   });
 
-  it('writes to python process (ensures newline)', () => {
+  it('writes to python process (ensures newline)', async () => {
     const shell = new PersistentShell({
       language: 'python',
       cwd: '/tmp',
       onOutput,
       onExit,
     });
+    await shell.ready();
 
     shell.write('print("hello")');
     // Python logic in PersistentShell ensures newline
     expect(mockPtyProcess.write).toHaveBeenCalledWith('print("hello")\n');
   });
 
-  it('resizes the pty', () => {
+  it('resizes the pty', async () => {
     const shell = new PersistentShell({
       language: 'shell',
       cwd: '/tmp',
       onOutput,
       onExit,
     });
+    await shell.ready();
 
     shell.resize(100, 40);
     expect(mockPtyProcess.resize).toHaveBeenCalledWith(100, 40);
   });
 
-  it('kills the process', () => {
+  it('kills the process', async () => {
     const shell = new PersistentShell({
       language: 'shell',
       cwd: '/tmp',
       onOutput,
       onExit,
     });
+    await shell.ready();
 
     shell.kill('SIGKILL');
     expect(mockPtyProcess.kill).toHaveBeenCalledWith('SIGKILL');
   });
 
-  it('disposes functionality cleans up', () => {
+  it('disposes functionality cleans up', async () => {
     vi.mocked(fs.mkdtempSync).mockReturnValue('/tmp/venv-cleanup');
     const shell = new PersistentShell({
       language: 'python',
@@ -158,6 +169,7 @@ describe('PersistentShell', () => {
       onOutput,
       onExit,
     });
+    await shell.ready();
 
     shell.dispose();
 
