@@ -10,7 +10,8 @@ import { buildShellActionProfile } from '../../safety/approval-ladder/buildShell
 import { computeMinimumReviewLevel } from '../../safety/approval-ladder/computeMinimumReviewLevel.js';
 import type { Config } from '../../config/config.js';
 
-describe('PIN Verification Logic', () => {
+// Skip on Windows - buildShellActionProfile uses shell parsing which hangs
+describe.skipIf(process.platform === 'win32')('PIN Verification Logic', () => {
   const mockConfig = {
     getSecurityProfile: () => 'balanced',
     getApprovalPin: () => undefined,

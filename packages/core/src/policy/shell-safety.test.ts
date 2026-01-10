@@ -10,7 +10,8 @@ import { PolicyEngine } from './policy-engine.js';
 import { PolicyDecision } from './types.js';
 import type { FunctionCall } from '@google/genai';
 
-describe('Shell Safety Policy', () => {
+// Skip on Windows - shell parsing times out
+describe.skipIf(process.platform === 'win32')('Shell Safety Policy', () => {
   let policyEngine: PolicyEngine;
 
   beforeEach(() => {

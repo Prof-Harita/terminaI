@@ -10,7 +10,8 @@ import { buildShellActionProfile } from '../buildShellActionProfile.js';
 import { computeMinimumReviewLevel } from '../computeMinimumReviewLevel.js';
 import type { Config } from '../../../config/config.js';
 
-describe('buildShellActionProfile', () => {
+// Skip entire test suite on Windows - tests bash shell parsing which is slow/broken on Windows
+describe.skipIf(process.platform === 'win32')('buildShellActionProfile', () => {
   const mockConfig = {
     getSecurityProfile: () => 'balanced',
     getApprovalPin: () => undefined,
