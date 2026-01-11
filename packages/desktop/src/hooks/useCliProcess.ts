@@ -22,6 +22,20 @@ import { useBridgeStore } from '../bridge/store';
 import { BridgeActions } from '../bridge/types';
 import { handleSseEvent, type JsonRpcResponse } from '../bridge/eventHandler';
 import { TabLock } from '../bridge/tabLock';
+import { commandRegistry } from '../commands/registry';
+import { ClearCommand } from '../commands/implementations/ClearCommand';
+import { RestoreCommand } from '../commands/implementations/RestoreCommand';
+import { HelpCommand } from '../commands/implementations/HelpCommand';
+import { BugCommand } from '../commands/implementations/BugCommand';
+import { HardResetCommand } from '../commands/implementations/HardResetCommand';
+import { DebugCommand } from '../commands/implementations/DebugCommand';
+import {
+  CheckpointCommand,
+  TrustCommand,
+  UntrustCommand,
+  SessionsCommand,
+} from '../commands/implementations/StubCommands';
+import type { CommandContext } from '../commands/types';
 
 const BLOCKING_PROMPT_REGEX =
   /^.*(password|\[y\/n\]|confirm|enter value|sudo).*:/i;
@@ -99,6 +113,31 @@ export function useCliProcess(options?: { onComplete?: () => void }) {
     }
   }, [currentTaskId, setActiveTaskId]);
 
+  // Phase 3: Registry Initialization
+  useEffect(() => {
+    if (!commandRegistry.has('clear')) {
+      commandRegistry.register(ClearCommand);
+    }
+    if (!commandRegistry.has('restore')) {
+      commandRegistry.register(RestoreCommand);
+    }
+    if (!commandRegistry.has('help')) commandRegistry.register(HelpCommand);
+    if (!commandRegistry.has('bug')) commandRegistry.register(BugCommand);
+    if (!commandRegistry.has('checkpoint'))
+      commandRegistry.register(CheckpointCommand);
+    if (!commandRegistry.has('trust')) commandRegistry.register(TrustCommand);
+    if (!commandRegistry.has('untrust'))
+      commandRegistry.register(UntrustCommand);
+    if (!commandRegistry.has('sessions'))
+      commandRegistry.register(SessionsCommand);
+
+    // ...
+    if (!commandRegistry.has('reset')) {
+      commandRegistry.register(HardResetCommand);
+    }
+    if (!commandRegistry.has('debug')) commandRegistry.register(DebugCommand);
+  }, []);
+
   const activeStreamAbortRef = useRef<AbortController | null>(null);
   const currentAssistantTextRef = useRef<string>('');
   const lastSpokenAssistantTextRef = useRef<string>('');
@@ -161,52 +200,68 @@ export function useCliProcess(options?: { onComplete?: () => void }) {
   );
 
   const handleBridgeToolUpdate = useCallback(
-    (result: any) => {
+    (result: unknown) => {
       // Logic lifted from old handleJsonRpc for tool-call-update
       setToolStatus('Agent is executing tools...');
-      const parts = result.status?.message?.parts ?? [];
+      // Type guards for accessing nested properties on unknown
+      const r = result as Record<string, unknown> | null;
+      const status = r?.status as Record<string, unknown> | undefined;
+      const message = status?.message as Record<string, unknown> | undefined;
+      const parts = (message?.parts ?? []) as Array<Record<string, unknown>>;
       for (const part of parts) {
         const hasData =
           part && typeof part === 'object' && 'data' in part && part.data;
         if ((part?.kind === 'data' || hasData) && part.data) {
-          const toolData = part.data;
+          const toolData = part.data as Record<string, unknown>;
+          const request = toolData?.request as
+            | Record<string, unknown>
+            | undefined;
           const callId =
-            toolData?.request?.callId ??
-            toolData?.callId ??
+            (request?.callId as string) ??
+            (toolData?.callId as string) ??
             crypto.randomUUID();
 
           const existingEvent = useExecutionStore
             .getState()
             .toolEvents.find((e) => e.id === callId);
 
-          if (toolData.request && !existingEvent) {
+          if (request && !existingEvent) {
             addToolEvent({
               id: callId,
-              toolName: toolData.request.name,
-              inputArguments: toolData.request.args ?? {},
+              toolName: request.name as string,
+              inputArguments: (request.args as Record<string, unknown>) ?? {},
               status: 'running',
               terminalOutput: '',
               startedAt: Date.now(),
             });
           }
 
-          const output = toolData?.output ?? toolData?.result;
+          const output = (toolData?.output ?? toolData?.result) as
+            | string
+            | undefined;
           if (typeof output === 'string') {
-            if (existingEvent || toolData.request) {
+            if (existingEvent || request) {
               appendTerminalOutput(callId, output);
             }
+            // Check for blocking prompt on every chunk
             if (BLOCKING_PROMPT_REGEX.test(output)) {
+              console.log(
+                '[useCliProcess] Detected blocking prompt in output:',
+                output,
+              );
               setWaitingForInput(true);
             }
           }
 
+          const toolStatus = toolData.status as string | undefined;
           if (
+            toolStatus &&
             ['completed', 'failed', 'success', 'error', 'cancelled'].includes(
-              toolData.status,
+              toolStatus,
             )
           ) {
             updateToolEvent(callId, {
-              status: ['success', 'completed'].includes(toolData.status)
+              status: ['success', 'completed'].includes(toolStatus)
                 ? 'completed'
                 : 'failed',
               completedAt: Date.now(),
@@ -340,6 +395,45 @@ export function useCliProcess(options?: { onComplete?: () => void }) {
         return;
       }
 
+      // Phase 3: Command Interception (Moved BEFORE isProcessing check to allow /clear during generation)
+      const commandMatch = commandRegistry.parse(text);
+      if (commandMatch) {
+        const context: CommandContext = {
+          dispatch,
+          store: useBridgeStore.getState().state,
+          ui: {
+            clearMessages: () => setMessages([]),
+            focusInput: () => {
+              /* No-op, input focus is handled by UI mainly */
+            },
+            appendSystemMessage: (content: string) => {
+              setMessages((prev) => [
+                ...prev,
+                {
+                  id: crypto.randomUUID(),
+                  role: 'system',
+                  content,
+                  events: [],
+                },
+              ]);
+            },
+          },
+        };
+
+        try {
+          await commandRegistry.execute(
+            commandMatch.command,
+            commandMatch.args,
+            context,
+          );
+          return; // Stop network request
+        } catch (e) {
+          // Registry handles logging, but we can double check
+          console.error('Command execution failed', e);
+        }
+        return; // Even if failed, we intercepted.
+      }
+
       if (isProcessing) {
         messageQueueRef.current.push(text);
         return;
@@ -379,6 +473,11 @@ export function useCliProcess(options?: { onComplete?: () => void }) {
       const abortController = new AbortController();
       activeStreamAbortRef.current = abortController;
 
+      // Add connection timeout (10s) to prevent 'working forever' on dead backend
+      const timeoutId = setTimeout(() => {
+        abortController.abort('Connection timeout');
+      }, 10000);
+
       const messageId = crypto.randomUUID();
       const body = {
         jsonrpc: '2.0',
@@ -404,6 +503,7 @@ export function useCliProcess(options?: { onComplete?: () => void }) {
           body,
           abortController.signal,
         );
+        clearTimeout(timeoutId);
 
         await readSseStream(stream, (msg) => {
           if (!tabLockRef.current?.isLocked()) {
@@ -439,6 +539,7 @@ export function useCliProcess(options?: { onComplete?: () => void }) {
       handleBridgeText,
       handleBridgeToolUpdate,
       onBridgeComplete,
+      appendToAssistant,
     ],
   );
 
@@ -535,6 +636,7 @@ export function useCliProcess(options?: { onComplete?: () => void }) {
       handleBridgeText,
       handleBridgeToolUpdate,
       onBridgeComplete,
+      appendToAssistant,
     ],
   );
 
@@ -596,6 +698,20 @@ export function useCliProcess(options?: { onComplete?: () => void }) {
     dispatch(BridgeActions.streamEnded());
   }, [dispatch]);
 
+  // Fix 2: Abort active stream when disconnected (e.g. Session Reset)
+  useEffect(() => {
+    if (bridgeState.status === 'disconnected') {
+      console.log('[useCliProcess] Aborting active stream due to disconnect');
+      if (activeStreamAbortRef.current) {
+        activeStreamAbortRef.current.abort();
+        activeStreamAbortRef.current = null;
+      }
+      // Explicitly clear processing state to unblock UI
+      setToolStatus(null);
+      setWaitingForInput(false);
+    }
+  }, [bridgeState.status, setToolStatus, setWaitingForInput]);
+
   return {
     messages,
     isConnected,
@@ -606,5 +722,6 @@ export function useCliProcess(options?: { onComplete?: () => void }) {
     sendToolInput,
     closeTerminal: () => {},
     stop: stopAgent,
+    clearMessages: () => setMessages([]),
   };
 }

@@ -19,6 +19,12 @@ trail**.
 > surfaces (Desktop/Voice/A2A) are still being hardened across platforms. Expect
 > power; expect rough edges. Contributions welcome.
 
+## Demo
+
+<div align="center">
+  <img src="docs-terminai/assets/Kooha_combined_cropped.gif" alt="TerminaI Demo" width="100%">
+</div>
+
 ---
 
 ## Vision

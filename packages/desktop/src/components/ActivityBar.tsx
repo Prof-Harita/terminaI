@@ -14,6 +14,7 @@ import {
   Terminal,
   Settings2,
   User,
+  Plus,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Button } from './ui/button';
@@ -31,6 +32,7 @@ export type ActivityView =
 interface ActivityBarProps {
   activeView: ActivityView | null;
   onViewChange: (view: ActivityView | null) => void;
+  onNewChat?: () => void;
 }
 
 interface ActivityItemProps {
@@ -69,14 +71,21 @@ function ActivityItem({
         title={label}
       >
         <Icon
-          className={cn('h-6 w-6 stroke-[1.5]', isActive && 'stroke-[2]')}
+          className={cn(
+            'h-6 w-6 stroke-[1.5] stroke-[#555] dark:stroke-[#999] transition-colors',
+            isActive && 'stroke-black dark:stroke-white stroke-[2]',
+          )}
         />
       </Button>
     </div>
   );
 }
 
-export function ActivityBar({ activeView, onViewChange }: ActivityBarProps) {
+export function ActivityBar({
+  activeView,
+  onViewChange,
+  onNewChat,
+}: ActivityBarProps) {
   const toggleView = (view: ActivityView) => {
     if (activeView === view) {
       onViewChange(null);
@@ -86,7 +95,20 @@ export function ActivityBar({ activeView, onViewChange }: ActivityBarProps) {
   };
 
   return (
-    <div className="w-[48px] bg-sidebar-accent/50 border-r border-border flex flex-col h-full flex-shrink-0 z-30">
+    <div className="w-[48px] bg-zinc-100 dark:bg-zinc-900 border-r border-border flex flex-col h-full flex-shrink-0 z-30">
+      {onNewChat && (
+        <div className="flex justify-center py-3 pb-1">
+          <Button
+            size="icon"
+            onClick={onNewChat}
+            className="h-9 w-9 bg-red-600 hover:bg-red-500 text-white rounded-full shadow-md group transition-all hover:scale-105"
+            title="New Chat"
+          >
+            <Plus className="h-6 w-6 stroke-[2.5]" />
+          </Button>
+        </div>
+      )}
+
       <ActivityItem
         icon={Clock}
         label="History"

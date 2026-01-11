@@ -60,7 +60,6 @@ export function ChatView({
   sendMessage,
   respondToConfirmation,
   inputRef,
-  onPendingConfirmation,
   voiceEnabled,
   onStop,
   onOpenSettings,
@@ -84,7 +83,7 @@ export function ChatView({
   const userMessages = useMemo(
     () =>
       messages
-        .filter((m) => m.role === 'user')
+        .filter((m) => m.role === 'user' || m.role === 'system')
         .map((m) => m.content)
         .reverse(),
     [messages],
@@ -151,15 +150,9 @@ export function ChatView({
   );
 
   // Track pending confirmation for keyboard shortcuts
-  useEffect(() => {
-    const pendingMsg = messages.find((m) => m.pendingConfirmation);
-    const confirmation = pendingMsg?.pendingConfirmation;
-    onPendingConfirmation?.(
-      confirmation?.id ?? null,
-      confirmation?.requiresPin ?? false,
-      false, // PIN ready state will be managed by ConfirmationCard (added in future task)
-    );
-  }, [messages, onPendingConfirmation]);
+  // Track pending confirmation for keyboard shortcuts
+  // Redundant effect removed to prevent infinite loop (App.tsx handles this)
+  // See: https://github.com/Prof-Harita/terminaI/issues/FIX-INFINITE-LOOP
 
   // Task 45: Secondary status for long tools
   const [showLongRunningWarning, setShowLongRunningWarning] = useState(false);
@@ -322,15 +315,21 @@ export function ChatView({
               key={message.id}
               className={cn(
                 'flex',
-                message.role === 'user' ? 'justify-end' : 'justify-start',
+                message.role === 'system'
+                  ? 'justify-center'
+                  : message.role === 'user'
+                    ? 'justify-end'
+                    : 'justify-start',
               )}
             >
               <div
                 className={cn(
                   'max-w-[85%] rounded-lg px-4 py-2.5 text-base leading-relaxed',
-                  message.role === 'user'
-                    ? 'bg-primary text-primary-foreground relative group'
-                    : 'bg-muted text-foreground border border-border relative group',
+                  message.role === 'system'
+                    ? 'bg-transparent text-muted-foreground text-sm italic py-1 px-4 text-center border-none shadow-none max-w-[90%]'
+                    : message.role === 'user'
+                      ? 'bg-primary text-primary-foreground relative group'
+                      : 'bg-muted text-foreground border border-border relative group',
                 )}
               >
                 {message.role === 'user' && (

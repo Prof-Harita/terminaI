@@ -19,19 +19,39 @@ export function MessageBubble({ message }: Props) {
     <div
       style={{
         display: 'flex',
-        justifyContent: isUser ? 'flex-end' : 'flex-start',
+        justifyContent:
+          message.role === 'system'
+            ? 'center'
+            : isUser
+              ? 'flex-end'
+              : 'flex-start',
       }}
     >
       <div
         style={{
-          maxWidth: '75%',
+          maxWidth: message.role === 'system' ? '90%' : '75%',
           padding: 'var(--space-4) var(--space-5)',
-          borderRadius: isUser
-            ? 'var(--radius-lg) var(--radius-lg) var(--radius-sm) var(--radius-lg)'
-            : 'var(--radius-lg) var(--radius-lg) var(--radius-lg) var(--radius-sm)',
-          background: isUser ? 'var(--accent)' : 'var(--bg-tertiary)',
-          color: isUser ? 'white' : 'var(--text-primary)',
-          fontSize: 'var(--text-base)',
+          borderRadius:
+            message.role === 'system'
+              ? 'var(--radius-lg)'
+              : isUser
+                ? 'var(--radius-lg) var(--radius-lg) var(--radius-sm) var(--radius-lg)'
+                : 'var(--radius-lg) var(--radius-lg) var(--radius-lg) var(--radius-sm)',
+          background:
+            message.role === 'system'
+              ? 'transparent'
+              : isUser
+                ? 'var(--accent)'
+                : 'var(--bg-tertiary)',
+          color:
+            message.role === 'system'
+              ? 'var(--text-secondary)'
+              : isUser
+                ? 'white'
+                : 'var(--text-primary)',
+          fontSize:
+            message.role === 'system' ? 'var(--text-sm)' : 'var(--text-base)',
+          fontStyle: message.role === 'system' ? 'italic' : 'normal',
           lineHeight: '1.5',
         }}
       >
