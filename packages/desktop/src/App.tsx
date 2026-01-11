@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { useCliProcess } from './hooks/useCliProcess';
 import { useSettingsStore } from './stores/settingsStore';
 import { useSidecarStore } from './stores/sidecarStore';
@@ -38,6 +38,10 @@ function App() {
   // Use V2 Sidecar Hook (handles connection lifecycle)
   useSidecar();
 
+  const cliOptions = useCallback(() => {
+    setTimeout(() => chatInputRef.current?.focus(), 0);
+  }, []);
+
   const {
     messages,
     isConnected,
@@ -47,11 +51,7 @@ function App() {
     respondToConfirmation,
     sendToolInput,
     stop,
-  } = useCliProcess({
-    onComplete: () => {
-      setTimeout(() => chatInputRef.current?.focus(), 0);
-    },
-  });
+  } = useCliProcess({ onComplete: cliOptions });
 
   const { currentToolStatus, contextUsed, contextLimit, contextFiles } =
     useExecutionStore();
@@ -159,10 +159,24 @@ function App() {
     }
   }, [pendingConfirmationId]);
 
+  /* --- Key Fix: clearChat delegates to /clear command --- */
   const clearChat = useCallback(() => {
+    // Phase 3: Delegate to Registry via /clear command
+    // This handles SessionManager.startNewSession() and ui.clearMessages()
     sendMessage('/clear');
+
     setTimeout(() => chatInputRef.current?.focus(), 100);
   }, [sendMessage]);
+
+  // Handler for pending confirmation updates from ChatView
+  const handlePendingConfirmation = useCallback(
+    (id: string | null, requiresPin?: boolean, pinReady?: boolean) => {
+      setPendingConfirmationId(id);
+      setPendingConfirmationRequiresPin(requiresPin ?? false);
+      setPendingConfirmationPinReady(pinReady ?? false);
+    },
+    [],
+  );
 
   // Auto-focus chat input when window regains focus
   useEffect(() => {
@@ -177,42 +191,56 @@ function App() {
     return () => window.removeEventListener('focus', handleFocus);
   }, [isPaletteOpen, isSettingsOpen, showAuth]);
 
-  useKeyboardShortcuts({
-    onOpenPalette: () => setIsPaletteOpen(true),
-    onOpenSettings: () => setActiveActivity('preference'),
-    onFocusChat: () => chatInputRef.current?.focus(),
-    onNewConversation: clearChat,
-    onShowCheatSheet: () => setIsCheatSheetOpen(true),
-    onApprove: () => {
-      if (pendingConfirmationId) {
-        // Don't approve if PIN required but not ready
-        if (pendingConfirmationRequiresPin && !pendingConfirmationPinReady) {
-          return;
+  const shortcuts = useMemo(
+    () => ({
+      onOpenPalette: () => setIsPaletteOpen(true),
+      onOpenSettings: () => setActiveActivity('preference'),
+      onFocusChat: () => chatInputRef.current?.focus(),
+      onNewConversation: clearChat,
+      onShowCheatSheet: () => setIsCheatSheetOpen(true),
+      onApprove: () => {
+        if (pendingConfirmationId) {
+          // Don't approve if PIN required but not ready
+          if (pendingConfirmationRequiresPin && !pendingConfirmationPinReady) {
+            return;
+          }
+          respondToConfirmation(pendingConfirmationId, true);
+          setPendingConfirmationId(null);
+          setPendingConfirmationRequiresPin(false);
+          setPendingConfirmationPinReady(false);
+          setTimeout(() => chatInputRef.current?.focus(), 0);
         }
-        respondToConfirmation(pendingConfirmationId, true);
-        setPendingConfirmationId(null);
-        setPendingConfirmationRequiresPin(false);
-        setPendingConfirmationPinReady(false);
-        setTimeout(() => chatInputRef.current?.focus(), 0);
-      }
-    },
-    onEscape: () => {
-      if (pendingConfirmationId) {
-        respondToConfirmation(pendingConfirmationId, false);
-        setPendingConfirmationId(null);
-        setTimeout(() => chatInputRef.current?.focus(), 0);
-      } else if (activeActivity && activeActivity !== 'history') {
-        setActiveActivity('history'); // Go back to history instead of null? Or null? Old behavior was null but history is default.
-        setTimeout(() => chatInputRef.current?.focus(), 0);
-      } else if (isPaletteOpen) {
-        setIsPaletteOpen(false);
-        setTimeout(() => chatInputRef.current?.focus(), 0);
-      } else if (isCheatSheetOpen) {
-        setIsCheatSheetOpen(false);
-        setTimeout(() => chatInputRef.current?.focus(), 0);
-      }
-    },
-  });
+      },
+      onEscape: () => {
+        if (pendingConfirmationId) {
+          respondToConfirmation(pendingConfirmationId, false);
+          setPendingConfirmationId(null);
+          setTimeout(() => chatInputRef.current?.focus(), 0);
+        } else if (activeActivity && activeActivity !== 'history') {
+          setActiveActivity('history');
+          setTimeout(() => chatInputRef.current?.focus(), 0);
+        } else if (isPaletteOpen) {
+          setIsPaletteOpen(false);
+          setTimeout(() => chatInputRef.current?.focus(), 0);
+        } else if (isCheatSheetOpen) {
+          setIsCheatSheetOpen(false);
+          setTimeout(() => chatInputRef.current?.focus(), 0);
+        }
+      },
+    }),
+    [
+      clearChat,
+      pendingConfirmationId,
+      pendingConfirmationRequiresPin,
+      pendingConfirmationPinReady,
+      respondToConfirmation,
+      activeActivity,
+      isPaletteOpen,
+      isCheatSheetOpen,
+    ],
+  );
+
+  useKeyboardShortcuts(shortcuts);
 
   // Track pending confirmation for keyboard shortcuts
   useEffect(() => {
@@ -407,6 +435,7 @@ function App() {
           <ActivityBar
             activeView={activeActivity}
             onViewChange={setActiveActivity}
+            onNewChat={clearChat}
           />
 
           {/* Side Panel */}
@@ -438,11 +467,7 @@ function App() {
               respondToConfirmation={respondToConfirmation}
               inputRef={chatInputRef}
               voiceEnabled={voiceEnabled}
-              onPendingConfirmation={(id, requiresPin, pinReady) => {
-                setPendingConfirmationId(id);
-                setPendingConfirmationRequiresPin(requiresPin ?? false);
-                setPendingConfirmationPinReady(pinReady ?? false);
-              }}
+              onPendingConfirmation={handlePendingConfirmation}
               onStop={stop}
               onOpenSettings={() => setActiveActivity('preference')}
               onSwitchProvider={() => setIsSwitchProviderOpen(true)}

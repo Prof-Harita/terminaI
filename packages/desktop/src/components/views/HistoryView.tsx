@@ -10,6 +10,7 @@ import { Clock, Trash2 } from 'lucide-react';
 
 interface Props {
   onSelectSession: (id: string) => void;
+  onNewChat?: () => void;
 }
 
 export function HistoryView({ onSelectSession }: Props) {
