@@ -1,6 +1,6 @@
 {
   "name": "@terminai/cli-wrapper",
-  "version": "0.22.0",
+  "version": "0.23.0",
   "description": "TerminaI CLI - AI-Powered Terminal",
   "license": "Apache-2.0",
   "repository": {

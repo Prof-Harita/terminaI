@@ -1,6 +1,6 @@
 {
   "name": "@terminai/cloud-relay",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "WebSocket Relay for TerminaI Web Remote",
   "type": "module",
   "main": "dist/server.js",
