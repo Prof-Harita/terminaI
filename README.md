@@ -19,6 +19,9 @@ trail**.
 > surfaces (Desktop/Voice/A2A) are still being hardened across platforms. Expect
 > power; expect rough edges. Contributions welcome.
 
+⚠️ Status Update: I welcomed my newborn child into the world on Jan 12. Development will be bursty for a few weeks.
+​The architecture is sound, but if you find bugs, PRs are highly welcome and will be merged faster than I can write code right now. Help me keep the terminaI dream alive while I learn how to be a dad.
+
 ## Demo
 
 <div align="center">
