@@ -19,8 +19,11 @@ trail**.
 > surfaces (Desktop/Voice/A2A) are still being hardened across platforms. Expect
 > power; expect rough edges. Contributions welcome.
 
-⚠️ Status Update: I welcomed my newborn child into the world on Jan 12. Development will be bursty for a few weeks.
-​The architecture is sound, but if you find bugs, PRs are highly welcome and will be merged faster than I can write code right now. Help me keep the terminaI dream alive while I learn how to be a dad.
+⚠️ Status Update: I welcomed my newborn child into the world on Jan 12.
+Development will be bursty for a few weeks. ​The architecture is sound, but if
+you find bugs, PRs are highly welcome and will be merged faster than I can write
+code right now. Help me keep the terminaI dream alive while I learn how to be a
+dad.
 
 ## Demo
 
@@ -173,9 +176,42 @@ terminai
 
 ### OpenAI-compatible providers
 
-Configure `llm.provider` and `llm.openaiCompatible` in
-`~/.terminai/settings.json` (legacy `~/.gemini/settings.json` is still
-supported).
+Recommended setup (CLI):
+
+1. Export your key in the same shell before running
+
+```bash
+export OPENAI_API_KEY="sk-..."
+```
+
+2. Start TerminaI and run `/auth`
+3. Choose "OpenAI Compatible"
+4. Enter base URL, model, and env var name
+
+If the wizard fails or you prefer manual config, add this to
+`~/.terminai/settings.json` (change url, model, and env var name to your
+preferred providers):
+
+```json
+{
+  "llm": {
+    "provider": "openai_compatible",
+    "openaiCompatible": {
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "model": "openai/gpt-oss-120b:free",
+      "auth": {
+        "type": "bearer",
+        "envVarName": "OPENAI_API_KEY"
+      }
+    }
+  },
+  "security": {
+    "auth": {
+      "selectedType": "openai-compatible"
+    }
+  }
+}
+```
 
 See: `docs-terminai/multi-llm-support.md`
 

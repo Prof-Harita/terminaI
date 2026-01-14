@@ -152,7 +152,7 @@ describe('useAuth', () => {
 
       await waitFor(() => {
         expect(result.current.authError).toBe(
-          'No authentication method selected.',
+          'No authentication method selected. Run /auth to set up.',
         );
         expect(result.current.authState).toBe(AuthState.Updating);
       });

@@ -4,12 +4,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { execSync } from 'node:child_process';
+import { execFileSync, execSync } from 'node:child_process';
 import lintStaged from 'lint-staged';
 
 try {
   // Get repository root
-  const root = execSync('git rev-parse --show-toplevel').toString().trim();
+  const root = execFileSync('git', ['rev-parse', '--show-toplevel'], {
+    encoding: 'utf8',
+  }).trim();
 
   // Run critical tests first
   try {
