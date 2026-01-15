@@ -24,3 +24,4 @@ opencode/
 open-interpreter/
 packages/desktop/src-tauri/target/
 packages/desktop/src-tauri/gen/
+.opencode-openai/

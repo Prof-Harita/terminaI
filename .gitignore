@@ -79,3 +79,4 @@ live_log.txt
 *.log
 
 .gemini/
+.opencode-openai/
