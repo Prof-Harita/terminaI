@@ -37,10 +37,12 @@ describe('authCommand', () => {
 
   it('should have subcommands: login, logout, and wizard', () => {
     expect(authCommand.subCommands).toBeDefined();
-    expect(authCommand.subCommands).toHaveLength(3);
+    expect(authCommand.subCommands).toHaveLength(5);
     expect(authCommand.subCommands?.[0]?.name).toBe('login');
     expect(authCommand.subCommands?.[1]?.name).toBe('logout');
     expect(authCommand.subCommands?.[2]?.name).toBe('wizard');
+    expect(authCommand.subCommands?.[3]?.name).toBe('reset');
+    expect(authCommand.subCommands?.[4]?.name).toBe('status');
   });
 
   it('should return a dialog action to open the auth dialog when called with no args', () => {
