@@ -37,6 +37,17 @@ export interface ChatGptOAuthStart {
   readonly codeVerifier: string;
 }
 
+/**
+ * Error thrown when OpenAI returns refresh_token_reused.
+ * This indicates the stored credentials are permanently invalid.
+ */
+export class RefreshTokenReusedError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'RefreshTokenReusedError';
+  }
+}
+
 export class ChatGptOAuthClient {
   private readonly clientId: string;
   private readonly authorizeUrl: string;
@@ -125,6 +136,14 @@ export class ChatGptOAuthClient {
 
     if (!response.ok) {
       const text = await response.text().catch(() => '');
+
+      // Detect refresh_token_reused error - this means stored creds are permanently invalid
+      if (response.status === 401 && text.includes('refresh_token_reused')) {
+        throw new RefreshTokenReusedError(
+          'ChatGPT OAuth session expired. Your refresh token was already used. Run /auth reset then /auth wizard to re-authenticate.',
+        );
+      }
+
       throw new Error(
         `OpenAI OAuth refresh failed (${response.status}): ${text}`,
       );

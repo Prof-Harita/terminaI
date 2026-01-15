@@ -951,9 +951,16 @@ Logging in with Google... Restarting terminaI to continue.
 
   const slashCommandActions = useMemo(
     () => ({
-      openAuthDialog: () => setAuthState(AuthState.Updating),
-      openAuthWizardDialog: () =>
-        setAuthWizardDialog(AuthWizardDialogState.Provider),
+      openAuthDialog: () => {
+        setCustomDialog(null);
+        setAuthState(AuthState.Updating);
+      },
+      openAuthWizardDialog: () => {
+        // Clear any blocking custom dialog (e.g., LogoutConfirmationDialog)
+        // before opening the wizard to ensure it renders
+        setCustomDialog(null);
+        setAuthWizardDialog(AuthWizardDialogState.Provider);
+      },
       openThemeDialog,
       openEditorDialog,
       openPrivacyNotice: () => setShowPrivacyNotice(true),
@@ -2013,7 +2020,8 @@ Logging in with Google... Restarting terminaI to continue.
     !!proQuotaRequest ||
     isSessionBrowserOpen ||
     isAuthDialogOpen ||
-    authState === AuthState.AwaitingApiKeyInput;
+    authState === AuthState.AwaitingApiKeyInput ||
+    authWizardDialog !== null; // Auth wizard dialog should show DialogManager
 
   const pendingHistoryItems = useMemo(
     () => [...pendingSlashCommandHistoryItems, ...pendingGeminiHistoryItems],

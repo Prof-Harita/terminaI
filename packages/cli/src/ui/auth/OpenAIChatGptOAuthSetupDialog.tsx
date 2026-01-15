@@ -15,6 +15,8 @@ import {
   DEFAULT_OPENAI_OAUTH_REDIRECT_PORT,
   tryImportFromCodexCli,
   tryImportFromOpenCode,
+  coreEvents,
+  CoreEvent,
 } from '@terminai/core';
 import type { LoadedSettings } from '../../config/settings.js';
 import { SettingScope } from '../../config/settings.js';
@@ -26,6 +28,7 @@ import process from 'node:process';
 import * as http from 'node:http';
 import { URL } from 'node:url';
 import { CliSpinner } from '../components/CliSpinner.js';
+import open from 'open';
 
 type Step = 'model' | 'base_url' | 'oauth';
 
@@ -119,13 +122,38 @@ export function OpenAIChatGptOAuthSetupDialog({
 
   const startOauthFlow = useCallback(
     async (client: ChatGptOAuthClient): Promise<void> => {
-      const redirectUri = `http://127.0.0.1:${DEFAULT_OPENAI_OAUTH_REDIRECT_PORT}/auth/callback`;
+      const redirectUri = `http://localhost:${DEFAULT_OPENAI_OAUTH_REDIRECT_PORT}/auth/callback`;
       const start = client.startAuthorization({ redirectUri });
 
       setAuthUrl(start.authUrl);
       setOauthState(start.state);
       setCodeVerifier(start.codeVerifier);
       setOauthInProgress(true);
+
+      // Auto-open browser like Google OAuth does
+      coreEvents.emit(CoreEvent.UserFeedback, {
+        severity: 'info',
+        message:
+          `\nChatGPT OAuth login required.\n` +
+          `Attempting to open authentication page in your browser.\n` +
+          `Otherwise navigate to:\n${start.authUrl}\n`,
+      });
+
+      try {
+        const childProcess = await open(start.authUrl);
+        childProcess.on('error', (error) => {
+          coreEvents.emit(CoreEvent.UserFeedback, {
+            severity: 'warning',
+            message: `Could not auto-open browser: ${error.message}. Please copy the URL above.`,
+          });
+        });
+      } catch (_err) {
+        // Browser auto-open failed, user can still copy the URL
+        coreEvents.emit(CoreEvent.UserFeedback, {
+          severity: 'warning',
+          message: 'Could not auto-open browser. Please copy the URL above.',
+        });
+      }
 
       const server = await bindOAuthServerWithCancelRetry({
         expectedState: start.state,
@@ -136,6 +164,10 @@ export function OpenAIChatGptOAuthSetupDialog({
             codeVerifier: start.codeVerifier,
           });
           await ChatGptOAuthCredentialStorage.save(creds);
+          coreEvents.emit(CoreEvent.UserFeedback, {
+            severity: 'info',
+            message: 'ChatGPT OAuth authentication succeeded!\n',
+          });
           void onComplete();
         },
         onError: (e) => {
@@ -219,7 +251,7 @@ export function OpenAIChatGptOAuthSetupDialog({
           return;
         }
 
-        const redirectUri = `http://127.0.0.1:${DEFAULT_OPENAI_OAUTH_REDIRECT_PORT}/auth/callback`;
+        const redirectUri = `http://localhost:${DEFAULT_OPENAI_OAUTH_REDIRECT_PORT}/auth/callback`;
         const client = new ChatGptOAuthClient();
         const creds = await client.exchangeAuthorizationCode({
           code: parsed.code,
@@ -294,12 +326,19 @@ export function OpenAIChatGptOAuthSetupDialog({
       </Box>
 
       {step === 'oauth' && authUrl && (
-        <Box marginTop={1} flexDirection="column">
-          <Text color={theme.text.link}>{authUrl}</Text>
+        <Box marginTop={1} flexDirection="column" width="100%">
+          <Text color={theme.text.secondary}>
+            If browser didn&apos;t open, copy this URL:
+          </Text>
+          <Box marginTop={1} width="100%">
+            <Text color={theme.text.link} wrap="wrap">
+              {authUrl}
+            </Text>
+          </Box>
           <Box marginTop={1}>
             <Text color={theme.text.secondary}>
               <CliSpinner type="dots" /> Waiting for OAuth callback on{' '}
-              {`127.0.0.1:${DEFAULT_OPENAI_OAUTH_REDIRECT_PORT}`}
+              {`localhost:${DEFAULT_OPENAI_OAUTH_REDIRECT_PORT}`}
             </Text>
           </Box>
         </Box>
@@ -349,7 +388,7 @@ async function bindOAuthServerWithCancelRetry(input: {
   onError: (error: Error) => void;
 }): Promise<http.Server> {
   const port = DEFAULT_OPENAI_OAUTH_REDIRECT_PORT;
-  const host = '127.0.0.1';
+  const host = 'localhost';
 
   const server = http.createServer((req, res) => {
     try {

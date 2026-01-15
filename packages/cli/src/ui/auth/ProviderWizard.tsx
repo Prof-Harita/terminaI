@@ -66,6 +66,14 @@ export function ProviderWizard({
       <Text bold color={theme.text.primary}>
         Choose your model provider
       </Text>
+      {targetScope === SettingScope.Workspace && (
+        <Box marginTop={1}>
+          <Text color="yellow">
+            ⚠️ Workspace settings detected - selection will apply to this
+            project only.
+          </Text>
+        </Box>
+      )}
       <Box marginTop={1}>
         <Text color={theme.text.primary}>
           TerminaI can use different providers. Select one to continue:

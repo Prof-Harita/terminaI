@@ -72,20 +72,31 @@ export class ChatGptOAuthCredentialStorage {
     await this.storage.setCredentials(creds as unknown as OAuthCredentials);
   }
 
+  /**
+   * Clear stored ChatGPT OAuth credentials.
+   * This method is intentionally infallible - it will never throw.
+   * This ensures /auth logout always succeeds, even if storage is corrupted.
+   */
   static async clear(): Promise<void> {
+    // Try primary storage first
     try {
       await this.storage.deleteCredentials(
         OPENAI_CHATGPT_TOKEN_STORAGE_SERVER_NAME,
       );
     } catch (error: unknown) {
+      // Log but don't throw - user recovery path must not be blocked
       coreEvents.emitFeedback(
-        'error',
-        'Failed to clear ChatGPT OAuth credentials',
+        'warning',
+        'Could not clear ChatGPT OAuth credentials from primary storage',
         error,
       );
-      throw new Error('Failed to clear ChatGPT OAuth credentials', {
-        cause: error,
-      });
+    }
+
+    // Also try clearing via clearAll on the storage as a fallback
+    try {
+      await this.storage.clearAll();
+    } catch {
+      // Ignore - best effort
     }
   }
 }

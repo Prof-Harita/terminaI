@@ -179,7 +179,7 @@ describe('ChatGptCodexContentGenerator', () => {
     expect(body['include']).toEqual(['reasoning.encrypted_content']);
   });
 
-  it('encodes assistant history as output_text in Responses input items', async () => {
+  it('encodes assistant history as simple role+content objects', async () => {
     vi.mocked(global.fetch).mockResolvedValue(
       sseResponse([
         'data: {"type":"response.completed","response":{"output":[{"type":"message","content":[{"type":"output_text","text":"ok"}]}]}}\n\n',
@@ -224,12 +224,105 @@ describe('ChatGptCodexContentGenerator', () => {
       return item['role'] === 'assistant';
     });
     expect(isPlainObject(assistantItem)).toBe(true);
+    // New format expectation: { role: 'assistant', content: 'hello' }
+    expect((assistantItem as Record<string, unknown>)['content']).toBe('hello');
+  });
 
-    const content = (assistantItem as Record<string, unknown>)['content'];
-    expect(Array.isArray(content)).toBe(true);
+  it('converts function calls and responses to structured items with ID linkage', async () => {
+    vi.mocked(global.fetch).mockResolvedValue(
+      sseResponse([
+        'data: {"type":"response.done","response":{"output":[]}}\n\n',
+      ]),
+    );
 
-    const first = (content as unknown[])[0];
-    expect(isPlainObject(first)).toBe(true);
-    expect((first as Record<string, unknown>)['type']).toBe('output_text');
+    const generator = new ChatGptCodexContentGenerator(
+      providerConfig,
+      mockConfig,
+    );
+
+    const stream = await generator.generateContentStream(
+      {
+        model: 'gpt-5.2-codex',
+        contents: [
+          {
+            role: 'model',
+            parts: [
+              {
+                functionCall: {
+                  name: 'my_tool',
+                  args: { x: 1 },
+                },
+              },
+            ],
+          },
+          {
+            role: 'function',
+            parts: [
+              {
+                functionResponse: {
+                  name: 'my_tool',
+                  response: { result: 'success' },
+                },
+              },
+            ],
+          },
+        ],
+        config: {},
+      },
+      'prompt-id',
+    );
+
+    for await (const _chunk of stream) {
+      // drain
+    }
+
+    const options = vi.mocked(global.fetch).mock.calls[0]?.[1];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const body = JSON.parse((options as any).body);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const input = body.input as any[];
+
+    const callItem = input.find((i) => i.type === 'function_call');
+    expect(callItem).toBeTruthy();
+    expect(callItem.name).toBe('my_tool');
+    expect(callItem.call_id).toBeTruthy(); // Should have generated an ID
+
+    const outputItem = input.find((i) => i.type === 'function_call_output');
+    expect(outputItem).toBeTruthy();
+    expect(outputItem.output).toContain('success');
+    expect(outputItem.call_id).toBe(callItem.call_id); // Linkage check
+  });
+
+  it('extracts usage metadata from terminal response', async () => {
+    vi.mocked(global.fetch).mockResolvedValue(
+      sseResponse([
+        'data: {"type":"response.completed","response":{"output":[],"usage":{"prompt_tokens":10,"completion_tokens":20,"total_tokens":30}}}\n\n',
+      ]),
+    );
+
+    const generator = new ChatGptCodexContentGenerator(
+      providerConfig,
+      mockConfig,
+    );
+
+    const stream = await generator.generateContentStream(
+      {
+        model: 'gpt-5.2-codex',
+        contents: [],
+        config: {},
+      },
+      'prompt-id',
+    );
+
+    let finalResponse;
+    for await (const chunk of stream) {
+      finalResponse = chunk;
+    }
+
+    expect(finalResponse?.usageMetadata).toEqual({
+      promptTokenCount: 10,
+      candidatesTokenCount: 20,
+      totalTokenCount: 30,
+    });
   });
 });

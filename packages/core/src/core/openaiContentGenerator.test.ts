@@ -430,7 +430,7 @@ describe('OpenAIContentGenerator', () => {
     };
 
     await expect(generator.generateContent(request, 'id')).rejects.toThrow(
-      'This provider is configured for text-only. Images and files are not supported.',
+      'The OpenAI provider currently only supports text. To use images or other files, please switch to the Gemini provider.',
     );
   });
 
@@ -451,7 +451,7 @@ describe('OpenAIContentGenerator', () => {
     };
 
     await expect(generator.generateContent(request, 'id')).rejects.toThrow(
-      'This provider is configured for text-only. Images and files are not supported.',
+      'The OpenAI provider currently only supports text. To use images or other files, please switch to the Gemini provider.',
     );
   });
 
@@ -471,7 +471,7 @@ describe('OpenAIContentGenerator', () => {
     await expect(
       generator.generateContentStream(request, 'id'),
     ).rejects.toThrow(
-      'This provider is configured for text-only. Images and files are not supported.',
+      'The OpenAI provider currently only supports text. To use images or other files, please switch to the Gemini provider.',
     );
   });
 
@@ -504,8 +504,10 @@ describe('OpenAIContentGenerator', () => {
 
     await expect(
       generator.generateContent({ model: 'gpt-4o', contents: [] }, 'id'),
-    ).rejects.toThrow('OpenAI Provider Error (429): Rate limit exceeded');
-  });
+    ).rejects.toThrow(
+      'OpenAI compatible backend error (429): Rate limit exceeded',
+    );
+  }, 10000);
 
   it('should handle streaming text deltas', async () => {
     const generator = new OpenAIContentGenerator(providerConfig, mockConfig);

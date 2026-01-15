@@ -51,6 +51,11 @@ interface OpenAIToolCall {
 
 interface OpenAIResponse {
   choices?: OpenAIChoice[];
+  usage?: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  };
 }
 
 interface OpenAITool {
@@ -163,7 +168,7 @@ export class OpenAIContentGenerator implements ContentGenerator {
     const contents = toContents(request.contents);
     if (this.hasUnsupportedModalities(contents)) {
       throw new Error(
-        'This provider is configured for text-only. Images and files are not supported.',
+        'The OpenAI provider currently only supports text. To use images or other files, please switch to the Gemini provider.',
       );
     }
     const messages = this.convertContentsToOpenAIMessages(contents);
@@ -193,6 +198,21 @@ export class OpenAIContentGenerator implements ContentGenerator {
     if (request.config?.temperature !== undefined) {
       body['temperature'] = request.config.temperature;
     }
+    if (request.config?.topP !== undefined) {
+      body['top_p'] = request.config.topP;
+    }
+    if (request.config?.presencePenalty !== undefined) {
+      body['presence_penalty'] = request.config.presencePenalty;
+    }
+    if (request.config?.frequencyPenalty !== undefined) {
+      body['frequency_penalty'] = request.config.frequencyPenalty;
+    }
+    if (request.config?.seed !== undefined) {
+      body['seed'] = request.config.seed;
+    }
+    if (request.config?.stopSequences) {
+      body['stop'] = request.config.stopSequences;
+    }
 
     const response = await this.fetchOpenAI(
       '/chat/completions',
@@ -211,7 +231,7 @@ export class OpenAIContentGenerator implements ContentGenerator {
     const contents = toContents(request.contents);
     if (this.hasUnsupportedModalities(contents)) {
       throw new Error(
-        'This provider is configured for text-only. Images and files are not supported.',
+        'The OpenAI provider currently only supports text. To use images or other files, please switch to the Gemini provider.',
       );
     }
     const messages = this.convertContentsToOpenAIMessages(contents);
@@ -240,6 +260,17 @@ export class OpenAIContentGenerator implements ContentGenerator {
       body['max_tokens'] = request.config.maxOutputTokens;
     if (request.config?.temperature !== undefined)
       body['temperature'] = request.config.temperature;
+    if (request.config?.topP !== undefined) body['top_p'] = request.config.topP;
+    if (request.config?.presencePenalty !== undefined)
+      body['presence_penalty'] = request.config.presencePenalty;
+    if (request.config?.frequencyPenalty !== undefined)
+      body['frequency_penalty'] = request.config.frequencyPenalty;
+    if (request.config?.seed !== undefined) body['seed'] = request.config.seed;
+    if (request.config?.stopSequences)
+      body['stop'] = request.config.stopSequences;
+
+    // Request usage implementation for streaming
+    body['stream_options'] = { include_usage: true };
 
     const response = await this.fetchOpenAI(
       '/chat/completions',
@@ -294,6 +325,7 @@ export class OpenAIContentGenerator implements ContentGenerator {
 
                 // 1. Handle Text Content
                 if (delta?.content) {
+                  hasYieldedAnyText = true;
                   const resp = new GenerateContentResponse();
                   resp.candidates = [
                     {
@@ -303,7 +335,6 @@ export class OpenAIContentGenerator implements ContentGenerator {
                       },
                     },
                   ];
-                  hasYieldedAnyText = true;
                   yield resp;
                 }
 
@@ -341,7 +372,21 @@ export class OpenAIContentGenerator implements ContentGenerator {
                   }
                 }
 
-                // 3. Handle Finish
+                // 3. Handle Usage Metadata (streaming)
+                if (data.usage) {
+                  const usage = data.usage;
+                  const resp = new GenerateContentResponse();
+                  resp.usageMetadata = {
+                    promptTokenCount: usage.prompt_tokens,
+                    candidatesTokenCount: usage.completion_tokens,
+                    totalTokenCount: usage.total_tokens,
+                  };
+                  // If usage comes in a separate chunk without content, we must yield it
+                  // Often it's the last chunk.
+                  yield resp;
+                }
+
+                // 4. Handle Finish
                 if (finishReason) {
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   const parts: any[] = [];
@@ -520,14 +565,50 @@ export class OpenAIContentGenerator implements ContentGenerator {
       options.dispatcher = new ProxyAgent(proxy);
     }
 
-    const response = await fetch(url, options);
+    let attempt = 0;
+    while (true) {
+      attempt++;
+      try {
+        const response = await fetch(url, options);
 
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(`OpenAI Provider Error (${response.status}): ${text}`);
+        if (response.ok) {
+          return response;
+        }
+
+        // Check for retryable errors (429, 503)
+        if (
+          attempt < 3 &&
+          (response.status === 429 || response.status >= 500)
+        ) {
+          const delay = Math.pow(2, attempt) * 1000 + Math.random() * 500;
+          if (this.globalConfig.getDebugMode()) {
+            console.warn(
+              `[OpenAI] Request failed with ${response.status}. Retrying in ${Math.round(delay)}ms (attempt ${attempt}/3)`,
+            );
+          }
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          continue;
+        }
+
+        const text = await response.text().catch(() => '');
+        throw new Error(
+          `OpenAI compatible backend error (${response.status}): ${text}`,
+        );
+      } catch (error: unknown) {
+        if (attempt < 3) {
+          const delay = Math.pow(2, attempt) * 1000 + Math.random() * 500;
+          if (this.globalConfig.getDebugMode()) {
+            console.warn(
+              `[OpenAI] Network error. Retrying in ${Math.round(delay)}ms (attempt ${attempt}/3)`,
+              error,
+            );
+          }
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          continue;
+        }
+        throw error;
+      }
     }
-
-    return response;
   }
 
   private convertTools(tools: Tool[]): OpenAITool[] {
@@ -731,8 +812,15 @@ export class OpenAIContentGenerator implements ContentGenerator {
 
       // Standard text message
       const textParts = (content.parts || [])
-        .filter((p) => p.text)
-        .map((p) => p.text)
+        .map((p) => {
+          if ('thought' in p && p.thought) {
+            return `[Thought: ${p.thought}]\n`;
+          }
+          if ('text' in p && p.text) {
+            return p.text;
+          }
+          return '';
+        })
         .join('');
 
       messages.push({
@@ -801,6 +889,14 @@ export class OpenAIContentGenerator implements ContentGenerator {
 
     const response = new GenerateContentResponse();
     response.candidates = [candidate];
+
+    if (data.usage) {
+      response.usageMetadata = {
+        promptTokenCount: data.usage.prompt_tokens,
+        candidatesTokenCount: data.usage.completion_tokens,
+        totalTokenCount: data.usage.total_tokens,
+      };
+    }
 
     return response;
   }

@@ -31,7 +31,10 @@ import {
   CODEX_ORIGINATOR,
 } from '../openai_chatgpt/constants.js';
 import { ChatGptOAuthCredentialStorage } from '../openai_chatgpt/credentialStorage.js';
-import { ChatGptOAuthClient } from '../openai_chatgpt/oauthClient.js';
+import {
+  ChatGptOAuthClient,
+  RefreshTokenReusedError,
+} from '../openai_chatgpt/oauthClient.js';
 import {
   tryImportFromCodexCli,
   tryImportFromOpenCode,
@@ -55,6 +58,11 @@ interface ChatGptCodexResponseOutputItem {
 
 interface ChatGptCodexResponse {
   output?: unknown;
+  usage?: {
+    prompt_tokens?: number;
+    completion_tokens?: number;
+    total_tokens?: number;
+  };
 }
 
 export class ChatGptCodexContentGenerator implements ContentGenerator {
@@ -158,7 +166,7 @@ export class ChatGptCodexContentGenerator implements ContentGenerator {
     const contents = toContents(request.contents);
     if (this.hasUnsupportedModalities(contents)) {
       throw new Error(
-        'This provider is configured for text-only. Images and files are not supported.',
+        'The ChatGPT Codex provider currently only supports text. To use images or other files, please switch to the Gemini provider.',
       );
     }
 
@@ -174,8 +182,31 @@ export class ChatGptCodexContentGenerator implements ContentGenerator {
       stream: true,
       include: ['reasoning.encrypted_content'],
       ...(instructions ? { instructions } : {}),
-      input: this.convertContentsToResponsesInput(contents),
+      input: this.convertContentsToResponsesInput(
+        contents.filter((c) => c.role !== 'system'),
+      ),
       ...(tools.length > 0 ? { tools: this.convertTools(tools) } : {}),
+      ...(request.config?.maxOutputTokens
+        ? { max_tokens: request.config.maxOutputTokens }
+        : {}),
+      ...(request.config?.temperature !== undefined
+        ? { temperature: request.config.temperature }
+        : {}),
+      ...(request.config?.topP !== undefined
+        ? { top_p: request.config.topP }
+        : {}),
+      ...(request.config?.stopSequences
+        ? { stop: request.config.stopSequences }
+        : {}),
+      ...(request.config?.presencePenalty
+        ? { presence_penalty: request.config.presencePenalty }
+        : {}),
+      ...(request.config?.frequencyPenalty
+        ? { frequency_penalty: request.config.frequencyPenalty }
+        : {}),
+      ...(request.config?.seed !== undefined
+        ? { seed: request.config.seed }
+        : {}),
     };
 
     const debugMode = this.globalConfig.getDebugMode();
@@ -199,6 +230,7 @@ export class ChatGptCodexContentGenerator implements ContentGenerator {
       const decoder = new TextDecoder();
       let buffer = '';
       let terminalResponse: ChatGptCodexResponse | null = null;
+      let hasYieldedText = false;
 
       try {
         while (true) {
@@ -241,16 +273,25 @@ export class ChatGptCodexContentGenerator implements ContentGenerator {
                   content: { role: 'model', parts: [{ text: delta }] },
                 },
               ];
+              hasYieldedText = true;
               yield resp;
             }
 
             if (
               (type === 'response.completed' ||
                 type === 'response.done' ||
-                type === 'response.completed_event') &&
-              this.isPlainObject(event['response'])
+                type === 'response.completed_event' ||
+                type === 'response.output_item.done') && // Added extra finish parsing
+              (this.isPlainObject(event['response']) ||
+                this.isPlainObject(event['item'])) // Handle item-level done
             ) {
-              terminalResponse = event['response'] as ChatGptCodexResponse;
+              // Prefer top-level response if available, else item (though usually response.done has the usage)
+              const candidate = (event['response'] ||
+                event['item']) as ChatGptCodexResponse;
+              // Only overwrite if it looks like a terminal response (has output or usage)
+              if (candidate.output || candidate.usage) {
+                terminalResponse = candidate;
+              }
             }
           }
         }
@@ -262,12 +303,12 @@ export class ChatGptCodexContentGenerator implements ContentGenerator {
         throw new Error('ChatGPT Codex stream ended without terminal response');
       }
 
-      const { text, toolCalls } =
+      const { text, toolCalls, usage } =
         this.extractTextAndToolCallsFromResponse(terminalResponse);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const parts: any[] = [];
-      if (text) parts.push({ text });
+      if (text && !hasYieldedText) parts.push({ text });
 
       for (const tc of toolCalls) {
         try {
@@ -294,6 +335,13 @@ export class ChatGptCodexContentGenerator implements ContentGenerator {
 
       const final = new GenerateContentResponse();
       final.candidates = [candidate];
+      if (usage) {
+        final.usageMetadata = {
+          promptTokenCount: usage.prompt_tokens ?? 0,
+          candidatesTokenCount: usage.completion_tokens ?? 0,
+          totalTokenCount: usage.total_tokens ?? 0,
+        };
+      }
       yield final;
     }.call(this);
   }
@@ -368,13 +416,22 @@ export class ChatGptCodexContentGenerator implements ContentGenerator {
         credentials.lastRefresh,
       );
       if (stalenessRefresh) {
-        const refreshed = await this.oauthClient.refresh({
-          refreshToken: credentials.token.refreshToken ?? '',
-          existingRefreshToken: credentials.token.refreshToken ?? undefined,
-        });
-        await ChatGptOAuthCredentialStorage.save(refreshed);
-        const reloaded = await ChatGptOAuthCredentialStorage.load();
-        if (reloaded) credentials = reloaded;
+        try {
+          const refreshed = await this.oauthClient.refresh({
+            refreshToken: credentials.token.refreshToken ?? '',
+            existingRefreshToken: credentials.token.refreshToken ?? undefined,
+          });
+          await ChatGptOAuthCredentialStorage.save(refreshed);
+          const reloaded = await ChatGptOAuthCredentialStorage.load();
+          if (reloaded) credentials = reloaded;
+        } catch (error) {
+          if (error instanceof RefreshTokenReusedError) {
+            // Clear invalid credentials so user can re-auth
+            await ChatGptOAuthCredentialStorage.clear();
+            throw error; // Re-throw with user-friendly message
+          }
+          throw error;
+        }
       }
 
       const accountId =
@@ -394,7 +451,15 @@ export class ChatGptCodexContentGenerator implements ContentGenerator {
     };
 
     // 401 recovery: reload -> retry -> refresh -> retry -> fail
-    let response = await attemptWithCreds();
+    let response: Response;
+    try {
+      response = await attemptWithCreds();
+    } catch (error) {
+      if (error instanceof RefreshTokenReusedError) {
+        throw error; // Already has user-friendly message
+      }
+      throw error;
+    }
     if (response.status !== 401) {
       return ensureOk(response);
     }
@@ -405,40 +470,69 @@ export class ChatGptCodexContentGenerator implements ContentGenerator {
       );
       if (reloaded) credentials = reloaded;
     }
+    try {
+      response = await attemptWithCreds();
+    } catch (error) {
+      if (error instanceof RefreshTokenReusedError) {
+        throw error;
+      }
+      throw error;
+    }
+    if (response.status !== 401) {
+      return ensureOk(response);
+    }
+
+    // Final refresh attempt
+    try {
+      const refreshed = await this.oauthClient.refresh({
+        refreshToken: credentials.token.refreshToken ?? '',
+        existingRefreshToken: credentials.token.refreshToken ?? undefined,
+      });
+      await ChatGptOAuthCredentialStorage.save(refreshed);
+      {
+        const reloaded = await ChatGptOAuthCredentialStorage.load();
+        if (reloaded) credentials = reloaded;
+      }
+    } catch (error) {
+      if (error instanceof RefreshTokenReusedError) {
+        await ChatGptOAuthCredentialStorage.clear();
+        throw error;
+      }
+      throw error;
+    }
+
     response = await attemptWithCreds();
     if (response.status !== 401) {
       return ensureOk(response);
     }
 
-    const refreshed = await this.oauthClient.refresh({
-      refreshToken: credentials.token.refreshToken ?? '',
-      existingRefreshToken: credentials.token.refreshToken ?? undefined,
-    });
-    await ChatGptOAuthCredentialStorage.save(refreshed);
-    {
-      const reloaded = await ChatGptOAuthCredentialStorage.load();
-      if (reloaded) credentials = reloaded;
-    }
-
-    response = await attemptWithCreds();
-    if (response.status !== 401) {
-      return ensureOk(response);
-    }
-
-    throw new Error('ChatGPT OAuth unauthorized. Login required.');
+    // All recovery attempts failed - clear creds and tell user to re-auth
+    await ChatGptOAuthCredentialStorage.clear();
+    throw new Error(
+      'ChatGPT OAuth unauthorized. Credentials cleared. Run /auth wizard to re-authenticate.',
+    );
   }
 
   private async loadOrImportCredentials(): Promise<ChatGptOAuthStoredCredentials> {
-    // Attempt import-first if missing (best-effort; avoids loopback/OAuth churn)
+    // Attempt load first
     const loaded = await ChatGptOAuthCredentialStorage.load().catch(() => null);
-    if (loaded) return loaded;
+    if (loaded) {
+      // Validate loaded credentials have required fields
+      if (!loaded.accountId || !loaded.token.refreshToken) {
+        // Silently clear corrupted credentials and continue to import/error
+        await ChatGptOAuthCredentialStorage.clear();
+      } else {
+        return loaded;
+      }
+    }
 
+    // Try importing from external sources
     const imported =
       (await tryImportFromCodexCli(this.oauthClient)) ??
       (await tryImportFromOpenCode(this.oauthClient));
 
-    // Only save imported credentials if they have a valid accountId
-    if (imported && imported.accountId) {
+    // Strict validation before saving - must have accountId AND refreshToken
+    if (imported && imported.accountId && imported.token.refreshToken) {
       await ChatGptOAuthCredentialStorage.save(imported);
       const reloaded = await ChatGptOAuthCredentialStorage.load().catch(
         () => null,
@@ -447,7 +541,7 @@ export class ChatGptCodexContentGenerator implements ContentGenerator {
     }
 
     throw new Error(
-      'ChatGPT OAuth credentials not found. Import from Codex/OpenCode or complete OAuth login.',
+      '[ChatGPT OAuth] Not authenticated. Run /auth wizard to complete OpenAI login.',
     );
   }
 
@@ -520,58 +614,97 @@ export class ChatGptCodexContentGenerator implements ContentGenerator {
   }
 
   private convertContentsToResponsesInput(contents: Content[]): unknown[] {
-    // MVP: represent conversation as role+text. Tool calls/outputs are included as text lines.
-    // This keeps the request shape stable across backend variants while we harden full Responses input-item typing.
-    const items: Array<{
-      role: 'user' | 'assistant' | 'system';
-      content: string;
-    }> = [];
+    const items: unknown[] = [];
+    const callIdStack: Record<string, string[]> = {};
 
     for (const content of contents) {
-      const role: 'user' | 'assistant' | 'system' =
-        content.role === 'model'
-          ? 'assistant'
-          : content.role === 'system'
-            ? 'system'
-            : 'user';
-
       const parts = content.parts ?? [];
-      const lines: string[] = [];
-      for (const part of parts) {
-        if (part.text) {
-          lines.push(part.text);
-        } else if (part.functionCall?.name) {
-          lines.push(
-            `Tool call: ${part.functionCall.name}(${JSON.stringify(part.functionCall.args ?? {})})`,
-          );
-        } else if (part.functionResponse?.name) {
-          lines.push(
-            `Tool result: ${part.functionResponse.name} -> ${JSON.stringify(part.functionResponse.response ?? {})}`,
-          );
+
+      // Check for function responses first (tool outputs)
+      if (parts.some((p) => p.functionResponse)) {
+        for (const part of parts) {
+          if (part.functionResponse) {
+            const name = part.functionResponse.name || '';
+            const ids = callIdStack[name];
+            // ID linkage: consume the ID we generated for the call, or fallback
+            const callId = ids?.shift() || `call_unknown_${Date.now()}`;
+            items.push({
+              type: 'function_call_output',
+              call_id: callId,
+              output: JSON.stringify(part.functionResponse.response ?? {}),
+            });
+          }
         }
+        continue;
       }
 
-      items.push({ role, content: lines.join('') });
+      // Check for function calls (assistant requests)
+      if (parts.some((p) => p.functionCall)) {
+        for (const part of parts) {
+          if (part.functionCall) {
+            const name = part.functionCall.name || '';
+            // Generate stable ID if provided, otherwise robust fallback
+            const callId =
+              (part.functionCall as { id?: string }).id ||
+              `call_${name.replace(/[^a-zA-Z0-9_]/g, '')}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+
+            if (!callIdStack[name]) callIdStack[name] = [];
+            callIdStack[name].push(callId);
+
+            items.push({
+              type: 'function_call',
+              call_id: callId,
+              name: this.sanitizeToolName(name),
+              arguments: JSON.stringify(part.functionCall.args ?? {}),
+            });
+          }
+          if (part.text) {
+            // Assistant text accompanying tool call
+            items.push({
+              role: content.role === 'model' ? 'assistant' : 'user',
+              content: part.text,
+            });
+          }
+        }
+        continue;
+      }
+
+      // Standard text message
+      const textContent = parts
+        .filter((p) => p.text)
+        .map((p) => p.text)
+        .join('');
+
+      // Filter out system messages here? Or allow them?
+      // OpenAI Responses API generally expects user/assistant here, system via instructions.
+      // But if we encounter system here, map to 'system' just in case or skip if duplicates instructions.
+      // For now, mapping 'model' -> 'assistant', others -> 'user' (safe default)
+      // except explicit 'system' -> 'system'.
+      if (textContent) {
+        items.push({
+          role:
+            content.role === 'model'
+              ? 'assistant'
+              : content.role === 'system'
+                ? 'system'
+                : 'user',
+          content: textContent,
+        });
+      }
     }
 
-    return items.map((m) => ({
-      role: m.role,
-      content: [
-        {
-          type: m.role === 'assistant' ? 'output_text' : 'input_text',
-          text: m.content,
-        },
-      ],
-    }));
+    return items;
   }
 
   private extractTextAndToolCallsFromResponse(response: ChatGptCodexResponse): {
     text: string;
     toolCalls: Array<{ id?: string; name: string; arguments: string }>;
+    usage?: ChatGptCodexResponse['usage'];
   } {
     const toolCalls: Array<{ id?: string; name: string; arguments: string }> =
       [];
     let text = '';
+    const usage = response.usage;
 
     const output = response.output;
     if (!Array.isArray(output)) {
@@ -604,7 +737,7 @@ export class ChatGptCodexContentGenerator implements ContentGenerator {
       }
     }
 
-    return { text, toolCalls };
+    return { text, toolCalls, usage };
   }
 }
 

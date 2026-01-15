@@ -76,11 +76,117 @@ const authWizardCommand: SlashCommand = {
   },
 };
 
+const authResetCommand: SlashCommand = {
+  name: 'reset',
+  description: 'Nuclear reset: clear ALL credentials and auth settings',
+  kind: CommandKind.BUILT_IN,
+  action: async (context, _args): Promise<OpenDialogActionReturn> => {
+    // Clear Google/Gemini cached credentials
+    await clearCachedCredentialFile().catch(() => {});
+
+    // Clear ChatGPT OAuth credentials (infallible)
+    await ChatGptOAuthCredentialStorage.clear();
+
+    // Reset all auth-related settings in User scope
+    context.services.settings.setValue(
+      SettingScope.User,
+      'security.auth.selectedType',
+      undefined,
+    );
+    context.services.settings.setValue(
+      SettingScope.User,
+      'llm.provider',
+      undefined,
+    );
+
+    // Also clear Workspace scope to prevent overrides
+    context.services.settings.setValue(
+      SettingScope.Workspace,
+      'security.auth.selectedType',
+      undefined,
+    );
+    context.services.settings.setValue(
+      SettingScope.Workspace,
+      'llm.provider',
+      undefined,
+    );
+
+    // Strip thoughts from history
+    context.services.config?.getGeminiClient()?.stripThoughtsFromHistory();
+
+    // Open wizard directly - no confirmation needed for reset
+    return {
+      type: 'dialog',
+      dialog: 'authWizard',
+    };
+  },
+};
+
+const authStatusCommand: SlashCommand = {
+  name: 'status',
+  description: 'Show current authentication status and provider',
+  kind: CommandKind.BUILT_IN,
+  action: async (context, _args) => {
+    const settings = context.services.settings.merged;
+    const provider = settings.llm?.provider ?? 'gemini';
+    const selectedType = settings.security?.auth?.selectedType ?? 'not set';
+
+    const lines: string[] = [
+      `**Current Auth Status**`,
+      `Provider: ${provider}`,
+      `Auth Type: ${selectedType}`,
+    ];
+
+    // Check ChatGPT OAuth credentials if applicable
+    if (provider === 'openai_chatgpt_oauth') {
+      try {
+        const creds = await ChatGptOAuthCredentialStorage.load();
+        if (creds) {
+          const hasAccountId = creds.accountId ? '✓' : '✗';
+          const hasRefreshToken = creds.token.refreshToken ? '✓' : '✗';
+          const lastRefresh = creds.lastRefresh
+            ? new Date(creds.lastRefresh).toLocaleString()
+            : 'never';
+          lines.push(
+            `Account ID: ${hasAccountId}`,
+            `Refresh Token: ${hasRefreshToken}`,
+            `Last Refresh: ${lastRefresh}`,
+          );
+        } else {
+          lines.push(`ChatGPT OAuth: Not authenticated`);
+        }
+      } catch {
+        lines.push(`ChatGPT OAuth: Error loading credentials`);
+      }
+    }
+
+    // Check for workspace overrides
+    const workspaceProvider = context.services.settings.forScope(
+      SettingScope.Workspace,
+    ).settings.llm?.provider;
+    if (workspaceProvider) {
+      lines.push(`⚠️ Workspace overrides provider to: ${workspaceProvider}`);
+    }
+
+    return {
+      type: 'message',
+      messageType: 'info',
+      content: lines.join('\n'),
+    };
+  },
+};
+
 export const authCommand: SlashCommand = {
   name: 'auth',
   description: 'Manage authentication',
   kind: CommandKind.BUILT_IN,
-  subCommands: [authLoginCommand, authLogoutCommand, authWizardCommand],
+  subCommands: [
+    authLoginCommand,
+    authLogoutCommand,
+    authWizardCommand,
+    authResetCommand,
+    authStatusCommand,
+  ],
   action: (context, args) =>
     // Default to login if no subcommand is provided
     authLoginCommand.action!(context, args),
