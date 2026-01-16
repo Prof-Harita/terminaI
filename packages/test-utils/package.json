@@ -1,6 +1,6 @@
 {
   "name": "@terminai/test-utils",
-  "version": "0.25.0",
+  "version": "0.26.0",
   "private": true,
   "main": "src/index.ts",
   "license": "Apache-2.0",
