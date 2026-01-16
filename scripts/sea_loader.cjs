@@ -1,3 +1,4 @@
+/* eslint-disable */
 const { getAsset } = require('node:sea');
 const fs = require('node:fs');
 const path = require('node:path');
