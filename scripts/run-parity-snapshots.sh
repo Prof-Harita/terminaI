@@ -23,7 +23,7 @@ cat > "$FIXTURES_DIR/user-overrides.json" << 'INNER_EOF'
     "previewFeatures": true
   },
   "model": {
-    "name": "gemini-3-pro-preview"
+    "name": "gemini-2.0-pro-exp"
   }
 }
 INNER_EOF
