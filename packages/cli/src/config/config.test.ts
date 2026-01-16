@@ -2408,23 +2408,12 @@ describe('Telemetry configuration via environment variables', () => {
     expect(config.getTelemetryEnabled()).toBe(true);
   });
 
-  it('should prioritize GEMINI_TELEMETRY_TARGET over settings', async () => {
-    vi.stubEnv('GEMINI_TELEMETRY_TARGET', 'gcp');
-    process.argv = ['node', 'script.js'];
-    const argv = await parseArguments({} as Settings);
-    const settings: Settings = {
-      telemetry: { target: ServerConfig.TelemetryTarget.LOCAL },
-    };
-    const config = await loadCliConfig(settings, 'test-session', argv);
-    expect(config.getTelemetryTarget()).toBe('gcp');
-  });
-
   it('should throw when GEMINI_TELEMETRY_TARGET is invalid', async () => {
     vi.stubEnv('GEMINI_TELEMETRY_TARGET', 'bogus');
     process.argv = ['node', 'script.js'];
     const argv = await parseArguments({} as Settings);
     const settings: Settings = {
-      telemetry: { target: ServerConfig.TelemetryTarget.GCP },
+      telemetry: { target: ServerConfig.TelemetryTarget.LOCAL },
     };
     await expect(loadCliConfig(settings, 'test-session', argv)).rejects.toThrow(
       /Invalid telemetry configuration: .*Invalid telemetry target/i,

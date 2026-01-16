@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "README.md",
+                "file": "local/terminai replay.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "README"
+              "title": "terminai replay"
             }
           }
         ]
@@ -185,6 +185,8 @@
   },
   "active": "679bc035dcce914a",
   "lastOpenFiles": [
+    "README.md",
+    "local/terminai replay.md",
     "packages/core/coverage/coverage-summary.json",
     "packages/core/coverage/cobertura-coverage.xml",
     "packages/core/coverage/lcov-report/src/utils/filesearch/result-cache.ts.html",
@@ -195,7 +197,6 @@
     "packages/core/coverage/lcov-report/src/utils/filesearch/crawlCache.ts.html",
     "packages/core/coverage/lcov-report/src/telemetry/clearcut-logger/index.html",
     "packages/core/coverage/lcov-report/src/telemetry/clearcut-logger/event-metadata-key.ts.html",
-    "packages/core/coverage/lcov-report/src/telemetry/clearcut-logger/clearcut-logger.ts.html",
     "packages/core/coverage/lcov-report/sort-arrow-sprite.png",
     "packages/core/coverage/lcov-report/favicon.png",
     "packages/core/coverage/sort-arrow-sprite.png",
@@ -224,7 +225,6 @@
     "node_modules/@vitest/eslint-plugin/node_modules/@typescript-eslint/utils/README.md",
     "node_modules/@vitest/eslint-plugin/node_modules/@typescript-eslint/visitor-keys/README.md",
     "node_modules/@vitest/eslint-plugin/node_modules/@typescript-eslint/typescript-estree/README.md",
-    "node_modules/@vitest/eslint-plugin/node_modules/@typescript-eslint/types/README.md",
     "node_modules/istanbul-reports/lib/html-spa/assets/sort-arrow-sprite.png",
     "node_modules/istanbul-reports/lib/html/assets/sort-arrow-sprite.png",
     "node_modules/istanbul-reports/lib/html/assets/favicon.png",

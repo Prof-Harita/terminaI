@@ -1,5 +1,14 @@
 # TerminaI
 
+### Local-first computer operator (PTY terminal) with explicit approvals + audit logs
+
+Runs on Windows/Linux/macOS. Model-agnostic: supports Gemini, ChatGPT sign-in,
+and OpenAI-compatible endpoints (OpenRouter + local gateways). Designed for real
+system changes — governed, reviewable, and reversible when possible.
+
+> Looking for an open-source alternative to Cowork-style “computer operators”?
+> TerminaI is a governed, CLI-first operator runtime.
+
 <div align="center">
   <img src="docs-terminai/assets/terminai-banner.svg" alt="TerminaI Banner" width="100%">
 </div>
@@ -10,20 +19,45 @@
   <img src="https://img.shields.io/badge/License-Apache%202.0-green" alt="License">
 </p>
 
-**TerminaI is an AI-powered system operator.** You describe what you want;
-TerminaI inspects your machine, proposes actions, and executes them through
-**governed tools** with a deterministic **approval ladder** and an **audit
-trail**.
+**TerminaI is an AI-powered system operator.**  
+You describe what you want; TerminaI inspects your machine, proposes a plan, and
+executes it through **governed tools** with a deterministic **approval ladder**
+and an **audit trail**.
 
-> **Status: Public Preview (v0.x)** The core operator loop is usable today. Some
-> surfaces (Desktop/Voice/A2A) are still being hardened across platforms. Expect
-> power; expect rough edges. Contributions welcome.
+> **Status: Public Preview (v0.x)**  
+> The core operator loop is usable today. CLI is the canonical surface.
+> Desktop/Voice/A2A are optional and still being hardened across platforms.
+> Expect power; expect rough edges. Contributions welcome.
 
-⚠️ Status Update: I welcomed my newborn child into the world on Jan 12.
-Development will be bursty for a few weeks. ​The architecture is sound, but if
-you find bugs, PRs are highly welcome and will be merged faster than I can write
-code right now. Help me keep the terminaI dream alive while I learn how to be a
-dad.
+> **Maintainer note (Jan 2026):** I welcomed my newborn in Jan. Development will
+> be bursty for a few weeks. If you hit bugs, PRs are the fastest path—small
+> fixes will get reviewed quickly.
+
+---
+
+## What this is / what this is not
+
+**This is:**
+
+- A **local-first operator runtime**: intent → governed plan → approvals →
+  execution → audit log.
+- A **real terminal operator** (true PTY): it can handle interactive sessions
+  (sudo prompts, ssh, vim/htop-style flows).
+- A **model-flexible** setup: choose a provider you already use (including
+  OpenAI-compatible endpoints and local gateways).
+- **100% free and 100% private** if you want it to be. Use free models on
+  OpenRouter, run local LLMs—no telemetry, no charges, ever.
+
+**This is not:**
+
+- A hosted service. There is **no "contact sales," no pilots, no managed
+  deployment**, and no support obligations—this is best-effort OSS.
+- An "unchecked agent" that silently runs commands. Risky actions are gated
+  behind explicit approvals and logged locally.
+- A promise that every surface is production-hardened today
+  (desktop/voice/remote features are optional previews).
+
+---
 
 ## Demo
 
@@ -38,22 +72,17 @@ dad.
 What if your computer could do things for you safely?
 
 Not just suggesting commands. Not just generating scripts. Actually operating
-your system: diagnosing issues, fixing problems, and orchestrating workflows —
-**with guardrails that make execution trustworthy.**
+your system—diagnosing issues, fixing problems, and orchestrating
+workflows—**with guardrails that make execution trustworthy.**
 
-For years, “internet help” meant copy instructions from a chat window, paste
-into your terminal, and hope you didn’t miss a step. Coding tools beginning with
-Cursor and Aider largely eliminated that for software development — but the rest
-of your computer is still stuck in the copy/paste era.
-
-Resolving computer issues or setting up servers or doing end-to-end automated
-workflows or doing anything on computer beyond coding ??? Majority of users
-still just copy paste instructions from ChatGPT.
+For years, "internet help" meant: copy instructions from a chat window, paste
+into your terminal, and hope you didn't miss a step. Coding tools (Cursor,
+Aider, etc.) reduced that friction for software development—but the rest of your
+computer is still stuck in the copy/paste era.
 
 TerminaI is the next interface: you state intent, it proposes a governed plan,
-you approve at the right level, and it executes with an audit trail. Less
-ceremony. Fewer fragile steps. More outcomes — without handing your machine to
-an unchecked agent.
+you approve at the right level, and it executes with an audit trail. Fewer
+fragile steps. More outcomes—without handing your machine to an unchecked agent.
 
 ---
 
@@ -62,14 +91,14 @@ an unchecked agent.
 Computers are powerful, but operating them still requires memorizing syntax,
 hunting through logs, and repeating the same diagnosis steps.
 
-TerminaI compresses the gap between **intent** and **execution** — without
-turning your machine into an uncontrolled “agent.”
+TerminaI compresses the gap between **intent** and **execution**—without turning
+your machine into an uncontrolled "agent."
 
 **Intent → Governed plan → Approval → Execution → Audit**
 
 ---
 
-## Who it’s for
+## Who it's for
 
 - **Generalist users** — “Review the largest files in my downloads folder,
   prioritizing the oldest first, i need to free up 200 GB of space.” “What is
@@ -78,9 +107,9 @@ turning your machine into an uncontrolled “agent.”
   Can you free up memory" "Can you install the best markdown viewer on my linux
   machine?". "I just re-installed Windows. Find specific drivers for my GPU and
   install them".
-- **Newbie developers** — “Set up my machine for this repo.” “Fix my dev
-  environment.” “Explain what broke and how to recover.” "Install all the
-  dependencies for this project"
+- **Developers** — “Set up my machine for this repo.” “Fix my dev environment.”
+  “Explain what broke and how to recover.” "Install all the dependencies for
+  this project"
 - **Tech purists** — AI leverage with deterministic guardrails, explicit
   approvals, and tamper-evident logs.
 - **Professional engineers / DevOps** — Remotely control your servers,
@@ -91,38 +120,32 @@ turning your machine into an uncontrolled “agent.”
 
 ## Two ways to use TerminaI
 
-- **CLI**: the canonical interface for developers, power users, and headless
-  environments.
-- **Desktop**: a Tauri wrapper around the same engine (GUI + voice surface).
-  Linux/Windows are MVP; macOS is coming soon.
+- **CLI (canonical):** for developers, power users, and headless environments.
+- **Desktop (preview):** a Tauri wrapper around the same engine (GUI + voice
+  surface). Linux/Windows are early; macOS is in progress. Treat as experimental
+  until hardened.
 
-The canonical command is `terminai`.
+The canonical command is: `terminai`.
 
 ---
 
 ## What makes TerminaI different
 
-AI system operation must be governed. We took the experimental Gemini CLI and
-rebuilt it as a **production-grade runtime**.
+AI system operation must be governed. TerminaI is built around that primitive.
 
-- **Adaptive "System 2" Brain**: Doesn't just guess; it _thinks_. Uses dynamic
-  cognitive frameworks (Consensus, Sequential, Reflection) to solve complex
-  tasks.
-- **Provider Agnostic**: Decoupled from Google-locked infrastructure. Supports
-  Gemini, OpenAI, Anthropic, and local models.
-- **Production Stability**: Patched critical upstream memory leaks and race
-  conditions. Built for long-running sessions.
-- **True PTY Support**: Handles interactive applications (vim, htop, ssh)
-  correctly via `node-pty`.
-- **Governed Autonomy**: Strict **Policy Engine** and **Approval Ladder**
-  (A/B/C) replace "yolo" execution.
-- **Enterprise Audit**: High-throughput **JSONL** structured logs with
-  tamper-evident intent tracking.
-- **Deep Extensibility**: First-class support for **MCP** and an
-  **Agent-to-Agent (A2A)** control plane.
-- **Multi-Surface**: Available as a headless **CLI** for servers and a **Native
-  Desktop App** (Linux/Windows) with voice control.
-- **Remote Ready**: Securely operate headless instances via the A2A protocol.
+- **True PTY support:** handles interactive applications correctly (sudo
+  prompts, ssh sessions, vim/htop-like flows) via `node-pty`.
+- **Governed autonomy:** a strict **policy engine** + deterministic **approval
+  ladder** (A/B/C) replaces "yolo execution."
+- **Audit trail by default:** structured **JSONL** logs for actions and intent
+  tracking (local files you can review/replay).
+- **Provider flexibility:** choose what you already use—Google, OpenAI sign-in,
+  or any OpenAI-compatible `/chat/completions` endpoint (OpenRouter, local
+  gateways, etc.).
+- **Deep extensibility:** first-class support for **MCP** (tool connectors) and
+  an optional **Agent-to-Agent (A2A)** control plane (preview).
+- **Local-first posture:** core operation runs on your machine; no hosted relay
+  is required. Any optional remote features are opt-in and under your control.
 
 ---
 
@@ -138,10 +161,10 @@ terminai --version
 terminai
 ```
 
-> If you don’t see the CLI package yet (or want bleeding-edge), install from
+> If you don't see the CLI package yet (or want bleeding-edge), install from
 > source below.
 
-### Desktop (installers)
+### Desktop (installers) — preview
 
 Download installers from GitHub Releases:
 
@@ -149,71 +172,114 @@ Download installers from GitHub Releases:
 
 ---
 
-### Git clone and build
+### Git clone and build (contributors / bleeding-edge)
 
 ```bash
-git clone https://github.com/terminai/terminai.git
-cd terminai
+git clone https://github.com/Prof-Harita/terminaI.git
+cd terminaI
 npm install
 npm run build
 ```
 
-## Quick start
+---
 
-TerminaI supports Gemini (default) and OpenAI-compatible providers.
+## Upgrade (if you installed earlier)
 
-> **Note:** Although the authentication wizard supports multiple providers,
-> Gemini remains the most extensively tested and stable implementation. Gemini
-> was prioritized to ensure accessibility, as its free-tier credits allow for
-> broad adoption without immediate cost barriers.
+If you installed before the recent multi-provider updates, upgrade so you get
+the latest auth + platform parity.
 
-### Gemini
+- **npm global:**
+  ```bash
+  npm i -g @terminai/cli@latest
+  terminai --version
+  ```
+- **release installers:** grab the latest from Releases and reinstall:
+  - https://github.com/Prof-Harita/terminaI/releases
+- **source build:**
+  ```bash
+  git pull
+  npm install
+  npm run build
+  ```
+
+---
+
+## Quick start (providers)
+
+Run `terminai` and the wizard guides you through setup.
+
+### Google Gemini (default)
+
+Fastest path for many users.
 
 ```bash
-export TERMINAI_API_KEY="..."
+terminai
+# Select "Google Gemini" → browser opens → sign in
+```
+
+Or use an API key:
+
+```bash
+export TERMINAI_API_KEY="your-gemini-key"
 terminai
 ```
 
-### OpenAI-compatible providers
+### ChatGPT sign-in (OAuth) — preview
 
-Recommended setup (CLI):
+Use an OpenAI browser sign-in flow (similar to how Codex tooling supports "Sign
+in with ChatGPT").
 
-1. Export your key in the same shell before running
+```bash
+terminai
+# Select "ChatGPT Sign-in (OAuth)" → sign in with OpenAI
+```
+
+> Note: this is still being hardened. If anything fails, attach logs (see below)
+> and open an issue.
+
+### OpenAI-Compatible
+
+Connect to OpenAI Platform, OpenRouter, Ollama gateways, or any
+`/chat/completions` endpoint.
 
 ```bash
 export OPENAI_API_KEY="sk-..."
+terminai
+# Select "OpenAI Compatible" → enter base URL and model
 ```
 
-2. Start TerminaI and run `/auth`
-3. Choose "OpenAI Compatible"
-4. Enter base URL, model, and env var name
+**Popular configurations:**
 
-If the wizard fails or you prefer manual config, add this to
-`~/.terminai/settings.json` (change url, model, and env var name to your
-preferred providers):
-
-```json
-{
-  "llm": {
-    "provider": "openai_compatible",
-    "openaiCompatible": {
-      "baseUrl": "https://openrouter.ai/api/v1",
-      "model": "openai/gpt-oss-120b:free",
-      "auth": {
-        "type": "bearer",
-        "envVarName": "OPENAI_API_KEY"
-      }
-    }
-  },
-  "security": {
-    "auth": {
-      "selectedType": "openai-compatible"
-    }
-  }
-}
-```
+- OpenAI: `https://api.openai.com/v1`
+- OpenRouter: `https://openrouter.ai/api/v1`
+- Local LLM gateway: `http://localhost:11434/v1`
 
 See: `docs-terminai/multi-llm-support.md`
+
+---
+
+## First win (10 minutes)
+
+Pick one of these prompts and paste it into TerminaI:
+
+1. **Free disk space safely**
+
+   > "I need to free 50GB. Start with read-only inspection: show largest
+   > folders/files and estimate reclaim options. Propose a plan and wait for
+   > approval before deleting anything."
+
+2. **Fix a failing service**
+
+   > "My service is failing. Start with read-only diagnosis (status + recent
+   > logs). Propose the smallest fix plan and wait for approval before changing
+   > anything."
+
+3. **Repair broken network**
+   > "My internet is flaky. Diagnose first (read-only), propose a step-by-step
+   > plan, and only apply changes after explicit approval."
+
+Each path should end with: **verify** (show the outcome) and **audit** (show
+where the log is).
 
 ---
 
@@ -260,12 +326,12 @@ Contributor and security references:
 
 ```text
 packages/
-├── core/           # Engine: tools, policy, routing, telemetry
+├── core/           # Engine: tools, policy, routing, logging/telemetry (opt-in)
 ├── cli/            # Terminal UI (Ink/React)
-├── desktop/        # Tauri app + PTY bridge
-├── a2a-server/     # Agent-to-Agent control plane
+├── desktop/        # Tauri app + PTY bridge (preview)
+├── a2a-server/     # Agent-to-Agent control plane (preview)
 ├── termai/         # `terminai` launcher
-└── cloud-relay/    # Cloud relay server (optional)
+└── cloud-relay/    # Self-hosted relay server (optional/preview; not provided as a service)
 ```
 
 </details>
@@ -310,9 +376,22 @@ npm run desktop:dev
 
 ---
 
+## Why TerminaI vs “chat-first” computer assistants?
+
+| Capability            | Chat-first assistants / UI shells   | TerminaI (governed operator runtime)                                                   |
+| --------------------- | ----------------------------------- | -------------------------------------------------------------------------------------- |
+| Real terminal control | Often best-effort command execution | **True PTY** (interactive sudo/ssh/TTY flows)                                          |
+| Safety model          | “Be careful” prompts                | **Policy + A/B/C approvals** for risky actions                                         |
+| Traceability          | Partial transcripts                 | **Local JSONL audit logs** of what ran and why                                         |
+| Provider choice       | Frequently tied to one model/vendor | **Model-agnostic** (Gemini / ChatGPT native Oauth, OpenAI-compatible + local gateways) |
+| Platforms             | Varies                              | **Windows + Linux + macOS** (CLI-first)                                                |
+| Goal                  | Assist with tasks                   | **Mutate system state safely** (review → approve → execute → verify)                   |
+| Privacy               | Varies.                             | Zero telemetry. Works great with local-hosted models                                   |
+| Price                 | $100                                | Free. Works great with free models in OpenRouter (e.g., GPT-OSS)                       |
+
 ## Lineage
 
-TerminaI is a community fork of Google’s Gemini CLI:
+TerminaI is a community fork of Google's Gemini CLI:
 
 - https://github.com/google-gemini/gemini-cli
 

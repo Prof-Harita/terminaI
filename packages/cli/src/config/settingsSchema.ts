@@ -1577,6 +1577,15 @@ const SETTINGS_SCHEMA = {
     description: 'Security-related settings.',
     showInDialog: false,
     properties: {
+      approvalPin: {
+        type: 'string',
+        label: 'Approval PIN',
+        category: 'Security',
+        requiresRestart: false,
+        default: '000000',
+        description: '6-digit PIN for high-risk actions.',
+        showInDialog: true,
+      },
       disableYoloMode: {
         type: 'boolean',
         label: 'Disable YOLO Mode',

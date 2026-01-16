@@ -30,45 +30,58 @@ npm install -g @terminai/cli
 
 ## Authentication
 
-TerminaI uses OAuth (browser flow) or an API key for model access.
+TerminaI supports three authentication pathways. Run `terminai` and the wizard
+will guide you through your chosen provider.
 
-### Option 1: Login with Google (Recommended)
+### Google Gemini (Default)
+
+The fastest path to get started. Free tier credits available.
+
+**Option A: OAuth (browser flow)**
 
 ```bash
 terminai
-# Follow the browser authentication flow
+# Select "Google Gemini" → browser opens → sign in
 ```
 
-### Option 2: API Key
+**Option B: API Key**
 
 ```bash
-export TERMINAI_API_KEY="YOUR_API_KEY"
+export TERMINAI_API_KEY="your-gemini-api-key"
 terminai
 ```
 
-### Option 3: OpenAI-compatible provider (OpenAI/OpenRouter/etc.)
+### ChatGPT Plus/Pro (OAuth)
 
-1. Configure `~/.terminai/settings.json`:
+Use your existing ChatGPT subscription. No separate API key required.
 
-```json
-{
-  "llm": {
-    "provider": "openai_compatible",
-    "openaiCompatible": {
-      "baseUrl": "https://api.openai.com/v1",
-      "model": "gpt-4o-mini",
-      "auth": { "type": "bearer", "envVarName": "OPENAI_API_KEY" }
-    }
-  }
-}
+```bash
+terminai
+# Select "ChatGPT Plus/Pro (OAuth)" → browser opens → sign in with OpenAI
 ```
 
-2. Export your key and run:
+Your ChatGPT Plus or Pro subscription works directly. Tokens reuse from existing
+Codex CLI or OpenCode installations if present.
+
+### OpenAI-Compatible (API Key)
+
+Connect to OpenAI, OpenRouter, local inference servers, or any provider
+supporting `/chat/completions`.
 
 ```bash
 export OPENAI_API_KEY="sk-..."
 terminai
+# Select "OpenAI Compatible" → enter base URL and model
 ```
+
+**Supported providers:**
+
+- OpenAI Platform (`https://api.openai.com/v1`)
+- OpenRouter (`https://openrouter.ai/api/v1`)
+- Local servers (Ollama, vLLM, LM Studio)
+- Any OpenAI-compatible endpoint
+
+For advanced configuration, see [multi-llm-support.md](./multi-llm-support.md).
 
 ## First Commands
 

@@ -202,6 +202,24 @@ sync.**
 | Internal Google tooling | Build scripts for internal systems            |
 | Version bump chores     | Minor version bumps without code changes      |
 
+### Google Telemetry (DELETED)
+
+> [!IMPORTANT] Google telemetry code has been **completely removed** from
+> TerminaI, not just skipped.
+
+| Component              | Status                        |
+| ---------------------- | ----------------------------- |
+| `clearcut-logger/*`    | **Deleted**                   |
+| `gcp-exporters.ts`     | **Deleted**                   |
+| `TelemetryTarget.GCP`  | **Removed from enum**         |
+| `telemetry_gcp.js`     | **Deleted**                   |
+| `@google-cloud/*` deps | **Removed from package.json** |
+
+TerminaI enforces **local-only telemetry** for privacy. Remote OTLP endpoints
+are blocked at runtime.
+
+See: [terminai_telemetry.md](terminai_telemetry.md) for full details.
+
 ---
 
 ## Quick Reference for Sync Decisions

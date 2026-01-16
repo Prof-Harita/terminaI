@@ -48,6 +48,9 @@ export function buildWizardSettingsPatch(
         value: input.geminiAuthType,
       });
     }
+    // Clear OpenAI configs to prevent zombie state during hot-swap
+    patches.push({ path: 'llm.openaiCompatible', value: undefined });
+    patches.push({ path: 'llm.openaiChatgptOauth', value: undefined });
   } else if (input.provider === 'openai_compatible') {
     if (!input.openaiCompatible) {
       throw new Error(

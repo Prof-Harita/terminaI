@@ -40,20 +40,31 @@ import type { JWTInput } from 'google-auth-library';
 import type { Config } from '../config/config.js';
 import { SERVICE_NAME } from './constants.js';
 import { initializeMetrics } from './metrics.js';
-import { ClearcutLogger } from './clearcut-logger/clearcut-logger.js';
 import {
   FileLogExporter,
   FileMetricExporter,
   FileSpanExporter,
 } from './file-exporters.js';
-import {
-  GcpTraceExporter,
-  GcpMetricExporter,
-  GcpLogExporter,
-} from './gcp-exporters.js';
-import { TelemetryTarget } from './index.js';
 import { debugLogger } from '../utils/debugLogger.js';
 import { authEvents } from '../code_assist/oauth2.js';
+
+/**
+ * Validates that an endpoint is localhost-only.
+ * TerminaI enforces local-only telemetry for privacy.
+ */
+function isLocalEndpoint(endpoint: string): boolean {
+  try {
+    const url = new URL(endpoint);
+    return (
+      url.hostname === 'localhost' ||
+      url.hostname === '127.0.0.1' ||
+      url.hostname === '::1' ||
+      url.hostname === '[::1]'
+    );
+  } catch {
+    return false;
+  }
+}
 
 // For troubleshooting, set the log level to DiagLogLevel.DEBUG
 class DiagLoggerAdapter {
@@ -200,47 +211,34 @@ export async function initializeTelemetry(
 
   const otlpEndpoint = config.getTelemetryOtlpEndpoint();
   const otlpProtocol = config.getTelemetryOtlpProtocol();
-  const telemetryTarget = config.getTelemetryTarget();
-  const useCollector = config.getTelemetryUseCollector();
+
+  // TerminaI: Enforce localhost-only OTLP endpoints for privacy
+  if (otlpEndpoint && !isLocalEndpoint(otlpEndpoint)) {
+    debugLogger.warn(
+      'Remote OTLP endpoints are not supported in TerminaI. ' +
+        'Telemetry will only be sent locally. ' +
+        'Set otlpEndpoint to localhost or remove it.',
+    );
+    return;
+  }
 
   const parsedEndpoint = parseOtlpEndpoint(otlpEndpoint, otlpProtocol);
   const telemetryOutfile = config.getTelemetryOutfile();
   const useOtlp = !!parsedEndpoint && !telemetryOutfile;
 
-  const gcpProjectId =
-    process.env['OTLP_GOOGLE_CLOUD_PROJECT'] ||
-    process.env['GOOGLE_CLOUD_PROJECT'];
-  const useDirectGcpExport =
-    telemetryTarget === TelemetryTarget.GCP && !useCollector;
-
   let spanExporter:
     | OTLPTraceExporter
     | OTLPTraceExporterHttp
-    | GcpTraceExporter
     | FileSpanExporter
     | ConsoleSpanExporter;
   let logExporter:
     | OTLPLogExporter
     | OTLPLogExporterHttp
-    | GcpLogExporter
     | FileLogExporter
     | ConsoleLogRecordExporter;
   let metricReader: PeriodicExportingMetricReader;
 
-  if (useDirectGcpExport) {
-    debugLogger.log(
-      'Creating GCP exporters with projectId:',
-      gcpProjectId,
-      'using',
-      credentials ? 'provided credentials' : 'ADC',
-    );
-    spanExporter = new GcpTraceExporter(gcpProjectId, credentials);
-    logExporter = new GcpLogExporter(gcpProjectId, credentials);
-    metricReader = new PeriodicExportingMetricReader({
-      exporter: new GcpMetricExporter(gcpProjectId, credentials),
-      exportIntervalMillis: 30000,
-    });
-  } else if (useOtlp) {
+  if (useOtlp) {
     if (otlpProtocol === 'http') {
       spanExporter = new OTLPTraceExporterHttp({
         url: parsedEndpoint,
@@ -356,7 +354,6 @@ export async function shutdownTelemetry(
     return;
   }
   try {
-    ClearcutLogger.getInstance()?.shutdown();
     await sdk.shutdown();
     if (config.getDebugMode() && fromProcessExit) {
       debugLogger.log('OpenTelemetry SDK shut down successfully.');

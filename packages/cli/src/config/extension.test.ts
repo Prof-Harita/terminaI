@@ -1137,7 +1137,7 @@ describe('extension tests', () => {
           vi.clearAllMocks();
         });
 
-        it(`should log an ${isUpdate ? 'update' : 'install'} event to clearcut on success`, async () => {
+        it(`should log an ${isUpdate ? 'update' : 'install'} event to telemetry on success`, async () => {
           await extensionManager.installOrUpdateExtension(
             { source: sourceExtDir, type: 'local' },
             isUpdate

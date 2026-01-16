@@ -2,5 +2,9 @@
   "security": {
     "auth": {}
   },
-  "llm": {}
+  "llm": {},
+  "telemetry": {
+    "useCollector": true
+  },
+  "sandbox": false
 }

@@ -102,8 +102,25 @@ import {
 import { DiscoveredMCPTool } from '../tools/mcp-tool.js';
 import * as uiTelemetry from './uiTelemetry.js';
 import { makeFakeConfig } from '../test-utils/config.js';
-import { ClearcutLogger } from './clearcut-logger/clearcut-logger.js';
 import { UserAccountManager } from '../utils/userAccountManager.js';
+
+// ClearcutLogger was removed in TerminaI for privacy - mock for test compatibility
+const ClearcutLogger = {
+  prototype: {
+    logChatCompressionEvent: vi.fn(),
+    logRipgrepFallbackEvent: vi.fn(),
+    logMalformedJsonResponseEvent: vi.fn(),
+    logModelRoutingEvent: vi.fn(),
+    logExtensionInstallEvent: vi.fn(),
+    logExtensionUpdateEvent: vi.fn(),
+    logExtensionUninstallEvent: vi.fn(),
+    logExtensionEnableEvent: vi.fn(),
+    logExtensionDisableEvent: vi.fn(),
+    logAgentStartEvent: vi.fn(),
+    logAgentFinishEvent: vi.fn(),
+    logWebFetchFallbackAttemptEvent: vi.fn(),
+  },
+};
 import { InstallationManager } from '../utils/installationManager.js';
 import { AgentTerminateMode } from '../agents/types.js';
 

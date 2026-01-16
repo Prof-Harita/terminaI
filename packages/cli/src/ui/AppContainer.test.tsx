@@ -19,7 +19,7 @@ import { render } from '../test-utils/render.js';
 import { waitFor } from '../test-utils/async.js';
 import { cleanup } from 'ink-testing-library';
 import { act, useContext, type ReactElement } from 'react';
-import { AppContainer } from './AppContainer.js';
+import { AppContainer, type AppContainerProps } from './AppContainer.js';
 import { SettingsContext } from './contexts/SettingsContext.js';
 import {
   type Config,
@@ -117,6 +117,7 @@ vi.mock('./App.js', () => ({
 
 vi.mock('./hooks/useQuotaAndFallback.js');
 vi.mock('./hooks/useHistoryManager.js');
+vi.mock('./hooks/useReplay.js');
 vi.mock('./hooks/useThemeCommand.js');
 vi.mock('./auth/useAuth.js');
 vi.mock('./hooks/useEditorSettings.js');
@@ -151,6 +152,7 @@ vi.mock('./utils/ConsolePatcher.js');
 vi.mock('../utils/cleanup.js');
 
 import { useHistory } from './hooks/useHistoryManager.js';
+import { useReplay } from './hooks/useReplay.js';
 import { useThemeCommand } from './hooks/useThemeCommand.js';
 import { useAuthCommand } from './auth/useAuth.js';
 import { useEditorSettings } from './hooks/useEditorSettings.js';
@@ -187,6 +189,7 @@ describe('AppContainer State Management', () => {
   let mockSettings: LoadedSettings;
   let mockInitResult: InitializationResult;
   let mockExtensionManager: MockedObject<ExtensionManager>;
+  let defaultProps: AppContainerProps;
 
   // Helper to generate the AppContainer JSX for render and rerender
   const getAppContainer = ({
@@ -405,6 +408,13 @@ describe('AppContainer State Management', () => {
       shouldOpenAuthDialog: false,
       geminiMdFileCount: 0,
     } as InitializationResult;
+
+    // cast defaultProps to AppContainerProps to allow for optional properties like replayEvents
+    defaultProps = {
+      config: mockConfig,
+      initializationResult: mockInitResult,
+      version: '1.0.0',
+    } as AppContainerProps;
   });
 
   afterEach(() => {
@@ -1905,6 +1915,17 @@ describe('AppContainer State Management', () => {
       unmount!();
     });
   });
+  it('passes replayEvents to useReplay hook', () => {
+    const replayEvents = [
+      { timestamp: 123, type: 'user' as const, text: 'test' },
+    ];
+    render(<AppContainer {...defaultProps} replayEvents={replayEvents} />);
+    expect(useReplay).toHaveBeenCalledWith(
+      expect.anything(), // historyManager
+      replayEvents,
+    );
+  });
+
   describe('Banner Text', () => {
     it('should render placeholder banner text for USE_GEMINI auth type', async () => {
       const config = makeFakeConfig();

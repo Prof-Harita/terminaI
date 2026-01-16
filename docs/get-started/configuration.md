@@ -867,6 +867,10 @@ their corresponding top-level category object in your `settings.json` file.
 
 #### `security`
 
+- **`security.approvalPin`** (string):
+  - **Description:** 6-digit PIN for high-risk actions.
+  - **Default:** `"000000"`
+
 - **`security.disableYoloMode`** (boolean):
   - **Description:** Disable YOLO mode, even if enabled by a flag.
   - **Default:** `false`

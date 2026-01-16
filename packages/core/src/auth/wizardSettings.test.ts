@@ -19,6 +19,9 @@ describe('buildWizardSettingsPatch', () => {
     expect(patches).toEqual([
       { path: 'llm.provider', value: 'gemini' },
       { path: 'security.auth.selectedType', value: AuthType.USE_GEMINI },
+      // Cleanup patches to clear OpenAI configs during hot-swap
+      { path: 'llm.openaiCompatible', value: undefined },
+      { path: 'llm.openaiChatgptOauth', value: undefined },
     ]);
   });
 

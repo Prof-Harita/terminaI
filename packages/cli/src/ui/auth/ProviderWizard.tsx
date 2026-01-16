@@ -10,7 +10,11 @@ import { theme } from '../semantic-colors.js';
 import { RadioButtonSelect } from '../components/shared/RadioButtonSelect.js';
 import type { LoadedSettings } from '../../config/settings.js';
 import { SettingScope } from '../../config/settings.js';
-import { buildWizardSettingsPatch, type ProviderId } from '@terminai/core';
+import {
+  buildWizardSettingsPatch,
+  type ProviderId,
+  AuthType,
+} from '@terminai/core';
 
 interface Props {
   settings: LoadedSettings;
@@ -126,27 +130,13 @@ export function ProviderWizard({
               return;
             }
 
-            // Gemini: persist provider selection, then proceed to existing auth dialog.
-            applyPatches(buildWizardSettingsPatch({ provider: 'gemini' }));
-
-            // 2.2 Fix: Clear OpenAI auth type if present to avoid inconsistent state
-            const currentAuthType =
-              settings.merged.security?.auth?.selectedType;
-            if (
-              currentAuthType === 'openai-compatible' ||
-              currentAuthType === 'openai-chatgpt-oauth'
-            ) {
-              settings.setValue(
-                SettingScope.User,
-                'security.auth.selectedType',
-                undefined,
-              );
-              settings.setValue(
-                SettingScope.Workspace,
-                'security.auth.selectedType',
-                undefined,
-              );
-            }
+            // Gemini: persist provider selection with explicit auth type for hot-swap
+            applyPatches(
+              buildWizardSettingsPatch({
+                provider: 'gemini',
+                geminiAuthType: AuthType.LOGIN_WITH_GOOGLE,
+              }),
+            );
 
             void onProceedToGeminiAuth();
           }}

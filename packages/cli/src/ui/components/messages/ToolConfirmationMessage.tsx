@@ -438,6 +438,12 @@ export const ToolConfirmationMessage: React.FC<
           )}
           {requiresPin && (
             <Text color={theme.text.secondary}>
+              Please enter pin for approval (default pin is 000000. Please
+              configure your pin at security.approvalPin)
+            </Text>
+          )}
+          {requiresPin && (
+            <Text color={theme.text.secondary}>
               PIN: {'•'.repeat(pin.length).padEnd(pinLength, '_')}
             </Text>
           )}

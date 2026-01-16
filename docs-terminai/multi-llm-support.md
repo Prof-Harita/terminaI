@@ -1,14 +1,17 @@
 # Multi-LLM Provider Support Architecture
 
 > **Status**: Implemented  
-> **Version**: 0.21.0  
-> **Last Updated**: 2026-01-15
+> **Version**: 0.23.0  
+> **Last Updated**: 2026-01-16
 
 ## Overview
 
-TerminaI supports multiple LLM providers through a pluggable architecture that
-allows users to choose between Gemini (default), OpenAI-compatible APIs, and
-future providers like Anthropic.
+TerminaI supports multiple LLM providers through a pluggable architecture:
+
+- **Gemini** (default) - Google's Gemini models via OAuth or API key
+- **ChatGPT OAuth** - Use your ChatGPT Plus/Pro subscription (no API key needed)
+- **OpenAI-Compatible** - Any provider supporting the `/chat/completions`
+  endpoint
 
 ## Architecture Diagram
 
@@ -26,6 +29,7 @@ flowchart TB
 
         subgraph Generators["Content Generators"]
             Gemini["GeminiContentGenerator<br/>(GoogleGenAI SDK)"]
+            ChatGPT["ChatGptCodexContentGenerator<br/>(OAuth + Responses API)"]
             OpenAI["OpenAIContentGenerator<br/>(fetch-based)"]
             CodeAssist["CodeAssistContentGenerator<br/>(OAuth flow)"]
         end
@@ -33,6 +37,7 @@ flowchart TB
 
     subgraph External["External APIs"]
         GeminiAPI["Gemini API"]
+        ChatGPTAPI["ChatGPT Backend<br/>/codex/responses"]
         OpenAIAPI["OpenAI-Compatible<br/>/chat/completions"]
     end
 
@@ -41,9 +46,11 @@ flowchart TB
     Config --> Capabilities
     Capabilities --> UI
     Factory --> Gemini
+    Factory --> ChatGPT
     Factory --> OpenAI
     Factory --> CodeAssist
     Gemini --> GeminiAPI
+    ChatGPT --> ChatGPTAPI
     OpenAI --> OpenAIAPI
     CodeAssist --> GeminiAPI
 ```
@@ -77,6 +84,7 @@ flowchart TB
 ```typescript
 enum LlmProviderId {
   GEMINI = 'gemini',
+  OPENAI_CHATGPT_OAUTH = 'openai_chatgpt_oauth',
   OPENAI_COMPATIBLE = 'openai_compatible',
   ANTHROPIC = 'anthropic',
 }

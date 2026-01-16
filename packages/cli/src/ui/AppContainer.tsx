@@ -162,13 +162,17 @@ function isToolExecuting(pendingHistoryItems: HistoryItemWithoutId[]) {
   });
 }
 
-interface AppContainerProps {
+import { useReplay } from './hooks/useReplay.js';
+import { type ReplayEvent } from '../utils/replay.js';
+
+export interface AppContainerProps {
   config: Config;
   startupWarnings?: string[];
   version: string;
   initializationResult: InitializationResult;
   resumedSessionData?: ResumedSessionData;
   voiceOverrides?: VoiceOverrides;
+  replayEvents?: ReplayEvent[];
 }
 
 /**
@@ -383,6 +387,8 @@ export const AppContainer = (props: AppContainerProps) => {
   const historyManager = useHistory({
     chatRecordingService: config.getGeminiClient()?.getChatRecordingService(),
   });
+
+  useReplay(historyManager, props.replayEvents);
   useMemoryMonitor(historyManager);
 
   useEffect(() => {

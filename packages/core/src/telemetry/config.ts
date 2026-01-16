@@ -21,6 +21,7 @@ export function parseBooleanEnvFlag(
 
 /**
  * Normalize a telemetry target value into TelemetryTarget or undefined.
+ * TerminaI only supports LOCAL target for privacy.
  */
 export function parseTelemetryTargetValue(
   value: string | TelemetryTarget | undefined,
@@ -29,9 +30,7 @@ export function parseTelemetryTargetValue(
   if (value === TelemetryTarget.LOCAL || value === 'local') {
     return TelemetryTarget.LOCAL;
   }
-  if (value === TelemetryTarget.GCP || value === 'gcp') {
-    return TelemetryTarget.GCP;
-  }
+  // GCP target removed for privacy - only local is supported
   return undefined;
 }
 
@@ -70,7 +69,7 @@ export async function resolveTelemetrySettings(options: {
     throw new FatalConfigError(
       `Invalid telemetry target: ${String(
         rawTarget,
-      )}. Valid values are: local, gcp`,
+      )}. Only "local" is supported in TerminaI.`,
     );
   }
 

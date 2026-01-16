@@ -45,38 +45,37 @@ if (!telemetrySettings) {
 }
 
 let target = telemetrySettings?.target || 'local';
-const allowedTargets = ['local', 'gcp', 'genkit'];
+
+// TerminaI: Only local telemetry is supported for privacy
+if (target !== 'local') {
+  console.warn(
+    `⚠️  Warning: Target '${target}' is not supported in TerminaI. Only 'local' is available.`,
+  );
+  target = 'local';
+}
 
 const targetArg = process.argv.find((arg) => arg.startsWith('--target='));
 if (targetArg) {
   const potentialTarget = targetArg.split('=')[1];
-  if (allowedTargets.includes(potentialTarget)) {
+  if (potentialTarget === 'local') {
     target = potentialTarget;
     console.log(`⚙️  Using command-line target: ${target}`);
   } else {
-    console.error(
-      `🛑 Error: Invalid target '${potentialTarget}'. Allowed targets are: ${allowedTargets.join(
-        ', ',
-      )}.`,
+    console.warn(
+      `⚠️  Warning: Target '${potentialTarget}' is not supported in TerminaI. Using 'local'.`,
     );
-    process.exit(1);
+    target = 'local';
   }
-} else if (telemetrySettings?.target) {
+} else if (telemetrySettings?.target === 'local') {
   console.log(
     `⚙️ Using telemetry target from settings.json: ${telemetrySettings.target}`,
   );
 }
 
-const targetScripts = {
-  gcp: 'telemetry_gcp.js',
-  local: 'local_telemetry.js',
-  genkit: 'telemetry_genkit.js',
-};
-
-const scriptPath = join(projectRoot, 'scripts', targetScripts[target]);
+const scriptPath = join(projectRoot, 'scripts', 'local_telemetry.js');
 
 try {
-  console.log(`🚀 Running telemetry script for target: ${target}.`);
+  console.log(`🚀 Running local telemetry setup...`);
   const env = { ...process.env };
 
   execSync(`node ${scriptPath}`, {
@@ -85,7 +84,7 @@ try {
     env,
   });
 } catch (error) {
-  console.error(`🛑 Failed to run telemetry script for target: ${target}`);
+  console.error(`🛑 Failed to run local telemetry script`);
   console.error(error);
   process.exit(1);
 }

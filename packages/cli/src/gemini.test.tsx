@@ -587,6 +587,7 @@ describe('gemini.tsx main function kitty protocol', () => {
       webRemoteRotateToken: undefined,
       iUnderstandWebRemoteRisk: undefined,
       remoteBind: undefined,
+      replay: undefined,
     });
 
     await act(async () => {

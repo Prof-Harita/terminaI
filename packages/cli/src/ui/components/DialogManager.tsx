@@ -145,8 +145,8 @@ export const DialogManager = ({
             await config.reconfigureProvider(providerConfig, undefined);
             uiActions.setAuthWizardDialog(null);
             uiActions.closeSettingsDialog();
-            // T2.3: For Gemini, open AuthDialog so user can authenticate
-            uiActions.setAuthState(AuthState.Updating);
+            // T2.3: For Gemini, trigger re-auth flow (same pattern as OpenAI paths)
+            uiActions.setAuthState(AuthState.Unauthenticated);
           } catch (error) {
             const message =
               error instanceof Error ? error.message : String(error);

@@ -1500,6 +1500,13 @@
       "default": {},
       "type": "object",
       "properties": {
+        "approvalPin": {
+          "title": "Approval PIN",
+          "description": "6-digit PIN for high-risk actions.",
+          "markdownDescription": "6-digit PIN for high-risk actions.\n\n- Category: `Security`\n- Requires restart: `no`\n- Default: `000000`",
+          "default": "000000",
+          "type": "string"
+        },
         "disableYoloMode": {
           "title": "Disable YOLO Mode",
           "description": "Disable YOLO mode, even if enabled by a flag.",

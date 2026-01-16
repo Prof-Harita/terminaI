@@ -40,8 +40,6 @@ afterAll(() => {
   server.close();
 });
 
-const CLEARCUT_URL = 'https://play.googleapis.com/log';
-
 // Mock file discovery service and tool registry
 vi.mock('@terminai/core', async () => {
   const actual = await vi.importActual('@terminai/core');
@@ -74,7 +72,6 @@ describe('Configuration Integration Tests', () => {
 
   beforeEach(() => {
     server.resetHandlers(
-      http.post(CLEARCUT_URL, () => HttpResponse.text()),
       http.all('*', () => new HttpResponse(null, { status: 200 })),
     );
 

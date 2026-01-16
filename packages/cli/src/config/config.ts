@@ -66,6 +66,7 @@ export interface CliArgs {
   model: string | undefined;
   sandbox: boolean | string | undefined;
   debug: boolean | undefined;
+  replay: string | undefined;
   prompt: string | undefined;
   promptInteractive: string | undefined;
   preview: boolean | undefined;
@@ -133,6 +134,10 @@ export async function parseArguments(settings: Settings): Promise<CliArgs> {
       type: 'boolean',
       description: 'Run in debug mode?',
       default: false,
+    })
+    .option('replay', {
+      type: 'string',
+      description: 'Replay a chat session from a log file',
     })
     .command('$0 [query..]', 'Launch TerminaI', (yargsInstance) =>
       yargsInstance

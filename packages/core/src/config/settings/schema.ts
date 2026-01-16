@@ -63,9 +63,8 @@ export const SETTINGS_SCHEMA = {
         default: 'local',
         options: [
           { value: 'local', label: 'Local' }, // TelemetryTarget.LOCAL
-          { value: 'gcp', label: 'GCP' }, // TelemetryTarget.GCP
         ],
-        description: 'Destination for telemetry data (local or GCP).',
+        description: 'Destination for telemetry data (local only in TerminaI).',
         showInDialog: true,
       },
       otlpEndpoint: {

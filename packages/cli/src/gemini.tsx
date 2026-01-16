@@ -13,6 +13,8 @@ import { Onboarding, type OnboardingResult } from './ui/Onboarding.js';
 import { RemoteConsent } from './ui/RemoteConsent.js';
 import { loadCliConfig, parseArguments } from './config/config.js';
 import * as cliConfig from './config/config.js';
+import { parseLogFile, type ReplayEvent } from './utils/replay.js';
+import { resolvePath } from './utils/resolvePath.js';
 import { readStdin } from './utils/readStdin.js';
 import { basename } from 'node:path';
 import v8 from 'node:v8';
@@ -201,6 +203,7 @@ export async function startInteractiveUI(
   resumedSessionData: ResumedSessionData | undefined,
   initializationResult: InitializationResult,
   voiceOverrides?: VoiceOverrides,
+  replayEvents?: ReplayEvent[],
 ) {
   // Never enter Ink alternate buffer mode when screen reader mode is enabled
   // as there is no benefit of alternate buffer mode when using a screen reader
@@ -258,6 +261,7 @@ export async function startInteractiveUI(
                       resumedSessionData={resumedSessionData}
                       initializationResult={initializationResult}
                       voiceOverrides={voiceOverrides}
+                      replayEvents={replayEvents}
                     />
                   </VimModeProvider>
                 </SessionStatsProvider>
@@ -820,6 +824,17 @@ export async function main() {
 
     // Render UI, passing necessary config values. Check that there is no command line question.
     if (config.isInteractive()) {
+      let replayEvents: ReplayEvent[] | undefined;
+      if (argv.replay) {
+        try {
+          const logPath = resolvePath(argv.replay);
+          replayEvents = await parseLogFile(logPath);
+        } catch (e) {
+          console.error(`Failed to parse replay log file: ${e}`);
+          process.exit(1);
+        }
+      }
+
       await startInteractiveUI(
         config,
         settings,
@@ -828,6 +843,7 @@ export async function main() {
         resumedSessionData,
         initializationResult,
         voiceOverrides,
+        replayEvents,
       );
       return;
     }

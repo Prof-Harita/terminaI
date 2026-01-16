@@ -36,16 +36,17 @@ describe('telemetry/config helpers', () => {
   describe('parseTelemetryTargetValue', () => {
     it('parses string values', () => {
       expect(parseTelemetryTargetValue('local')).toBe(TelemetryTarget.LOCAL);
-      expect(parseTelemetryTargetValue('gcp')).toBe(TelemetryTarget.GCP);
     });
 
     it('accepts enum values', () => {
       expect(parseTelemetryTargetValue(TelemetryTarget.LOCAL)).toBe(
         TelemetryTarget.LOCAL,
       );
-      expect(parseTelemetryTargetValue(TelemetryTarget.GCP)).toBe(
-        TelemetryTarget.GCP,
-      );
+    });
+
+    it('returns undefined for removed GCP target', () => {
+      // GCP target was removed for privacy in TerminaI
+      expect(parseTelemetryTargetValue('gcp')).toBeUndefined();
     });
 
     it('returns undefined for unknown', () => {
@@ -81,7 +82,7 @@ describe('telemetry/config helpers', () => {
       };
       const env = {
         GEMINI_TELEMETRY_ENABLED: '1',
-        GEMINI_TELEMETRY_TARGET: 'gcp',
+        GEMINI_TELEMETRY_TARGET: 'local',
         GEMINI_TELEMETRY_OTLP_ENDPOINT: 'http://env:4317',
         GEMINI_TELEMETRY_OTLP_PROTOCOL: 'http',
         GEMINI_TELEMETRY_LOG_PROMPTS: 'true',
@@ -100,7 +101,7 @@ describe('telemetry/config helpers', () => {
       const resolvedEnv = await resolveTelemetrySettings({ env, settings });
       expect(resolvedEnv).toEqual({
         enabled: true,
-        target: TelemetryTarget.GCP,
+        target: TelemetryTarget.LOCAL,
         otlpEndpoint: 'http://env:4317',
         otlpProtocol: 'http',
         logPrompts: true,
