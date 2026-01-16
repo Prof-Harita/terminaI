@@ -48,19 +48,6 @@ function createWasmPlugins() {
   return [wasmBinaryPlugin, wasmLoader({ mode: 'embedded' })];
 }
 
-          return {
-            contents,
-            loader: args.path.endsWith('tsx')
-              ? 'tsx'
-              : args.path.endsWith('ts')
-                ? 'ts'
-                : 'js',
-          };
-        }
-      });
-    },
-  };
-}
 
 /**
  * Get binary extension for current platform.
