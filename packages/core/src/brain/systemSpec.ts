@@ -142,6 +142,15 @@ function getShellVersion(): string {
     if (shellType === 'zsh') {
       return execSync('zsh --version').toString().split(' ')[1].trim();
     }
+    if (shellType === 'powershell') {
+      // Detect PowerShell version using $PSVersionTable
+      const version = execSync(
+        'powershell -NoProfile -Command "$PSVersionTable.PSVersion.ToString()"',
+      )
+        .toString()
+        .trim();
+      return version;
+    }
   } catch {
     // Ignore version detection failures
   }
@@ -178,27 +187,45 @@ function detectRuntimesSync(spec: SystemSpec) {
 }
 
 function detectBinariesSync(spec: SystemSpec) {
-  const commonBinaries = [
-    'git',
-    'curl',
-    'wget',
-    'docker',
-    'google-chrome',
-    'libreoffice',
-    'pandoc',
-  ];
+  const isWindows = os.platform() === 'win32';
+
+  // Core binaries available on both platforms
+  const commonBinaries = ['git', 'curl', 'docker', 'pandoc'];
+
+  // Add platform-specific binaries
+  if (isWindows) {
+    commonBinaries.push(
+      'pwsh', // PowerShell Core
+      'wsl', // Windows Subsystem for Linux
+      'winget', // Windows Package Manager
+      'choco', // Chocolatey
+      'scoop', // Scoop package manager
+    );
+  } else {
+    commonBinaries.push('wget', 'google-chrome', 'libreoffice');
+  }
+
   for (const bin of commonBinaries) {
     try {
-      const binPath = execSync(`which ${bin}`).toString().trim();
-      spec.binaries[bin] = { path: binPath };
-      try {
-        const version = execSync(`${bin} --version`)
-          .toString()
-          .split('\n')[0]
-          .trim();
-        spec.binaries[bin].version = version;
-      } catch {
-        // Ignore version detection failures
+      // Use 'where' on Windows, 'which' on others
+      const checkCmd = isWindows ? `where ${bin}` : `which ${bin}`;
+      const binPath = execSync(checkCmd, { stdio: 'pipe' })
+        .toString()
+        .split('\n')[0]
+        .trim();
+
+      if (binPath) {
+        spec.binaries[bin] = { path: binPath };
+        try {
+          // Version check usually works with --version across platforms
+          const version = execSync(`${bin} --version`)
+            .toString()
+            .split('\n')[0]
+            .trim();
+          spec.binaries[bin].version = version;
+        } catch {
+          // Ignore version detection failures
+        }
       }
     } catch {
       // Ignore binary existence failures
@@ -208,8 +235,14 @@ function detectBinariesSync(spec: SystemSpec) {
 
 function checkSudo(): boolean {
   try {
-    execSync('sudo -n true', { stdio: 'ignore' });
-    return true;
+    if (os.platform() === 'win32') {
+      // 'net session' only works if we have Admin privileges
+      execSync('net session', { stdio: 'ignore' });
+      return true;
+    } else {
+      execSync('sudo -n true', { stdio: 'ignore' });
+      return true;
+    }
   } catch {
     return false;
   }
@@ -217,7 +250,8 @@ function checkSudo(): boolean {
 
 function checkInternet(): boolean {
   try {
-    execSync('ping -c 1 8.8.8.8', { stdio: 'ignore', timeout: 2000 });
+    const pingFlag = os.platform() === 'win32' ? '-n' : '-c';
+    execSync(`ping ${pingFlag} 1 8.8.8.8`, { stdio: 'ignore', timeout: 2000 });
     return true;
   } catch {
     return false;

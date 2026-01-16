@@ -1,5 +1,5 @@
 {
-  "main": "packages/desktop/src-tauri/resources/terminai_cli.js",
+  "main": "packages/desktop/src-tauri/resources/terminai_cli.mjs",
   "output": "packages/desktop/src-tauri/resources/terminai.blob",
   "disableExperimentalSEAWarning": true,
   "useSnapshot": false,

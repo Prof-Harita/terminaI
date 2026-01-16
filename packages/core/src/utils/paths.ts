@@ -311,11 +311,18 @@ export function makeRelative(
 }
 
 /**
- * Escapes special characters in a file path like macOS terminal does.
- * Escapes: spaces, parentheses, brackets, braces, semicolons, ampersands, pipes,
- * asterisks, question marks, dollar signs, backticks, quotes, hash, and other shell metacharacters.
+ * Escapes special characters in a file path for shell compatibility.
+ * On Windows: Uses double-quoting (PowerShell/CMD compatible).
+ * On POSIX: Uses backslash escaping (bash/zsh compatible).
  */
 export function escapePath(filePath: string): string {
+  // Windows: Use double-quoting which works in PowerShell and CMD
+  if (os.platform() === 'win32') {
+    // Escape internal double-quotes by doubling them
+    return `"${filePath.replace(/"/g, '""')}"`;
+  }
+
+  // POSIX: Use backslash escaping
   let result = '';
   for (let i = 0; i < filePath.length; i++) {
     const char = filePath[i];

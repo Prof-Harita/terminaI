@@ -106,6 +106,16 @@ export class AudioController {
           }
         }
       }
+      if (process.platform === 'win32') {
+        const output = execSync(
+          'powershell -NoProfile -Command "(Get-AudioDevice -Playback).Volume"',
+          { encoding: 'utf8' },
+        );
+        const percent = Number.parseFloat(output.trim());
+        if (Number.isFinite(percent)) {
+          return clampVolume(percent / 100);
+        }
+      }
     } catch {
       // Ignore volume detection failures; ducking becomes a no-op.
     }
@@ -126,6 +136,14 @@ export class AudioController {
         execSync(`amixer set Master ${Math.round(clamped * 100)}%`, {
           stdio: 'ignore',
         });
+        return;
+      }
+      if (process.platform === 'win32') {
+        // Best-effort: Requires AudioDeviceCmdlets module. Fails silently if missing.
+        execSync(
+          `powershell -NoProfile -Command "(Get-AudioDevice -Playback).Volume = ${Math.round(clamped * 100)}"`,
+          { stdio: 'ignore' },
+        );
       }
     } catch {
       // Swallow errors to avoid crashing the CLI if the host lacks mixers.

@@ -78,14 +78,15 @@ console.log('📦 Bundling CLI for Tauri sidecar...');
 (async () => {
   try {
     // Step 1: Bundle CLI to a single CJS file (SEA requires CJS for reliable embedding)
-    const bundleOutput = 'packages/desktop/src-tauri/resources/terminai_cli.js';
+    const bundleOutput =
+      'packages/desktop/src-tauri/resources/terminai_cli.mjs';
 
     await build({
       entryPoints: ['packages/cli/index.ts'],
       bundle: true,
       platform: 'node',
       target: 'node20',
-      format: 'cjs', // SEA works best with CommonJS
+      format: 'esm', // Use ESM to support top-level await in dependencies
       outfile: bundleOutput,
       plugins: createWasmPlugins(),
       external: [

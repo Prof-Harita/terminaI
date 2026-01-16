@@ -142,6 +142,33 @@ jobs:
       - name: 'Smoke test bundle'
         run: 'node ./bundle/gemini.js --version'
 
+  windows_build:
+    name: 'Windows Build'
+    runs-on: 'windows-latest'
+    needs:
+      - 'merge_queue_skipper'
+    if: "${{ needs.merge_queue_skipper.outputs.skip != 'true' }}"
+    steps:
+      - name: 'Checkout'
+        uses: 'actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8' # ratchet:actions/checkout@v5
+
+      - name: 'Set up Node.js'
+        uses: 'actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020' # ratchet:actions/setup-node@v4'
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: 'Install dependencies'
+        run: 'npm ci'
+
+      - name: 'Build project'
+        run: 'npm run build'
+
+      - name: 'Run tests'
+        run: 'npm test --if-present'
+        env:
+          CI: true
+
   codeql:
     name: 'CodeQL'
     runs-on: 'ubuntu-latest'
@@ -259,6 +286,7 @@ jobs:
       - 'lint'
       - 'link_checker'
       - 'build'
+      - 'windows_build'
       - 'codeql'
       - 'bundle_size'
       - 'npm_pack_smoke_test'
@@ -269,6 +297,7 @@ jobs:
           if [[ (${{ needs.lint.result }} != 'success' && ${{ needs.lint.result }} != 'skipped') || \
                (${{ needs.link_checker.result }} != 'success' && ${{ needs.link_checker.result }} != 'skipped') || \
                (${{ needs.build.result }} != 'success' && ${{ needs.build.result }} != 'skipped') || \
+               (${{ needs.windows_build.result }} != 'success' && ${{ needs.windows_build.result }} != 'skipped') || \
                (${{ needs.codeql.result }} != 'success' && ${{ needs.codeql.result }} != 'skipped') || \
                (${{ needs.bundle_size.result }} != 'success' && ${{ needs.bundle_size.result }} != 'skipped') || \
                (${{ needs.npm_pack_smoke_test.result }} != 'success' && ${{ needs.npm_pack_smoke_test.result }} != 'skipped') ]]; then

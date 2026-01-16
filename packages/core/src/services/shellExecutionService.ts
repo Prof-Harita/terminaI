@@ -359,8 +359,8 @@ export class ShellExecutionService {
           GEMINI_CLI: '1',
           TERMINAI_CLI: '1',
           TERM: 'xterm-256color',
-          PAGER: 'cat',
-          GIT_PAGER: 'cat',
+          PAGER: isWindows ? '' : 'cat',
+          GIT_PAGER: isWindows ? '' : 'cat',
         },
       });
 

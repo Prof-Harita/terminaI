@@ -6,6 +6,7 @@
  */
 
 import * as path from 'node:path';
+import * as os from 'node:os';
 import { inspect } from 'node:util';
 import process from 'node:process';
 import type {
@@ -664,7 +665,9 @@ export class Config {
       terminalWidth: params.shellExecutionConfig?.terminalWidth ?? 80,
       terminalHeight: params.shellExecutionConfig?.terminalHeight ?? 24,
       showColor: params.shellExecutionConfig?.showColor ?? false,
-      pager: params.shellExecutionConfig?.pager ?? 'cat',
+      pager:
+        params.shellExecutionConfig?.pager ??
+        (os.platform() === 'win32' ? '' : 'cat'),
     };
     this.truncateToolOutputThreshold =
       params.truncateToolOutputThreshold ??
@@ -745,16 +748,27 @@ export class Config {
       'pypi.org',
       'python.org',
     ];
-    this.criticalPaths = params.security?.criticalPaths ?? [
-      '/',
-      '/etc',
-      '/usr',
-      '/bin',
-      '/sbin',
-      '~/.ssh',
-      '~/.aws',
-      '~/.gnupg',
-    ];
+    this.criticalPaths =
+      params.security?.criticalPaths ??
+      (os.platform() === 'win32'
+        ? [
+            'C:\\',
+            'C:\\Windows',
+            'C:\\Program Files',
+            'C:\\Program Files (x86)',
+            path.join(os.homedir(), '.ssh'),
+            path.join(os.homedir(), '.aws'),
+          ]
+        : [
+            '/',
+            '/etc',
+            '/usr',
+            '/bin',
+            '/sbin',
+            '~/.ssh',
+            '~/.aws',
+            '~/.gnupg',
+          ]);
     const policyBrainAuthority = params.brain?.policyAuthority;
     this.brainAuthority = resolveEffectiveBrainAuthority(
       params.brain?.authority ?? DEFAULT_BRAIN_AUTHORITY,
