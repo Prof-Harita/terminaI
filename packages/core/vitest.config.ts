@@ -32,8 +32,9 @@ export default defineConfig({
     },
     poolOptions: {
       threads: {
-        minThreads: 8,
-        maxThreads: 16,
+        // Reduce parallelism on Windows to prevent worker pool exhaustion
+        minThreads: process.platform === 'win32' ? 2 : 8,
+        maxThreads: process.platform === 'win32' ? 4 : 16,
       },
     },
   },

@@ -32,6 +32,7 @@ vi.mock('../systemSpec.js', async (importOriginal) => {
       ...actual,
       scanSystemSync: vi.fn(() => mockSystemSpec),
       saveSystemSpec: vi.fn(),
+      loadSystemSpec: vi.fn(() => mockSystemSpec), // Required for executeTask()
     };
   }
   return actual;
