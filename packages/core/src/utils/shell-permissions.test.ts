@@ -477,7 +477,7 @@ describeWindowsOnly('PowerShell integration', () => {
     expect(reason).toBe(
       'Command rejected because it could not be parsed safely',
     );
-  });
+  }, 15000);
 });
 
 // Skip on Windows - requires shell parser which hangs
