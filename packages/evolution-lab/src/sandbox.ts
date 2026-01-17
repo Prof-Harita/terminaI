@@ -8,6 +8,7 @@
 import { spawn, type ChildProcess } from 'node:child_process';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
+import * as os from 'node:os';
 import { randomUUID } from 'node:crypto';
 import type { SandboxConfig, SandboxType } from './types.js';
 
@@ -69,7 +70,7 @@ export class SandboxController {
         'Host sandbox is unsafe and requires --allow-unsafe-host.',
       );
     }
-    const workDir = path.join('/tmp', 'evolution-lab', id);
+    const workDir = path.join(os.tmpdir(), 'evolution-lab', id);
     const logsDir = path.join(workDir, 'logs');
 
     await fs.mkdir(workDir, { recursive: true });
@@ -131,7 +132,7 @@ export class SandboxController {
         '--workdir',
         '/workspace',
         '--tmpfs',
-        `/tmp:rw,size=${tmpfsSize}m`,
+        `${os.tmpdir()}:rw,size=${tmpfsSize}m`,
         '--security-opt',
         'no-new-privileges',
         this.config.image,
