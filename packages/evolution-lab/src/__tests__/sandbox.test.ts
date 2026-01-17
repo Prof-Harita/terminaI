@@ -16,25 +16,29 @@ describe('SandboxController', () => {
     vi.restoreAllMocks();
   });
 
-  it('defaults to docker-backed sandboxes', async () => {
-    const controller = new SandboxController();
-    const startSpy = vi
-      .spyOn(
-        controller as unknown as {
-          startDockerContainer: (
-            id: string,
-            workDir: string,
-          ) => Promise<string>;
-        },
-        'startDockerContainer',
-      )
-      .mockResolvedValue('container-id');
+  it.skipIf(process.platform === 'win32')(
+    'defaults to docker-backed sandboxes',
+    async () => {
+      const controller = new SandboxController();
+      const startSpy = vi
+        .spyOn(
+          controller as unknown as {
+            startDockerContainer: (
+              id: string,
+              workDir: string,
+            ) => Promise<string>;
+          },
+          'startDockerContainer',
+        )
+        .mockResolvedValue('container-id');
 
-    const sandbox = await controller.create();
-    expect(sandbox.type).toBe('docker');
-    expect(startSpy).toHaveBeenCalledOnce();
-    await controller.destroy(sandbox);
-  }, 20000);
+      const sandbox = await controller.create();
+      expect(sandbox.type).toBe('docker');
+      expect(startSpy).toHaveBeenCalledOnce();
+      await controller.destroy(sandbox);
+    },
+    20000,
+  );
 
   it('requires opt-in for host execution', async () => {
     const controller = new SandboxController({ type: 'host' });
