@@ -120,6 +120,7 @@ export class LoadedSettings implements ILoadedSettings {
 export interface SettingsLoaderOptions {
   workspaceDir?: string;
   themeMappings?: Record<string, string>;
+  settings?: Settings;
 }
 
 /**
@@ -211,6 +212,23 @@ export class SettingsLoader {
     const userSettingsPath = Storage.getGlobalSettingsPath();
     const storage = new Storage(workspaceDir);
     const workspaceSettingsPath = storage.getWorkspaceSettingsPath();
+
+    // If explicit settings are provided, use them as User settings and bypass disk I/O
+    // If explicit settings are provided, use them as User settings and bypass disk I/O
+    if (this.options.settings) {
+      return new LoadedSettings(
+        { path: systemSettingsPath, settings: {}, originalSettings: {} },
+        { path: systemDefaultsPath, settings: {}, originalSettings: {} },
+        {
+          path: userSettingsPath,
+          settings: this.options.settings,
+          originalSettings: this.options.settings,
+        },
+        { path: workspaceSettingsPath, settings: {}, originalSettings: {} },
+        true, // Trusted by default when using mock settings
+        new Set(),
+      );
+    }
 
     const system = readSettingsFile(systemSettingsPath, themeMappings);
     const systemDefaults = readSettingsFile(systemDefaultsPath, themeMappings);

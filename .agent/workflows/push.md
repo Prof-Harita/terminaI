@@ -148,6 +148,10 @@ Store this for CI monitoring.
 
 ## 5. CI Monitoring (Token-Efficient)
 
+> [!IMPORTANT] **Agent Directive**: You MUST use the `gh` commands below for
+> monitoring. DO NOT use the browser tool to check CI status. DO NOT assume CI
+> is finished until you see a success/failure conclusion.
+
 **Objective**: Monitor GitHub Actions until all checks pass, using minimal token
 budget.
 

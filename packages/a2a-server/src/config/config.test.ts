@@ -49,34 +49,38 @@ describe('loadConfig provider auth selection', () => {
     delete process.env['USE_CCPA'];
   });
 
-  it('uses USE_OPENAI_CHATGPT_OAUTH when llm.provider is openai_chatgpt_oauth', async () => {
-    const { AuthType, LlmProviderId } = await import('@terminai/core');
-    const { loadConfig } = await import('./config.js');
+  it(
+    'uses USE_OPENAI_CHATGPT_OAUTH when llm.provider is openai_chatgpt_oauth',
+    { timeout: 10000 },
+    async () => {
+      const { AuthType, LlmProviderId } = await import('@terminai/core');
+      const { loadConfig } = await import('./config.js');
 
-    const loadedSettings = {
-      merged: {
-        llm: {
-          provider: 'openai_chatgpt_oauth',
-          openaiChatgptOauth: { model: 'gpt-5.2-codex' },
+      const loadedSettings = {
+        merged: {
+          llm: {
+            provider: 'openai_chatgpt_oauth',
+            openaiChatgptOauth: { model: 'gpt-5.2-codex' },
+          },
+          security: { auth: {} },
         },
-        security: { auth: {} },
-      },
-    } as unknown as LoadedSettings;
+      } as unknown as LoadedSettings;
 
-    const cfg = await loadConfig(
-      loadedSettings,
-      {} as unknown as import('@terminai/core').ExtensionLoader,
-      'a2a-server',
-      process.cwd(),
-    );
+      const cfg = await loadConfig(
+        loadedSettings,
+        {} as unknown as import('@terminai/core').ExtensionLoader,
+        'a2a-server',
+        process.cwd(),
+      );
 
-    expect(
-      (
-        cfg as unknown as { getProviderConfig: () => { provider: string } }
-      ).getProviderConfig().provider,
-    ).toBe(LlmProviderId.OPENAI_CHATGPT_OAUTH);
-    expect(refreshAuthSpy).toHaveBeenCalledWith(
-      AuthType.USE_OPENAI_CHATGPT_OAUTH,
-    );
-  });
+      expect(
+        (
+          cfg as unknown as { getProviderConfig: () => { provider: string } }
+        ).getProviderConfig().provider,
+      ).toBe(LlmProviderId.OPENAI_CHATGPT_OAUTH);
+      expect(refreshAuthSpy).toHaveBeenCalledWith(
+        AuthType.USE_OPENAI_CHATGPT_OAUTH,
+      );
+    },
+  );
 });

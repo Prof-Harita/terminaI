@@ -15,6 +15,7 @@ import {
   WRITE_FILE_TOOL_NAME,
   EDIT_TOOL_NAME,
   WEB_FETCH_TOOL_NAME,
+  REPL_TOOL_NAME,
   type ExtensionLoader,
   debugLogger,
 } from '@terminai/core';
@@ -745,6 +746,7 @@ describe('mergeExcludeTools', () => {
     EDIT_TOOL_NAME,
     WRITE_FILE_TOOL_NAME,
     WEB_FETCH_TOOL_NAME,
+    REPL_TOOL_NAME,
   ]);
   const originalIsTTY = process.stdin.isTTY;
 
@@ -1616,9 +1618,9 @@ describe('loadCliConfig tool exclusions', () => {
     process.argv = ['node', 'script.js', '-p', 'test'];
     const argv = await parseArguments({} as Settings);
     const config = await loadCliConfig({}, 'test-session', argv);
-    expect(config.getExcludeTools()).toContain('run_shell_command');
-    expect(config.getExcludeTools()).toContain('replace');
-    expect(config.getExcludeTools()).toContain('write_file');
+    expect(config.getExcludeTools()).toContain(SHELL_TOOL_NAME);
+    expect(config.getExcludeTools()).toContain(EDIT_TOOL_NAME);
+    expect(config.getExcludeTools()).toContain(WRITE_FILE_TOOL_NAME);
   });
 
   it('should not exclude interactive tools in non-interactive mode with YOLO', async () => {

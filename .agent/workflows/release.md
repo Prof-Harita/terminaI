@@ -97,6 +97,9 @@ automation.
 
 ## 4. Release Monitoring (Critical)
 
+> [!IMPORTANT] **Agent Directive**: You MUST use the `gh` commands below for
+> monitoring. DO NOT use the browser tool to check release status.
+
 **Objective**: Actively monitor CI/CD workflows and report status in real-time.
 
 ### 4.1 Monitor NPM Release Workflow

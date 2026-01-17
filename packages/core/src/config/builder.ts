@@ -234,6 +234,11 @@ export class ConfigBuilder {
       summarizeToolOutput: settings.model?.summarizeToolOutput as any,
       compressionThreshold: settings.model?.compressionThreshold,
       folderTrust: settings.security?.folderTrust?.enabled,
+      mcpServers: settings.mcpServers,
+      allowedMcpServers:
+        (settings as any).mcp?.allowed ?? (settings as any).allowedMcpServers,
+      blockedMcpServers:
+        (settings as any).mcp?.excluded ?? (settings as any).blockedMcpServers,
       useRipgrep: settings.tools?.useRipgrep,
       enableInteractiveShell:
         settings.tools?.shell?.enableInteractiveShell ?? true,
@@ -260,7 +265,7 @@ export class ConfigBuilder {
         ?.introspectionAgentSettings as any,
       retryFetchErrors: settings.general?.retryFetchErrors ?? false,
       enableHooks: settings.tools?.enableHooks ?? false,
-      excludedTools: settings.tools?.exclude,
+      excludeTools: settings.tools?.exclude,
       hooks: settings.hooks as any,
       // Apply overrides
       ...(options.overrides || {}),

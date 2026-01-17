@@ -38,6 +38,7 @@ import {
   WEB_FETCH_TOOL_NAME,
   getVersion,
   PREVIEW_GEMINI_MODEL_AUTO,
+  type GeminiCLIExtension,
   type OutputFormat,
   type ConfigParameters,
 } from '@terminai/core';
@@ -741,6 +742,7 @@ export async function loadCliConfig(
 
   const excludeTools = mergeExcludeTools(
     settings,
+    extensionManager.getExtensions(),
     extraExcludes.length > 0 ? extraExcludes : undefined,
   );
 
@@ -766,6 +768,7 @@ export async function loadCliConfig(
 
   const ptyInfo = await getPty();
 
+  // Pass full settings to settingsToProviderConfig for proper resolution
   const providerResult = settingsToProviderConfig(settings, {
     modelOverride: argv.model,
   });
@@ -834,23 +837,29 @@ export async function loadCliConfig(
     overrides.allowedMcpServers = argv.allowedMcpServerNames;
     overrides.blockedMcpServers = [];
   }
-
-  overrides.excludedTools = excludeTools;
+  overrides.excludeTools = excludeTools;
 
   return builder.build({
     workspaceDir: cwd,
     question,
     approvalMode,
     overrides,
+    settings,
   });
 }
 
 function mergeExcludeTools(
   settings: Settings,
+  extensions: GeminiCLIExtension[] = [],
   extraExcludes?: string[] | undefined,
 ): string[] {
+  const extensionExcludes = extensions
+    .filter((e) => e.isActive)
+    .flatMap((e) => e.excludeTools || []);
+
   const allExcludeTools = new Set([
     ...(settings.tools?.exclude || []),
+    ...extensionExcludes,
     ...(extraExcludes || []),
   ]);
   return [...allExcludeTools];
