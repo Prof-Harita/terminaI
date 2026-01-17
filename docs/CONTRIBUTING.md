@@ -175,7 +175,7 @@ used for the CLI's interface, is compatible with React DevTools version 4.x.
     ```
 
     Your running CLI application should then connect to React DevTools.
-    ![](/docs/assets/connected_devtools.png)
+    ![](assets/connected_devtools.png)
 
 ### Sandboxing
 
@@ -269,8 +269,8 @@ code.
 
 ### Documentation structure
 
-Our documentation is organized using [sidebar.json](/docs/sidebar.json) as the
-table of contents. When adding new documentation:
+Our documentation is organized using [sidebar.json](sidebar.json) as the source
+of truth for structure. When adding new documentation:
 
 1. Create your markdown file **in the appropriate directory** under `/docs`.
 2. Add an entry to `sidebar.json` in the relevant section.
@@ -318,7 +318,7 @@ Before submitting your documentation pull request, please:
 
 If you have questions about contributing documentation:
 
-- Check our [FAQ](/docs/faq.md).
+- Check our [FAQ](faq.md).
 - Review existing documentation for examples.
 - Open [an issue](https://github.com/google-gemini/gemini-cli/issues) to discuss
   your proposed changes.

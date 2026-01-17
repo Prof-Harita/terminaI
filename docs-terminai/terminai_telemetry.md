@@ -41,12 +41,9 @@ usage events (session starts, tool calls, API requests, etc.) to
 
 **Files Deleted:**
 
-- [clearcut-logger.ts](file:///home/profharita/Code/terminaI/packages/core/src/telemetry/clearcut-logger/clearcut-logger.ts)
-  — ~1500 lines of event logging
-- [event-metadata-key.ts](file:///home/profharita/Code/terminaI/packages/core/src/telemetry/clearcut-logger/event-metadata-key.ts)
-  — Event key enums
-- [clearcut-logger.test.ts](file:///home/profharita/Code/terminaI/packages/core/src/telemetry/clearcut-logger/clearcut-logger.test.ts)
-  — Tests
+- clearcut-logger.ts — ~1500 lines of event logging
+- event-metadata-key.ts — Event key enums
+- clearcut-logger.test.ts — Tests
 
 **Interim State:** Prior to deletion, the singleton was disabled:
 
@@ -82,8 +79,8 @@ Distributed traces | | `GcpMetricExporter` | Cloud Monitoring | Metrics
 
 **Files Deleted:**
 
-- [gcp-exporters.ts](file:///home/profharita/Code/terminaI/packages/core/src/telemetry/gcp-exporters.ts)
-- [gcp-exporters.test.ts](file:///home/profharita/Code/terminaI/packages/core/src/telemetry/gcp-exporters.test.ts)
+- gcp-exporters.ts
+- gcp-exporters.test.ts
 
 ---
 
@@ -156,12 +153,10 @@ if (otlpEndpoint && !isLocalEndpoint(otlpEndpoint)) {
 This script automated the setup of an OpenTelemetry collector configured to
 forward data to Google Cloud.
 
-**File Deleted:**
-[telemetry_gcp.js](file:///home/profharita/Code/terminaI/scripts/telemetry_gcp.js)
+**File Deleted:** [telemetry_gcp.js](../scripts/telemetry_gcp.js)
 
-**Updated:**
-[telemetry.js](file:///home/profharita/Code/terminaI/scripts/telemetry.js) —
-Removed `gcp` target handling
+**Updated:** [telemetry.js](../scripts/telemetry.js) — Removed `gcp` target
+handling
 
 ---
 
@@ -215,31 +210,31 @@ This downloads Jaeger and `otelcol-contrib` to
 
 ### Core Telemetry
 
-| File                                                                                       | Change                                                                     |
-| ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
-| [sdk.ts](file:///home/profharita/Code/terminaI/packages/core/src/telemetry/sdk.ts)         | Remove GCP imports, add localhost validation, remove Clearcut shutdown     |
-| [loggers.ts](file:///home/profharita/Code/terminaI/packages/core/src/telemetry/loggers.ts) | Remove all `ClearcutLogger.getInstance()?.` calls                          |
-| [index.ts](file:///home/profharita/Code/terminaI/packages/core/src/telemetry/index.ts)     | Remove GCP exports, remove Clearcut exports, simplify TelemetryTarget enum |
-| [config.ts](file:///home/profharita/Code/terminaI/packages/core/src/telemetry/config.ts)   | Remove GCP target parsing                                                  |
+| File                                                    | Change                                                                     |
+| ------------------------------------------------------- | -------------------------------------------------------------------------- |
+| [sdk.ts](../packages/core/src/telemetry/sdk.ts)         | Remove GCP imports, add localhost validation, remove Clearcut shutdown     |
+| [loggers.ts](../packages/core/src/telemetry/loggers.ts) | Remove all `ClearcutLogger.getInstance()?.` calls                          |
+| [index.ts](../packages/core/src/telemetry/index.ts)     | Remove GCP exports, remove Clearcut exports, simplify TelemetryTarget enum |
+| [config.ts](../packages/core/src/telemetry/config.ts)   | Remove GCP target parsing                                                  |
 
 ### Settings Schema
 
-| File                                                                                                       | Change                           |
-| ---------------------------------------------------------------------------------------------------------- | -------------------------------- |
-| [schema.ts (core)](file:///home/profharita/Code/terminaI/packages/core/src/config/settings/schema.ts)      | Remove `gcp` from target options |
-| [settingsSchema.ts (cli)](file:///home/profharita/Code/terminaI/packages/cli/src/config/settingsSchema.ts) | Remove `gcp` from target options |
+| File                                                                    | Change                           |
+| ----------------------------------------------------------------------- | -------------------------------- |
+| [schema.ts (core)](../packages/core/src/config/settings/schema.ts)      | Remove `gcp` from target options |
+| [settingsSchema.ts (cli)](../packages/cli/src/config/settingsSchema.ts) | Remove `gcp` from target options |
 
 ### Scripts
 
-| File                                                                       | Change                       |
-| -------------------------------------------------------------------------- | ---------------------------- |
-| [telemetry.js](file:///home/profharita/Code/terminaI/scripts/telemetry.js) | Remove `gcp` target handling |
+| File                                    | Change                       |
+| --------------------------------------- | ---------------------------- |
+| [telemetry.js](../scripts/telemetry.js) | Remove `gcp` target handling |
 
 ### Package.json
 
-| File                                                                                    | Change                             |
-| --------------------------------------------------------------------------------------- | ---------------------------------- |
-| [package.json (core)](file:///home/profharita/Code/terminaI/packages/core/package.json) | Remove 3 Google Cloud dependencies |
+| File                                                 | Change                             |
+| ---------------------------------------------------- | ---------------------------------- |
+| [package.json (core)](../packages/core/package.json) | Remove 3 Google Cloud dependencies |
 
 ---
 
