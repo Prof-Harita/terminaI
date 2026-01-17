@@ -7,6 +7,35 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import type { GenerativeModelAdapter } from '../riskAssessor.js';
+import type { SystemSpec } from '../systemSpec.js';
+
+// Static fixture to avoid slow execSync calls on Windows CI
+const mockSystemSpec: SystemSpec = {
+  os: { name: 'linux', version: '5.15.0', arch: 'x64' },
+  shell: { type: 'bash', version: '5.0.0' },
+  runtimes: { node: { version: 'v20.0.0', npm: '10.0.0' } },
+  binaries: { git: { path: '/usr/bin/git', version: '2.40.0' } },
+  packageManagers: ['npm'],
+  sudoAvailable: false,
+  network: { hasInternet: true },
+  timestamp: Date.now(),
+};
+
+// Mock scanSystemSync on Windows to avoid slow execSync calls
+vi.mock('../systemSpec.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../systemSpec.js')>();
+
+  // Only mock on Windows - Linux CI uses real system scan
+  if (process.platform === 'win32') {
+    return {
+      ...actual,
+      scanSystemSync: vi.fn(() => mockSystemSpec),
+      scanSystem: vi.fn(async () => mockSystemSpec),
+    };
+  }
+  return actual;
+});
+
 import {
   scanSystemSync,
   selectFrameworkHeuristic,

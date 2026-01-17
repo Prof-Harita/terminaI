@@ -8,7 +8,8 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { escapePath, unescapePath, isSubpath, shortenPath } from './paths.js';
 
-describe('escapePath', () => {
+// POSIX escapePath tests - skip on Windows since behavior differs
+describe.skipIf(process.platform === 'win32')('escapePath (POSIX)', () => {
   it.each([
     ['spaces', 'my file.txt', 'my\\ file.txt'],
     ['tabs', 'file\twith\ttabs.txt', 'file\\\twith\\\ttabs.txt'],
@@ -90,7 +91,49 @@ describe('escapePath', () => {
   });
 });
 
-describe('unescapePath', () => {
+// Windows-specific escapePath tests - verifies double-quoting behavior
+describe.skipIf(process.platform !== 'win32')('escapePath (Windows)', () => {
+  it('should use double-quoting for paths with spaces', () => {
+    expect(escapePath('my file.txt')).toBe('"my file.txt"');
+  });
+
+  it('should use double-quoting for paths with parentheses', () => {
+    expect(escapePath('file(1).txt')).toBe('"file(1).txt"');
+  });
+
+  it('should use double-quoting for complex paths', () => {
+    expect(escapePath('C:\\Program Files\\My App\\file.txt')).toBe(
+      '"C:\\Program Files\\My App\\file.txt"',
+    );
+  });
+
+  it('should escape internal double-quotes by doubling them', () => {
+    expect(escapePath('file"name.txt')).toBe('"file""name.txt"');
+  });
+
+  it('should not quote paths without special characters', () => {
+    expect(escapePath('normalfile.txt')).toBe('normalfile.txt');
+  });
+
+  it('should not quote paths with only backslashes (path separators)', () => {
+    expect(escapePath('C:\\Users\\Test\\file.txt')).toBe(
+      'C:\\Users\\Test\\file.txt',
+    );
+  });
+
+  it('should handle empty strings', () => {
+    expect(escapePath('')).toBe('');
+  });
+
+  it('should handle Windows-style paths with spaces', () => {
+    expect(escapePath('C:\\Program Files (x86)\\App\\config.ini')).toBe(
+      '"C:\\Program Files (x86)\\App\\config.ini"',
+    );
+  });
+});
+
+// POSIX unescapePath tests - skip on Windows since it uses different escaping
+describe.skipIf(process.platform === 'win32')('unescapePath (POSIX)', () => {
   it.each([
     ['spaces', 'my\\ file.txt', 'my file.txt'],
     ['tabs', 'file\\\twith\\\ttabs.txt', 'file\twith\ttabs.txt'],
