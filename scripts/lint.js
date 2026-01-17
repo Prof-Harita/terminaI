@@ -487,9 +487,7 @@ function main() {
   // If no specific flag is passed (other than --changed-only --setup), run all
   // Filter args to exclude flags that are not subcommands
   const flags = ['--changed-only'];
-  const subcommandArgs = args.filter(
-    (arg) => !flags.includes(arg) && arg !== '--setup',
-  );
+  const subcommandArgs = args.filter((arg) => !flags.includes(arg));
 
   if (subcommandArgs.length === 0) {
     setupLinters();
