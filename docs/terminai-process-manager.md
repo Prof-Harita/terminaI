@@ -1,12 +1,12 @@
-# terminaI Process Manager — Manual Verification
+# TerminAI Process Manager — Manual Verification
 
-This page documents the manual verification flow for terminaI's process
+This page documents the manual verification flow for TerminAI's process
 orchestration capabilities. These checks ensure that long-running sessions can
 be started, observed, and stopped safely.
 
 ## Preconditions
 
-- You can run `gemini` from this repo (for example, via `npm run start`).
+- You can run `terminai` from this repo (for example, via `npm run start`).
 - You have a project with a long-running command (example: `npm run dev`).
 
 ## Manual verification steps
@@ -20,7 +20,7 @@ be started, observed, and stopped safely.
    ```
 
    Expected:
-   - terminaI starts a named session `devserver`.
+   - TerminAI starts a named session `devserver`.
    - Output is streamed or summarized.
    - Readiness is acknowledged based on output text.
 
@@ -33,7 +33,7 @@ be started, observed, and stopped safely.
    ```
 
    Expected:
-   - terminaI returns the last 50 lines from the session buffer.
+   - TerminAI returns the last 50 lines from the session buffer.
    - Output is bounded and does not dump the full log.
 
 3. **Stop the session safely**
@@ -45,7 +45,7 @@ be started, observed, and stopped safely.
    ```
 
    Expected:
-   - terminaI sends SIGINT (or PTY input) to the process.
+   - TerminAI sends SIGINT (or PTY input) to the process.
    - If a confirmation prompt appears, approve it.
    - The session stops cleanly.
 
@@ -58,7 +58,7 @@ be started, observed, and stopped safely.
    ```
 
    Expected:
-   - terminaI lists known sessions.
+   - TerminAI lists known sessions.
    - `devserver` is marked exited/stopped if it was terminated.
 
 ## Notes

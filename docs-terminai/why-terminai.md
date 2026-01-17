@@ -1,4 +1,4 @@
-# Why TerminaI?
+# Why TerminAI?
 
 The era of "Chat-to-Code" is evolving into the era of **System Operation**.
 
@@ -8,10 +8,10 @@ a snippet. But computers are not just text editors. They are dynamic, stateful
 systems that break, slow down, and require constant maintenance. Drivers fail,
 networks drift, disks fill up, and environments rot.
 
-**TerminaI is not a coding agent; it is an autonomous System Operator.**
+**TerminAI is not a coding agent; it is an autonomous System Operator.**
 
 Its value proposition is to bridge the gap between _intent_ and _system state_.
-Where a coding assistant writes code for you to run, TerminaI acts as a
+Where a coding assistant writes code for you to run, TerminAI acts as a
 sovereign operator that can safely navigate your terminal, diagnose deep system
 issues, and execute complex remediation plans. It doesn't just suggest a fix—it
 can act on it, governed by a safety layer that turns "risky AI execution" into
@@ -52,7 +52,7 @@ builds the tools it needs to solve your problem.
 **What it is:** A hard-coded, policy-driven safety layer with a strict A/B/C
 approval ladder. **Why it wins:** It solves the Enterprise "Trust Problem."
 Power users and SysAdmins will never grant root access to a black-box agent.
-TerminaI’s **Policy Engine** makes every system mutation explicit, reviewable,
+TerminAI’s **Policy Engine** makes every system mutation explicit, reviewable,
 and reversible, transforming "AI hallucination risk" into "managed operational
 choices."
 
@@ -60,7 +60,7 @@ choices."
 
 **What it is:** Deep, native integration with `node-pty` to manage complex,
 stateful terminal sessions. **Why it wins:** Most agents fail the moment a CLI
-creates a TUI or asks for a password. TerminaI interacts seamlessly with `sudo`
+creates a TUI or asks for a password. TerminAI interacts seamlessly with `sudo`
 prompts, `ssh` sessions, package managers, and TUI applications (like `vim` or
 `htop`). It is a **true operator** capable of navigating the messy, interactive
 reality of effective system administration.
@@ -87,7 +87,7 @@ platform adapts to the model, not the other way around.
 **What it is:** It is not a "coding assistant" trapped in your IDE; it is an
 autonomous System Administrator for your OS. **Why it wins:** It fills the
 massive operational gap left by code-centric tools. Copilot helps you write a
-function; TerminaI fixes your broken network adapter, frees up disk space,
+function; TerminAI fixes your broken network adapter, frees up disk space,
 installs missing drivers, and debugs your local environment. It manages the
 _computer_, not just the text files.
 
@@ -122,7 +122,7 @@ the auth, you own the infrastructure.
 ### 11. Agent-to-Agent (A2A) Orchestration Protocol
 
 **What it is:** The experimental `packages/a2a-server` layer for inter-agent
-communication. **Why it wins:** It positions TerminaI not just as a tool, but as
+communication. **Why it wins:** It positions TerminAI not just as a tool, but as
 a **Platform**. It lays the groundwork for multi-agent swarms where specialized
 instances (e.g., a "Researcher" agent) can coordinate with distinct execution
 agents, enabling complex, multi-modal automation flows beyond the capacity of a
@@ -144,10 +144,10 @@ accessibility-first interfaces that chatbots simply cannot replicate.
 ### 13. Universal MCP & Extension Support
 
 **What it is:** Full compatibility with the **Model Context Protocol (MCP)**,
-allowing any standard MCP server to instantly extend TerminaI’s capabilities.
-**Why it wins:** Immediate ecosystem scale. You don't need to wait for TerminaI
+allowing any standard MCP server to instantly extend TerminAI’s capabilities.
+**Why it wins:** Immediate ecosystem scale. You don't need to wait for TerminAI
 to build a "Linear integration" or "Postgres connector." If an MCP exists for
-it, TerminaI supports it today. It inherits the entire innovation velocity of
+it, TerminAI supports it today. It inherits the entire innovation velocity of
 the broader AI ecosystem from Day 1.
 
 ### 14. Community "Recipe" Library

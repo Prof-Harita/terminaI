@@ -1,6 +1,6 @@
 # Desktop App (Tauri) Guide
 
-The Desktop app provides a GUI for TerminaI.
+The Desktop app provides a GUI for TerminAI.
 
 It supports two modes:
 
@@ -37,7 +37,7 @@ Download from
 
 - `.deb` for Debian/Ubuntu: `sudo dpkg -i terminai_*.deb`
 - `.AppImage` for other distros:
-  `chmod +x TerminaI*.AppImage && ./TerminaI*.AppImage`
+  `chmod +x TerminAI*.AppImage && ./TerminAI*.AppImage`
 
 ### Windows
 
@@ -63,7 +63,7 @@ After installation, verify your setup:
 ### Windows
 
 ```powershell
-# 1. Launch TerminaI from Start Menu
+# 1. Launch TerminAI from Start Menu
 # 2. Check Help → About → version should match the release
 # 3. Enter a prompt and verify the embedded sidecar responds
 ```

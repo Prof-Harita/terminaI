@@ -2,7 +2,7 @@
 
 ## Settings file (CLI / agent)
 
-TerminaI uses the same settings file layout as the upstream Gemini CLI.
+TerminAI uses the same settings file layout as the upstream Gemini CLI.
 
 - Default path: `~/.terminai/settings.json` (legacy `~/.gemini/settings.json` is
   still read for compatibility)
@@ -64,11 +64,11 @@ Environment variables:
     `llm.openaiCompatible.auth.envVarName`).
 
 Legacy compatibility: legacy Gemini-prefixed environment variables are aliased
-to their Terminai-prefixed equivalents (Terminai values win when both are set).
+to their TerminAI-prefixed equivalents (TerminAI values win when both are set).
 
 ### Settings loading architecture (CLI-Desktop parity)
 
-As of commit `a7d891fd` (2024-12-31), TerminaI uses a **unified settings
+As of commit `a7d891fd` (2024-12-31), TerminAI uses a **unified settings
 infrastructure** (`@terminai/core/config/settings`) shared between:
 
 - CLI (`packages/cli`)

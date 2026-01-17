@@ -3,7 +3,7 @@
 > [!NOTE] Voice Mode is currently in **beta**. Desktop offers offline STT/TTS;
 > CLI voice is TTS-only with STT planned.
 
-terminaI supports offline voice (download once → offline) via the Desktop app.
+TerminAI supports offline voice (download once → offline) via the Desktop app.
 
 ## Overview
 

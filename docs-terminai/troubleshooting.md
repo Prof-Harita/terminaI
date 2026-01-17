@@ -72,7 +72,7 @@ authenticated.
 - Verify the `command` exists (e.g. `docker`).
 - Run the MCP command manually to check for errors.
 - If you used environment variables in settings, ensure they are exported in the
-  shell that launches TerminaI.
+  shell that launches TerminAI.
 
 ## Voice install fails
 

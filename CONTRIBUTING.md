@@ -1,6 +1,6 @@
-# Contributing to TerminaI
+# Contributing to TerminAI
 
-TerminaI is a community-built AI terminal with governed autonomy for laptops and
+TerminAI is a community-built AI terminal with governed autonomy for laptops and
 servers.
 
 We’re optimizing for **contributors** right now. If you want to build the future
@@ -40,7 +40,7 @@ High-impact areas (with suggested entry points):
      `packages/core/src/telemetry/sanitize.ts`
 4. **MCP ecosystem** — new powers via MCP servers
    - start: `docs/tools/mcp-server.md`
-5. **A2A protocol + clients** — drive TerminaI from IDE/GUI/scripts
+5. **A2A protocol + clients** — drive TerminAI from IDE/GUI/scripts
    - start: `packages/a2a-server/`, `docs-terminai/web-remote.md`
 
 ## How to contribute (process)
@@ -96,7 +96,7 @@ agree that your contributions are licensed under the same terms.
 
 - Please adhere to the coding style, patterns, and conventions used throughout
   the existing codebase.
-- Consult [terminaI.md](terminaI.md) (typically found in the project root) for
+- Consult [TerminAI.md](TerminAI.md) (typically found in the project root) for
   specific instructions related to AI-assisted development, including
   conventions for React, comments, and Git usage.
 - **Imports:** Pay special attention to import paths. The project uses ESLint to

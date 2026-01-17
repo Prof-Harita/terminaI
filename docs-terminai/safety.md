@@ -1,6 +1,6 @@
 # Safety Guide
 
-TerminaI is a "terminal operator" with a sophisticated safety model that
+TerminAI is a "terminal operator" with a sophisticated safety model that
 balances security and usability.
 
 ---
@@ -47,7 +47,7 @@ Every action is evaluated on **three dimensions**:
 3. **Domain**: Where is it happening? (Workspace → Localhost → Trusted →
    Untrusted → System)
 
-Based on these and your chosen profile, TerminaI decides whether to:
+Based on these and your chosen profile, TerminAI decides whether to:
 
 - ✅ **Pass**: Run silently
 - 📝 **Log**: Show a notification
@@ -58,7 +58,7 @@ Based on these and your chosen profile, TerminaI decides whether to:
 
 ## Always Protected
 
-Regardless of your profile, TerminaI **always** requires PIN for:
+Regardless of your profile, TerminAI **always** requires PIN for:
 
 - Deleting root directories (`rm -rf /`)
 - Modifying system files (`/etc`, `~/.ssh`)

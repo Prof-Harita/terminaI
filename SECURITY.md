@@ -1,6 +1,6 @@
 # Security Policy
 
-TerminaI is an agentic system operator. That means a bug can have real impact.
+TerminAI is an agentic system operator. That means a bug can have real impact.
 
 ## Reporting a vulnerability
 

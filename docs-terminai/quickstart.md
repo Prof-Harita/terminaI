@@ -1,6 +1,6 @@
 # Quickstart Guide
 
-Get up and running with TerminaI in 5 minutes.
+Get up and running with TerminAI in 5 minutes.
 
 ## Installation
 
@@ -30,7 +30,7 @@ npm install -g @terminai/cli
 
 ## Authentication
 
-TerminaI supports three authentication pathways. Run `terminai` and the wizard
+TerminAI supports three authentication pathways. Run `terminai` and the wizard
 will guide you through your chosen provider.
 
 ### Google Gemini (Default)
@@ -98,7 +98,7 @@ terminai
 
 - `/help` - Show available commands
 - `/sessions` - List background processes
-- `/exit` - Exit terminaI
+- `/exit` - Exit TerminAI
 
 ## Verification
 

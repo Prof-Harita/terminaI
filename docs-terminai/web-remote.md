@@ -19,7 +19,7 @@ Clients:
 ## Architecture
 
 ```
-[Client (Desktop/Web)] ←→ [A2A Server] ←→ [Local terminaI Agent]
+[Client (Desktop/Web)] ←→ [A2A Server] ←→ [Local TerminAI Agent]
        (Any)             (HTTP)           (Your Machine)
 ```
 
@@ -27,7 +27,7 @@ Clients:
 
 ### 1. Start Web Remote
 
-Run terminaI with the `--web-remote` flag:
+Run TerminAI with the `--web-remote` flag:
 
 ```bash
 terminai --web-remote

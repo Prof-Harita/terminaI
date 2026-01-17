@@ -1,11 +1,11 @@
-# TerminaI Documentation
+# TerminAI Documentation
 
-Welcome to TerminaI — an AI-powered terminal with governed autonomy for laptops
+Welcome to TerminAI — an AI-powered terminal with governed autonomy for laptops
 and servers.
 
-## What is terminaI?
+## What is TerminAI?
 
-TerminaI is a **general-purpose terminal operator** for everyone — from laymen
+TerminAI is a **general-purpose terminal operator** for everyone — from laymen
 to sysadmins — built on a stable upstream core.
 
 **Running on:** Stable Core v0.21.0
@@ -28,7 +28,7 @@ to sysadmins — built on a stable upstream core.
 
 ### Getting Started
 
-- [Quickstart Guide](./quickstart.md) - Install and run terminaI in 5 minutes
+- [Quickstart Guide](./quickstart.md) - Install and run TerminAI in 5 minutes
 - [Voice Guide](./voice.md) - Install + use offline voice
 - [Web Remote (A2A) Guide](./web-remote.md) - Run the A2A server and connect
   clients
@@ -49,7 +49,7 @@ to sysadmins — built on a stable upstream core.
 
 ## Architecture
 
-terminaI extends Gemini CLI with:
+TerminAI extends Gemini CLI with:
 
 - **System Awareness**: CPU, memory, disk, and process monitoring
 - **Process Orchestration**: Background process management (`/sessions`)
@@ -59,4 +59,4 @@ terminaI extends Gemini CLI with:
 - **Web Remote**: A2A server for local/remote clients (Desktop, browser `/ui`,
   custom)
 
-See [Changelog](./changelog.md) for terminaI-specific modifications.
+See [Changelog](./changelog.md) for TerminAI-specific modifications.

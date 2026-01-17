@@ -1,7 +1,7 @@
 # AGENTS.md — The Definitive Guide for AI Agents
 
 > **Purpose**: This document is the single source of truth for AI agents working
-> on TerminaI. Read this completely before making any changes.
+> on TerminAI. Read this completely before making any changes.
 >
 > **Last Updated**: January 17, 2026  
 > **Scope**: All packages, all workflows, all agents
@@ -27,16 +27,16 @@
 
 ## Project Identity
 
-### What is TerminaI?
+### What is TerminAI?
 
-TerminaI is an **AI-powered system operator** — not just a coding assistant.
+TerminAI is an **AI-powered system operator** — not just a coding assistant.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                         TERMINAI THESIS                              │
 │                                                                     │
 │   "Google provides the intelligence.                                │
-│    TerminaI provides the root access and the guardrails."          │
+│    TerminAI provides the root access and the guardrails."          │
 │                                                                     │
 │   We are building GOVERNED AUTONOMY for systems and servers.       │
 └─────────────────────────────────────────────────────────────────────┘
@@ -44,7 +44,7 @@ TerminaI is an **AI-powered system operator** — not just a coding assistant.
 
 ### What Makes Us Different
 
-| Capability                                           | TerminaI | Others  |
+| Capability                                           | TerminAI | Others  |
 | ---------------------------------------------------- | -------- | ------- |
 | Actually executes (not just suggests)                | ✅       | Rare    |
 | Policy gating (approval before action)               | ✅       | ❌      |
@@ -93,7 +93,7 @@ terminaI/
 │   ├── web-client/     # 🌐 Web client
 │   └── api/            # 📡 API definitions
 ├── docs/               # 📚 Upstream documentation
-├── docs-terminai/      # 📖 TerminaI-specific documentation
+├── docs-terminai/      # 📖 TerminAI-specific documentation
 ├── .agent/workflows/   # 🔄 Agent workflow definitions
 ├── schemas/            # 📐 JSON Schemas (settings, policy)
 └── scripts/            # ⚙️  Build and utility scripts
@@ -393,7 +393,7 @@ packages/desktop/
 
 ### Turbo Mode (and Turborepo)
 
-TerminaI uses **Turborepo** for high-performance builds.
+TerminAI uses **Turborepo** for high-performance builds.
 
 - `npm run build` is an alias for `turbo run build`.
 - `npm test` is an alias for `turbo run test`.
@@ -758,7 +758,7 @@ src/
 
 ### Three-Agent Sync Pipeline
 
-TerminaI is forked from
+TerminAI is forked from
 [Gemini CLI (Upstream)](https://github.com/google-gemini/gemini-cli).
 
 **Philosophy:** Quality >> Speed >> Cost
@@ -789,7 +789,7 @@ TerminaI is forked from
 | Zone              | Description                | Action             |
 | ----------------- | -------------------------- | ------------------ |
 | 🟢 **LEVERAGE**   | Files we can take directly | Cherry-pick        |
-| 🔴 **CANON**      | TerminaI-owned code        | Reimplement intent |
+| 🔴 **CANON**      | TerminAI-owned code        | Reimplement intent |
 | 🟡 **QUARANTINE** | Needs human decision       | Analyze & decide   |
 | ⚪ **SKIP**       | Irrelevant                 | Ignore             |
 
@@ -883,7 +883,7 @@ Always run `/A-context` or review this file first. Context prevents rework.
 
 | Path                | Content                                |
 | ------------------- | -------------------------------------- |
-| `terminaI.md`       | Coding standards (React, TS, comments) |
+| `TerminAI.md`       | Coding standards (React, TS, comments) |
 | `TECHNICAL_SPEC.md` | 14 professionalization initiatives     |
 | `CONTRIBUTING.md`   | Contribution process                   |
 | `.agent/workflows/` | All workflow definitions               |

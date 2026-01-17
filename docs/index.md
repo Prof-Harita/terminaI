@@ -1,23 +1,23 @@
-# Welcome to Gemini CLI documentation
+# Welcome to TerminAI documentation
 
 This documentation provides a comprehensive guide to installing, using, and
-developing Gemini CLI, a tool that lets you interact with Gemini models through
-a command-line interface.
+developing TerminAI, a tool that lets you interact with Gemini models through a
+command-line interface.
 
-## Gemini CLI overview
+## TerminAI overview
 
-Gemini CLI brings the capabilities of Gemini models to your terminal in an
+TerminAI brings the capabilities of Gemini models to your terminal in an
 interactive Read-Eval-Print Loop (REPL) environment.
 
 > [!NOTE] **Using TerminaI?** This repository is home to **TerminaI**, an
 > enhanced distribution of Gemini CLI featuring a Desktop GUI, Voice Mode, and
 > Web Remote.
 >
-> 👉 **[Go to TerminaI Documentation](../docs-terminai/index.md)** for:
+> 👉 **[Go to TerminAI Documentation](../docs-terminai/index.md)** for:
 >
 > - Desktop App & Voice
 > - Web Remote (A2A)
-> - TerminaI-specific configuration
+> - TerminAI-specific configuration
 
 The core CLI application (`packages/cli`) communicates with a local server
 (`packages/core`), which in turn manages requests to the Gemini API and its AI
@@ -31,13 +31,13 @@ This documentation is organized into the following sections:
 
 ### Overview
 
-- **[TerminaI operator recipes](./termai-operator-recipes.md):** Practical, safe
-  prompts for common terminal tasks.
-- **[TerminaI quickstart](./termai-quickstart.md):** Install and launch TerminaI
-  in minutes.
-- **[What can TerminaI do?](./termai-examples.md):** Copy-paste examples for
+- **[TerminAI operator recipes](./terminai-operator-recipes.md):** Practical,
+  safe prompts for common terminal tasks.
+- **[TerminAI quickstart](./terminai-quickstart.md):** Install and launch
+  TerminAI in minutes.
+- **[What can TerminAI do?](./terminai-examples.md):** Copy-paste examples for
   real-world tasks.
-- **[TerminaI comparison](./termai-comparison.md):** Differences from Gemini
+- **[TerminAI comparison](./terminai-comparison.md):** Differences from Gemini
   CLI, Warp, and Fig.
 - **[Architecture overview](./architecture.md):** Understand the high-level
   design of Gemini CLI, including its components and how they interact.
@@ -46,8 +46,8 @@ This documentation is organized into the following sections:
 
 ### Get started
 
-- **[TerminaI quickstart](./termai-quickstart.md):** Install and launch
-  TerminaI.
+- **[TerminAI quickstart](./terminai-quickstart.md):** Install and launch
+  TerminAI.
 - **[Gemini CLI quickstart](./get-started/index.md):** Let's get started with
   Gemini CLI.
 - **[Gemini 3 Pro on Gemini CLI](./get-started/gemini-2.0-flash-exp.md):** Learn
@@ -71,7 +71,7 @@ This documentation is organized into the following sections:
 - **[Enterprise](./cli/enterprise.md):** Gemini CLI for enterprise.
 - **[Headless mode](./cli/headless.md):** Use Gemini CLI programmatically for
   scripting and automation.
-- **[TerminaI process manager](./termai-process-manager.md):** Manual
+- **[TerminAI process manager](./terminai-process-manager.md):** Manual
   verification steps for process orchestration.
 - **[Keyboard shortcuts](./cli/keyboard-shortcuts.md):** A reference for all
   keyboard shortcuts to improve your workflow.
@@ -167,4 +167,4 @@ This documentation is organized into the following sections:
 - **[Terms of service and privacy notice](./tos-privacy.md):** Information on
   the terms of service and privacy notices applicable to your use of Gemini CLI.
 
-We hope this documentation helps you make the most of Gemini CLI!
+We hope this documentation helps you make the most of TerminAI!
