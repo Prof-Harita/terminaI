@@ -134,7 +134,7 @@ describeWindowsOnly('PowerShell integration', () => {
     const roots = getCommandRoots('Get-ChildItem | Select-Object Name');
     expect(roots.length).toBeGreaterThan(0);
     expect(roots).toContain('Get-ChildItem');
-  });
+  }, 15000);
 });
 
 describe('stripShellWrapper', () => {

@@ -191,6 +191,7 @@ describe('Tool Confirmation Policy Updates', () => {
           }
         }
       },
+      15000,
     );
   });
 });

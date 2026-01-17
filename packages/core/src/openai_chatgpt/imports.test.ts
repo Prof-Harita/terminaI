@@ -6,12 +6,29 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import * as os from 'node:os';
 import * as path from 'node:path';
 import { promises as fs } from 'node:fs';
 import { tryImportFromCodexCli, tryImportFromOpenCode } from './imports.js';
 import { ChatGptOAuthClient } from './oauthClient.js';
 import { CHATGPT_ACCOUNT_ID_CLAIM, OPENAI_AUTH_CLAIM } from './constants.js';
+
+// Hoist the mock function so it can be reassigned per test
+const mockHomedir = vi.hoisted(() => vi.fn(() => '/tmp'));
+
+vi.mock('node:os', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('node:os')>();
+  return {
+    ...actual,
+    homedir: mockHomedir,
+    default: {
+      ...actual,
+      homedir: mockHomedir,
+      tmpdir: actual.tmpdir,
+    },
+  };
+});
+
+import * as os from 'node:os';
 
 function jwt(payload: Record<string, unknown>): string {
   const header = Buffer.from(JSON.stringify({ alg: 'none' })).toString(
@@ -84,6 +101,7 @@ describe('imports', () => {
     );
 
     vi.stubEnv('HOME', home);
+    mockHomedir.mockReturnValue(home);
 
     const payload = await tryImportFromOpenCode(new ChatGptOAuthClient());
     expect(payload?.token.refreshToken).toBe('refresh_1');
@@ -104,6 +122,7 @@ describe('imports', () => {
     );
 
     vi.stubEnv('HOME', home);
+    mockHomedir.mockReturnValue(home);
 
     const payload = await tryImportFromOpenCode(new ChatGptOAuthClient());
     expect(payload?.token.refreshToken).toBe('refresh_legacy');
