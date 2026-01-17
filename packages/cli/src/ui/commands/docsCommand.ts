@@ -18,6 +18,7 @@ export const docsCommand: SlashCommand = {
   name: 'docs',
   description: 'Open full terminaI documentation in your browser',
   kind: CommandKind.BUILT_IN,
+  hidden: true,
   autoExecute: true,
   action: async (context: CommandContext): Promise<void> => {
     const docsUrl = 'https://terminai.org/docs';

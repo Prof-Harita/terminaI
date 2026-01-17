@@ -16,6 +16,7 @@ export const viewModeCommand: SlashCommand = {
   name: 'view',
   description: 'Switch the view mode (standard, focus, multiplex)',
   kind: CommandKind.BUILT_IN,
+  hidden: true,
   completion: (_context: CommandContext, partialArg: string) => {
     const modes = ['standard', 'focus', 'multiplex'];
     return modes.filter((m) => m.startsWith(partialArg));

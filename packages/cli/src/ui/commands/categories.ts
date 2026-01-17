@@ -15,6 +15,7 @@ export const CommandCategory = {
   SESSIONS: 'Sessions + Workspace',
   CAPABILITIES: 'Capabilities',
   SYSTEM_OPERATOR: 'System Operator',
+  EXTENSIONS: 'Extensions',
 } as const;
 
 export type CommandCategoryType =

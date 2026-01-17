@@ -20,6 +20,7 @@ export const permissionsCommand: SlashCommand = {
   name: 'permissions',
   description: 'Manage folder trust settings and other permissions',
   kind: CommandKind.BUILT_IN,
+  hidden: true,
   autoExecute: false,
   subCommands: [
     {

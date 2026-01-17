@@ -107,6 +107,7 @@ import { createPolicyUpdater } from './config/policy.js';
 import { requestConsentNonInteractive } from './config/extensions/consent.js';
 import { ScrollProvider } from './ui/contexts/ScrollProvider.js';
 import { isAlternateBufferEnabled } from './ui/hooks/useAlternateBuffer.js';
+import { printSessionSeparator } from './ui/components/SessionSeparator.js';
 import { cleanupOldLogs } from './utils/logCleanup.js';
 
 import { setupTerminalAndTheme } from './utils/terminalTheme.js';
@@ -742,8 +743,10 @@ export async function main() {
       ) {
         enterAlternateScreen();
         disableLineWrapping();
-
         // Ink will cleanup so there is no need for us to manually cleanup.
+      } else {
+        // Print session separator when NOT in alternate screen mode (scrollback mode)
+        printSessionSeparator(process.stdout.columns);
       }
 
       // This cleanup isn't strictly needed but may help in certain situations.

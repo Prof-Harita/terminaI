@@ -12,11 +12,14 @@ import {
 import { MessageType } from '../types.js';
 import type { SlashCommand, SlashCommandActionReturn } from './types.js';
 import { CommandKind } from './types.js';
+import { CommandCategory } from './categories.js';
 
 export const memoryCommand: SlashCommand = {
   name: 'memory',
   description: 'Commands for interacting with memory',
   kind: CommandKind.BUILT_IN,
+  visibility: 'core',
+  category: CommandCategory.SESSIONS,
   autoExecute: false,
   subCommands: [
     {
@@ -152,4 +155,9 @@ export const memoryCommand: SlashCommand = {
       },
     },
   ],
+  // Default action: show memory
+  action: async (context) => {
+    const showCmd = memoryCommand.subCommands?.find((c) => c.name === 'show');
+    return showCmd?.action?.(context, '');
+  },
 };

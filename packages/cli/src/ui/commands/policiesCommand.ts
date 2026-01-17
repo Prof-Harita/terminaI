@@ -71,6 +71,7 @@ export const policiesCommand: SlashCommand = {
   name: 'policies',
   description: 'Manage policies',
   kind: CommandKind.BUILT_IN,
+  hidden: true,
   autoExecute: false,
   subCommands: [listPoliciesCommand],
 };

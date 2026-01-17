@@ -3,7 +3,7 @@
 > **Purpose**: This document is the single source of truth for AI agents working
 > on TerminaI. Read this completely before making any changes.
 >
-> **Last Updated**: December 31, 2025  
+> **Last Updated**: January 17, 2026  
 > **Scope**: All packages, all workflows, all agents
 
 ---
@@ -44,14 +44,17 @@ TerminaI is an **AI-powered system operator** — not just a coding assistant.
 
 ### What Makes Us Different
 
-| Capability                             | TerminaI | Others  |
-| -------------------------------------- | -------- | ------- |
-| Actually executes (not just suggests)  | ✅       | Rare    |
-| Policy gating (approval before action) | ✅       | ❌      |
-| Audit trail (what, when, why)          | ✅       | ❌      |
-| Voice control                          | ✅       | ❌      |
-| Agent-to-Agent protocol                | ✅       | ❌      |
-| Multi-LLM provider support             | ✅       | Limited |
+| Capability                                           | TerminaI | Others  |
+| ---------------------------------------------------- | -------- | ------- |
+| Actually executes (not just suggests)                | ✅       | Rare    |
+| Policy gating (approval before action)               | ✅       | ❌      |
+| Three-axis security (Outcome/Intent/Domain)          | ✅       | ❌      |
+| Audit trail (immutable, non-disableable)             | ✅       | ❌      |
+| Voice control (push-to-talk STT/TTS)                 | ✅       | ❌      |
+| Agent-to-Agent protocol                              | ✅       | ❌      |
+| Multi-LLM (Gemini, ChatGPT OAuth, OpenAI-compatible) | ✅       | Limited |
+| Native Windows support                               | ✅       | Limited |
+| Recipes engine (governed playbooks)                  | ✅       | ❌      |
 
 ### The Vision Stack
 
@@ -76,17 +79,23 @@ TerminaI is an **AI-powered system operator** — not just a coding assistant.
 ```
 terminaI/
 ├── packages/
-│   ├── core/           # 🧠 Engine: tools, policy, routing, telemetry
+│   ├── core/           # 🧠 Engine: tools, policy, safety, telemetry
 │   ├── cli/            # ⌨️  Terminal UI (Ink/React)
 │   ├── desktop/        # 🖥️  Tauri app + PTY bridge
 │   ├── a2a-server/     # 🔌 Agent-to-Agent control plane
 │   ├── termai/         # 🚀 The `terminai` launcher
-│   ├── evolution-lab/  # 🧪 Automated testing harness
+│   ├── evolution-lab/  # 🧪 Automated testing harness (Docker-default)
 │   ├── cloud-relay/    # ☁️  Cloud relay server
-│   └── test-utils/     # 🧰 Testing utilities
+│   ├── test-utils/     # 🧰 Testing utilities
+│   ├── desktop-linux-atspi-sidecar/   # 🐧 Linux GUI sidecar
+│   ├── desktop-windows-driver/        # 🪟 Windows automation driver
+│   ├── vscode-ide-companion/          # 💻 VS Code integration
+│   ├── web-client/     # 🌐 Web client
+│   └── api/            # 📡 API definitions
 ├── docs/               # 📚 Upstream documentation
 ├── docs-terminai/      # 📖 TerminaI-specific documentation
 ├── .agent/workflows/   # 🔄 Agent workflow definitions
+├── schemas/            # 📐 JSON Schemas (settings, policy)
 └── scripts/            # ⚙️  Build and utility scripts
 ```
 
@@ -106,10 +115,12 @@ flowchart TB
         Approval[Approval Ladder]
         Tools[Tool Scheduler]
         Brain[Thinking Orchestrator]
+        Recipes[Recipes Engine]
     end
 
     subgraph LLM["LLM Providers"]
         Gemini[Gemini API]
+        ChatGPT[ChatGPT OAuth]
         OpenAI[OpenAI-Compatible]
     end
 
@@ -118,21 +129,27 @@ flowchart TB
         FileOps[File Operations]
         REPL[REPL Tool]
         GUI[GUI Automation]
+        Computer[Computer Session Manager]
     end
 
     subgraph Safety["Safety Layer"]
         Audit[Audit Ledger]
         Sandbox[Sandbox Controller]
+        MCP[MCP OAuth Provider]
     end
 
     Input --> Policy
     Policy --> Approval
     Approval --> Tools
     Tools --> Brain
+    Tools --> Recipes
     Brain --> LLM
+    Recipes --> LLM
     LLM --> Execution
+    Execution --> Computer
     Execution --> Sandbox
     Execution --> Audit
+    MCP --> LLM
 ```
 
 ---
@@ -161,6 +178,38 @@ The approval ladder (A/B/C) is **non-negotiable**:
 | **C** | Click + 6-digit PIN | Destructive, outside workspace |
 
 The model can **escalate** review levels but **never downgrade** them.
+
+#### Three-Axis Security Model
+
+Every action is classified on three dimensions:
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    THREE-AXIS SECURITY MODEL                        │
+├──────────────────────┬──────────────────────┬──────────────────────┤
+│       OUTCOME        │      INTENTION       │       DOMAIN         │
+├──────────────────────┼──────────────────────┼──────────────────────┤
+│ • reversible         │ • log_only           │ • workspace          │
+│ • soft-irreversible  │ • confirm            │ • localhost          │
+│ • irreversible       │ • pin                │ • trusted (network)  │
+│                      │                      │ • untrusted          │
+│                      │                      │ • system             │
+└──────────────────────┴──────────────────────┴──────────────────────┘
+```
+
+**Location**: `packages/core/src/safety/approval-ladder/`
+
+- `classifyOutcome.ts` — Determines reversibility (Git-tracked = reversible)
+- `classifyDomain.ts` — Network/path classification
+- `computeRisk.ts` — Routes to profile-specific risk assessment
+- `computeMinimumReviewLevel.ts` — Final deterministic level (A/B/C)
+
+#### Safety Invariants
+
+1. **Audit is Immutable** — Cannot be disabled, write-time redacted
+2. **Model Cannot Downgrade** — Brain may escalate, never lower
+3. **Provenance Triggers Escalation** — Untrusted sources → higher review
+4. **PIN for Level C** — 6-digit PIN required (default: `000000`)
 
 ### Rule 3: Provenance Matters
 
@@ -217,15 +266,17 @@ Every behavior change requires:
 ```
 packages/core/src/
 ├── agents/           # Agent framework, TOML loaders
+├── audit/            # 📜 Audit ledger (immutable, non-disableable)
 ├── brain/            # Thinking orchestrator, frameworks
-├── computer/         # PTY management, GUI automation
-├── config/           # Configuration loading
+├── computer/         # 💻 Session manager, persistent shell
+├── config/           # Configuration loading, settings
 ├── core/             # Turn management, tool scheduling
 ├── hooks/            # Lifecycle hooks
-├── mcp/              # MCP client/server integration
-├── policy/           # Policy engine
+├── mcp/              # MCP client/server + OAuth provider
+├── policy/           # 🏛️ Policy engine (enterprise controls)
+├── recipes/          # 📖 Governed playbook loader/executor
 ├── safety/           # Approval ladder, action profiles
-├── telemetry/        # Logging, sanitization
+├── telemetry/        # Metrics (Flicker, Exit Fail, Slow Render)
 ├── tools/            # Built-in tools (shell, edit, etc.)
 └── utils/            # Utilities, env aliases
 ```
@@ -236,6 +287,8 @@ packages/core/src/
 - `CoreToolScheduler` — Central tool execution
 - `computeMinimumReviewLevel()` — Deterministic safety
 - `ThinkingOrchestrator` — Framework selection
+- `AuditLedger` — Immutable event logging
+- `RecipeExecutor` — Governed playbook execution
 
 ### `@terminai/cli` — Terminal Interface
 
@@ -246,8 +299,26 @@ packages/core/src/
 
 - `src/gemini.tsx` — Main entry component
 - `src/ui/` — All UI components
-- `src/utils/` — CLI utilities
+- `src/ui/commands/` — Slash command implementations
+- `src/voice/` — Voice mode (STT/TTS)
 - `src/config/` — CLI configuration
+
+**Key Slash Commands**:
+
+| Command         | Purpose                           |
+| --------------- | --------------------------------- |
+| `/think`        | Toggle Brain Mode (deep thinking) |
+| `/evaluate`     | Generate session insights report  |
+| `/audit`        | View/export audit ledger          |
+| `/pin-security` | Configure 6-digit PIN             |
+| `/ide`          | Toggle IDE integration mode       |
+| `/policies`     | View active enterprise policies   |
+| `/stats`        | Display usage statistics          |
+| `/recipes`      | List/run governed playbooks       |
+| `/llm`          | Switch LLM provider mid-session   |
+| `/logs`         | View session logs                 |
+
+**Voice Mode**: Push-to-talk with `/voice install` for whisper.cpp STT.
 
 **Testing**: Use `ink-testing-library` with `render()` and `lastFrame()`.
 
@@ -496,6 +567,73 @@ The brain (thinking orchestrator) is **advisory by default**:
 - May escalate review levels
 - **Cannot** execute without going through tool scheduler
 - **Cannot** lower deterministic review minimums
+
+**Authority Modes** (via `brain.authority` setting):
+
+| Mode            | Behavior                               |
+| --------------- | -------------------------------------- |
+| `advisory`      | Suggestions only, no review escalation |
+| `escalate-only` | May raise review level (default)       |
+| `governing`     | Demands additional review more often   |
+
+### Audit Ledger
+
+**Location**: `packages/core/src/audit/`  
+**Principle**: Non-disableable, immutable, queryable
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                        AUDIT LEDGER                                 │
+├─────────────────────────────────────────────────────────────────────┤
+│  • Cannot be disabled (not a user setting)                          │
+│  • Write-time secret redaction (API keys, credentials)              │
+│  • Typed text redacted by default (ui.type)                         │
+│  • Hash-chain tamper evidence (Phase 2)                             │
+│  • Queryable by brain for history-based adjustments                 │
+│  • Exportable for enterprise compliance                             │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+**Event Types**: `tool.requested`, `tool.approved`, `tool.denied`,
+`tool.execution_*`, `session.*`
+
+**CLI**: Use `/audit` to view summary, `/audit export` for JSONL export.
+
+### Recipes Engine
+
+**Location**: `packages/core/src/recipes/`  
+**Purpose**: Governed, reviewable, reusable playbooks
+
+**Trust Model**:
+
+| Source       | Trust Level | First Load Action          |
+| ------------ | ----------- | -------------------------- |
+| Built-in     | Trusted     | Execute immediately        |
+| User recipes | Trusted     | Execute immediately        |
+| Community    | Untrusted   | Confirmation on first load |
+
+**Key Behavior**:
+
+- Recipes can **escalate** review levels per-step
+- Recipes can **never downgrade** deterministic minimums
+- Every step is executed via `CoreToolScheduler` (approvals + audit)
+- Audit logs include `recipeId` + `recipeVersion` + `stepId`
+
+**CLI**: Use `/recipes list`, `/recipes show <id>`, `/recipes run <id>`.
+
+### Policy Engine
+
+**Location**: `packages/core/src/policy/`  
+**Purpose**: Enterprise-grade governance controls
+
+- Policy files (TOML) can override user settings
+- Explicit policies always win over default behaviors
+- Supports lock semantics: effective authority cannot be lowered by user
+
+**Usage**: Policies are loaded from `.terminai/policy.toml` or enterprise
+sources.
+
+**CLI**: Use `/policies` to view active policies.
 
 ---
 
@@ -753,13 +891,18 @@ Always run `/A-context` or review this file first. Context prevents rework.
 
 ### Environment Variables
 
-| Variable            | Purpose                                    |
-| ------------------- | ------------------------------------------ |
-| `TERMINAI_API_KEY`  | Gemini API key                             |
-| `TERMINAI_BASE_URL` | Override Gemini endpoint                   |
-| `TERMINAI_SANDBOX`  | Enable sandboxing (`true\|docker\|podman`) |
-| `DEBUG`             | Enable debug mode                          |
-| `DEV`               | Enable dev mode (React DevTools)           |
+| Variable               | Purpose                                    |
+| ---------------------- | ------------------------------------------ |
+| `TERMINAI_API_KEY`     | Gemini API key                             |
+| `TERMINAI_BASE_URL`    | Override Gemini endpoint                   |
+| `TERMINAI_SANDBOX`     | Enable sandboxing (`true\|docker\|podman`) |
+| `TERMINAI_SYSTEM_MD`   | Path to custom system instructions         |
+| `TERMINAI_PROJECT_DIR` | Override project root detection            |
+| `DEBUG`                | Enable debug mode                          |
+| `DEV`                  | Enable dev mode (React DevTools)           |
+
+**Legacy Support**: All `GEMINI_*` variables work via
+`applyTerminaiEnvAliases()`.
 
 ### Approval PIN
 

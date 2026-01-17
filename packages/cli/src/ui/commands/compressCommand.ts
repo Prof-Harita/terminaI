@@ -15,6 +15,7 @@ export const compressCommand: SlashCommand = {
   altNames: ['summarize'],
   description: 'Compresses the context by replacing it with a summary',
   kind: CommandKind.BUILT_IN,
+  hidden: true,
   autoExecute: true,
   action: async (context) => {
     const { ui } = context;

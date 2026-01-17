@@ -39,6 +39,7 @@ export const sessionsCommand: SlashCommand = {
   description:
     'Manage background process sessions (start, list, status, read, summarize, send, stop).',
   kind: CommandKind.BUILT_IN,
+  hidden: true,
   autoExecute: false,
   action: (_context: CommandContext, rawArgs: string) => {
     const parts = parseArgs(rawArgs);

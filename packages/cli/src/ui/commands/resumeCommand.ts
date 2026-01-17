@@ -11,11 +11,14 @@ import type {
   SlashCommand,
 } from './types.js';
 import { CommandKind } from './types.js';
+import { CommandCategory } from './categories.js';
 
 export const resumeCommand: SlashCommand = {
   name: 'resume',
   description: 'Browse and resume auto-saved conversations',
   kind: CommandKind.BUILT_IN,
+  visibility: 'core',
+  category: CommandCategory.SESSIONS,
   autoExecute: true,
   action: async (
     _context: CommandContext,

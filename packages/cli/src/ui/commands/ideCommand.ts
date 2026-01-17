@@ -142,6 +142,7 @@ export const ideCommand = async (): Promise<SlashCommand> => {
       name: 'ide',
       description: 'Manage IDE integration',
       kind: CommandKind.BUILT_IN,
+      hidden: true,
       autoExecute: false,
       action: (): SlashCommandActionReturn =>
         ({
@@ -156,6 +157,7 @@ export const ideCommand = async (): Promise<SlashCommand> => {
     name: 'ide',
     description: 'Manage IDE integration',
     kind: CommandKind.BUILT_IN,
+    hidden: true,
     autoExecute: false,
     subCommands: [],
   };

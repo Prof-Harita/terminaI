@@ -244,6 +244,7 @@ export const hooksCommand: SlashCommand = {
   name: 'hooks',
   description: 'Manage hooks',
   kind: CommandKind.BUILT_IN,
+  hidden: true,
   subCommands: [panelCommand, enableCommand, disableCommand],
   action: async (context: CommandContext) => panelCommand.action!(context, ''),
 };

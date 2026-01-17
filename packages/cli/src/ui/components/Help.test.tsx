@@ -16,17 +16,20 @@ const mockCommands: readonly SlashCommand[] = [
     name: 'test',
     description: 'A test command',
     kind: CommandKind.BUILT_IN,
+    category: 'Essentials',
   },
   {
     name: 'hidden',
     description: 'A hidden command',
     hidden: true,
     kind: CommandKind.BUILT_IN,
+    category: 'Essentials',
   },
   {
     name: 'parent',
     description: 'A parent command',
     kind: CommandKind.BUILT_IN,
+    category: 'Essentials',
     subCommands: [
       {
         name: 'visible-child',
@@ -69,7 +72,7 @@ describe('Help Component', () => {
     expect(output).toContain('Keyboard Shortcuts:');
     expect(output).toContain('Ctrl+C');
     expect(output).toContain('Ctrl+S');
-    expect(output).toContain('Page Up/Down');
+
     unmount();
   });
 });

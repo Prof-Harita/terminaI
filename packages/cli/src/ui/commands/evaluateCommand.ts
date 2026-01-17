@@ -22,6 +22,7 @@ export const evaluateCommand: SlashCommand = {
   name: 'evaluate',
   kind: CommandKind.BUILT_IN,
   description: 'Evaluate recent sessions and generate an insights report',
+  hidden: true,
   action: async (context: CommandContext, args: string) => {
     const { config, logger } = context.services;
     const { addItem } = context.ui;

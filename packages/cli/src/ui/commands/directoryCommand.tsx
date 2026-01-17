@@ -264,4 +264,11 @@ export const directoryCommand: SlashCommand = {
       },
     },
   ],
+  // Default action: show directories
+  action: async (context: CommandContext) => {
+    const showCmd = directoryCommand.subCommands?.find(
+      (c) => c.name === 'show',
+    );
+    return showCmd?.action?.(context, '');
+  },
 };

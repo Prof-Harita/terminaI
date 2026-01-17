@@ -10,7 +10,6 @@ import { Box, Text } from 'ink';
 import { theme } from '../semantic-colors.js';
 import { type SlashCommand, CommandKind } from '../commands/types.js';
 import {
-  CommandCategory,
   LEFT_COLUMN_CATEGORIES,
   RIGHT_COLUMN_CATEGORIES,
   type CommandCategoryType,
@@ -39,8 +38,10 @@ function groupByCategory(
     // Skip commands without description
     if (!cmd.description) continue;
 
-    const category =
-      (cmd.category as CommandCategoryType) || CommandCategory.ESSENTIALS;
+    // Skip commands with no category (e.g. dynamic MCP prompts)
+    const category = cmd.category as CommandCategoryType;
+    if (!category) continue;
+
     const group = groups.get(category) || [];
     group.push(cmd);
     groups.set(category, group);
@@ -206,12 +207,6 @@ export const Help: React.FC<HelpProps> = ({ commands, showAll = false }) => {
       </Text>
       <Text color={theme.text.primary}>
         <Text bold color={theme.text.accent}>
-          Alt+Left/Right
-        </Text>{' '}
-        - Jump through words in the input
-      </Text>
-      <Text color={theme.text.primary}>
-        <Text bold color={theme.text.accent}>
           Ctrl+C
         </Text>{' '}
         - Quit application
@@ -238,39 +233,15 @@ export const Help: React.FC<HelpProps> = ({ commands, showAll = false }) => {
       </Text>
       <Text color={theme.text.primary}>
         <Text bold color={theme.text.accent}>
-          {process.platform === 'darwin' ? 'Ctrl+X / Meta+Enter' : 'Ctrl+X'}
-        </Text>{' '}
-        - Open input in external editor
-      </Text>
-      <Text color={theme.text.primary}>
-        <Text bold color={theme.text.accent}>
           Ctrl+Y
         </Text>{' '}
         - Toggle YOLO mode
       </Text>
       <Text color={theme.text.primary}>
         <Text bold color={theme.text.accent}>
-          Enter
-        </Text>{' '}
-        - Send message
-      </Text>
-      <Text color={theme.text.primary}>
-        <Text bold color={theme.text.accent}>
           Esc
         </Text>{' '}
         - Cancel operation / Clear input (double press)
-      </Text>
-      <Text color={theme.text.primary}>
-        <Text bold color={theme.text.accent}>
-          Page Up/Down
-        </Text>{' '}
-        - Scroll page up/down
-      </Text>
-      <Text color={theme.text.primary}>
-        <Text bold color={theme.text.accent}>
-          Shift+Tab
-        </Text>{' '}
-        - Toggle auto-accepting edits
       </Text>
       <Text color={theme.text.primary}>
         <Text bold color={theme.text.accent}>
@@ -282,7 +253,7 @@ export const Help: React.FC<HelpProps> = ({ commands, showAll = false }) => {
       <Text color={theme.text.primary}>
         For a full list of shortcuts, see{' '}
         <Text bold color={theme.text.accent}>
-          docs/cli/keyboard-shortcuts.md
+          terminai.org/docs/shortcuts
         </Text>
       </Text>
       {!showAll && (
