@@ -96,7 +96,7 @@ agree that your contributions are licensed under the same terms.
 
 - Please adhere to the coding style, patterns, and conventions used throughout
   the existing codebase.
-- Consult [terminaI.md](../terminaI.md) (typically found in the project root)
+- Consult [TerminAI.md](../TerminAI.md) (typically found in the project root)
   for specific instructions related to AI-assisted development, including
   conventions for React, comments, and Git usage.
 - **Imports:** Pay special attention to import paths. The project uses ESLint to
