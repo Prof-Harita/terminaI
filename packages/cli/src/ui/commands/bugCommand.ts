@@ -12,6 +12,7 @@ import {
   type SlashCommand,
   CommandKind,
 } from './types.js';
+import { CommandCategory } from './categories.js';
 import { MessageType } from '../types.js';
 import { GIT_COMMIT_INFO } from '../../generated/git-commit.js';
 import { formatMemoryUsage } from '../utils/formatters.js';
@@ -22,6 +23,8 @@ export const bugCommand: SlashCommand = {
   name: 'bug',
   description: 'Submit a bug report',
   kind: CommandKind.BUILT_IN,
+  visibility: 'core',
+  category: CommandCategory.SYSTEM_OPERATOR,
   autoExecute: false,
   action: async (context: CommandContext, args?: string): Promise<void> => {
     const bugDescription = (args || '').trim();

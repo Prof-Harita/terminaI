@@ -1,11 +1,11 @@
 #!/bin/bash
 set -e
 
-echo "🔹 1. Cleaning up..."
-rm -rf node_modules packages/*/node_modules packages/*/dist
+echo "🔹 1. Cleaning up dist folders..."
+rm -rf packages/*/dist
 
-echo "🔹 2. Installing dependencies (npm ci)..."
-npm ci
+echo "🔹 2. Installing dependencies (npm install)..."
+npm install
 
 echo "🔹 3. Building project..."
 npm run build

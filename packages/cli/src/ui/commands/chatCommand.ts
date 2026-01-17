@@ -15,6 +15,7 @@ import type {
   SlashCommandActionReturn,
 } from './types.js';
 import { CommandKind } from './types.js';
+import { CommandCategory } from './categories.js';
 import {
   decodeTagName,
   type MessageActionReturn,
@@ -378,6 +379,8 @@ export const chatCommand: SlashCommand = {
   name: 'chat',
   description: 'Manage conversation history',
   kind: CommandKind.BUILT_IN,
+  visibility: 'core',
+  category: CommandCategory.SESSIONS,
   autoExecute: false,
   subCommands: [
     listCommand,
@@ -386,4 +389,7 @@ export const chatCommand: SlashCommand = {
     deleteCommand,
     shareCommand,
   ],
+  // Default action: list saved chats
+  action: async (context): Promise<void> =>
+    listCommand.action?.(context, '') as Promise<void>,
 };

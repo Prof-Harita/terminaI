@@ -16,6 +16,7 @@ import {
   RecipeLoader as DefaultRecipeLoader,
 } from '@terminai/core';
 import { CommandKind, type SlashCommand } from './types.js';
+import { CommandCategory } from './categories.js';
 import { MessageType } from '../types.js';
 
 interface RecipesCommandDeps {
@@ -210,6 +211,8 @@ export function recipesCommand(deps?: RecipesCommandDeps): SlashCommand {
     name: 'recipes',
     description: 'List, show, or run governed recipes.',
     kind: CommandKind.BUILT_IN,
+    visibility: 'core',
+    category: CommandCategory.SYSTEM_OPERATOR,
     autoExecute: false,
     action: async (context, args) => {
       const { subcommand, rest } = parseArgs(args);

@@ -11,9 +11,9 @@ Get up and running with TerminaI in 5 minutes.
 git clone https://github.com/Prof-Harita/terminaI.git
 cd terminaI
 
-# Install dependencies and build
-npm ci
-npm run build
+# Install dependencies and# Build everything (uses Turbo)
+npm install
+turbo run build
 
 # Link the CLI
 npm link --workspace packages/cli

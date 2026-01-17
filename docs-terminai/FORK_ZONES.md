@@ -127,7 +127,17 @@ Upstream is Gemini-only. We support OpenAI, ChatGPT OAuth, and Anthropic.
 | File/Path                               | Our Divergence             |
 | --------------------------------------- | -------------------------- |
 | `packages/core/src/core/logger.ts`      | JSONL format (O(1) writes) |
+| `packages/core/src/core/logger.ts`      | JSONL format (O(1) writes) |
 | `packages/core/src/core/logger.test.ts` | Tests for JSONL format     |
+
+### Build Infrastructure (NEW - TerminaI Only)
+
+| File/Path              | Our Divergence                          |
+| ---------------------- | --------------------------------------- |
+| `turbo.json`           | Turborepo configuration                 |
+| `package.json`         | `packageManager` (npm@11), `workspaces` |
+| `scripts/verify-ci.sh` | Optimized for Turbo caching             |
+| `scripts/build.js`     | Invokes `turbo run build`               |
 
 ---
 

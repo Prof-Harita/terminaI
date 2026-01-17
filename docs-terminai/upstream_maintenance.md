@@ -53,6 +53,7 @@ TerminaI is the **source of truth** for:
   innovation.
 - **TerminaI-added features** — Voice mode, Evolution Lab, A2A server, Desktop
   app.
+- **Build Infrastructure** — Turborepo (`turbo.json`) and optimized scripts.
 
 **Implication:** If upstream modifies these files, we **ignore** the change. We
 don't want their auth because it's Gemini-only.

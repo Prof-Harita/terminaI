@@ -11,13 +11,10 @@ merge/deployment.
 
 // turbo-all
 
-### 1. Clean Build
+### 1.// turbo
 
-```bash
-npm run build
-```
-
-Must complete without errors.
+3. Build the project: `turbo run build`
+4. Run tests: `npm test`e without errors.
 
 ### 2. Full Test Suite
 

@@ -109,7 +109,7 @@ import { platform, arch } from 'os';
 console.log(`🚀 Building TerminaI for ${platform()}-${arch()}`);
 
 // Step 1: Build Frontend
-execSync('npm run build', { cwd: 'packages/desktop', stdio: 'inherit' });
+execSync('turbo run build', { cwd: 'packages/desktop', stdio: 'inherit' });
 
 // Step 2: Bundle CLI Sidecar
 execSync('node scripts/bundle_cli.js', { stdio: 'inherit' });

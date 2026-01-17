@@ -1,6 +1,6 @@
 # CLI commands
 
-Gemini CLI supports several built-in commands to help you manage your session,
+TerminaI supports several built-in commands to help you manage your session,
 customize the interface, and control its behavior. These commands are prefixed
 with a forward slash (`/`), an at symbol (`@`), or an exclamation mark (`!`).
 
@@ -11,11 +11,11 @@ Slash commands provide meta-level control over the CLI itself.
 ### Built-in Commands
 
 - **`/bug`**
-  - **Description:** File an issue about Gemini CLI. By default, the issue is
-    filed within the GitHub repository for Gemini CLI. The string you enter
-    after `/bug` will become the headline for the bug being filed. The default
-    `/bug` behavior can be modified using the `advanced.bugCommand` setting in
-    your `.terminai/settings.json` files.
+  - **Description:** File an issue about TerminaI. By default, the issue is
+    filed within the GitHub repository. The string you enter after `/bug` will
+    become the headline for the bug being filed. The default `/bug` behavior can
+    be modified using the `advanced.bugCommand` setting in your
+    `.terminai/settings.json` files.
 
 - **`/chat`**
   - **Description:** Save and resume conversation history for branching
@@ -99,12 +99,15 @@ Slash commands provide meta-level control over the CLI itself.
   - **Description:** Open a dialog for selecting supported editors.
 
 - **`/extensions`**
-  - **Description:** Lists all active extensions in the current Gemini CLI
-    session. See [Gemini CLI Extensions](../extensions/index.md).
+  - **Description:** Lists all active extensions in the current TerminaI
+    session. See [TerminaI Extensions](../extensions/index.md).
 
 - **`/help`** (or **`/?`**)
-  - **Description:** Display help information about Gemini CLI, including
+  - **Description:** Display help information about TerminaI, including
     available commands and their usage.
+  - **Sub-commands:**
+    - **`all`**:
+      - **Description:** Show all commands including hidden internal ones.
 
 - **`/mcp`**
   - **Description:** Manage configured Model Context Protocol (MCP) servers.
@@ -181,10 +184,10 @@ Slash commands provide meta-level control over the CLI itself.
     complete details.
 
 - [**`/settings`**](./settings.md)
-  - **Description:** Open the settings editor to view and modify Gemini CLI
+  - **Description:** Open the settings editor to view and modify TerminaI
     settings.
   - **Details:** This command provides a user-friendly interface for changing
-    settings that control the behavior and appearance of Gemini CLI. It is
+    settings that control the behavior and appearance of TerminaI. It is
     equivalent to manually editing the `.terminai/settings.json` file, but with
     validation and guidance to prevent errors. See the
     [settings documentation](./settings.md) for a full list of available
@@ -203,11 +206,34 @@ Slash commands provide meta-level control over the CLI itself.
 
 - [**`/theme`**](./themes.md)
   - **Description:** Open a dialog that lets you change the visual theme of
-    Gemini CLI.
+    TerminaI.
 
-- **`/auth`**
-  - **Description:** Open a dialog that lets you change the authentication
-    method.
+- **`/llm`** (or **`/auth`**)
+  - **Description:** Manage LLM provider and authentication.
+  - **Sub-commands:**
+    - **`login`**:
+      - **Description:** Configure provider and authentication.
+    - **`logout`**:
+      - **Description:** Log out and clear all cached credentials.
+    - **`wizard`**:
+      - **Description:** Open the provider selection wizard to switch LLM
+        providers.
+    - **`reset`**:
+      - **Description:** Nuclear reset: clear ALL credentials and auth settings.
+    - **`status`**:
+      - **Description:** Show current authentication status and provider.
+  - **Note:** Running `/llm` without a subcommand opens the provider wizard.
+
+- **`/logs`** (or **`/audit`**)
+  - **Description:** View or export session logs (audit ledger).
+  - **Sub-commands:**
+    - **`show`**:
+      - **Description:** Show recent log entries (default action).
+    - **`verify`**:
+      - **Description:** Verify the log hash chain integrity.
+    - **`export`**:
+      - **Description:** Export logs with current redaction settings.
+  - **Note:** Running `/logs` without a subcommand shows recent entries.
 
 - **`/about`**
   - **Description:** Show version info. Please share this information when
@@ -215,7 +241,7 @@ Slash commands provide meta-level control over the CLI itself.
 
 - [**`/tools`**](../tools/index.md)
   - **Description:** Display a list of tools that are currently available within
-    Gemini CLI.
+    TerminaI.
   - **Usage:** `/tools [desc]`
   - **Sub-commands:**
     - **`desc`** or **`descriptions`**:
@@ -230,7 +256,7 @@ Slash commands provide meta-level control over the CLI itself.
     purposes.
 
 - **`/quit`** (or **`/exit`**)
-  - **Description:** Exit Gemini CLI.
+  - **Description:** Exit TerminaI.
 
 - **`/vim`**
   - **Description:** Toggle vim mode on or off. When vim mode is enabled, the

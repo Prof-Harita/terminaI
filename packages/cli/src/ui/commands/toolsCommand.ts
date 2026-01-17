@@ -10,12 +10,15 @@ import {
   type SlashCommand,
   CommandKind,
 } from './types.js';
+import { CommandCategory } from './categories.js';
 import { MessageType, type HistoryItemToolsList } from '../types.js';
 
 export const toolsCommand: SlashCommand = {
   name: 'tools',
   description: 'List available terminaI tools. Usage: /tools [desc]',
   kind: CommandKind.BUILT_IN,
+  visibility: 'core',
+  category: CommandCategory.CAPABILITIES,
   autoExecute: false,
   action: async (context: CommandContext, args?: string): Promise<void> => {
     const subCommand = args?.trim();

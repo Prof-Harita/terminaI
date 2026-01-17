@@ -217,7 +217,7 @@ their corresponding top-level category object in your `settings.json` file.
   - **Requires restart:** Yes
 
 - **`ui.showStatusInTitle`** (boolean):
-  - **Description:** Show Gemini CLI status and thoughts in the terminal window
+  - **Description:** Show TerminaI status and thoughts in the terminal window
     title
   - **Default:** `false`
 
@@ -830,7 +830,7 @@ their corresponding top-level category object in your `settings.json` file.
 
 - **`tools.enableHooks`** (boolean):
   - **Description:** Enable the hooks system for intercepting and customizing
-    Gemini CLI behavior. When enabled, hooks configured in settings will execute
+    TerminaI behavior. When enabled, hooks configured in settings will execute
     at appropriate lifecycle events (BeforeTool, AfterTool, BeforeModel, etc.).
     Requires MessageBus integration.
   - **Default:** `false`

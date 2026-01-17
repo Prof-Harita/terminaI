@@ -14,8 +14,8 @@ logs), you’re in the right place.
 ```bash
 git clone https://github.com/Prof-Harita/terminaI.git
 cd terminaI
-npm ci
-npm run build
+npm install
+turbo run build
 
 # Link the launcher
 npm link --workspace packages/termai
@@ -63,7 +63,7 @@ High-impact areas (with suggested entry points):
 Fast local checks:
 
 ```bash
-npm test --workspaces --if-present
+npm test
 ```
 
 If you’re changing linted areas:

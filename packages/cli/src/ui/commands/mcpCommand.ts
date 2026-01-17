@@ -11,6 +11,7 @@ import type {
   CommandContext,
 } from './types.js';
 import { CommandKind } from './types.js';
+import { CommandCategory } from './categories.js';
 import type { MessageActionReturn } from '@terminai/core';
 import {
   DiscoveredMCPTool,
@@ -363,6 +364,8 @@ export const mcpCommand: SlashCommand = {
   name: 'mcp',
   description: 'Manage configured Model Context Protocol (MCP) servers',
   kind: CommandKind.BUILT_IN,
+  visibility: 'core',
+  category: CommandCategory.CAPABILITIES,
   autoExecute: false,
   subCommands: [
     listCommand,

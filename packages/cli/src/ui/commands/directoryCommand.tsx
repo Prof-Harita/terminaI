@@ -13,6 +13,7 @@ import {
 import { MultiFolderTrustDialog } from '../components/MultiFolderTrustDialog.js';
 import type { SlashCommand, CommandContext } from './types.js';
 import { CommandKind } from './types.js';
+import { CommandCategory } from './categories.js';
 import { MessageType, type HistoryItem } from '../types.js';
 import { refreshServerHierarchicalMemory } from '@terminai/core';
 import { expandHomeDir } from '../utils/directoryUtils.js';
@@ -74,6 +75,8 @@ export const directoryCommand: SlashCommand = {
   altNames: ['dir'],
   description: 'Manage workspace directories',
   kind: CommandKind.BUILT_IN,
+  visibility: 'core',
+  category: CommandCategory.SESSIONS,
   subCommands: [
     {
       name: 'add',

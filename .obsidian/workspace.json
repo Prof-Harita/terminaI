@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "local/terminai replay.md",
+                "file": "local/slash_cleanup.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "terminai replay"
+              "title": "slash_cleanup"
             }
           }
         ]
@@ -185,18 +185,32 @@
   },
   "active": "679bc035dcce914a",
   "lastOpenFiles": [
-    "README.md",
+    "packages/cli/src/ui/commands/chatCommand.ts.tmp-86544280781216c3",
+    "packages/cli/dist/src/commands/extensions/examples/custom-commands/commands/fs/grep-code.toml",
+    "packages/cli/dist/src/commands/extensions/examples/custom-commands/commands/fs",
+    "packages/cli/dist/src/commands/extensions/examples/context/terminaI.md",
+    "packages/cli/dist/src/commands/extensions/examples/context/gemini-extension.json",
+    "packages/cli/dist/src/commands/extensions/examples/mcp-server/tsconfig.json",
+    "packages/cli/dist/src/commands/extensions/examples/mcp-server/package.json",
+    "packages/cli/dist/src/commands/extensions/examples/mcp-server/gemini-extension.json",
+    "packages/cli/dist/src/commands/extensions/examples/mcp-server/example.ts",
+    "packages/cli/dist/src/commands/extensions/examples/mcp-server/example.test.ts",
+    "packages/cli/dist/src/commands/extensions/examples/mcp-server/example.test.js.map",
+    "packages/cli/dist/src/commands/extensions/examples/mcp-server/example.test.js",
+    "bundle/docs/cli/quick-reference.md",
+    "node_modules/turbo/README.md",
+    "node_modules/turbo-linux-64/README.md",
+    "docs/cli/quick-reference.md",
+    "packages/cli/coverage/lcov-report/sort-arrow-sprite.png",
+    "packages/cli/coverage/lcov-report/favicon.png",
+    "packages/cli/coverage/sort-arrow-sprite.png",
+    "packages/cli/coverage/favicon.png",
+    "local/slash_cleanup_tasks.md",
+    "local/slash_perfection_prompt.md",
+    "local/slash_prompt.md",
+    "local/slash_cleanup.md",
     "local/terminai replay.md",
-    "packages/core/coverage/coverage-summary.json",
-    "packages/core/coverage/cobertura-coverage.xml",
-    "packages/core/coverage/lcov-report/src/utils/filesearch/result-cache.ts.html",
-    "packages/core/coverage/lcov-report/src/utils/filesearch/index.html",
-    "packages/core/coverage/lcov-report/src/utils/filesearch/ignore.ts.html",
-    "packages/core/coverage/lcov-report/src/utils/filesearch/fileSearch.ts.html",
-    "packages/core/coverage/lcov-report/src/utils/filesearch/crawler.ts.html",
-    "packages/core/coverage/lcov-report/src/utils/filesearch/crawlCache.ts.html",
-    "packages/core/coverage/lcov-report/src/telemetry/clearcut-logger/index.html",
-    "packages/core/coverage/lcov-report/src/telemetry/clearcut-logger/event-metadata-key.ts.html",
+    "README.md",
     "packages/core/coverage/lcov-report/sort-arrow-sprite.png",
     "packages/core/coverage/lcov-report/favicon.png",
     "packages/core/coverage/sort-arrow-sprite.png",
@@ -215,21 +229,7 @@
     "node_modules/@textlint/linter-formatter/node_modules/ansi-regex/readme.md",
     "node_modules/@textlint/linter-formatter/node_modules/emoji-regex/README.md",
     "node_modules/@bundled-es-modules/tough-cookie/node_modules/tough-cookie/README.md",
-    "node_modules/zod-to-json-schema/dist-test-v4/types/node_modules/zod/README.md",
-    "node_modules/zod-to-json-schema/dist-test-v4/esm/node_modules/zod/README.md",
-    "node_modules/zod-to-json-schema/dist-test-v4/cjs/node_modules/zod/README.md",
-    "node_modules/zod-to-json-schema/dist-test-v3/types/node_modules/zod/README.md",
-    "node_modules/zod-to-json-schema/dist-test-v3/esm/node_modules/zod/README.md",
-    "node_modules/zod-to-json-schema/dist-test-v3/cjs/node_modules/zod/README.md",
-    "node_modules/lazystream/node_modules/readable-stream/doc/wg-meetings/2015-01-30.md",
-    "node_modules/@vitest/eslint-plugin/node_modules/@typescript-eslint/utils/README.md",
-    "node_modules/@vitest/eslint-plugin/node_modules/@typescript-eslint/visitor-keys/README.md",
-    "node_modules/@vitest/eslint-plugin/node_modules/@typescript-eslint/typescript-estree/README.md",
     "node_modules/istanbul-reports/lib/html-spa/assets/sort-arrow-sprite.png",
-    "node_modules/istanbul-reports/lib/html/assets/sort-arrow-sprite.png",
-    "node_modules/istanbul-reports/lib/html/assets/favicon.png",
-    "node_modules/qrcode-terminal/example/basic.png",
-    "node_modules/highlight.js/styles/pojoaque.jpg",
-    "node_modules/highlight.js/styles/brown-papersq.png"
+    "node_modules/istanbul-reports/lib/html/assets/sort-arrow-sprite.png"
   ]
 }

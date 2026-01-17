@@ -11,7 +11,7 @@ import type { SlashCommand } from '../ui/commands/types.js';
 import type { Config } from '@terminai/core';
 import { startupProfiler } from '@terminai/core';
 import { aboutCommand } from '../ui/commands/aboutCommand.js';
-import { authCommand } from '../ui/commands/authCommand.js';
+import { llmCommand } from '../ui/commands/llmCommand.js';
 import { bugCommand } from '../ui/commands/bugCommand.js';
 import { chatCommand } from '../ui/commands/chatCommand.js';
 import { clearCommand } from '../ui/commands/clearCommand.js';
@@ -34,7 +34,7 @@ import { pinSecurityCommand } from '../ui/commands/pinSecurityCommand.js';
 import { privacyCommand } from '../ui/commands/privacyCommand.js';
 import { policiesCommand } from '../ui/commands/policiesCommand.js';
 import { profileCommand } from '../ui/commands/profileCommand.js';
-import { auditCommand } from '../ui/commands/auditCommand.js';
+import { logsCommand } from '../ui/commands/logsCommand.js';
 import { recipesCommand } from '../ui/commands/recipesCommand.js';
 import { quitCommand } from '../ui/commands/quitCommand.js';
 import { restoreCommand } from '../ui/commands/restoreCommand.js';
@@ -54,7 +54,7 @@ import { evaluateCommand } from '../ui/commands/evaluateCommand.js';
 
 /**
  * Loads the core, hard-coded slash commands that are an integral part
- * of the Gemini CLI application.
+ * of the TerminaI application.
  */
 export class BuiltinCommandLoader implements ICommandLoader {
   constructor(private config: Config | null) {}
@@ -70,7 +70,7 @@ export class BuiltinCommandLoader implements ICommandLoader {
     const handle = startupProfiler.start('load_builtin_commands');
     const allDefinitions: Array<SlashCommand | null> = [
       aboutCommand,
-      authCommand,
+      llmCommand,
       bugCommand,
       chatCommand,
       clearCommand,
@@ -95,7 +95,7 @@ export class BuiltinCommandLoader implements ICommandLoader {
         ? [policiesCommand]
         : []),
       ...(isDevelopment ? [profileCommand] : []),
-      auditCommand,
+      logsCommand,
       recipesCommand(),
       quitCommand,
       restoreCommand(this.config),

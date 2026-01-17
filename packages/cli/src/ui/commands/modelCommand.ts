@@ -10,11 +10,14 @@ import {
   CommandKind,
   type SlashCommand,
 } from './types.js';
+import { CommandCategory } from './categories.js';
 
 export const modelCommand: SlashCommand = {
   name: 'model',
   description: 'Opens a dialog to configure the model',
   kind: CommandKind.BUILT_IN,
+  visibility: 'core',
+  category: CommandCategory.LLM_MODEL,
   autoExecute: true,
   action: async (context: CommandContext) => {
     if (context.services.config) {

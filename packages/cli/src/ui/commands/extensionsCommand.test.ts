@@ -405,7 +405,7 @@ describe('extensionsCommand', () => {
 
       await exploreAction(mockContext, '');
 
-      const extensionsUrl = 'https://geminicli.com/extensions/';
+      const extensionsUrl = 'https://terminai.org/extensions/';
       expect(mockContext.ui.addItem).toHaveBeenCalledWith(
         {
           type: MessageType.INFO,
@@ -421,7 +421,7 @@ describe('extensionsCommand', () => {
       // Simulate a sandbox environment
       vi.stubEnv('NODE_ENV', '');
       vi.stubEnv('SANDBOX', 'gemini-sandbox');
-      const extensionsUrl = 'https://geminicli.com/extensions/';
+      const extensionsUrl = 'https://terminai.org/extensions/';
 
       await exploreAction(mockContext, '');
 
@@ -440,7 +440,7 @@ describe('extensionsCommand', () => {
     it('should add an info message and not call open in NODE_ENV test environment', async () => {
       vi.stubEnv('NODE_ENV', 'test');
       vi.stubEnv('SANDBOX', '');
-      const extensionsUrl = 'https://geminicli.com/extensions/';
+      const extensionsUrl = 'https://terminai.org/extensions/';
 
       await exploreAction(mockContext, '');
 
@@ -458,7 +458,7 @@ describe('extensionsCommand', () => {
 
     it('should handle errors when opening the browser', async () => {
       vi.stubEnv('NODE_ENV', '');
-      const extensionsUrl = 'https://geminicli.com/extensions/';
+      const extensionsUrl = 'https://terminai.org/extensions/';
       const errorMessage = 'Failed to open browser';
       vi.mocked(open).mockRejectedValue(new Error(errorMessage));
 

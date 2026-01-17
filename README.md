@@ -147,7 +147,7 @@ AI system operation must be governed. TerminaI is built around that primitive.
 - **Local-first posture:** core operation runs on your machine; no hosted relay
   is required. Any optional remote features are opt-in and under your control.
 
----
+## Read more: `docs-terminai/why-terminai.md`
 
 ## Install
 
@@ -256,6 +256,11 @@ terminai
 
 See: `docs-terminai/multi-llm-support.md`
 
+```markdown
+Once in the CLI interface, use `/help` to understand the commands available, or
+begin chatting away!.
+```
+
 ---
 
 ## First win (10 minutes)
@@ -295,13 +300,7 @@ ladder:
 Audit logs are written to `~/.terminai/logs/audit/` (JSONL). Runtime/session
 logs live in `~/.terminai/logs/`.
 
-High-level flow:
-
-```text
-User intent -> policy engine -> approval -> tool execution -> audit
-```
-
----
+## Zero telemetry by design. No opt-in, no opt-out: just local logs you can inspect. Nothing leaves your system, except for the LLM provider you choose to use.
 
 ## Documentation
 
@@ -393,7 +392,7 @@ npm run desktop:dev
 
 TerminaI is a community fork of Google's Gemini CLI:
 
-- https://github.com/google-gemini/gemini-cli
+- https://github.com/google-gemini/gemini-cli (Upstream)
 
 ---
 

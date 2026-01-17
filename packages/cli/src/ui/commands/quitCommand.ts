@@ -7,12 +7,15 @@
 
 import { formatDuration } from '../utils/formatters.js';
 import { CommandKind, type SlashCommand } from './types.js';
+import { CommandCategory } from './categories.js';
 
 export const quitCommand: SlashCommand = {
   name: 'quit',
   altNames: ['exit'],
   description: 'Exit the cli',
   kind: CommandKind.BUILT_IN,
+  visibility: 'core',
+  category: CommandCategory.ESSENTIALS,
   autoExecute: true,
   action: (context) => {
     const now = Date.now();

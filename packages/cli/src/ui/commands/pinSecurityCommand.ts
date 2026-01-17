@@ -7,6 +7,7 @@
 
 import { SettingScope } from '../../config/settings.js';
 import { CommandKind, type SlashCommand } from './types.js';
+import { CommandCategory } from './categories.js';
 
 /**
  * A slash command that allows the user to view or update their approval PIN.
@@ -17,6 +18,8 @@ export const pinSecurityCommand: SlashCommand = {
   name: 'pin-security',
   kind: CommandKind.BUILT_IN,
   description: 'Manage your approval PIN',
+  visibility: 'core',
+  category: CommandCategory.ESSENTIALS,
   action: async (context, args) => {
     const trimmedArgs = args?.trim();
 

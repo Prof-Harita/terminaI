@@ -13,6 +13,7 @@ import {
   type SlashCommand,
   CommandKind,
 } from './types.js';
+import { CommandCategory } from './categories.js';
 
 async function defaultSessionView(context: CommandContext) {
   const now = new Date();
@@ -49,6 +50,8 @@ export const statsCommand: SlashCommand = {
   altNames: ['usage'],
   description: 'Check session stats. Usage: /stats [session|model|tools]',
   kind: CommandKind.BUILT_IN,
+  visibility: 'core',
+  category: CommandCategory.SYSTEM_OPERATOR,
   autoExecute: false,
   action: async (context: CommandContext) => {
     await defaultSessionView(context);

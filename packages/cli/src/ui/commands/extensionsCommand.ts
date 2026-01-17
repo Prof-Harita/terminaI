@@ -19,6 +19,7 @@ import {
   type SlashCommand,
   CommandKind,
 } from './types.js';
+import { CommandCategory } from './categories.js';
 import open from 'open';
 import process from 'node:process';
 import { ExtensionManager } from '../../config/extension-manager.js';
@@ -271,7 +272,7 @@ async function restartAction(
 }
 
 async function exploreAction(context: CommandContext) {
-  const extensionsUrl = 'https://geminicli.com/extensions/';
+  const extensionsUrl = 'https://terminai.org/extensions/';
 
   // Only check for NODE_ENV for explicit test mode, not for unit test framework
   if (process.env['NODE_ENV'] === 'test') {
@@ -533,6 +534,8 @@ export function extensionsCommand(
     name: 'extensions',
     description: 'Manage extensions',
     kind: CommandKind.BUILT_IN,
+    visibility: 'core',
+    category: CommandCategory.CAPABILITIES,
     autoExecute: false,
     subCommands: [
       listExtensionsCommand,

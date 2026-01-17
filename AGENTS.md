@@ -147,8 +147,8 @@ flowchart TB
 npm run preflight
 ```
 
-This single command validates: build → typecheck → test → lint. **Never commit
-without passing preflight.**
+This single command validates: build (via Turbo) → typecheck → test → lint.
+**Never commit without passing preflight.**
 
 ### Rule 2: Safety First
 
@@ -320,7 +320,12 @@ packages/desktop/
 - **Bugs only** → Start at `/fix`
 - **Ready to merge** → Start at `/ship`
 
-### Turbo Mode
+### Turbo Mode (and Turborepo)
+
+TerminaI uses **Turborepo** for high-performance builds.
+
+- `npm run build` is an alias for `turbo run build`.
+- `npm test` is an alias for `turbo run test`.
 
 Workflows support `// turbo` annotations for auto-running safe commands:
 
@@ -616,7 +621,7 @@ src/
 ### Three-Agent Sync Pipeline
 
 TerminaI is forked from
-[Gemini CLI](https://github.com/google-gemini/gemini-cli).
+[Gemini CLI (Upstream)](https://github.com/google-gemini/gemini-cli).
 
 **Philosophy:** Quality >> Speed >> Cost
 
@@ -726,15 +731,15 @@ Always run `/A-context` or review this file first. Context prevents rework.
 
 ### Essential Commands
 
-| Command             | Purpose                               |
-| ------------------- | ------------------------------------- |
-| `npm run preflight` | Full validation (build + test + lint) |
-| `npm run build`     | Build all packages                    |
-| `npm test`          | Run all tests                         |
-| `npm run lint`      | Check linting                         |
-| `npm run lint:fix`  | Auto-fix lint issues                  |
-| `npm run typecheck` | TypeScript validation                 |
-| `npm run tauri dev` | Run desktop app in dev mode           |
+| Command             | Purpose                                     |
+| ------------------- | ------------------------------------------- |
+| `npm run preflight` | Full validation (Turbo build + test + lint) |
+| `npm run build`     | Build all packages (via Turbo)              |
+| `npm test`          | Run all tests (via Turbo)                   |
+| `npm run lint`      | Check linting                               |
+| `npm run lint:fix`  | Auto-fix lint issues                        |
+| `npm run typecheck` | TypeScript validation (via Turbo)           |
+| `npm run tauri dev` | Run desktop app in dev mode                 |
 
 ### Important Paths
 

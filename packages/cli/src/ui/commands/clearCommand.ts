@@ -15,12 +15,15 @@ import {
 } from '@terminai/core';
 import type { SlashCommand } from './types.js';
 import { CommandKind } from './types.js';
+import { CommandCategory } from './categories.js';
 import { randomUUID } from 'node:crypto';
 
 export const clearCommand: SlashCommand = {
   name: 'clear',
   description: 'Clear the screen and conversation history',
   kind: CommandKind.BUILT_IN,
+  visibility: 'core',
+  category: CommandCategory.ESSENTIALS,
   autoExecute: true,
   action: async (context, _args) => {
     const geminiClient = context.services.config?.getGeminiClient();

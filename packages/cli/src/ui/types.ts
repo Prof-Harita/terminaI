@@ -148,6 +148,7 @@ export type HistoryItemAbout = HistoryItemBase & {
 export type HistoryItemHelp = HistoryItemBase & {
   type: 'help';
   timestamp: Date;
+  showAll?: boolean; // When true, shows all commands including hidden
 };
 
 export type HistoryItemStats = HistoryItemBase & {

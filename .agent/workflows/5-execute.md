@@ -29,7 +29,7 @@ specified, no more, no less.
 2. After each file change, verify it compiles:
 
    ```bash
-   npm run build
+   turbo run build
    ```
 
 3. If the task has a specific test, run it:

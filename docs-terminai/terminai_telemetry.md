@@ -303,7 +303,8 @@ Already correct:
 2. **Build Verification:**
 
    ```bash
-   npm run build
+   turbo run build
+   npm test
    # Ensure no reference errors for deleted modules
    ```
 

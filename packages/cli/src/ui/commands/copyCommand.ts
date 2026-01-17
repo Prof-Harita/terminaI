@@ -9,11 +9,14 @@ import { debugLogger } from '@terminai/core';
 import { copyToClipboard } from '../utils/commandUtils.js';
 import type { SlashCommand, SlashCommandActionReturn } from './types.js';
 import { CommandKind } from './types.js';
+import { CommandCategory } from './categories.js';
 
 export const copyCommand: SlashCommand = {
   name: 'copy',
   description: 'Copy the last result or code snippet to clipboard',
   kind: CommandKind.BUILT_IN,
+  visibility: 'core',
+  category: CommandCategory.ESSENTIALS,
   autoExecute: true,
   action: async (context, _args): Promise<SlashCommandActionReturn | void> => {
     const chat = context.services.config?.getGeminiClient()?.getChat();

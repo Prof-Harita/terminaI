@@ -59,7 +59,7 @@ If automatic resolution leaves unexpected state:
 
 ```bash
 npm ci
-npm run build
+npm install && turbo run build
 ```
 
 - **On failure**: Identify the failing package and file. Fix TypeScript errors.
@@ -120,7 +120,7 @@ END WHILE
 ### 3.2 Pre-Push Verification
 
 ```bash
-npm run build && npm run lint && npm run test:ci
+turbo run build && npm run lint && npm run test:ci
 ```
 
 Must all pass before proceeding.

@@ -7,7 +7,7 @@ On this page, you can find information regarding the current releases and
 announcements from each release.
 
 For the full changelog, refer to
-[Releases - google-gemini/gemini-cli](https://github.com/google-gemini/gemini-cli/releases)
+[Releases - Prof-Harita/terminaI](https://github.com/Prof-Harita/terminaI/releases)
 on GitHub.
 
 ## Current releases
@@ -334,12 +334,12 @@ on GitHub.
 - 🎉 **Our New Home Page & Better Documentation** 🎉
   - Check out our new home page for better getting started material, reference
     documentation, extensions and more!
-  - _Homepage:_ [https://geminicli.com](https://geminicli.com)
+  - _Homepage:_ [https://terminai.org](https://terminai.org)
   - ‼️*NEW documentation:*
-    [https://geminicli.com/docs](https://geminicli.com/docs) (Have any
-    [suggestions](https://github.com/google-gemini/gemini-cli/discussions/8722)?)
+    [https://terminai.org/docs](https://terminai.org/docs) (Have any
+    [suggestions](https://github.com/Prof-Harita/terminaI/discussions/8722)?)
   - _Extensions:_
-    [https://geminicli.com/extensions](https://geminicli.com/extensions)
+    [https://terminai.org/extensions](https://terminai.org/extensions)
 - **Non-Interactive Allowed Tools:** `--allowed-tools` will now also work in
   non-interactive mode.
   ([pr](https://github.com/google-gemini/gemini-cli/pull/9114) by

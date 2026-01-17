@@ -33,7 +33,7 @@ This is a Node.js/TypeScript backend service.
 
 ## Building and Running
 
-- Build: \`npm run build\`
+- Build: \`turbo run build\`
 - Start: \`npm run start\`
 - Dev: \`npm run dev\`
 
@@ -65,7 +65,7 @@ This is a React frontend application.
 ## Commands
 
 - Dev Server: \`npm start\`
-- Build: \`npm run build\`
+- Build: \`turbo run build\`
 - Test: \`npm test\`
 ```
 

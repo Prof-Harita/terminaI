@@ -22,6 +22,7 @@ import {
   type SlashCommandActionReturn,
   CommandKind,
 } from './types.js';
+import { CommandCategory } from './categories.js';
 import type { HistoryItem } from '../types.js';
 
 const HistoryItemSchema = z
@@ -165,6 +166,8 @@ export const restoreCommand = (config: Config | null): SlashCommand | null => {
     description:
       'Restore a tool call. This will reset the conversation and file history to the state it was in when the tool call was suggested',
     kind: CommandKind.BUILT_IN,
+    visibility: 'core',
+    category: CommandCategory.SYSTEM_OPERATOR,
     autoExecute: true,
     action: restoreAction,
     completion,

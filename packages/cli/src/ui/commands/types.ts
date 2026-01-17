@@ -168,12 +168,38 @@ export enum CommandKind {
   MCP_PROMPT = 'mcp-prompt',
 }
 
+/**
+ * Controls command visibility in /help and autocomplete.
+ * - 'core': Always visible in /help
+ * - 'conditional': Visible when `when()` returns true
+ * - 'hidden': Never shown in /help, but still callable
+ */
+export type CommandVisibility = 'core' | 'conditional' | 'hidden';
+
 // The standardized contract for any command in the system.
 export interface SlashCommand {
   name: string;
   altNames?: string[];
   description: string;
   hidden?: boolean;
+
+  /**
+   * Controls visibility in /help and autocomplete.
+   * If not set, defaults to 'core' (visible) unless `hidden` is true.
+   */
+  visibility?: CommandVisibility;
+
+  /**
+   * Category for grouping in /help display.
+   * e.g., 'Essentials', 'LLM + Model', 'Sessions + Workspace'
+   */
+  category?: string;
+
+  /**
+   * For conditional visibility: returns true if command should be shown.
+   * Only evaluated when visibility is 'conditional'.
+   */
+  when?: (ctx: CommandContext) => boolean;
 
   kind: CommandKind;
 

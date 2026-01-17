@@ -37,6 +37,7 @@ export const auditCommand: SlashCommand = {
   description:
     'View or export audit ledger (always on). Usage: /audit [export|verify]',
   kind: CommandKind.BUILT_IN,
+  hidden: true, // Aliased by /logs - kept for upstream compatibility
   autoExecute: false,
   action: async (context) => {
     const ledger = getLedger(context);
