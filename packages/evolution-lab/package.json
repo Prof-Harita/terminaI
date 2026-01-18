@@ -1,6 +1,6 @@
 {
   "name": "@terminai/evolution-lab",
-  "version": "0.26.0",
+  "version": "0.50.0",
   "description": "Agentic Testing Lab for TerminaI",
   "private": true,
   "type": "module",
