@@ -11,6 +11,7 @@ import type { TokenStorage, OAuthCredentials } from './types.js';
 import { TokenStorageType } from './types.js';
 
 const FORCE_FILE_STORAGE_ENV_VAR = 'GEMINI_FORCE_FILE_STORAGE';
+const TERMINAI_FORCE_FILE_STORAGE_ENV_VAR = 'TERMINAI_FORCE_FILE_STORAGE';
 
 export class HybridTokenStorage extends BaseTokenStorage {
   private storage: TokenStorage | null = null;
@@ -21,8 +22,42 @@ export class HybridTokenStorage extends BaseTokenStorage {
     super(serviceName);
   }
 
+  private isFileStorageForced(): boolean {
+    return (
+      process.env[TERMINAI_FORCE_FILE_STORAGE_ENV_VAR] === 'true' ||
+      process.env[FORCE_FILE_STORAGE_ENV_VAR] === 'true'
+    );
+  }
+
+  private async fallbackToFileStorage(): Promise<TokenStorage> {
+    this.storage = new FileTokenStorage(this.serviceName);
+    this.storageType = TokenStorageType.ENCRYPTED_FILE;
+    this.storageInitPromise = Promise.resolve(this.storage);
+    return this.storage;
+  }
+
+  private async runWithFallback<T>(
+    op: (storage: TokenStorage) => Promise<T>,
+  ): Promise<T> {
+    const storage = await this.getStorage();
+    try {
+      const result = await op(storage);
+      return result;
+    } catch (error: unknown) {
+      if (
+        !this.isFileStorageForced() &&
+        this.storageType === TokenStorageType.KEYCHAIN
+      ) {
+        const fileStorage = await this.fallbackToFileStorage();
+        const result = await op(fileStorage);
+        return result;
+      }
+      throw error;
+    }
+  }
+
   private async initializeStorage(): Promise<TokenStorage> {
-    const forceFileStorage = process.env[FORCE_FILE_STORAGE_ENV_VAR] === 'true';
+    const forceFileStorage = this.isFileStorageForced();
 
     if (!forceFileStorage) {
       try {
@@ -62,33 +97,33 @@ export class HybridTokenStorage extends BaseTokenStorage {
   }
 
   async getCredentials(serverName: string): Promise<OAuthCredentials | null> {
-    const storage = await this.getStorage();
-    return storage.getCredentials(serverName);
+    return this.runWithFallback((storage) =>
+      storage.getCredentials(serverName),
+    );
   }
 
   async setCredentials(credentials: OAuthCredentials): Promise<void> {
-    const storage = await this.getStorage();
-    await storage.setCredentials(credentials);
+    await this.runWithFallback((storage) =>
+      storage.setCredentials(credentials),
+    );
   }
 
   async deleteCredentials(serverName: string): Promise<void> {
-    const storage = await this.getStorage();
-    await storage.deleteCredentials(serverName);
+    await this.runWithFallback((storage) =>
+      storage.deleteCredentials(serverName),
+    );
   }
 
   async listServers(): Promise<string[]> {
-    const storage = await this.getStorage();
-    return storage.listServers();
+    return this.runWithFallback((storage) => storage.listServers());
   }
 
   async getAllCredentials(): Promise<Map<string, OAuthCredentials>> {
-    const storage = await this.getStorage();
-    return storage.getAllCredentials();
+    return this.runWithFallback((storage) => storage.getAllCredentials());
   }
 
   async clearAll(): Promise<void> {
-    const storage = await this.getStorage();
-    await storage.clearAll();
+    await this.runWithFallback((storage) => storage.clearAll());
   }
 
   async getStorageType(): Promise<TokenStorageType> {

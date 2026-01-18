@@ -653,6 +653,7 @@ describe('useTextBuffer', () => {
     });
 
     it('should handle multiple paths with escaped spaces', () => {
+      const isWindows = process.platform === 'win32';
       // Use Set to model reality: individual paths exist, combined string doesn't
       const validPaths = new Set(['/path/to/my file.txt', '/other/path.txt']);
       const { result } = renderHook(() =>
@@ -661,7 +662,9 @@ describe('useTextBuffer', () => {
       const filePaths = '/path/to/my\\ file.txt /other/path.txt';
       act(() => result.current.insert(filePaths, { paste: true }));
       expect(getBufferState(result).text).toBe(
-        '@/path/to/my\\ file.txt @/other/path.txt ',
+        isWindows
+          ? '@"/path/to/my file.txt" @/other/path.txt '
+          : '@/path/to/my\\ file.txt @/other/path.txt ',
       );
     });
 

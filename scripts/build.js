@@ -18,7 +18,7 @@
 // limitations under the License.
 
 import { execSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { existsSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -52,6 +52,18 @@ if (!existsSync(nodeModulesPath)) {
 // build all workspaces/packages
 execSync('npm run generate', { stdio: 'inherit', cwd: root });
 execSync('npm run build:packages', { stdio: 'inherit', cwd: root });
+
+// Force update timestamp for CLI package to satisfy check-build-status.js
+// This creates/updates the timestamp file to "now", preventing stale warnings
+// when turbo restores from cache (which restores old timestamps).
+try {
+  const cliDistDir = join(root, 'packages', 'cli', 'dist');
+  if (existsSync(cliDistDir)) {
+    writeFileSync(join(cliDistDir, '.last_build'), '');
+  }
+} catch (e) {
+  console.warn('Failed to update CLI build timestamp:', e.message);
+}
 
 // also build container image if sandboxing is enabled
 // skip (-s) npm install + build since we did that above

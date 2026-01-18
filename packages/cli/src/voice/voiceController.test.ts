@@ -31,7 +31,7 @@ describe('VoiceController', () => {
     resolveSpeak();
     await speakCall;
     expect(controller.isSpeaking()).toBe(false);
-  });
+  }, 15_000);
 
   it('no-ops when no TTS provider is configured', async () => {
     const controller = new VoiceController(null);

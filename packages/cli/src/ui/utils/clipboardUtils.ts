@@ -287,7 +287,7 @@ export function parsePastedPaths(
     const unescaped = unescapePath(segment);
     if (isValidPath(unescaped)) {
       anyValidPath = true;
-      return `@${segment}`;
+      return `@${escapePath(unescaped)}`;
     }
     return segment;
   });

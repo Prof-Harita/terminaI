@@ -26,9 +26,24 @@ import { TextInput } from '../components/shared/TextInput.js';
 import { checkExhaustive } from '../../utils/checks.js';
 import process from 'node:process';
 import * as http from 'node:http';
+import * as net from 'node:net';
 import { URL } from 'node:url';
 import { CliSpinner } from '../components/CliSpinner.js';
 import open from 'open';
+
+function isTruthyEnvVar(name: string): boolean {
+  const raw = process.env[name];
+  if (raw === undefined) return false;
+  const normalized = raw.trim().toLowerCase();
+  return (
+    normalized === '1' ||
+    normalized === 'true' ||
+    normalized === 'yes' ||
+    normalized === 'on'
+  );
+}
+
+const OAUTH_DEBUG = isTruthyEnvVar('TERMINAI_OAUTH_DEBUG');
 
 type Step = 'model' | 'base_url' | 'oauth';
 
@@ -57,8 +72,14 @@ export function OpenAIChatGptOAuthSetupDialog({
   const [oauthState, setOauthState] = useState<string | null>(null);
   const [codeVerifier, setCodeVerifier] = useState<string | null>(null);
   const [oauthInProgress, setOauthInProgress] = useState(false);
+  const [callbackServerStatus, setCallbackServerStatus] = useState<
+    'idle' | 'binding' | 'listening' | 'failed'
+  >('idle');
 
   const serverRef = useRef<http.Server | null>(null);
+  const oauthCallbackTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   const openaiSettings = settings.merged.llm?.openaiChatgptOauth;
   const defaultModel = openaiSettings?.model || '';
@@ -116,14 +137,23 @@ export function OpenAIChatGptOAuthSetupDialog({
         // ignore
       }
       serverRef.current = null;
+
+      if (oauthCallbackTimeoutRef.current) {
+        clearTimeout(oauthCallbackTimeoutRef.current);
+      }
+      oauthCallbackTimeoutRef.current = null;
     },
     [],
   );
 
   const startOauthFlow = useCallback(
     async (client: ChatGptOAuthClient): Promise<void> => {
+      if (OAUTH_DEBUG) console.log('[OAuth DEBUG] startOauthFlow called');
+      setCallbackServerStatus('binding');
       const redirectUri = `http://localhost:${DEFAULT_OPENAI_OAUTH_REDIRECT_PORT}/auth/callback`;
       const start = client.startAuthorization({ redirectUri });
+      if (OAUTH_DEBUG)
+        console.log('[OAuth DEBUG] Authorization started, state:', start.state);
 
       setAuthUrl(start.authUrl);
       setOauthState(start.state);
@@ -155,27 +185,79 @@ export function OpenAIChatGptOAuthSetupDialog({
         });
       }
 
-      const server = await bindOAuthServerWithCancelRetry({
-        expectedState: start.state,
-        onCode: async (code) => {
-          const creds = await client.exchangeAuthorizationCode({
-            code,
-            redirectUri,
-            codeVerifier: start.codeVerifier,
-          });
-          await ChatGptOAuthCredentialStorage.save(creds);
-          coreEvents.emit(CoreEvent.UserFeedback, {
-            severity: 'info',
-            message: 'ChatGPT OAuth authentication succeeded!\n',
-          });
-          void onComplete();
-        },
-        onError: (e) => {
-          onAuthError(e.message);
-        },
-      });
+      if (OAUTH_DEBUG)
+        console.log(
+          '[OAuth DEBUG] About to call bindOAuthServerWithCancelRetry',
+        );
+      try {
+        const server = await bindOAuthServerWithCancelRetry({
+          expectedState: start.state,
+          onCode: async (code) => {
+            if (OAUTH_DEBUG)
+              console.log('[OAuth DEBUG] onCode callback triggered with code');
+            if (oauthCallbackTimeoutRef.current) {
+              clearTimeout(oauthCallbackTimeoutRef.current);
+            }
+            oauthCallbackTimeoutRef.current = null;
 
-      serverRef.current = server;
+            const creds = await client.exchangeAuthorizationCode({
+              code,
+              redirectUri,
+              codeVerifier: start.codeVerifier,
+            });
+            await ChatGptOAuthCredentialStorage.save(creds);
+            coreEvents.emit(CoreEvent.UserFeedback, {
+              severity: 'info',
+              message: 'ChatGPT OAuth authentication succeeded!\n',
+            });
+            void onComplete();
+          },
+          onError: (e) => {
+            if (OAUTH_DEBUG)
+              console.log(
+                '[OAuth DEBUG] onError callback triggered:',
+                e.message,
+              );
+            onAuthError(e.message);
+          },
+        });
+        if (OAUTH_DEBUG)
+          console.log(
+            '[OAuth DEBUG] bindOAuthServerWithCancelRetry returned, server:',
+            !!server,
+          );
+
+        setCallbackServerStatus('listening');
+        serverRef.current = server;
+
+        if (oauthCallbackTimeoutRef.current) {
+          clearTimeout(oauthCallbackTimeoutRef.current);
+        }
+        oauthCallbackTimeoutRef.current = setTimeout(
+          () => {
+            onAuthError(
+              'Timed out waiting for OAuth callback. Paste the full redirect URL from your browser.',
+            );
+            setCallbackServerStatus('failed');
+            try {
+              server.close();
+            } catch {
+              // ignore
+            }
+          },
+          2 * 60 * 1000,
+        );
+
+        server.once('close', () => {
+          if (oauthCallbackTimeoutRef.current) {
+            clearTimeout(oauthCallbackTimeoutRef.current);
+          }
+          oauthCallbackTimeoutRef.current = null;
+        });
+      } catch (e: unknown) {
+        setCallbackServerStatus('failed');
+        throw e;
+      }
     },
     [onAuthError, onComplete],
   );
@@ -216,16 +298,25 @@ export function OpenAIChatGptOAuthSetupDialog({
         onAuthError(null);
         if (!applyProviderSettings()) return;
 
-        const client = new ChatGptOAuthClient();
-        const imported =
-          (await tryImportFromCodexCli(client)) ??
-          (await tryImportFromOpenCode(client));
+        try {
+          const client = new ChatGptOAuthClient();
+          const imported =
+            (await tryImportFromCodexCli(client)) ??
+            (await tryImportFromOpenCode(client));
 
-        // Ensure imported credentials strictly have the required account ID
-        if (imported && imported.accountId) {
-          await ChatGptOAuthCredentialStorage.save(imported);
-          void onComplete();
-          return;
+          // Ensure imported credentials strictly have the required account ID
+          if (imported && imported.accountId) {
+            await ChatGptOAuthCredentialStorage.save(imported);
+            void onComplete();
+            return;
+          }
+        } catch (e: unknown) {
+          // Log but continue to OAuth flow - import is optional
+          const msg = e instanceof Error ? e.message : String(e);
+          coreEvents.emit(CoreEvent.UserFeedback, {
+            severity: 'warning',
+            message: `Could not import existing credentials: ${msg}`,
+          });
         }
 
         setStep('oauth');
@@ -234,33 +325,41 @@ export function OpenAIChatGptOAuthSetupDialog({
       case 'oauth': {
         // Manual paste submit
         onAuthError(null);
-        const redirectUrl = manualPasteBuffer.text.trim();
-        const parsed = parseRedirectUrl(redirectUrl);
-        if (!parsed) {
-          onAuthError(
-            'Could not parse redirect URL. Paste the full URL from your browser.',
-          );
-          return;
-        }
-        if (!oauthState || parsed.state !== oauthState) {
-          onAuthError('State mismatch. Restart the OAuth flow and try again.');
-          return;
-        }
-        if (!codeVerifier) {
-          onAuthError('OAuth state is missing. Restart the OAuth flow.');
-          return;
-        }
+        try {
+          const redirectUrl = manualPasteBuffer.text.trim();
+          const parsed = parseRedirectUrl(redirectUrl);
+          if (!parsed) {
+            onAuthError(
+              'Could not parse redirect URL. Paste the full URL from your browser.',
+            );
+            return;
+          }
+          if (!oauthState || parsed.state !== oauthState) {
+            onAuthError(
+              'State mismatch. Restart the OAuth flow and try again.',
+            );
+            return;
+          }
+          if (!codeVerifier) {
+            onAuthError('OAuth state is missing. Restart the OAuth flow.');
+            return;
+          }
 
-        const redirectUri = `http://localhost:${DEFAULT_OPENAI_OAUTH_REDIRECT_PORT}/auth/callback`;
-        const client = new ChatGptOAuthClient();
-        const creds = await client.exchangeAuthorizationCode({
-          code: parsed.code,
-          redirectUri,
-          codeVerifier,
-        });
-        await ChatGptOAuthCredentialStorage.save(creds);
-        void onComplete();
-        return;
+          const redirectUri = `http://localhost:${DEFAULT_OPENAI_OAUTH_REDIRECT_PORT}/auth/callback`;
+          const client = new ChatGptOAuthClient();
+          const creds = await client.exchangeAuthorizationCode({
+            code: parsed.code,
+            redirectUri,
+            codeVerifier,
+          });
+          await ChatGptOAuthCredentialStorage.save(creds);
+          void onComplete();
+          return;
+        } catch (e: unknown) {
+          const msg = e instanceof Error ? e.message : String(e);
+          onAuthError(msg);
+          return;
+        }
       }
       default:
         checkExhaustive(step);
@@ -337,8 +436,17 @@ export function OpenAIChatGptOAuthSetupDialog({
           </Box>
           <Box marginTop={1}>
             <Text color={theme.text.secondary}>
-              <CliSpinner type="dots" /> Waiting for OAuth callback on{' '}
-              {`localhost:${DEFAULT_OPENAI_OAUTH_REDIRECT_PORT}`}
+              {callbackServerStatus === 'failed' ? null : (
+                <CliSpinner type="dots" />
+              )}{' '}
+              {callbackServerStatus === 'listening'
+                ? 'Waiting for OAuth callback on '
+                : callbackServerStatus === 'failed'
+                  ? 'Local callback server unavailable. Paste the full redirect URL below.'
+                  : 'Starting local callback server on '}
+              {callbackServerStatus === 'failed'
+                ? null
+                : `localhost:${DEFAULT_OPENAI_OAUTH_REDIRECT_PORT}`}
             </Text>
           </Box>
         </Box>
@@ -388,14 +496,28 @@ async function bindOAuthServerWithCancelRetry(input: {
   onError: (error: Error) => void;
 }): Promise<http.Server> {
   const port = DEFAULT_OPENAI_OAUTH_REDIRECT_PORT;
-  const host = 'localhost';
+  // Use 127.0.0.1 by default instead of 'localhost' to avoid IPv4/IPv6
+  // mismatch on Windows. The redirect URI uses 'localhost' (required by OAuth),
+  // but binding to 127.0.0.1 ensures the server listens on IPv4.
+  // Allow override via OAUTH_CALLBACK_HOST for Docker/special environments.
+  const host = process.env['OAUTH_CALLBACK_HOST'] || '127.0.0.1';
+
+  if (OAUTH_DEBUG)
+    console.log('[OAuth DEBUG] Creating callback server for', host, port);
 
   const server = http.createServer((req, res) => {
+    if (OAUTH_DEBUG)
+      console.log('[OAuth DEBUG] Received request:', req.method, req.url);
     try {
       const url = new URL(req.url ?? '/', `http://${host}:${port}`);
       if (url.pathname === '/cancel') {
-        res.writeHead(200, { 'Content-Type': 'text/plain' });
-        res.end('cancelled');
+        res.writeHead(200, {
+          'Content-Type': 'text/plain',
+          Connection: 'close',
+        });
+        res.end('cancelled', () => {
+          req.socket.destroy();
+        });
         try {
           server.close();
         } catch {
@@ -405,28 +527,55 @@ async function bindOAuthServerWithCancelRetry(input: {
       }
 
       if (url.pathname !== '/auth/callback') {
-        res.writeHead(404, { 'Content-Type': 'text/plain' });
-        res.end('not found');
+        res.writeHead(404, {
+          'Content-Type': 'text/plain',
+          Connection: 'close',
+        });
+        res.end('not found', () => {
+          req.socket.destroy();
+        });
         return;
       }
 
       const code = url.searchParams.get('code') ?? '';
       const state = url.searchParams.get('state') ?? '';
       if (!code || !state) {
-        res.writeHead(400, { 'Content-Type': 'text/plain' });
-        res.end('missing code/state');
+        res.writeHead(400, {
+          'Content-Type': 'text/plain',
+          Connection: 'close',
+        });
+        res.end('missing code/state', () => {
+          req.socket.destroy();
+        });
         return;
       }
       if (state !== input.expectedState) {
-        res.writeHead(400, { 'Content-Type': 'text/plain' });
-        res.end('state mismatch');
+        res.writeHead(400, {
+          'Content-Type': 'text/plain',
+          Connection: 'close',
+        });
+        res.end('state mismatch', () => {
+          req.socket.destroy();
+        });
         return;
       }
 
-      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.writeHead(200, {
+        'Content-Type': 'text/html',
+        Connection: 'close',
+      });
       res.end(
         '<!doctype html><meta charset="utf-8"><title>TerminaI</title><p>Authentication complete. You can close this tab.</p>',
+        () => {
+          req.socket.destroy();
+        },
       );
+
+      try {
+        server.close();
+      } catch {
+        // ignore
+      }
 
       void input.onCode(code).catch((e: unknown) => {
         const err = e instanceof Error ? e : new Error('OAuth exchange failed');
@@ -435,8 +584,18 @@ async function bindOAuthServerWithCancelRetry(input: {
     } catch (e: unknown) {
       const err = e instanceof Error ? e : new Error('OAuth callback failed');
       input.onError(err);
-      res.writeHead(500, { 'Content-Type': 'text/plain' });
-      res.end('error');
+      res.writeHead(500, {
+        'Content-Type': 'text/plain',
+        Connection: 'close',
+      });
+      res.end('error', () => {
+        req.socket.destroy();
+      });
+      try {
+        server.close();
+      } catch {
+        // ignore
+      }
     }
   });
 
@@ -450,17 +609,44 @@ async function listenWithCancelRetry(
 ): Promise<void> {
   const attempts = 10;
   const delayMs = 200;
+  const listenTimeoutMs = 2_000;
 
   for (let i = 0; i < attempts; i++) {
+    if (OAUTH_DEBUG)
+      console.log(
+        `[OAuth DEBUG] Bind attempt ${i + 1}/${attempts} to ${input.host}:${input.port}`,
+      );
     try {
       await new Promise<void>((resolve, reject) => {
-        const onError = (err: unknown) => {
+        const timer = setTimeout(() => {
           server.off('error', onError);
+          try {
+            server.close();
+          } catch {
+            // ignore
+          }
+          reject(
+            new Error(
+              `Timed out while binding ${input.host}:${input.port} (attempt ${i + 1}/${attempts})`,
+            ),
+          );
+        }, listenTimeoutMs);
+
+        const onError = (err: unknown) => {
+          if (OAUTH_DEBUG)
+            console.log('[OAuth DEBUG] Server error during bind:', err);
+          server.off('error', onError);
+          clearTimeout(timer);
           reject(err);
         };
         server.once('error', onError);
         server.listen(input.port, input.host, () => {
+          if (OAUTH_DEBUG)
+            console.log(
+              `[OAuth DEBUG] Server successfully listening on ${input.host}:${input.port}`,
+            );
           server.off('error', onError);
+          clearTimeout(timer);
           resolve();
         });
       });
@@ -473,13 +659,60 @@ async function listenWithCancelRetry(
         typeof (e as { code?: unknown }).code === 'string'
           ? (e as { code: string }).code
           : '';
+      if (OAUTH_DEBUG)
+        console.log(`[OAuth DEBUG] Bind failed with code: ${code}`, e);
       if (code !== 'EADDRINUSE') {
+        if (OAUTH_DEBUG)
+          console.log('[OAuth DEBUG] Non-EADDRINUSE error, throwing');
         throw e;
       }
-      await fetch(`http://${input.host}:${input.port}/cancel`).catch(() => {});
+      if (OAUTH_DEBUG)
+        console.log('[OAuth DEBUG] Port in use, sending cancel request');
+      await sendCancelRequest({ host: input.host, port: input.port }).catch(
+        () => {},
+      );
       await new Promise((r) => setTimeout(r, delayMs));
     }
   }
 
   throw new Error(`Failed to bind ${input.host}:${input.port}`);
+}
+
+async function sendCancelRequest(input: {
+  host: string;
+  port: number;
+}): Promise<void> {
+  const host = input.host === '0.0.0.0' ? '127.0.0.1' : input.host;
+  await new Promise<void>((resolve, reject) => {
+    let settled = false;
+    const settle = (error?: Error) => {
+      if (settled) return;
+      settled = true;
+      if (error) {
+        reject(error);
+        return;
+      }
+      resolve();
+    };
+
+    const socket = net.connect({ host, port: input.port });
+    socket.setTimeout(2_000);
+
+    socket.on('timeout', () => {
+      socket.destroy();
+      settle(new Error('Cancel request timed out'));
+    });
+    socket.on('error', (error) => {
+      socket.destroy();
+      settle(error);
+    });
+    socket.on('connect', () => {
+      socket.write(`GET /cancel HTTP/1.1\r\n`);
+      socket.write(`Host: ${host}:${input.port}\r\n`);
+      socket.write(`Connection: close\r\n\r\n`);
+    });
+    socket.on('close', () => {
+      settle();
+    });
+  });
 }

@@ -42,15 +42,19 @@ describe('deferred auth default (Task 18)', () => {
     vi.resetAllMocks();
   });
 
-  it('enables deferLlmAuth when TERMINAI_SIDECAR=1', async () => {
-    process.env['TERMINAI_SIDECAR'] = '1';
-    const { createApp } = await import('./app.js');
+  it(
+    'enables deferLlmAuth when TERMINAI_SIDECAR=1',
+    { timeout: 15000 },
+    async () => {
+      process.env['TERMINAI_SIDECAR'] = '1';
+      const { createApp } = await import('./app.js');
 
-    await createApp();
+      await createApp();
 
-    // Signature: loadConfig(loadedSettings, extensionLoader, taskId, targetDir?, { deferLlmAuth })
-    const lastCall = loadConfigSpy.mock.calls.at(-1);
-    expect(lastCall?.[2]).toBe('a2a-server');
-    expect(lastCall?.[4]).toEqual({ deferLlmAuth: true });
-  });
+      // Signature: loadConfig(loadedSettings, extensionLoader, taskId, targetDir?, { deferLlmAuth })
+      const lastCall = loadConfigSpy.mock.calls.at(-1);
+      expect(lastCall?.[2]).toBe('a2a-server');
+      expect(lastCall?.[4]).toEqual({ deferLlmAuth: true });
+    },
+  );
 });

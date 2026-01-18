@@ -117,6 +117,21 @@ describe('HybridTokenStorage', () => {
       );
     });
 
+    it('should use file storage when TERMINAI_FORCE_FILE_STORAGE is set', async () => {
+      process.env['TERMINAI_FORCE_FILE_STORAGE'] = 'true';
+      mockFileStorage.getCredentials.mockResolvedValue(null);
+
+      await storage.getCredentials('test-server');
+
+      expect(mockKeychainStorage.isAvailable).not.toHaveBeenCalled();
+      expect(mockFileStorage.getCredentials).toHaveBeenCalledWith(
+        'test-server',
+      );
+      expect(await storage.getStorageType()).toBe(
+        TokenStorageType.ENCRYPTED_FILE,
+      );
+    });
+
     it('should fall back to file storage when keychain is unavailable', async () => {
       mockKeychainStorage.isAvailable!.mockResolvedValue(false);
       mockFileStorage.getCredentials.mockResolvedValue(null);
@@ -201,6 +216,33 @@ describe('HybridTokenStorage', () => {
 
       expect(mockKeychainStorage.setCredentials).toHaveBeenCalledWith(
         credentials,
+      );
+    });
+
+    it('should fall back to file storage when keychain operation throws', async () => {
+      const credentials: OAuthCredentials = {
+        serverName: 'test-server',
+        token: {
+          accessToken: 'access-token',
+          tokenType: 'Bearer',
+        },
+        updatedAt: Date.now(),
+      };
+
+      mockKeychainStorage.isAvailable!.mockResolvedValue(true);
+      mockKeychainStorage.setCredentials.mockRejectedValue(
+        new Error('The stub received bad data'),
+      );
+      mockFileStorage.setCredentials.mockResolvedValue(undefined);
+
+      await storage.setCredentials(credentials);
+
+      expect(mockKeychainStorage.setCredentials).toHaveBeenCalledWith(
+        credentials,
+      );
+      expect(mockFileStorage.setCredentials).toHaveBeenCalledWith(credentials);
+      expect(await storage.getStorageType()).toBe(
+        TokenStorageType.ENCRYPTED_FILE,
       );
     });
   });

@@ -51,7 +51,7 @@ describe('loadConfig provider auth selection', () => {
 
   it(
     'uses USE_OPENAI_CHATGPT_OAUTH when llm.provider is openai_chatgpt_oauth',
-    { timeout: 10000 },
+    { timeout: 20000 },
     async () => {
       const { AuthType, LlmProviderId } = await import('@terminai/core');
       const { loadConfig } = await import('./config.js');

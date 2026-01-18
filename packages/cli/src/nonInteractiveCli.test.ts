@@ -1113,9 +1113,8 @@ describe('runNonInteractive', () => {
     // If we want to test that handleCancellationError is called, we need the loop to detect abortion.
     // But our stream throws before the loop can detect it.
 
-    // Let's just check that the promise rejects with 'Aborted' for now,
-    // which proves the abortion signal reached the stream.
-    await expect(runPromise).rejects.toThrow('Aborted');
+    // The stream may surface 'Aborted' before the cancellation handler throws.
+    await expect(runPromise).rejects.toThrow(/Aborted|Cancelled/);
 
     expect(
       processStderrSpy.mock.calls.some(

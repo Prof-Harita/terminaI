@@ -56,12 +56,18 @@ describe('terminalSetup', () => {
     vi.resetAllMocks();
     process.env = { ...originalEnv };
 
+    delete process.env['TERM_PROGRAM'];
+    delete process.env['VSCODE_GIT_IPC_HANDLE'];
+    delete process.env['VSCODE_GIT_ASKPASS_MAIN'];
+    delete process.env['CURSOR_TRACE_ID'];
+
     // Default mocks
     mocks.homedir.mockReturnValue('/home/user');
     mocks.platform.mockReturnValue('darwin');
     mocks.mkdir.mockResolvedValue(undefined);
     mocks.copyFile.mockResolvedValue(undefined);
     mocks.exec.mockImplementation((cmd, cb) => cb(null, { stdout: '' }));
+    mocks.readFile.mockRejectedValue(new Error('ENOENT'));
   });
 
   afterEach(() => {

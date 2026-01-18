@@ -66,8 +66,8 @@ export default defineConfig({
     },
     poolOptions: {
       threads: {
-        minThreads: 8,
-        maxThreads: 16,
+        minThreads: process.platform === 'win32' ? 2 : 8,
+        maxThreads: process.platform === 'win32' ? 4 : 16,
       },
     },
     server: {

@@ -253,7 +253,12 @@ terminai
 Or use an API key:
 
 ```bash
+# macOS/Linux
 export TERMINAI_API_KEY="your-gemini-key"
+
+# Windows (PowerShell)
+$env:TERMINAI_API_KEY='your-gemini-key'
+
 terminai
 ```
 
@@ -276,7 +281,12 @@ Connect to OpenAI Platform, OpenRouter, Ollama gateways, or any
 `/chat/completions` endpoint.
 
 ```bash
+# macOS/Linux
 export OPENAI_API_KEY="sk-..."
+
+# Windows (PowerShell)
+$env:OPENAI_API_KEY='sk-...'
+
 terminai
 # Select "OpenAI Compatible" → enter base URL and model
 ```
@@ -290,8 +300,8 @@ terminai
 See: `docs-terminai/multi-llm-support.md`
 
 ```markdown
-Once in the CLI interface, use `/help` to understand the commands available, or
-begin chatting away!.
+Use `/llm reset` to switch when inside. Note right now hot-swap is not fully
+live. Please restart (Ctrl-C and npm run start or terminai) to apply changes.
 ```
 
 ---

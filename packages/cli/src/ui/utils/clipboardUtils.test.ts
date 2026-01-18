@@ -6,7 +6,7 @@
  */
 
 import os from 'node:os';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import {
   clipboardHasImage,
   saveClipboardImage,
@@ -15,7 +15,19 @@ import {
   parsePastedPaths,
 } from './clipboardUtils.js';
 
+vi.mock('@terminai/core', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@terminai/core')>();
+  return {
+    ...actual,
+    spawnAsync: vi.fn(),
+  };
+});
+
 describe('clipboardUtils', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
   describe('clipboardHasImage', () => {
     it('should return false on unsupported platforms', async () => {
       if (process.platform !== 'darwin' && process.platform !== 'win32') {
@@ -27,20 +39,36 @@ describe('clipboardUtils', () => {
       }
     });
 
-    // Skip on Windows CI: PowerShell clipboard operations hang in headless environment
-    it.skipIf(process.platform === 'win32' && process.env['CI'] === 'true')(
-      'should return boolean on macOS or Windows',
-      async () => {
-        if (process.platform === 'darwin' || process.platform === 'win32') {
-          const result = await clipboardHasImage();
-          expect(typeof result).toBe('boolean');
-        } else {
-          // Skip on unsupported platforms
-          expect(true).toBe(true);
-        }
-      },
-      30000, // Increased timeout
-    );
+    it('should construct platform clipboard command', async () => {
+      const { spawnAsync } = await import('@terminai/core');
+      const isWindows = process.platform === 'win32';
+      const isDarwin = process.platform === 'darwin';
+      const mockResult: { stdout: string; stderr: string } = {
+        stdout: isWindows ? 'True' : isDarwin ? 'TIFF picture' : '',
+        stderr: '',
+      };
+      vi.mocked(spawnAsync).mockResolvedValue(mockResult);
+
+      const result = await clipboardHasImage();
+
+      if (isWindows) {
+        expect(spawnAsync).toHaveBeenCalledWith('powershell', [
+          '-NoProfile',
+          '-Command',
+          'Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.Clipboard]::ContainsImage()',
+        ]);
+        expect(result).toBe(true);
+      } else if (isDarwin) {
+        expect(spawnAsync).toHaveBeenCalledWith('osascript', [
+          '-e',
+          'clipboard info',
+        ]);
+        expect(result).toBe(true);
+      } else {
+        expect(spawnAsync).not.toHaveBeenCalled();
+        expect(result).toBe(false);
+      }
+    }, 30000);
   });
 
   describe('saveClipboardImage', () => {

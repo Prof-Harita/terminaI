@@ -80,3 +80,7 @@ live_log.txt
 
 .gemini/
 .turbo
+
+local/
+local/*
+

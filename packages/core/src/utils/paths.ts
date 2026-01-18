@@ -317,7 +317,7 @@ export function makeRelative(
  */
 export function escapePath(filePath: string): string {
   // Windows: Use double-quoting which works in PowerShell and CMD
-  if (os.platform() === 'win32') {
+  if (process.platform === 'win32') {
     // Only quote if it contains special characters
     if (SHELL_SPECIAL_CHARS.test(filePath)) {
       // Escape internal double-quotes by doubling them
