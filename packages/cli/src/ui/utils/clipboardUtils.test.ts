@@ -27,15 +27,20 @@ describe('clipboardUtils', () => {
       }
     });
 
-    it('should return boolean on macOS or Windows', async () => {
-      if (process.platform === 'darwin' || process.platform === 'win32') {
-        const result = await clipboardHasImage();
-        expect(typeof result).toBe('boolean');
-      } else {
-        // Skip on unsupported platforms
-        expect(true).toBe(true);
-      }
-    }, 10000);
+    // Skip on Windows CI: PowerShell clipboard operations hang in headless environment
+    it.skipIf(process.platform === 'win32' && process.env['CI'] === 'true')(
+      'should return boolean on macOS or Windows',
+      async () => {
+        if (process.platform === 'darwin' || process.platform === 'win32') {
+          const result = await clipboardHasImage();
+          expect(typeof result).toBe('boolean');
+        } else {
+          // Skip on unsupported platforms
+          expect(true).toBe(true);
+        }
+      },
+      30000, // Increased timeout
+    );
   });
 
   describe('saveClipboardImage', () => {

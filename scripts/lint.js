@@ -124,14 +124,40 @@ const LINTERS = {
   },
   yamllint: {
     check: yamllintCheck,
-    installer: `
-    python3 -m venv "${PYTHON_VENV_PATH}" && \
-    "${pythonVenvPythonPath}" -m pip install --upgrade pip && \
-    "${pythonVenvPythonPath}" -m pip install "yamllint==${YAMLLINT_VERSION}" --index-url https://pypi.org/simple
-  `,
+    installer: null, // Custom installer function below
     run: "git ls-files | grep -E '\\.(yaml|yml)' | xargs yamllint --format github",
   },
 };
+
+// Cross-platform yamllint installer
+function installYamllint() {
+  const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
+  try {
+    // Create venv
+    console.log('Creating Python virtual environment...');
+    execSync(`${pythonCmd} -m venv "${PYTHON_VENV_PATH}"`, {
+      stdio: 'inherit',
+    });
+
+    // Upgrade pip
+    console.log('Upgrading pip...');
+    execSync(`"${pythonVenvPythonPath}" -m pip install --upgrade pip`, {
+      stdio: 'inherit',
+    });
+
+    // Install yamllint
+    console.log('Installing yamllint...');
+    execSync(
+      `"${pythonVenvPythonPath}" -m pip install "yamllint==${YAMLLINT_VERSION}" --index-url https://pypi.org/simple`,
+      { stdio: 'inherit' },
+    );
+
+    return true;
+  } catch (e) {
+    console.error('Failed to install yamllint:', e.message);
+    return false;
+  }
+}
 
 function runCommand(command, stdio = 'inherit') {
   try {
@@ -140,6 +166,10 @@ function runCommand(command, stdio = 'inherit') {
     const nodeBin = join(process.cwd(), 'node_modules', '.bin');
     env[pathKey] =
       `${nodeBin}${delimiter}${TEMP_DIR}/actionlint${delimiter}${TEMP_DIR}/shellcheck${delimiter}${VENV_BIN_DIR}${delimiter}${env[pathKey]}`;
+    // Force UTF-8 encoding for Python tools on Windows
+    if (process.platform === 'win32') {
+      env.PYTHONUTF8 = '1';
+    }
     execSync(command, { stdio, env });
     return true;
   } catch (_e) {
@@ -202,7 +232,15 @@ export function setupLinters() {
     const { check, installer } = LINTERS[linter];
     if (!runCommand(check, 'ignore')) {
       console.log(`Installing ${linter}...`);
-      if (!runCommand(installer)) {
+      // Use custom installer for yamllint (cross-platform)
+      if (linter === 'yamllint') {
+        if (!installYamllint()) {
+          console.error(
+            `Failed to install ${linter}. Please install it manually.`,
+          );
+          process.exit(1);
+        }
+      } else if (!runCommand(installer)) {
         console.error(
           `Failed to install ${linter}. Please install it manually.`,
         );
@@ -285,25 +323,64 @@ export function runShellcheck() {
 
 export function runYamllint() {
   console.log('\nRunning yamllint...');
+  let filesToLint = [];
+
   if (CHANGED_ONLY) {
     const files = getChangedFiles();
     if (files) {
-      const yamlFiles = files.filter(
+      filesToLint = files.filter(
         (f) => /\.(yaml|yml)$/.test(f) && existsSync(f),
       );
-      if (yamlFiles.length === 0) {
+      if (filesToLint.length === 0) {
         console.log('No changed YAML files to lint.');
         return;
       }
-      const cmd = `yamllint --format github ${yamlFiles.join(' ')}`;
-      if (!runCommand(cmd)) {
-        process.exit(1);
-      }
-      return;
+    }
+  } else {
+    try {
+      const output = execSync('git ls-files', {
+        maxBuffer: 10 * 1024 * 1024,
+      })
+        .toString()
+        .trim();
+      const files = output.split('\n').filter(Boolean);
+      filesToLint = files.filter((f) => /\.(yaml|yml)$/.test(f));
+    } catch (e) {
+      console.error('Error finding files:', e);
+      // If git command fails, we can't proceed reliably in this strict mode
+      process.exit(1);
     }
   }
 
-  if (!runCommand(LINTERS.yamllint.run)) {
+  if (filesToLint.length === 0) {
+    console.log('No YAML files found to lint.');
+    return;
+  }
+
+  // Chunking to avoid command line length limits on Windows
+  const CHUNK_SIZE = 50;
+  let hasError = false;
+
+  const yamllintExecutable =
+    process.platform === 'win32'
+      ? join(VENV_BIN_DIR, 'yamllint.exe')
+      : 'yamllint';
+
+  console.log(`Yamllint executable path: ${yamllintExecutable}`);
+  if (process.platform === 'win32' && !existsSync(yamllintExecutable)) {
+    console.error(`Yamllint executable not found at: ${yamllintExecutable}`);
+  }
+
+  for (let i = 0; i < filesToLint.length; i += CHUNK_SIZE) {
+    const chunk = filesToLint.slice(i, i + CHUNK_SIZE);
+    // Quote files to handle spaces
+    const command = `"${yamllintExecutable}" --format github ${chunk.map((f) => `"${f}"`).join(' ')}`;
+    if (!runCommand(command)) {
+      hasError = true;
+    }
+  }
+
+  if (hasError) {
     process.exit(1);
   }
 }

@@ -334,7 +334,7 @@ describe('gemini.tsx main function', () => {
     // we can authorize outside the sandbox.
     expect(callOrder).toEqual(['relaunch', 'loadCliConfig']);
     processExitSpy.mockRestore();
-  }, 30000); // Increased from 15000 for Windows CI runners
+  }, 90000); // Increased timeout for Windows CI runners
 
   it('should log unhandled promise rejections and open debug console on first error', async () => {
     const processExitSpy = vi

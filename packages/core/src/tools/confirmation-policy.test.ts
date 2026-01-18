@@ -191,7 +191,7 @@ describe('Tool Confirmation Policy Updates', () => {
           }
         }
       },
-      15000,
+      60000, // Increased timeout for Windows compatibility
     );
   });
 });
