@@ -104,7 +104,7 @@ runs:
       run: |-
         set -e
         git add package.json package-lock.json packages/*/package.json
-        git commit -m "chore(release): ${RELEASE_TAG}"
+        git commit --no-verify -m "chore(release): ${RELEASE_TAG}"
         if [[ "${DRY_RUN}" == "false" ]]; then
           echo "Pushing release branch to remote..."
           git push --set-upstream origin "${BRANCH_NAME}" --follow-tags
