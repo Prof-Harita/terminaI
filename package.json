@@ -1,6 +1,6 @@
 {
   "name": "terminai-monorepo",
-  "version": "0.26.0",
+  "version": "0.50.3",
   "engines": {
     "node": ">=20.0.0"
   },
@@ -15,7 +15,7 @@
     "url": "git+https://github.com/Prof-Harita/terminaI.git"
   },
   "config": {
-    "sandboxImageUri": "us-docker.pkg.dev/gemini-code-dev/gemini-cli/sandbox:0.26.0"
+    "sandboxImageUri": "us-docker.pkg.dev/gemini-code-dev/gemini-cli/sandbox:0.50.3"
   },
   "scripts": {
     "start": "cross-env NODE_ENV=development node scripts/start.js",
