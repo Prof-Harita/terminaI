@@ -1,6 +1,6 @@
 {
   "name": "@terminai/web-client",
-  "version": "0.26.0",
+  "version": "0.50.2",
   "private": true,
   "description": "Minimal static client for TerminaI web-remote",
   "license": "Apache-2.0",
