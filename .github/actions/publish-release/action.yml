@@ -94,6 +94,12 @@ runs:
       run: |
         npm run release:version "${{ inputs.release-version }}"
 
+    - name: '🔧 Resolve file: dependencies to versioned npm dependencies'
+      working-directory: '${{ inputs.working-directory }}'
+      shell: 'bash'
+      run: |
+        node scripts/resolve-file-deps.js "${{ inputs.release-version }}"
+
     - name: '💾 Commit and Conditionally Push package versions'
       working-directory: '${{ inputs.working-directory }}'
       shell: 'bash'
@@ -160,6 +166,15 @@ runs:
         npm install "${{ inputs.core-package-name }}@${{ inputs.release-version }}" \
         --workspace="${{ inputs.cli-package-name }}" \
         --workspace="${{ inputs.a2a-package-name }}" \
+        --save-exact
+
+    - name: '🔗 Install latest a2a-server package'
+      working-directory: '${{ inputs.working-directory }}'
+      if: "${{ inputs.dry-run != 'true' }}"
+      shell: 'bash'
+      run: |
+        npm install "${{ inputs.a2a-package-name }}@${{ inputs.release-version }}" \
+        --workspace="${{ inputs.cli-package-name }}" \
         --save-exact
 
     - name: '📦 Publish CLI'
