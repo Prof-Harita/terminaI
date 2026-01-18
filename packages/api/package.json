@@ -1,6 +1,6 @@
 {
   "name": "@terminai/api",
-  "version": "0.26.0",
+  "version": "0.50.1",
   "description": "TerminaI REST API",
   "type": "module",
   "main": "dist/index.js",

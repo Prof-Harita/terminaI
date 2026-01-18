@@ -1,6 +1,6 @@
 {
   "name": "@terminai/cli",
-  "version": "0.26.0",
+  "version": "0.50.1",
   "description": "TerminaI CLI",
   "license": "Apache-2.0",
   "repository": {
@@ -27,7 +27,7 @@
     "dist"
   ],
   "config": {
-    "sandboxImageUri": "us-docker.pkg.dev/gemini-code-dev/gemini-cli/sandbox:0.26.0"
+    "sandboxImageUri": "us-docker.pkg.dev/gemini-code-dev/gemini-cli/sandbox:0.50.1"
   },
   "dependencies": {
     "@agentclientprotocol/sdk": "^0.11.0",
