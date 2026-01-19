@@ -95,6 +95,8 @@ git push origin main
 ```
 
 - ❌ **If rejected**: `git pull --rebase origin main && git push origin main`
+- ❌ **If rejected after amend**:
+  `git push origin main --force-with-lease --no-verify`
 
 ## 7. CI Monitoring
 
@@ -132,12 +134,25 @@ CI Status: Monitoring...
 
 Reference: `docs-terminai/CI_tech_debt.md`
 
-| Pattern                               | Root Cause                            | Safe to Skip?  |
-| ------------------------------------- | ------------------------------------- | -------------- |
-| `ThemeManager` Windows failures       | OS Identity Mismatch                  | ✅ Yes         |
-| `PolicyEngine` path assertions        | Linux mock on Windows runner          | ✅ Yes         |
-| `path.startsWith('/home')` on Windows | Mocked Linux paths vs real Windows FS | ✅ Yes         |
-| Timeout in integration tests          | Runner resource contention            | ✅ Yes (retry) |
+| Pattern                               | Root Cause                            | Safe to Skip?     |
+| ------------------------------------- | ------------------------------------- | ----------------- |
+| `ThemeManager` Windows failures       | OS Identity Mismatch                  | ✅ Yes            |
+| `PolicyEngine` path assertions        | Linux mock on Windows runner          | ✅ Yes            |
+| `path.startsWith('/home')` on Windows | Mocked Linux paths vs real Windows FS | ✅ Yes            |
+| Timeout in integration tests          | Runner resource contention            | ✅ Yes (retry)    |
+| `refreshAuth is not a function`       | Missing mock in test setup            | ⛔ FIX (add mock) |
+
+---
+
+## Common Lint Fix Patterns (from Session)
+
+| Issue                          | Fix                                                 |
+| ------------------------------ | --------------------------------------------------- |
+| Missing license header         | Add `@license` block at TOP of file                 |
+| `(foo as any).mockReturnValue` | Use `vi.mocked(foo).mockReturnValue()` instead      |
+| ShellCheck `[ ]` vs `[[ ]]`    | Use `[[ ]]` and `${VAR}` in bash scripts            |
+| Prettier formatting            | Run `npm run format` after all edits                |
+| OOM on lint:fix                | Run with `NODE_OPTIONS="--max-old-space-size=8192"` |
 
 ---
 

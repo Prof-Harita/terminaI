@@ -28,6 +28,14 @@ git checkout main && git pull origin main
 
 ## 2. Version Bump
 
+> [!IMPORTANT] ALWAYS check current version first to avoid regression!
+
+```bash
+# Check current version AND what's on NPM
+npm pkg get version
+npm view @terminai/cli versions --json | tail -5
+```
+
 Ask user for release type: **patch** | **minor** | **major**
 
 ```bash
@@ -40,10 +48,13 @@ echo "New version: $NEW_TAG"
 
 ```bash
 git push origin main --no-verify
-git push origin main --tags
+# Push ONLY the new tag (not --tags which can fail on repo rules)
+git push origin $NEW_TAG --no-verify
 ```
 
-- ❌ **If rejected**: `git pull --rebase origin main && git push --force`
+- ❌ **If rejected (non-fast-forward)**:
+  `git push origin main --force-with-lease --no-verify`
+- ❌ **If tags rejected (rule violation)**: Push specific tag only, not `--tags`
 - ✅ **If successful**: Proceed to release trigger
 
 ## 4. Trigger Manual Release (BYPASS TESTS)
@@ -87,12 +98,15 @@ gh run view $(gh run list --workflow release-manual.yml --limit 1 --json databas
 
 **Common Failure Patterns** (from session learnings):
 
-| Issue                         | Fix                                       |
-| ----------------------------- | ----------------------------------------- |
-| `file:` deps in published pkg | Already fixed with `resolve-file-deps.js` |
-| Git push rejected             | Add `--force` to workflow or rebase       |
-| NPM 401 on dist-tag           | Check `npm-token` is passed correctly     |
-| Version exists (E403)         | Bump to next patch version                |
+| Issue                          | Fix                                         |
+| ------------------------------ | ------------------------------------------- |
+| `file:` deps in published pkg  | Already fixed with `resolve-file-deps.js`   |
+| Git push rejected              | Use `--force-with-lease --no-verify`        |
+| NPM 401 on dist-tag            | Check `npm-token` is passed correctly       |
+| Version exists (E403)          | Bump to next patch version                  |
+| Tags rejected (repo rules)     | Push specific tag: `git push origin vX.Y.Z` |
+| Version regression (0.50→0.27) | ALWAYS check `npm pkg get version` first!   |
+| Pre-push hooks slow/hang       | Use `--no-verify` on ALL git push commands  |
 
 ## 6. Verify Success
 
@@ -138,7 +152,10 @@ gh workflow run release-manual.yml --field version=$(git describe --tags --abbre
 - `file:` refs must be resolved before publish → `scripts/resolve-file-deps.js`
 - `npm-token` must be passed to tag step
 - Git commits need `--no-verify` in workflow
-- Push needs `--force` for release retries
+- Push needs `--force-with-lease` for release retries (not just `--force`)
+- **Check version before bump** to avoid regression (e.g., 0.50 → 0.27)
+- Push specific tag (`git push origin vX.Y.Z`), not `--tags` (repo rules block
+  bulk tag push)
 
 ---
 
