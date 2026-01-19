@@ -27,6 +27,7 @@ describe('authCommand', () => {
       services: {
         config: {
           getGeminiClient: vi.fn(),
+          refreshAuth: vi.fn(),
         },
       },
     });

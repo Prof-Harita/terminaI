@@ -84,3 +84,7 @@ live_log.txt
 local/
 local/*
 
+codex-cli/
+opencode/
+opencode-openai-auth/
+

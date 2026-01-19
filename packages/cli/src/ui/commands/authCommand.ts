@@ -43,6 +43,9 @@ const authLogoutCommand: SlashCommand = {
     );
     // Strip thoughts from history instead of clearing completely
     context.services.config?.getGeminiClient()?.stripThoughtsFromHistory();
+    // Force reset content generator to discard stale credentials
+    const { AuthType } = await import('@terminai/core');
+    await context.services.config?.refreshAuth(AuthType.USE_GEMINI);
     // Return logout action to signal explicit state change
     return {
       type: 'logout',
@@ -113,6 +116,12 @@ const authResetCommand: SlashCommand = {
 
     // Strip thoughts from history
     context.services.config?.getGeminiClient()?.stripThoughtsFromHistory();
+
+    // T2.3: Force reset of content generator to avoid using stale credentials
+    // We default to Gemini (unauthenticated) as the safe fallback to ensure
+    // the old ChatGptCodexContentGenerator (with cached tokens) is discarded.
+    const { AuthType } = await import('@terminai/core');
+    await context.services.config?.refreshAuth(AuthType.USE_GEMINI);
 
     // Open wizard directly - no confirmation needed for reset
     return {

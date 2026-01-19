@@ -41,6 +41,7 @@ export interface InitializationResult {
 export async function initializeApp(
   config: Config,
   settings: LoadedSettings,
+  isFirstRun: boolean = false,
 ): Promise<InitializationResult> {
   const effectiveAuthType = resolveEffectiveAuthType(settings.merged);
   const authHandle = startupProfiler.start('authenticate');
@@ -48,7 +49,8 @@ export async function initializeApp(
   authHandle?.end();
   const themeError = validateTheme(settings);
 
-  const shouldOpenAuthDialog = effectiveAuthType === undefined || !!authError;
+  const shouldOpenAuthDialog =
+    effectiveAuthType === undefined || !!authError || isFirstRun;
 
   logCliConfiguration(
     config,

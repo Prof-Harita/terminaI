@@ -20,8 +20,23 @@
               "icon": "lucide-file",
               "title": "README"
             }
+          },
+          {
+            "id": "726b256b2a615ff2",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Untitled.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Untitled"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -78,7 +93,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "a6a4109701045f30",
@@ -183,53 +199,53 @@
       "bases:Create new base": false
     }
   },
-  "active": "679bc035dcce914a",
+  "active": "726b256b2a615ff2",
   "lastOpenFiles": [
-    "packages/a2a-server/coverage/coverage-summary.json",
-    "packages/a2a-server/coverage/cobertura-coverage.xml",
-    "packages/a2a-server/coverage/lcov-report/src/http/routes/index.html",
-    "packages/a2a-server/coverage/lcov-report/src/http/routes/auth.ts.html",
-    "packages/a2a-server/coverage/lcov-report/src/agent/task.ts.html",
-    "packages/a2a-server/coverage/lcov-report/src/agent/index.html",
-    "packages/a2a-server/coverage/lcov-report/src/agent/executor.ts.html",
-    "packages/a2a-server/coverage/lcov-report/src/utils/testing_utils.ts.html",
-    "packages/a2a-server/coverage/lcov-report/src/utils/redactSecrets.ts.html",
-    "packages/a2a-server/coverage/lcov-report/src/utils/index.html",
-    "packages/a2a-server/coverage/lcov-report/src/utils/logger.ts.html",
-    "packages/a2a-server/coverage/lcov-report/sort-arrow-sprite.png",
-    "packages/a2a-server/coverage/lcov-report/favicon.png",
-    "packages/a2a-server/coverage/sort-arrow-sprite.png",
-    "packages/a2a-server/coverage/favicon.png",
-    "packages/core/coverage/lcov-report/sort-arrow-sprite.png",
-    "packages/core/coverage/lcov-report/favicon.png",
-    "packages/core/coverage/sort-arrow-sprite.png",
-    "packages/core/coverage/favicon.png",
-    "packages/cli/dist/src/commands/extensions/examples/context/terminaI.md",
-    "local/slash_cleanup.md",
-    "docs/termai-examples.md",
-    "docs/termai-comparison.md",
-    "bundle/docs/terminai-process-manager.md",
-    "bundle/docs/terminai-operator-recipes.md",
-    "bundle/docs/terminai-comparison.md",
-    "bundle/docs/terminai-system.md",
-    "bundle/docs/terminai-quickstart.md",
-    "bundle/docs/terminai-examples.md",
-    "docs/terminai-system.md",
-    "docs/terminai-quickstart.md",
-    "docs/terminai-process-manager.md",
-    "docs/terminai-operator-recipes.md",
-    "docs/terminai-examples.md",
-    "docs/terminai-comparison.md",
-    "TerminAI.md",
-    "packages/cli/coverage/lcov-report/sort-arrow-sprite.png",
-    "packages/cli/coverage/lcov-report/favicon.png",
-    "local/slash_audit.md",
-    "bundle/docs/cli/quick-reference.md",
-    "node_modules/turbo/README.md",
-    "node_modules/turbo-linux-64/README.md",
-    "docs/cli/quick-reference.md",
-    "local/slash_cleanup_tasks.md",
-    "local/slash_perfection_prompt.md",
-    "local/slash_prompt.md"
+    "local/auth_linux_windows_review_output_antigravity2.md",
+    "local/auth_linux_windows_review_output_antigravity.md",
+    "local/auth_linux_windows_review_output_antigravity 1.md",
+    "windsurf-stable.gpg",
+    "hi",
+    "local/auth_linux_windows_skills.md",
+    "opencode/turbo.json",
+    "opencode/tsconfig.json",
+    "opencode/themes/undertale.json",
+    "opencode/themes/deltarune.json",
+    "opencode/themes",
+    "opencode/sst.config.ts",
+    "opencode/sst-env.d.ts",
+    "opencode/specs/project.md",
+    "opencode/specs/perf-roadmap.md",
+    "opencode/specs/05-modularize-and-dedupe.md",
+    "opencode/specs/04-scroll-spy-optimization.md",
+    "opencode/specs/03-request-throttling.md",
+    "opencode/specs/02-cache-eviction.md",
+    "opencode/specs/01-persist-payload-limits.md",
+    "opencode/specs",
+    "opencode/sdks/vscode/README.md",
+    "opencode/packages/opencode/src/provider/sdk/openai-compatible/src/README.md",
+    "opencode/packages/desktop/src-tauri/icons/prod/android/mipmap-xxxhdpi/ic_launcher_round.png",
+    "opencode/packages/desktop/src-tauri/icons/prod/android/mipmap-xxxhdpi/ic_launcher_foreground.png",
+    "opencode/packages/desktop/src-tauri/icons/prod/android/mipmap-xxxhdpi/ic_launcher.png",
+    "opencode/packages/desktop/src-tauri/icons/prod/android/mipmap-xxhdpi/ic_launcher_round.png",
+    "opencode/packages/desktop/src-tauri/icons/prod/android/mipmap-xxhdpi/ic_launcher_foreground.png",
+    "opencode/packages/desktop/src-tauri/icons/prod/android/mipmap-xxhdpi/ic_launcher.png",
+    "opencode/packages/desktop/src-tauri/icons/prod/android/mipmap-xhdpi/ic_launcher_round.png",
+    "opencode/packages/desktop/src-tauri/icons/prod/android/mipmap-xhdpi/ic_launcher_foreground.png",
+    "opencode/packages/desktop/src-tauri/icons/prod/android/mipmap-xhdpi/ic_launcher.png",
+    "opencode/packages/desktop/src-tauri/icons/prod/android/mipmap-mdpi/ic_launcher_round.png",
+    "opencode/packages/opencode/test/config/fixtures/no-frontmatter.md",
+    "opencode/packages/opencode/test/config/fixtures/frontmatter.md",
+    "opencode/packages/opencode/test/config/fixtures/empty-frontmatter.md",
+    "opencode/packages/opencode/src/acp/README.md",
+    "opencode/packages/desktop/src-tauri/icons/README.md",
+    "opencode/packages/console/app/README.md",
+    "opencode/packages/web/README.md",
+    "opencode/packages/slack/README.md",
+    "opencode/packages/opencode/README.md",
+    "opencode/packages/opencode/AGENTS.md",
+    "opencode/packages/docs/README.md",
+    "opencode/packages/enterprise/README.md",
+    "opencode/packages/app/README.md"
   ]
 }

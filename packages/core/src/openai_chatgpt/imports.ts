@@ -46,7 +46,7 @@ export async function tryImportFromCodexCli(
       scope: undefined,
     },
     accountId,
-    lastRefresh: parsed.lastRefresh,
+    lastRefresh: parsed.lastRefresh ?? Date.now(), // Trust imported token as fresh
   };
 }
 

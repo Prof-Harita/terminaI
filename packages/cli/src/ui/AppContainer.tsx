@@ -784,7 +784,11 @@ export const AppContainer = (props: AppContainerProps) => {
   } = useAuthCommand(settings, config);
 
   const [authWizardDialog, setAuthWizardDialog] =
-    useState<AuthWizardDialogState | null>(null);
+    useState<AuthWizardDialogState | null>(
+      initializationResult.shouldOpenAuthDialog
+        ? AuthWizardDialogState.Provider
+        : null,
+    );
 
   const { proQuotaRequest, handleProQuotaChoice } = useQuotaAndFallback({
     config,
