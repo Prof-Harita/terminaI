@@ -518,7 +518,9 @@ export async function main() {
     });
 
     let onboardingVoiceOverrides: VoiceOverrides | undefined;
-    if (config.isInteractive() && isFirstRun()) {
+    // We capture isFirstRun here because it might be marked complete by the onboarding flow
+    const firstRun = isFirstRun();
+    if (config.isInteractive() && firstRun) {
       const onboardingResult = await runOnboardingFlow();
       markOnboardingComplete();
       if (onboardingResult.approvalMode === 'preview') {
@@ -762,7 +764,11 @@ export async function main() {
 
     setMaxSizedBoxDebugging(isDebugMode);
     const initAppHandle = startupProfiler.start('initialize_app');
-    const initializationResult = await initializeApp(config, settings);
+    const initializationResult = await initializeApp(
+      config,
+      settings,
+      firstRun,
+    );
     initAppHandle?.end();
 
     if (

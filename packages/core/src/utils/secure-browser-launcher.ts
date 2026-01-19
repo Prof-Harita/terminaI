@@ -5,12 +5,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { execFile } from 'node:child_process';
-import { promisify } from 'node:util';
+import { spawn } from 'node:child_process';
 import { platform } from 'node:os';
 import { URL } from 'node:url';
-
-const execFileAsync = promisify(execFile);
 
 /**
  * Validates that a URL is safe to open in a browser.
@@ -46,14 +43,14 @@ function validateUrl(url: string): void {
  * Opens a URL in the default browser using platform-specific commands.
  * This implementation avoids shell injection vulnerabilities by:
  * 1. Validating the URL to ensure it's HTTP/HTTPS only
- * 2. Using execFile instead of exec to avoid shell interpretation
+ * 2. Using spawn with unref() for true fire-and-forget (no waiting for process exit)
  * 3. Passing the URL as an argument rather than constructing a command string
  *
  * @param url The URL to open
- * @throws Error if the URL is invalid or if opening the browser fails
+ * @throws Error if the URL is invalid (validation is synchronous; spawn is fire-and-forget)
  */
 export async function openBrowserSecurely(url: string): Promise<void> {
-  // Validate the URL first
+  // Validate the URL first (synchronous)
   validateUrl(url);
 
   const platformName = platform();
@@ -84,8 +81,7 @@ export async function openBrowserSecurely(url: string): Promise<void> {
     case 'linux':
     case 'freebsd':
     case 'openbsd':
-      // Linux and BSD variants
-      // Try xdg-open first, fall back to other options
+      // Linux and BSD variants - use xdg-open
       command = 'xdg-open';
       args = [url];
       break;
@@ -94,52 +90,40 @@ export async function openBrowserSecurely(url: string): Promise<void> {
       throw new Error(`Unsupported platform: ${platformName}`);
   }
 
-  const options: Record<string, unknown> = {
-    // Don't inherit parent's environment to avoid potential issues
-    env: {
-      ...process.env,
-      // Ensure we're not in a shell that might interpret special characters
-      SHELL: undefined,
-    },
-    // Detach the browser process so it doesn't block
+  // Use spawn with detached + unref for true fire-and-forget
+  // This does NOT wait for the child process to exit
+  const child = spawn(command, args, {
     detached: true,
     stdio: 'ignore',
-  };
+    env: {
+      ...process.env,
+      SHELL: undefined,
+    },
+  });
 
-  try {
-    await execFileAsync(command, args, options);
-  } catch (error) {
-    // For Linux, try fallback commands if xdg-open fails
-    if (
-      (platformName === 'linux' ||
-        platformName === 'freebsd' ||
-        platformName === 'openbsd') &&
-      command === 'xdg-open'
-    ) {
-      const fallbackCommands = [
-        'gnome-open',
-        'kde-open',
-        'firefox',
-        'chromium',
-        'google-chrome',
-      ];
+  // Unref the child so the parent can exit independently
+  child.unref();
 
-      for (const fallbackCommand of fallbackCommands) {
-        try {
-          await execFileAsync(fallbackCommand, [url], options);
-          return; // Success!
-        } catch {
-          // Try next command
-          continue;
-        }
-      }
-    }
-
-    // Re-throw the error if all attempts failed
-    throw new Error(
-      `Failed to open browser: ${error instanceof Error ? error.message : 'Unknown error'}`,
+  // Handle spawn errors (e.g., command not found)
+  child.on('error', (error) => {
+    // Log but don't throw - we're fire-and-forget
+    console.error(
+      `[openBrowserSecurely] Failed to spawn ${command}:`,
+      error.message,
     );
-  }
+  });
+
+  // Give the spawn a moment to fail if the command doesn't exist
+  await new Promise<void>((resolve, reject) => {
+    const timer = setTimeout(() => {
+      resolve();
+    }, 100);
+
+    child.on('error', (error) => {
+      clearTimeout(timer);
+      reject(new Error(`Failed to open browser: ${error.message}`));
+    });
+  });
 }
 
 /**

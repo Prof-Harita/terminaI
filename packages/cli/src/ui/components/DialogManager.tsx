@@ -145,8 +145,8 @@ export const DialogManager = ({
             await config.reconfigureProvider(providerConfig, undefined);
             uiActions.setAuthWizardDialog(null);
             uiActions.closeSettingsDialog();
-            // T2.3: For Gemini, trigger re-auth flow (same pattern as OpenAI paths)
-            uiActions.setAuthState(AuthState.Unauthenticated);
+            // T2.3: For Gemini, set Authenticated directly to avoid double-init
+            uiActions.setAuthState(AuthState.Authenticated);
           } catch (error) {
             const message =
               error instanceof Error ? error.message : String(error);
@@ -184,8 +184,8 @@ export const DialogManager = ({
             );
             uiActions.setAuthWizardDialog(null);
             uiActions.closeSettingsDialog();
-            // T2.3: For OpenAI-compatible, set Unauthenticated so useAuthCommand re-runs
-            uiActions.setAuthState(AuthState.Unauthenticated);
+            // T2.3: For OpenAI-compatible, set Authenticated directly to avoid double-init
+            uiActions.setAuthState(AuthState.Authenticated);
           } catch (error) {
             const message =
               error instanceof Error ? error.message : String(error);
@@ -224,7 +224,7 @@ export const DialogManager = ({
             );
             uiActions.setAuthWizardDialog(null);
             uiActions.closeSettingsDialog();
-            uiActions.setAuthState(AuthState.Unauthenticated);
+            uiActions.setAuthState(AuthState.Authenticated);
           } catch (error) {
             const message =
               error instanceof Error ? error.message : String(error);

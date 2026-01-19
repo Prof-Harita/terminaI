@@ -7,22 +7,31 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { openBrowserSecurely } from './secure-browser-launcher.js';
+import { EventEmitter } from 'node:events';
 
-// Create mock function using vi.hoisted
-const mockExecFile = vi.hoisted(() => vi.fn());
+// Create mock spawn function
+const mockSpawn = vi.hoisted(() => vi.fn());
 
-// Mock modules
-vi.mock('node:child_process');
-vi.mock('node:util', () => ({
-  promisify: () => mockExecFile,
+// Mock child_process module
+vi.mock('node:child_process', () => ({
+  spawn: mockSpawn,
 }));
 
 describe('secure-browser-launcher', () => {
   let originalPlatform: PropertyDescriptor | undefined;
 
+  function createMockChildProcess() {
+    const child = new EventEmitter() as EventEmitter & {
+      unref: ReturnType<typeof vi.fn>;
+    };
+    child.unref = vi.fn();
+    return child;
+  }
+
   beforeEach(() => {
     vi.clearAllMocks();
-    mockExecFile.mockResolvedValue({ stdout: '', stderr: '' });
+    const mockChild = createMockChildProcess();
+    mockSpawn.mockReturnValue(mockChild);
     originalPlatform = Object.getOwnPropertyDescriptor(process, 'platform');
   });
 
@@ -43,7 +52,7 @@ describe('secure-browser-launcher', () => {
     it('should allow valid HTTP URLs', async () => {
       setPlatform('darwin');
       await openBrowserSecurely('http://example.com');
-      expect(mockExecFile).toHaveBeenCalledWith(
+      expect(mockSpawn).toHaveBeenCalledWith(
         'open',
         ['http://example.com'],
         expect.any(Object),
@@ -53,7 +62,7 @@ describe('secure-browser-launcher', () => {
     it('should allow valid HTTPS URLs', async () => {
       setPlatform('darwin');
       await openBrowserSecurely('https://example.com');
-      expect(mockExecFile).toHaveBeenCalledWith(
+      expect(mockSpawn).toHaveBeenCalledWith(
         'open',
         ['https://example.com'],
         expect.any(Object),
@@ -102,8 +111,8 @@ describe('secure-browser-launcher', () => {
 
       await openBrowserSecurely(maliciousUrl);
 
-      // Verify that execFile was called (not exec) and the URL is passed safely
-      expect(mockExecFile).toHaveBeenCalledWith(
+      // Verify that spawn was called with PowerShell and the URL is passed safely
+      expect(mockSpawn).toHaveBeenCalledWith(
         'powershell.exe',
         [
           '-NoProfile',
@@ -130,9 +139,13 @@ describe('secure-browser-launcher', () => {
       ];
 
       for (const url of urlsWithSpecialChars) {
+        mockSpawn.mockClear();
+        const mockChild = createMockChildProcess();
+        mockSpawn.mockReturnValue(mockChild);
+
         await openBrowserSecurely(url);
         // Verify the URL is passed as an argument, not interpreted by shell
-        expect(mockExecFile).toHaveBeenCalledWith(
+        expect(mockSpawn).toHaveBeenCalledWith(
           'open',
           [url],
           expect.any(Object),
@@ -148,7 +161,7 @@ describe('secure-browser-launcher', () => {
       await openBrowserSecurely(urlWithSingleQuotes);
 
       // Verify that single quotes are escaped by doubling them
-      expect(mockExecFile).toHaveBeenCalledWith(
+      expect(mockSpawn).toHaveBeenCalledWith(
         'powershell.exe',
         [
           '-NoProfile',
@@ -167,7 +180,7 @@ describe('secure-browser-launcher', () => {
     it('should use correct command on macOS', async () => {
       setPlatform('darwin');
       await openBrowserSecurely('https://example.com');
-      expect(mockExecFile).toHaveBeenCalledWith(
+      expect(mockSpawn).toHaveBeenCalledWith(
         'open',
         ['https://example.com'],
         expect.any(Object),
@@ -177,7 +190,7 @@ describe('secure-browser-launcher', () => {
     it('should use PowerShell on Windows', async () => {
       setPlatform('win32');
       await openBrowserSecurely('https://example.com');
-      expect(mockExecFile).toHaveBeenCalledWith(
+      expect(mockSpawn).toHaveBeenCalledWith(
         'powershell.exe',
         expect.arrayContaining([
           '-Command',
@@ -190,7 +203,7 @@ describe('secure-browser-launcher', () => {
     it('should use xdg-open on Linux', async () => {
       setPlatform('linux');
       await openBrowserSecurely('https://example.com');
-      expect(mockExecFile).toHaveBeenCalledWith(
+      expect(mockSpawn).toHaveBeenCalledWith(
         'xdg-open',
         ['https://example.com'],
         expect.any(Object),
@@ -208,36 +221,29 @@ describe('secure-browser-launcher', () => {
   describe('Error handling', () => {
     it('should handle browser launch failures gracefully', async () => {
       setPlatform('darwin');
-      mockExecFile.mockRejectedValueOnce(new Error('Command not found'));
+
+      // Create child that emits error immediately
+      const mockChild = createMockChildProcess();
+      mockSpawn.mockReturnValue(mockChild);
+
+      // Emit error after spawn
+      setTimeout(() => {
+        mockChild.emit('error', new Error('Command not found'));
+      }, 10);
 
       await expect(openBrowserSecurely('https://example.com')).rejects.toThrow(
         'Failed to open browser',
       );
     });
 
-    it('should try fallback browsers on Linux', async () => {
-      setPlatform('linux');
-
-      // First call to xdg-open fails
-      mockExecFile.mockRejectedValueOnce(new Error('Command not found'));
-      // Second call to gnome-open succeeds
-      mockExecFile.mockResolvedValueOnce({ stdout: '', stderr: '' });
+    it('should call unref on the child process', async () => {
+      setPlatform('darwin');
+      const mockChild = createMockChildProcess();
+      mockSpawn.mockReturnValue(mockChild);
 
       await openBrowserSecurely('https://example.com');
 
-      expect(mockExecFile).toHaveBeenCalledTimes(2);
-      expect(mockExecFile).toHaveBeenNthCalledWith(
-        1,
-        'xdg-open',
-        ['https://example.com'],
-        expect.any(Object),
-      );
-      expect(mockExecFile).toHaveBeenNthCalledWith(
-        2,
-        'gnome-open',
-        ['https://example.com'],
-        expect.any(Object),
-      );
+      expect(mockChild.unref).toHaveBeenCalled();
     });
   });
 });

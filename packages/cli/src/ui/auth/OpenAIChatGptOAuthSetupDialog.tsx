@@ -16,7 +16,8 @@ import {
   tryImportFromCodexCli,
   tryImportFromOpenCode,
   coreEvents,
-  CoreEvent,
+  openBrowserSecurely,
+  shouldLaunchBrowser,
 } from '@terminai/core';
 import type { LoadedSettings } from '../../config/settings.js';
 import { SettingScope } from '../../config/settings.js';
@@ -29,7 +30,6 @@ import * as http from 'node:http';
 import * as net from 'node:net';
 import { URL } from 'node:url';
 import { CliSpinner } from '../components/CliSpinner.js';
-import open from 'open';
 
 function isTruthyEnvVar(name: string): boolean {
   const raw = process.env[name];
@@ -44,6 +44,10 @@ function isTruthyEnvVar(name: string): boolean {
 }
 
 const OAUTH_DEBUG = isTruthyEnvVar('TERMINAI_OAUTH_DEBUG');
+
+// Module-scoped to avoid re-evaluation on each render
+const REDIRECT_HOST = process.env['OAUTH_REDIRECT_HOST'] || 'localhost';
+const BIND_HOST = process.env['OAUTH_BIND_HOST'] || '127.0.0.1';
 
 type Step = 'model' | 'base_url' | 'oauth';
 
@@ -150,7 +154,7 @@ export function OpenAIChatGptOAuthSetupDialog({
     async (client: ChatGptOAuthClient): Promise<void> => {
       if (OAUTH_DEBUG) console.log('[OAuth DEBUG] startOauthFlow called');
       setCallbackServerStatus('binding');
-      const redirectUri = `http://localhost:${DEFAULT_OPENAI_OAUTH_REDIRECT_PORT}/auth/callback`;
+      const redirectUri = `http://${REDIRECT_HOST}:${DEFAULT_OPENAI_OAUTH_REDIRECT_PORT}/auth/callback`;
       const start = client.startAuthorization({ redirectUri });
       if (OAUTH_DEBUG)
         console.log('[OAuth DEBUG] Authorization started, state:', start.state);
@@ -160,30 +164,12 @@ export function OpenAIChatGptOAuthSetupDialog({
       setCodeVerifier(start.codeVerifier);
       setOauthInProgress(true);
 
-      // Auto-open browser like Google OAuth does
-      coreEvents.emit(CoreEvent.UserFeedback, {
-        severity: 'info',
-        message:
-          `\nChatGPT OAuth login required.\n` +
-          `Attempting to open authentication page in your browser.\n` +
-          `Otherwise navigate to:\n${start.authUrl}\n`,
-      });
-
-      try {
-        const childProcess = await open(start.authUrl);
-        childProcess.on('error', (error) => {
-          coreEvents.emit(CoreEvent.UserFeedback, {
-            severity: 'warning',
-            message: `Could not auto-open browser: ${error.message}. Please copy the URL above.`,
-          });
-        });
-      } catch (_err) {
-        // Browser auto-open failed, user can still copy the URL
-        coreEvents.emit(CoreEvent.UserFeedback, {
-          severity: 'warning',
-          message: 'Could not auto-open browser. Please copy the URL above.',
-        });
-      }
+      // Show URL first (fallback for manual copy-paste)
+      coreEvents.emitFeedback(
+        'info',
+        `\nChatGPT OAuth login required.\n` +
+          `Please sign in via your browser. If it doesn't open automatically, copy this URL:\n${start.authUrl}\n`,
+      );
 
       if (OAUTH_DEBUG)
         console.log(
@@ -191,6 +177,7 @@ export function OpenAIChatGptOAuthSetupDialog({
         );
       try {
         const server = await bindOAuthServerWithCancelRetry({
+          host: BIND_HOST,
           expectedState: start.state,
           onCode: async (code) => {
             if (OAUTH_DEBUG)
@@ -206,10 +193,10 @@ export function OpenAIChatGptOAuthSetupDialog({
               codeVerifier: start.codeVerifier,
             });
             await ChatGptOAuthCredentialStorage.save(creds);
-            coreEvents.emit(CoreEvent.UserFeedback, {
-              severity: 'info',
-              message: 'ChatGPT OAuth authentication succeeded!\n',
-            });
+            coreEvents.emitFeedback(
+              'info',
+              'ChatGPT OAuth authentication succeeded!\n',
+            );
             void onComplete();
           },
           onError: (e) => {
@@ -257,6 +244,33 @@ export function OpenAIChatGptOAuthSetupDialog({
       } catch (e: unknown) {
         setCallbackServerStatus('failed');
         throw e;
+      }
+
+      // Now launch the browser after server is listening (if GUI available)
+      if (shouldLaunchBrowser()) {
+        const launchTimeoutMs = 5000;
+        const launchPromise = openBrowserSecurely(start.authUrl).catch(
+          (error: Error) => {
+            coreEvents.emitFeedback(
+              'warning',
+              `Could not auto-open browser: ${error.message}. Please copy the URL above.`,
+            );
+          },
+        );
+
+        const timeoutPromise = new Promise<void>((resolve) =>
+          setTimeout(() => {
+            if (OAUTH_DEBUG)
+              console.log('[OAuth DEBUG] Browser launch attempt timed out');
+            resolve();
+          }, launchTimeoutMs),
+        );
+
+        // We don't await the launch indefinitely to prevent pathological hangs
+        void Promise.race([launchPromise, timeoutPromise]);
+      } else {
+        if (OAUTH_DEBUG)
+          console.log('[OAuth DEBUG] Skipping browser launch (headless/SSH)');
       }
     },
     [onAuthError, onComplete],
@@ -313,10 +327,10 @@ export function OpenAIChatGptOAuthSetupDialog({
         } catch (e: unknown) {
           // Log but continue to OAuth flow - import is optional
           const msg = e instanceof Error ? e.message : String(e);
-          coreEvents.emit(CoreEvent.UserFeedback, {
-            severity: 'warning',
-            message: `Could not import existing credentials: ${msg}`,
-          });
+          coreEvents.emitFeedback(
+            'warning',
+            `Could not import existing credentials: ${msg}`,
+          );
         }
 
         setStep('oauth');
@@ -345,7 +359,7 @@ export function OpenAIChatGptOAuthSetupDialog({
             return;
           }
 
-          const redirectUri = `http://localhost:${DEFAULT_OPENAI_OAUTH_REDIRECT_PORT}/auth/callback`;
+          const redirectUri = `http://${REDIRECT_HOST}:${DEFAULT_OPENAI_OAUTH_REDIRECT_PORT}/auth/callback`;
           const client = new ChatGptOAuthClient();
           const creds = await client.exchangeAuthorizationCode({
             code: parsed.code,
@@ -491,16 +505,13 @@ function parseRedirectUrl(
 }
 
 async function bindOAuthServerWithCancelRetry(input: {
+  host: string;
   expectedState: string;
   onCode: (code: string) => Promise<void>;
   onError: (error: Error) => void;
 }): Promise<http.Server> {
   const port = DEFAULT_OPENAI_OAUTH_REDIRECT_PORT;
-  // Use 127.0.0.1 by default instead of 'localhost' to avoid IPv4/IPv6
-  // mismatch on Windows. The redirect URI uses 'localhost' (required by OAuth),
-  // but binding to 127.0.0.1 ensures the server listens on IPv4.
-  // Allow override via OAUTH_CALLBACK_HOST for Docker/special environments.
-  const host = process.env['OAUTH_CALLBACK_HOST'] || '127.0.0.1';
+  const host = input.host;
 
   if (OAUTH_DEBUG)
     console.log('[OAuth DEBUG] Creating callback server for', host, port);

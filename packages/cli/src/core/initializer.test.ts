@@ -168,4 +168,14 @@ describe('initializer', () => {
       AuthType.USE_OPENAI_CHATGPT_OAUTH,
     );
   });
+
+  it('should set shouldOpenAuthDialog to true when isFirstRun is true', async () => {
+    const result = await initializeApp(
+      mockConfig as unknown as Config,
+      mockSettings,
+      true, // isFirstRun
+    );
+
+    expect(result.shouldOpenAuthDialog).toBe(true);
+  });
 });
