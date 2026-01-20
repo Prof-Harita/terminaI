@@ -193,3 +193,40 @@ This architecture transforms TerminAI from a fragile, developer-only tool into a
 ### Key Distinction
 *   **Tier 1 (Sandbox)** is **Immutable**. The environment is built by us, signed, and shipped. It never changes on your machine.
 *   **Tier 2 (Shim)** is **Managed Mutable**. We create it on your machine, but we manage the versions to match our "Gold Standard" as closely as possible.
+
+---
+
+## 7. Philosophy: Core Environment vs. Dynamic Capabilities
+
+Should we stuff the image with every tool (AGI style) or keep it lean and let it build?
+
+### The Decision: "Agentic Bootstrap"
+We choose **Lean Core + Dynamic Expansion**. We do *not* try to prepackage `ffmpeg`, `gcloud`, `aws`, `k8s`, etc., into the core image. This leads to "Bloatware hell" and infinite maintenance.
+
+Instead, we provide the **Core Capabilities** that allow the agent to *bootstrap* the rest.
+
+### The Core Environment (Survival Kit)
+This is what MUST be in every Tier 1 and Tier 2 runtime:
+1.  **Python 3.11+**: The brain's execution runtime.
+2.  **T-APTS**: The standard library for common tasks (fs, text, logic).
+3.  **Package Manager (`pip` / `uv`)**: The ability to get new Python tools.
+4.  **System Package Manager Shim**: A way to request system tools (e.g., `apt-get` in Docker, `brew` on Mac, `winget` on Windows).
+
+### Dynamic Capabilities (Just-in-Time)
+When the user asks: "Convert this video to gif", the Agent follows this flow:
+1.  **Check:** "Do I have `ffmpeg`?" (`shutil.which('ffmpeg')`)
+2.  **Reason:** "No. I am in Tier 1 (Debian). I should install it."
+3.  **Action:** "Running `sudo apt-get install -y ffmpeg`."
+4.  **Execute:** "Converting video..."
+
+### Guardrails for Dynamic Build
+To prevent the agent from breaking the environment:
+*   **Ephemeral by Default (Tier 1):** In Docker, installations are lost on restart. This keeps the environment clean.
+*   **User-Scoped (Tier 2):** On Host, we prefer installing to user-local paths or asking for permission before global installs.
+*   **Policy Engine:**
+    *   `apt-get install` -> **Level B** (Requires Approval).
+    *   `pip install` -> **Level A** (Safe if in venv).
+
+### Summary
+*   **Deterministic:** The **Core Runtime** (Python + T-APTS). We guarantee this is always there.
+*   **Dynamic:** The **Tooling Layer**. The agent builds its own workshop based on the task at hand.
