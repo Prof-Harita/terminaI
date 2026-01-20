@@ -206,11 +206,16 @@ We choose **Lean Core + Dynamic Expansion**. We do *not* try to prepackage `ffmp
 Instead, we provide the **Core Capabilities** that allow the agent to *bootstrap* the rest.
 
 ### The Core Environment (Survival Kit)
-This is what MUST be in every Tier 1 and Tier 2 runtime:
+This is what MUST be in every Tier 1 and Tier 2 runtime to guarantee the ability to reason, act, and bootstrap tools. These are the "Opposable Thumbs" of the Agent:
+
 1.  **Python 3.11+**: The brain's execution runtime.
 2.  **T-APTS**: The standard library for common tasks (fs, text, logic).
 3.  **Package Manager (`pip` / `uv`)**: The ability to get new Python tools.
-4.  **System Package Manager Shim**: A way to request system tools (e.g., `apt-get` in Docker, `brew` on Mac, `winget` on Windows).
+4.  **System Primitives (The "Hands")**:
+    *   **Network**: `curl` and `wget` (to download tools).
+    *   **Archive**: `tar` and `unzip` (to unpack tools).
+    *   **Process**: `ps`, `kill`, `lsof` (to manage the system).
+    *   **Privilege**: `sudo` (or `gsudo` on Windows) check capability.
 
 ### Dynamic Capabilities (Just-in-Time)
 When the user asks: "Convert this video to gif", the Agent follows this flow:
@@ -228,5 +233,5 @@ To prevent the agent from breaking the environment:
     *   `pip install` -> **Level A** (Safe if in venv).
 
 ### Summary
-*   **Deterministic:** The **Core Runtime** (Python + T-APTS). We guarantee this is always there.
+*   **Deterministic:** The **Core Runtime** (Python + T-APTS + System Primitives). We guarantee this is always there.
 *   **Dynamic:** The **Tooling Layer**. The agent builds its own workshop based on the task at hand.
