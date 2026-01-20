@@ -69,6 +69,10 @@ if (!geminiSandbox) {
   geminiSandbox = process.env.GEMINI_SANDBOX;
 }
 
+if (!geminiSandbox && process.env.CI) {
+  geminiSandbox = 'true';
+}
+
 geminiSandbox = (geminiSandbox || '').toLowerCase();
 
 const commandExists = (cmd) => {
