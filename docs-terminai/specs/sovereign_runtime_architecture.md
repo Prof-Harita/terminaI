@@ -161,3 +161,35 @@ The implementation is broken down into 3 phases to ensure stability.
 
 ## Conclusion
 This architecture transforms TerminAI from a fragile, developer-only tool into a robust Consumer System Operator. By owning the full stack—from the Python library (`T-APTS`) to the execution environment (`SandboxManager`)—we guarantee that if the user can run the CLI, they can run the agents.
+
+## 6. Platform Compatibility & User Experience
+
+### High-Level Summary (ELI5)
+**How it works on different computers:**
+
+*   **Option A: The "Lunchbox" (Docker Sandbox)**
+    *   **What it is:** A pre-sealed container.
+    *   **Does it have Python?** Yes, pre-installed inside.
+    *   **Does it have Packages?** Yes, pre-installed inside.
+    *   **Who uses it:** Linux users, Mac users, and Windows users who have Docker installed.
+    *   **Experience:** You download the box, and it just runs. Perfect isolation.
+
+*   **Option B: The "Home Kitchen" (Managed Host Shim)**
+    *   **What it is:** A managed setup directly on your computer.
+    *   **Does it have Python?** No, we use *your* installed Python. (If you don't have it, we ask you to get it).
+    *   **Does it have Packages?** We automatically download and install them into a private folder (`~/.terminai/runtime/venv`) so we don't mess up your other work.
+    *   **Who uses it:** Windows users (mostly) or anyone without Docker.
+    *   **Experience:** TerminAI sees you don't have Docker. It checks for Python. It creates a safe workspace. It installs the tools. It runs the task.
+
+### OS Compatibility Matrix
+
+| OS | Default Strategy | Requirements | Package Installation |
+| :--- | :--- | :--- | :--- |
+| **Linux** | **Tier 1 (Sandbox)** | Docker / Podman | **Pre-packaged** (Inside Image) |
+| **macOS** | **Tier 1 (Sandbox)** | Docker / OrbStack | **Pre-packaged** (Inside Image) |
+| **Windows** | **Tier 2 (Shim)** | Python 3.10+ | **Auto-installed** (Local Venv) |
+| **No Docker** | **Tier 2 (Shim)** | Python 3.10+ | **Auto-installed** (Local Venv) |
+
+### Key Distinction
+*   **Tier 1 (Sandbox)** is **Immutable**. The environment is built by us, signed, and shipped. It never changes on your machine.
+*   **Tier 2 (Shim)** is **Managed Mutable**. We create it on your machine, but we manage the versions to match our "Gold Standard" as closely as possible.
