@@ -58,97 +58,158 @@ See the detailed architectural recommendation below to move away from the upstre
 
 ---
 
-## 4. Recommended Solution: Architecture for Custom TerminAI Sandbox
+## 4. The Sovereign Sandbox Specification
 
-To permanently resolve this class of issues (dependency conflicts in opaque binary artifacts) and align with TerminAI's "Governed Autonomy" mission, we must replace the upstream `gemini-cli/sandbox` with a self-managed `terminai/sandbox` image.
+To fulfill TerminAI's mission of "Sovereign Autonomy" and "System Operation" (as defined in `docs-terminai/why-terminai.md`), we must eliminate reliance on opaque upstream binaries. The following is a comprehensive architectural specification for the new `terminai/sandbox`.
 
-### Goal
-Establish a sovereign build pipeline for the execution sandbox, allowing full control over installed libraries (`apts`), Python versions, and security policies.
+### 4.1. Design Philosophy
+*   **Sovereignty:** No binary blobs. Every line of code inside the container must be buildable from `packages/sandbox-image/`.
+*   **Transparency:** The `Dockerfile` serves as the public audit log of the execution environment.
+*   **Minimalism:** Only install what is necessary for "System Operation" (Python, Shell, core utils).
+*   **Security:** Non-root execution, read-only root FS compatibility, signed images.
 
-### Proposed Architecture
+### 4.2. Repository Structure
+We will establish a new workspace `packages/sandbox-image` to house the build artifacts.
 
-#### 1. Repository Structure
-Create a new package workspace for the sandbox definition:
+```text
+packages/sandbox-image/
+├── src/
+│   └── apts/                  # The TerminAI Python Tool Set (replaces upstream)
+│       ├── __init__.py
+│       ├── model.py           # Defines data models & constants (Fixes TRANSIT bug)
+│       └── action/
+│           └── cleanup.py     # Clean room implementation of cleanup logic
+├── bin/                       # Custom shell scripts/wrappers
+├── Dockerfile                 # The master blueprint
+├── requirements.txt           # Python dependencies (pinned with hashes)
+├── package.json               # Build scripts & versioning
+└── README.md                  # Documentation
 ```
-packages/
-└── sandbox/
-    ├── src/
-    │   └── apts/              # Re-implementation or fork of the Agent Python Tool Set
-    │       ├── __init__.py
-    │       ├── model.py       # Define ObjectTableLabels here (with TRANSIT)
-    │       └── action/
-    │           └── cleanup.py # The logic currently failing
-    ├── Dockerfile             # The transparent blueprint
-    ├── requirements.txt       # Explicit dependency locking
-    └── package.json           # Scripts for build/publish
-```
 
-#### 2. The Dockerfile Blueprint
-We stop inheriting from the opaque Google image and build from a standard, trusted base (e.g., `python:3.11-slim` or `mcr.microsoft.com/devcontainers/python`).
+### 4.3. The Dockerfile Blueprint
+We will use `python:3.11-slim-bookworm` as the base for a balance of modern Python features and stable Debian libraries.
 
 ```dockerfile
-# packages/sandbox/Dockerfile
-FROM python:3.11-slim
+# packages/sandbox-image/Dockerfile
+FROM python:3.11-slim-bookworm
 
-# 1. Install System Dependencies
+# Metadata for Auditability
+LABEL org.opencontainers.image.source="https://github.com/Prof-Harita/terminaI"
+LABEL org.opencontainers.image.description="TerminAI Sovereign Execution Sandbox"
+LABEL org.opencontainers.image.licenses="Apache-2.0"
+
+# 1. System Dependencies (The "Kitchen Stocking")
+# Selected to support the "System Operator" persona (network debug, file ops, processing)
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    # Core Utilities
     git \
+    curl \
+    wget \
+    jq \
+    zip \
+    unzip \
+    tree \
+    # Search & Text Processing
     ripgrep \
     fzf \
+    # System Diagnostics (Pillar II support)
+    procps \
+    lsof \
+    htop \
+    net-tools \
+    iputils-ping \
+    dnsutils \
+    netcat-openbsd \
+    # Build Essentials (for compilation if needed)
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# 2. Setup TerminAI User (Safety)
-RUN useradd -m -s /bin/bash terminai
-WORKDIR /home/terminai
-USER terminai
+# 2. Python Environment Setup
+# Pin pip version for reproducibility
+RUN pip install --no-cache-dir --upgrade pip==23.3.1
 
-# 3. Install Python Dependencies
-COPY --chown=terminai:terminai requirements.txt .
+# 3. Security Hardening: Create Non-Root User
+RUN useradd -m -s /bin/bash -u 1000 terminai
+
+# 4. Install Python Dependencies
+WORKDIR /app
+COPY requirements.txt .
+# Example requirements: pandas, numpy, requests, beautifulsoup4
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 4. Install Internal Tooling (APTS)
-# This is where we FIX the bug. We copy our own source code.
-COPY --chown=terminai:terminai src/apts /home/terminai/apts
-ENV PYTHONPATH="/home/terminai"
+# 5. Install TerminAI's "APTS" (Agent Python Tool Set)
+# This explicitly fixes the upstream crash by using our own source
+COPY --chown=terminai:terminai src/apts /usr/local/lib/python3.11/site-packages/apts
 
-# 5. Entrypoint
+# 6. Environment Configuration
+# Ensure the user cannot write to system paths, only workspace
+WORKDIR /workspace
+RUN chown terminai:terminai /workspace
+
+# Switch to non-root user
+USER terminai
+
+# Set strict environment variables
+ENV PYTHONPATH="/usr/local/lib/python3.11/site-packages"
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV HOME="/workspace"
+
+# 7. Entrypoint
 CMD ["/bin/bash"]
 ```
 
-#### 3. Migration Strategy (The "apts" Library)
-Since `apts` is currently closed-source in the upstream image, we have two paths:
+### 4.4. The `apts` Library Migration Strategy
+To fix the `ObjectTableLabels.TRANSIT` crash and own the stack:
 
-*   **Path A (Clean Room):** Re-implement the `cleanup` logic using standard Python libraries (`os`, `shutil`, `pathlib`) within our new `packages/sandbox/src/apts` directory. This is safer and avoids licensing issues.
-*   **Path B (Extraction):** Temporarily run the upstream container, inspect the `apts` source code (it is likely interpreted Python), and port relevant parts to our repository, respecting the Apache 2.0 license.
+1.  **Define the Model (`src/apts/model.py`):**
+    ```python
+    class ObjectTableLabels:
+        """
+        Defines standard labels for object classification in cleanup tasks.
+        """
+        TRANSIT = "TRANSIT"
+        KEEP = "KEEP"
+        DELETE = "DELETE"
+        ARCHIVE = "ARCHIVE"
+        # ... extend as needed
+    ```
 
-**For the `TRANSIT` bug:**
-In our new `packages/sandbox/src/apts/model.py`, we explicitly define:
-```python
-class ObjectTableLabels:
-    TRANSIT = "TRANSIT"
-    # ... other labels identified during reverse engineering
-```
+2.  **Implement Cleanup Logic (`src/apts/action/cleanup.py`):**
+    *   Write a standard Python function that traverses a directory.
+    *   Apply rules (e.g., "delete .tmp files older than 7 days").
+    *   Use `ObjectTableLabels` to tag files for the review UI.
 
-#### 4. Build & Release Pipeline
-Integrate with the existing GitHub Actions workflows:
+### 4.5. Build & Supply Chain Security
 
-1.  **Build:** Create a `docker build` step in the CI pipeline triggered on changes to `packages/sandbox/**`.
-2.  **Publish:** Push the resulting image to GitHub Container Registry (GHCR):
-    *   `ghcr.io/prof-harita/terminai/sandbox:latest`
-    *   `ghcr.io/prof-harita/terminai/sandbox:0.27.0`
+#### CI/CD Pipeline (GitHub Actions)
+We will add a new workflow `.github/workflows/build-sandbox.yml`:
 
-#### 5. Configuration Update
-Finally, point the CLI to the new sovereign image in `packages/cli/package.json`:
+1.  **Trigger:** On push to `packages/sandbox-image/**` or `tag`.
+2.  **Build:** `docker buildx build --platform linux/amd64,linux/arm64 ...`
+3.  **Sign:** Use **Sigstore/Cosign** to sign the container image. This ensures that the image pulled by the user's CLI matches exactly what was built on GitHub.
+4.  **Publish:** Push to `ghcr.io/prof-harita/terminai/sandbox`.
 
-```diff
-  "config": {
--   "sandboxImageUri": "us-docker.pkg.dev/gemini-code-dev/gemini-cli/sandbox:0.26.0"
-+   "sandboxImageUri": "ghcr.io/prof-harita/terminai/sandbox:0.27.0"
-  },
-```
+#### Versioning
+The sandbox version should track the CLI version to ensure compatibility.
+*   CLI `v0.27.0` -> Sandbox `v0.27.0`
 
-### Benefits
-1.  **Sovereignty:** We are no longer blocked by upstream release cycles.
-2.  **Stability:** We control the environment. If a library breaks, we pin the version in `requirements.txt`.
-3.  **Security:** We know exactly what binary code is running in the user's sandbox (no hidden malware or telemetry).
-4.  **Debuggability:** The source code for the cleanup tools is now in the monorepo, searchable and editable by developers.
+### 4.6. Integration Steps
+
+1.  **Update CLI Config:**
+    Modify `packages/cli/package.json`:
+    ```json
+    "config": {
+      "sandboxImageUri": "ghcr.io/prof-harita/terminai/sandbox:latest"
+    }
+    ```
+
+2.  **Update Documentation:**
+    *   Update `AGENTS.md` to reference `packages/sandbox-image`.
+    *   Update `CONTRIBUTING.md` with instructions on how to rebuild the sandbox locally (`docker build . -t terminai/sandbox`).
+
+### 4.7. Benefits of Sovereignty
+*   **Immediate Bug Fixes:** We can fix the `TRANSIT` crash in <1 hour by editing `src/apts/model.py`.
+*   **Security Audit:** We can run `trivy` or `snyk` on our own image to find vulnerabilities.
+*   **Offline Capability:** Users can `docker save/load` our image for air-gapped environments.
+*   **Custom Tooling:** We can add tools like `ffmpeg` or `imagemagick` if the community requests them, without waiting for upstream.
