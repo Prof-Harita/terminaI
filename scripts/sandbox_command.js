@@ -25,7 +25,8 @@ import os from 'node:os';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import dotenv from 'dotenv';
-import { GEMINI_DIR } from '@terminai/core';
+// import { GEMINI_DIR } from '@terminai/core';
+const GEMINI_DIR = '.gemini';
 
 const argv = yargs(hideBin(process.argv)).option('q', {
   alias: 'quiet',
