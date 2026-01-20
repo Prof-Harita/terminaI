@@ -2,7 +2,7 @@
 
 > **Purpose:** Rigorous analysis framework for upstream changes  
 > **Philosophy:** Quality >> Speed >> Cost  
-> **Last Updated:** 2026-01-15
+> **Last Updated:** 2026-01-20
 
 ---
 
@@ -43,6 +43,7 @@ Check every upstream file against known CANON systems:
 | `**/config/*`, `**/settings/*` | `config/settings/*`, `builder.ts`                         |
 | `**/providers/*`               | `providerTypes.ts`, `*ContentGenerator.ts`                |
 | `**/scheduler/*`               | `core/coreToolScheduler.ts`, `brain/`                     |
+| `**/sandbox/*`, `Dockerfile`   | `packages/sandbox-image/`, `sandboxConfig.ts` **(CANON)** |
 
 **Verification Required:**
 

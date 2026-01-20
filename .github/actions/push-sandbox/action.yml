@@ -9,11 +9,11 @@ inputs:
     description: 'Github secret'
     required: true
   dockerhub-username:
-    description: 'Dockerhub username'
-    required: true
+    description: 'Dockerhub username (deprecated, using github.actor)'
+    required: false
   dockerhub-token:
-    description: 'Dockerhub PAT w/ R+W'
-    required: true
+    description: 'Dockerhub PAT (deprecated, using github.token)'
+    required: false
   github-sha:
     description: 'Github Commit SHA Hash'
     required: true
@@ -49,9 +49,9 @@ runs:
     - name: 'Log in to GitHub Container Registry'
       uses: 'docker/login-action@v3'
       with:
-        registry: 'docker.io'
-        username: '${{ inputs.dockerhub-username }}'
-        password: '${{ inputs.dockerhub-token }}'
+        registry: 'ghcr.io'
+        username: '${{ github.actor }}'
+        password: '${{ inputs.github-secret }}'
     - name: 'determine image tag'
       id: 'image_tag'
       shell: 'bash'
@@ -70,18 +70,41 @@ runs:
       id: 'docker_build'
       shell: 'bash'
       env:
+        TERMINAI_SANDBOX_IMAGE_TAG: '${{ steps.image_tag.outputs.FINAL_TAG }}'
         GEMINI_SANDBOX_IMAGE_TAG: '${{ steps.image_tag.outputs.FINAL_TAG }}'
+        TERMINAI_SANDBOX: 'docker'
         GEMINI_SANDBOX: 'docker'
       run: |-
         npm run build:sandbox -- \
-          --image google/gemini-cli-sandbox:${{ steps.image_tag.outputs.FINAL_TAG }} \
+          --image ghcr.io/prof-harita/terminai/sandbox:${{ steps.image_tag.outputs.FINAL_TAG }} \
           --output-file final_image_uri.txt
         echo "uri=$(cat final_image_uri.txt)" >> $GITHUB_OUTPUT
+    - name: 'Generate SBOM'
+      uses: 'anchore/sbom-action@v0.17.9'
+      with:
+        image: '${{ steps.docker_build.outputs.uri }}'
+        artifact-name: 'sandbox-sbom'
+        output-file: 'sbom.json'
+        format: 'cyclonedx-json'
+    - name: 'Install Cosign'
+      uses: 'sigstore/cosign-installer@v3.7.0'
+    - name: 'test contracts'
+      shell: 'bash'
+      run: |-
+        docker run --rm "${{ steps.docker_build.outputs.uri }}" \
+          /opt/terminai/contract_checks.sh
     - name: 'publish'
       shell: 'bash'
       if: "${{ inputs.dry-run != 'true' }}"
       run: |-
         docker push "${{ steps.docker_build.outputs.uri }}"
+    - name: 'Sign image'
+      shell: 'bash'
+      if: "${{ inputs.dry-run != 'true' }}"
+      env:
+        COSIGN_YES: 'true'
+      run: |-
+        cosign sign --yes "${{ steps.docker_build.outputs.uri }}"
     - name: 'Create issue on failure'
       if: |-
         ${{ failure() }}

@@ -42,6 +42,11 @@ to sysadmins — built on a stable upstream core.
 ### For contributors
 
 - [Governance](./governance.md)
+- [Fork Zones](./FORK_ZONES.md) - Upstream sync zones (CANON/LEVERAGE/SKIP)
+- [Sandbox Architecture](./terminai-sandbox-architecture.md) - Sovereign Sandbox
+  - T-APTS
+- [Sandbox Governance](./sandbox-governance-integration.md) - Sandbox ≠ policy
+  bypass
 - [Why the Gemini CLI core?](./why-gemini.md)
 - [System Operator Recipes](./recipes.md)
 - [A2A Protocol](./a2a.md)

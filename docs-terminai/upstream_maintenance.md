@@ -2,7 +2,7 @@
 
 > **Document Type:** Architecture Decision Record  
 > **Status:** Active  
-> **Last Updated:** 2025-12-28  
+> **Last Updated:** 2026-01-20  
 > **Audience:** Engineering, Product, Executive
 
 ---
@@ -54,6 +54,8 @@ TerminaI is the **source of truth** for:
 - **TerminaI-added features** — Voice mode, Evolution Lab, A2A server, Desktop
   app.
 - **Build Infrastructure** — Turborepo (`turbo.json`) and optimized scripts.
+- **Sovereign Sandbox** — We own the sandbox image, T-APTS Python toolset, and
+  contract testing. Upstream sandbox images are not used.
 
 **Implication:** If upstream modifies these files, we **ignore** the change. We
 don't want their auth because it's Gemini-only.
@@ -250,3 +252,4 @@ ChatGPT OAuth adds these CANON files:
 | 2025-12-28 | Antigravity | Finalized with Jules integration                                                                 |
 | 2025-12-28 | Antigravity | Simplified to 2-stage (Jules 90% / Human 10%)                                                    |
 | 2026-01-15 | Antigravity | Added strategic rationale, new zone taxonomy (CANON/LEVERAGE/SKIP), ChatGPT OAuth worked example |
+| 2026-01-20 | Antigravity | Added Sovereign Sandbox to CANON section                                                         |

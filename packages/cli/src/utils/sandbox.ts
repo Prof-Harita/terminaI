@@ -35,6 +35,7 @@ import {
 } from './sandboxUtils.js';
 
 const execAsync = promisify(exec);
+import { runSandboxHealthCheck } from './sandboxHealthCheck.js';
 
 export async function start_sandbox(
   config: SandboxConfig,
@@ -131,7 +132,9 @@ export async function start_sandbox(
         ].join(' '),
       );
       // start and set up proxy if GEMINI_SANDBOX_PROXY_COMMAND is set
-      const proxyCommand = process.env['GEMINI_SANDBOX_PROXY_COMMAND'];
+      const proxyCommand =
+        process.env['TERMINAI_SANDBOX_PROXY_COMMAND'] ||
+        process.env['GEMINI_SANDBOX_PROXY_COMMAND'];
       let proxyProcess: ChildProcess | undefined = undefined;
       let sandboxProcess: ChildProcess | undefined = undefined;
       const sandboxEnv = { ...process.env };
@@ -216,14 +219,17 @@ export async function start_sandbox(
     const workdir = path.resolve(process.cwd());
     const containerWorkdir = getContainerPath(workdir);
 
-    // if BUILD_SANDBOX is set, then call scripts/build_sandbox.js under gemini-cli repo
+    // if BUILD_SANDBOX is set, then call scripts/build_sandbox.js under the repo
     //
-    // note this can only be done with binary linked from gemini-cli repo
+    // note this can only be done with binary linked from the repo
     if (process.env['BUILD_SANDBOX']) {
-      if (!gcPath.includes('gemini-cli/packages/')) {
+      if (
+        !gcPath.includes('terminaI/packages/') &&
+        !gcPath.includes('gemini-cli/packages/')
+      ) {
         throw new FatalSandboxError(
-          'Cannot build sandbox using installed gemini binary; ' +
-            'run `npm link ./packages/cli` under gemini-cli repo to switch to linked binary.',
+          'Cannot build sandbox using installed terminai binary; ' +
+            'run `npm link ./packages/cli` under the TerminAI repo to switch to linked binary.',
         );
       } else {
         debugLogger.log('building sandbox ...');
@@ -245,6 +251,7 @@ export async function start_sandbox(
             env: {
               ...process.env,
               GEMINI_SANDBOX: config.command, // in case sandbox is enabled via flags (see config.ts under cli package)
+              TERMINAI_SANDBOX: config.command,
             },
           },
         );
@@ -255,11 +262,28 @@ export async function start_sandbox(
     if (!(await ensureSandboxImageIsPresent(config.command, image))) {
       const remedy =
         image === LOCAL_DEV_SANDBOX_IMAGE_NAME
-          ? 'Try running `npm run build:all` or `npm run build:sandbox` under the gemini-cli repo to build it locally, or check the image name and your network connection.'
-          : 'Please check the image name, your network connection, or notify gemini-cli-dev@google.com if the issue persists.';
+          ? 'Try running `npm run build:all` or `npm run build:sandbox` under the TerminAI repo to build it locally, or check the image name and your network connection.'
+          : 'Please check the image name and your network connection. If the issue persists, file an issue at https://github.com/Prof-Harita/terminaI/issues';
       throw new FatalSandboxError(
         `Sandbox image '${image}' is missing or could not be pulled. ${remedy}`,
       );
+    }
+
+    // Run CLI-side health check (pre-container start).
+    // NOTE: This is intentionally redundant with the entrypoint's contract_checks.sh:
+    //   - CLI preflight: validates the image is compatible BEFORE starting the container.
+    //     Provides fast feedback without needing to fully spin up a container.
+    //   - Entrypoint preflight: runs INSIDE the container as defense-in-depth.
+    //     Catches issues that could only manifest at runtime.
+    // Both can be skipped independently (TERMINAI_SKIP_SANDBOX_HEALTH_CHECK, TERMINAI_SKIP_CONTRACT_CHECKS).
+    if (
+      !process.env['TERMINAI_SKIP_SANDBOX_HEALTH_CHECK'] &&
+      !process.env['SKIP_SANDBOX_HEALTH_CHECK']
+    ) {
+      const healthCheck = await runSandboxHealthCheck(config.command, image);
+      if (!healthCheck.success) {
+        throw new FatalSandboxError(healthCheck.error!);
+      }
     }
 
     // use interactive mode and auto-remove container on exit
@@ -267,8 +291,10 @@ export async function start_sandbox(
     const args = ['run', '-i', '--rm', '--init', '--workdir', containerWorkdir];
 
     // add custom flags from SANDBOX_FLAGS
-    if (process.env['SANDBOX_FLAGS']) {
-      const flags = parse(process.env['SANDBOX_FLAGS'], process.env).filter(
+    const sandboxFlags =
+      process.env['TERMINAI_SANDBOX_FLAGS'] || process.env['SANDBOX_FLAGS'];
+    if (sandboxFlags) {
+      const flags = parse(sandboxFlags, process.env).filter(
         (f): f is string => typeof f === 'string',
       );
       args.push(...flags);
@@ -330,8 +356,10 @@ export async function start_sandbox(
     }
 
     // mount paths listed in SANDBOX_MOUNTS
-    if (process.env['SANDBOX_MOUNTS']) {
-      for (let mount of process.env['SANDBOX_MOUNTS'].split(',')) {
+    const sandboxMounts =
+      process.env['TERMINAI_SANDBOX_MOUNTS'] || process.env['SANDBOX_MOUNTS'];
+    if (sandboxMounts) {
+      for (let mount of sandboxMounts.split(',')) {
         if (mount.trim()) {
           // parse mount as from:to:opts
           let [from, to, opts] = mount.trim().split(':');
@@ -341,13 +369,13 @@ export async function start_sandbox(
           // check that from path is absolute
           if (!path.isAbsolute(from)) {
             throw new FatalSandboxError(
-              `Path '${from}' listed in SANDBOX_MOUNTS must be absolute`,
+              `Path '${from}' listed in TERMINAI_SANDBOX_MOUNTS (or SANDBOX_MOUNTS) must be absolute`,
             );
           }
           // check that from path exists on host
           if (!fs.existsSync(from)) {
             throw new FatalSandboxError(
-              `Missing mount path '${from}' listed in SANDBOX_MOUNTS`,
+              `Missing mount path '${from}' listed in TERMINAI_SANDBOX_MOUNTS (or SANDBOX_MOUNTS)`,
             );
           }
           debugLogger.log(`SANDBOX_MOUNTS: ${from} -> ${to} (${opts})`);
@@ -368,7 +396,9 @@ export async function start_sandbox(
     // copy proxy environment variables, replacing localhost with SANDBOX_PROXY_NAME
     // copy as both upper-case and lower-case as is required by some utilities
     // GEMINI_SANDBOX_PROXY_COMMAND implies HTTPS_PROXY unless HTTP_PROXY is set
-    const proxyCommand = process.env['GEMINI_SANDBOX_PROXY_COMMAND'];
+    const proxyCommand =
+      process.env['TERMINAI_SANDBOX_PROXY_COMMAND'] ||
+      process.env['GEMINI_SANDBOX_PROXY_COMMAND'];
 
     if (proxyCommand) {
       let proxy =
@@ -526,15 +556,17 @@ export async function start_sandbox(
     }
 
     // copy additional environment variables from SANDBOX_ENV
-    if (process.env['SANDBOX_ENV']) {
-      for (let env of process.env['SANDBOX_ENV'].split(',')) {
+    const sandboxEnvVars =
+      process.env['TERMINAI_SANDBOX_ENV'] || process.env['SANDBOX_ENV'];
+    if (sandboxEnvVars) {
+      for (let env of sandboxEnvVars.split(',')) {
         if ((env = env.trim())) {
           if (env.includes('=')) {
             debugLogger.log(`SANDBOX_ENV: ${env}`);
             args.push('--env', env);
           } else {
             throw new FatalSandboxError(
-              'SANDBOX_ENV must be a comma-separated list of key=value pairs',
+              'TERMINAI_SANDBOX_ENV (or SANDBOX_ENV) must be a comma-separated list of key=value pairs',
             );
           }
         }

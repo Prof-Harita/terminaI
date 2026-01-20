@@ -41,7 +41,7 @@ const argv = yargs(hideBin(process.argv))
   .option('f', {
     alias: 'dockerfile',
     type: 'string',
-    default: 'Dockerfile',
+    default: 'packages/sandbox-image/Dockerfile',
     description: 'use <dockerfile> for custom image',
   })
   .option('i', {
@@ -92,30 +92,34 @@ if (!argv.s) {
 
 console.log('packing @terminai/cli ...');
 const cliPackageDir = join('packages', 'cli');
-rmSync(join(cliPackageDir, 'dist', 'google-gemini-cli-*.tgz'), { force: true });
+rmSync(join(cliPackageDir, 'dist', 'terminai-cli-*.tgz'), { force: true });
 execSync(`npm pack -w @terminai/cli --pack-destination ./packages/cli/dist`, {
   stdio: 'ignore',
 });
 
 console.log('packing @terminai/core ...');
 const corePackageDir = join('packages', 'core');
-rmSync(join(corePackageDir, 'dist', 'google-gemini-cli-core-*.tgz'), {
+rmSync(join(corePackageDir, 'dist', 'terminai-core-*.tgz'), {
   force: true,
 });
 execSync(`npm pack -w @terminai/core --pack-destination ./packages/core/dist`, {
   stdio: 'ignore',
 });
 
-const packageVersion = JSON.parse(
-  readFileSync(join(process.cwd(), 'package.json'), 'utf-8'),
+const cliPackageVersion = JSON.parse(
+  readFileSync(join(cliPackageDir, 'package.json'), 'utf-8'),
+).version;
+
+const corePackageVersion = JSON.parse(
+  readFileSync(join(corePackageDir, 'package.json'), 'utf-8'),
 ).version;
 
 chmodSync(
-  join(cliPackageDir, 'dist', `google-gemini-cli-${packageVersion}.tgz`),
+  join(cliPackageDir, 'dist', `terminai-cli-${cliPackageVersion}.tgz`),
   0o755,
 );
 chmodSync(
-  join(corePackageDir, 'dist', `google-gemini-cli-core-${packageVersion}.tgz`),
+  join(corePackageDir, 'dist', `terminai-core-${corePackageVersion}.tgz`),
   0o755,
 );
 
@@ -149,7 +153,9 @@ function buildImage(imageName, dockerfile) {
   ).version;
 
   const imageTag =
-    process.env.GEMINI_SANDBOX_IMAGE_TAG || imageName.split(':')[1];
+    process.env.TERMINAI_SANDBOX_IMAGE_TAG ||
+    process.env.GEMINI_SANDBOX_IMAGE_TAG ||
+    imageName.split(':')[1];
   const finalImageName = `${imageName.split(':')[0]}:${imageTag}`;
 
   try {
@@ -183,6 +189,50 @@ function buildImage(imageName, dockerfile) {
   }
 }
 
-buildImage(image, dockerFile);
+function testImage(imageName) {
+  console.log(`Testing ${imageName} contract compliance...`);
 
-execSync(`${sandboxCommand} image prune -f`, { stdio: 'ignore' });
+  // Run pytest inside the container
+  execSync(
+    `${sandboxCommand} run --rm ${imageName} ` +
+      `python3 -m pytest /opt/terminai/tests --tb=short`,
+    { stdio: 'inherit' },
+  );
+
+  // Run contract checks script
+  execSync(
+    `${sandboxCommand} run --rm ${imageName} ` +
+      `/opt/terminai/contract_checks.sh`,
+    { stdio: 'inherit' },
+  );
+
+  console.log(`Contract tests passed ✓`);
+
+  // Generate SBOM if syft is available
+  try {
+    const hasSyft = execSync('command -v syft || true').toString().trim();
+    if (hasSyft) {
+      console.log(`Generating SBOM for ${imageName}...`);
+      execSync(`syft ${imageName} -o cyclonedx-json > sbom.json`, {
+        stdio: 'inherit',
+      });
+      console.log(`SBOM generated: sbom.json`);
+    }
+  } catch (e) {
+    console.warn(`Warning: SBOM generation failed: ${e.message}`);
+  }
+}
+
+function buildAndTest(image, dockerFile) {
+  buildImage(image, dockerFile);
+  testImage(image);
+}
+
+buildAndTest(image, dockerFile);
+
+// Only prune images if explicitly requested or in CI.
+// This avoids surprising local dev workflows where pruning may remove unrelated images.
+if (process.env.TERMINAI_SANDBOX_PRUNE === '1' || process.env.CI === 'true') {
+  console.log('Pruning unused images...');
+  execSync(`${sandboxCommand} image prune -f`, { stdio: 'ignore' });
+}

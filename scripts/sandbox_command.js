@@ -33,7 +33,7 @@ const argv = yargs(hideBin(process.argv)).option('q', {
   default: false,
 }).argv;
 
-let geminiSandbox = process.env.GEMINI_SANDBOX;
+let geminiSandbox = process.env.TERMINAI_SANDBOX || process.env.GEMINI_SANDBOX;
 
 if (!geminiSandbox) {
   const userSettingsFile = join(os.homedir(), GEMINI_DIR, 'settings.json');

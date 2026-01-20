@@ -98,7 +98,8 @@ Risk Level = f(Outcome, Intention, Domain, Profile)
 3. **Risk Calculation**: Apply profile-specific logic
 4. **Safety Invariant Check**: Override with PIN if invariant triggered
 5. **Enforcement**: Show appropriate confirmation UI
-6. **Execution**: Run with sandboxing where applicable
+6. **Execution**: Run with sandboxing where applicable (see
+   [Sandbox Governance](./sandbox-governance-integration.md))
 7. **Audit**: Log decision for metrics and debugging
 
 ---

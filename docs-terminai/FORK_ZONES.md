@@ -1,6 +1,6 @@
 # Fork Zone Classification
 
-> **Last Reviewed:** 2026-01-15  
+> **Last Reviewed:** 2026-01-20  
 > **Audit Status:** Verified against actual codebase  
 > **Update Policy:** Update this file when creating new divergences from
 > upstream
@@ -139,6 +139,37 @@ Upstream is Gemini-only. We support OpenAI, ChatGPT OAuth, and Anthropic.
 | `scripts/verify-ci.sh` | Optimized for Turbo caching             |
 | `scripts/build.js`     | Invokes `turbo run build`               |
 
+### Sovereign Sandbox (NEW - TerminaI Only)
+
+> [!IMPORTANT] The sandbox image is now **fully owned by TerminaI**. Upstream
+> sandbox images are no longer used. This prevents runtime contract drift (e.g.,
+> the `ObjectTableLabels.TRANSIT` incident).
+
+| File/Path                                           | Purpose                                |
+| --------------------------------------------------- | -------------------------------------- |
+| `packages/sandbox-image/Dockerfile`                 | Sovereign sandbox image build          |
+| `packages/sandbox-image/python/terminai_apts/`      | T-APTS Python toolset (replaces apts)  |
+| `packages/sandbox-image/python/apts/`               | Backward-compat shim for legacy apts   |
+| `packages/sandbox-image/scripts/contract_checks.sh` | Boot-time contract validation          |
+| `packages/sandbox-image/scripts/entrypoint.sh`      | Container entrypoint with preflight    |
+| `packages/cli/src/utils/sandboxHealthCheck.ts`      | Runtime health check before sandbox    |
+| `packages/cli/src/config/sandboxConfig.ts`          | Image URI + TERMINAI_SANDBOX vars      |
+| `.github/actions/push-sandbox/action.yml`           | CI: build, test, sign, publish sandbox |
+
+**Key design decisions:**
+
+- Image published to `ghcr.io/prof-harita/terminai/sandbox:<version>`
+- T-APTS provides `ObjectTableLabels.TRANSIT/KEEP/DELETE/ARCHIVE/UNKNOWN`
+- Contract tests run before every image publish
+- Cosign signing + SBOM for supply chain security
+- Version pinned to CLI version (no floating tags)
+
+**Sync implications:**
+
+- If upstream modifies sandbox Dockerfile → **Ignore** (we own it)
+- If upstream adds sandbox improvements → **Evaluate** for reimplementation
+- If upstream changes sandbox image URI → **Ignore** (we use GHCR)
+
 ---
 
 ## 🟢 LEVERAGE — Take Upstream Innovations
@@ -270,6 +301,11 @@ See: [terminai_telemetry.md](terminai_telemetry.md) for full details.
 │  │   • llm.openai*              • keychain-*           • README.md   │  │
 │  │                              • oauth-*                            │  │
 │  │                                                                   │  │
+│  │   Sovereign Sandbox (NEW)                                         │  │
+│  │   • sandbox-image/           • T-APTS (terminai_apts)             │  │
+│  │   • sandboxHealthCheck.ts    • contract_checks.sh                 │  │
+│  │   • sandboxConfig.ts         • entrypoint.sh                      │  │
+│  │                                                                   │  │
 │  │   NEW Packages: evolution-lab, a2a-server, desktop, cloud-relay   │  │
 │  │                                                                   │  │
 │  └───────────────────────────────────────────────────────────────────┘  │
@@ -293,6 +329,7 @@ See: [terminai_telemetry.md](terminai_telemetry.md) for full details.
 │  │                                                                   │  │
 │  │   Google Telemetry     IDE Companions      Seasonal               │  │
 │  │   • clearcut/*         • vscode-*          • holiday themes       │  │
+│  │   • upstream sandbox   • gcp sandbox URI                          │  │
 │  │                                                                   │  │
 │  └───────────────────────────────────────────────────────────────────┘  │
 │                                                                         │
@@ -321,3 +358,4 @@ When diverging a new file from upstream:
 | ---------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 2025-12-28 | Antigravity | Initial document                                                                                                                                                            |
 | 2026-01-15 | Antigravity | Complete rewrite based on codebase audit: documented `openai_chatgpt/`, `brain/`, `voice/`, multi-provider layer, token storage. Three-tier taxonomy (CANON/LEVERAGE/SKIP). |
+| 2026-01-20 | Antigravity | Added Sovereign Sandbox section: `packages/sandbox-image/`, T-APTS, `sandboxHealthCheck.ts`. Updated diagram to include sandbox components.                                 |
