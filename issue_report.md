@@ -53,5 +53,102 @@ if not hasattr(apts.model.ObjectTableLabels, 'TRANSIT'):
 ```
 *Note: This is brittle and requires precise knowledge of the package structure which is currently hidden.*
 
-### C. Recommendation
-File a bug report against the `gemini-cli/sandbox` or the internal `apts` library project to release a patched version of the sandbox image (e.g., `0.26.1`) that resolves this dependency conflict.
+### C. Recommendation (Strategic)
+See the detailed architectural recommendation below to move away from the upstream sandbox entirely.
+
+---
+
+## 4. Recommended Solution: Architecture for Custom TerminAI Sandbox
+
+To permanently resolve this class of issues (dependency conflicts in opaque binary artifacts) and align with TerminAI's "Governed Autonomy" mission, we must replace the upstream `gemini-cli/sandbox` with a self-managed `terminai/sandbox` image.
+
+### Goal
+Establish a sovereign build pipeline for the execution sandbox, allowing full control over installed libraries (`apts`), Python versions, and security policies.
+
+### Proposed Architecture
+
+#### 1. Repository Structure
+Create a new package workspace for the sandbox definition:
+```
+packages/
+└── sandbox/
+    ├── src/
+    │   └── apts/              # Re-implementation or fork of the Agent Python Tool Set
+    │       ├── __init__.py
+    │       ├── model.py       # Define ObjectTableLabels here (with TRANSIT)
+    │       └── action/
+    │           └── cleanup.py # The logic currently failing
+    ├── Dockerfile             # The transparent blueprint
+    ├── requirements.txt       # Explicit dependency locking
+    └── package.json           # Scripts for build/publish
+```
+
+#### 2. The Dockerfile Blueprint
+We stop inheriting from the opaque Google image and build from a standard, trusted base (e.g., `python:3.11-slim` or `mcr.microsoft.com/devcontainers/python`).
+
+```dockerfile
+# packages/sandbox/Dockerfile
+FROM python:3.11-slim
+
+# 1. Install System Dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    ripgrep \
+    fzf \
+    && rm -rf /var/lib/apt/lists/*
+
+# 2. Setup TerminAI User (Safety)
+RUN useradd -m -s /bin/bash terminai
+WORKDIR /home/terminai
+USER terminai
+
+# 3. Install Python Dependencies
+COPY --chown=terminai:terminai requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 4. Install Internal Tooling (APTS)
+# This is where we FIX the bug. We copy our own source code.
+COPY --chown=terminai:terminai src/apts /home/terminai/apts
+ENV PYTHONPATH="/home/terminai"
+
+# 5. Entrypoint
+CMD ["/bin/bash"]
+```
+
+#### 3. Migration Strategy (The "apts" Library)
+Since `apts` is currently closed-source in the upstream image, we have two paths:
+
+*   **Path A (Clean Room):** Re-implement the `cleanup` logic using standard Python libraries (`os`, `shutil`, `pathlib`) within our new `packages/sandbox/src/apts` directory. This is safer and avoids licensing issues.
+*   **Path B (Extraction):** Temporarily run the upstream container, inspect the `apts` source code (it is likely interpreted Python), and port relevant parts to our repository, respecting the Apache 2.0 license.
+
+**For the `TRANSIT` bug:**
+In our new `packages/sandbox/src/apts/model.py`, we explicitly define:
+```python
+class ObjectTableLabels:
+    TRANSIT = "TRANSIT"
+    # ... other labels identified during reverse engineering
+```
+
+#### 4. Build & Release Pipeline
+Integrate with the existing GitHub Actions workflows:
+
+1.  **Build:** Create a `docker build` step in the CI pipeline triggered on changes to `packages/sandbox/**`.
+2.  **Publish:** Push the resulting image to GitHub Container Registry (GHCR):
+    *   `ghcr.io/prof-harita/terminai/sandbox:latest`
+    *   `ghcr.io/prof-harita/terminai/sandbox:0.27.0`
+
+#### 5. Configuration Update
+Finally, point the CLI to the new sovereign image in `packages/cli/package.json`:
+
+```diff
+  "config": {
+-   "sandboxImageUri": "us-docker.pkg.dev/gemini-code-dev/gemini-cli/sandbox:0.26.0"
++   "sandboxImageUri": "ghcr.io/prof-harita/terminai/sandbox:0.27.0"
+  },
+```
+
+### Benefits
+1.  **Sovereignty:** We are no longer blocked by upstream release cycles.
+2.  **Stability:** We control the environment. If a library breaks, we pin the version in `requirements.txt`.
+3.  **Security:** We know exactly what binary code is running in the user's sandbox (no hidden malware or telemetry).
+4.  **Debuggability:** The source code for the cleanup tools is now in the monorepo, searchable and editable by developers.
