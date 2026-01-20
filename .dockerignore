@@ -1,0 +1,9 @@
+.git
+node_modules
+.cache
+tmp
+coverage
+build
+dist
+!packages/cli/dist
+!packages/core/dist
