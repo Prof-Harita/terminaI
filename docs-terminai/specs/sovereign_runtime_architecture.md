@@ -235,3 +235,172 @@ To prevent the agent from breaking the environment:
 ### Summary
 *   **Deterministic:** The **Core Runtime** (Python + T-APTS + System Primitives). We guarantee this is always there.
 *   **Dynamic:** The **Tooling Layer**. The agent builds its own workshop based on the task at hand.
+
+---
+
+## 8. Technical Architecture Implementation
+
+This section provides the implementation blueprints for the Sovereign Runtime.
+
+### 8.1 Data Flow Diagrams
+
+#### Diagram A: Before (The Problem)
+*Status: Fragile, Host Fallback Crashes.*
+
+```mermaid
+flowchart TB
+    User --> CLI
+    CLI --> Check[Docker?]
+    Check -- Yes --> Docker[Upstream Sandbox]
+    Docker -- Has apts --> Success
+    Check -- No --> Host[Host Execution]
+    Host -- Missing apts --> Crash[CRASH: AttributeError]
+
+    style Crash fill:#f96,stroke:#333,stroke-width:2px
+```
+
+#### Diagram B: Intermediate (Sovereign Image)
+*Status: Fixes Container Drift, but Host is still broken.*
+
+```mermaid
+flowchart TB
+    User --> CLI
+    CLI --> Check[Docker?]
+    Check -- Yes --> Docker[Sovereign Sandbox]
+    Docker -- Has T-APTS --> Success
+    Check -- No --> Host[Host Execution]
+    Host -- Missing T-APTS --> Crash[CRASH: Import Error]
+
+    style Docker fill:#9f9,stroke:#333
+    style Crash fill:#f96,stroke:#333
+```
+
+#### Diagram C: Final (Sovereign Runtime)
+*Status: Universal Reliability.*
+
+```mermaid
+flowchart TB
+    User --> CLI
+    CLI --> Manager[SandboxManager]
+    Manager --> Check[Docker Available?]
+
+    %% Tier 1 Path
+    Check -- Yes --> Tier1[Tier 1: Sovereign Sandbox]
+    Tier1 --> Img[Sovereign Image]
+    Img -- Pre-installed T-APTS --> Run1[Execute Tool]
+
+    %% Tier 2 Path
+    Check -- No --> Tier2[Tier 2: Managed Shim]
+    Tier2 --> Boot[Bootstrap Venv]
+    Boot --> Install[pip install terminai-apts]
+    Install --> Run2[Execute Tool]
+
+    %% Dynamic Capability Loop
+    Run1 --> MissingTool{Missing ffmpeg?}
+    Run2 --> MissingTool
+
+    MissingTool -- Yes --> InstallTool[Agent Installs Tool]
+    InstallTool --> Retry[Retry Execution]
+
+    style Tier1 fill:#9f9,stroke:#333
+    style Tier2 fill:#ff9,stroke:#333
+    style InstallTool fill:#bbf,stroke:#333,stroke-dasharray: 5 5
+```
+
+### 8.2 Component Design
+
+#### New Class: `SandboxManager`
+**Location:** `packages/core/src/computer/SandboxManager.ts`
+
+```typescript
+export class SandboxManager {
+  /**
+   * Main entry point. Returns a runtime session (Docker or Local).
+   */
+  async getRuntime(): Promise<RuntimeSession> {
+    if (await this.isDockerAvailable()) {
+      return new DockerRuntime(); // Tier 1
+    } else {
+      return new ManagedLocalRuntime(); // Tier 2
+    }
+  }
+
+  /**
+   * Bootstraps the local environment if needed.
+   */
+  async ensureLocalRuntime(): Promise<void> {
+    const venvPath = path.join(os.homedir(), '.terminai', 'runtime', 'venv');
+    if (!fs.existsSync(venvPath)) {
+      // 1. Create Venv
+      await exec('python3', ['-m', 'venv', venvPath]);
+      // 2. Install T-APTS
+      await exec(path.join(venvPath, 'bin', 'pip'), ['install', 'terminai-apts']);
+    }
+  }
+}
+```
+
+#### Interface: `RuntimeSession`
+**Location:** `packages/core/src/computer/RuntimeSession.ts`
+
+```typescript
+export interface RuntimeSession {
+  type: 'docker' | 'local';
+
+  /**
+   * Execute a command in the runtime.
+   */
+  execute(command: string, opts: ExecOptions): Promise<ExecResult>;
+
+  /**
+   * Get the path to the python interpreter.
+   */
+  getPythonPath(): string;
+
+  /**
+   * Verify the environment is healthy (T-APTS present).
+   */
+  healthCheck(): Promise<boolean>;
+}
+```
+
+### 8.3 Bootstrapping Sequence (Tier 2)
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant CLI
+    participant SandboxManager
+    participant HostOS
+    participant PyPI
+
+    User->>CLI: "Clean downloads"
+    CLI->>SandboxManager: getRuntime()
+    SandboxManager->>HostOS: Docker available?
+    HostOS-->>SandboxManager: No
+
+    SandboxManager->>SandboxManager: ensureLocalRuntime()
+    SandboxManager->>HostOS: Check ~/.terminai/runtime/venv
+
+    opt Venv Missing
+        SandboxManager->>HostOS: python3 -m venv ...
+        SandboxManager->>PyPI: pip install terminai-apts
+    end
+
+    SandboxManager-->>CLI: ManagedLocalRuntime
+    CLI->>ManagedLocalRuntime: execute("python cleanup.py")
+    ManagedLocalRuntime->>HostOS: ~/.terminai/.../python cleanup.py
+    HostOS-->>CLI: Success (files cleaned)
+```
+
+### 8.4 File Structure Changes
+
+```text
+packages/core/src/
+├── computer/
+│   ├── SandboxManager.ts       # << NEW: Orchestrator
+│   ├── RuntimeSession.ts       # << NEW: Interface
+│   ├── DockerRuntime.ts        # << NEW: Tier 1 Logic
+│   ├── ManagedLocalRuntime.ts  # << NEW: Tier 2 Logic
+│   └── PersistentShell.ts      # (Updated to use RuntimeSession)
+```
