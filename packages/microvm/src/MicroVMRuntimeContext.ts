@@ -1,4 +1,12 @@
-import type { RuntimeContext } from '@terminai/core';
+import type {
+  RuntimeContext,
+  ExecutionOptions,
+  ExecutionResult,
+}   ExecutionResult,
+  RuntimeProcess,
+}   ExecutionResult,
+  RuntimeProcess,
+} from '@terminai/core';
 import { FirecrackerDriver } from './FirecrackerDriver.js';
 import { MacVZDriver } from './MacVZDriver.js';
 import * as path from 'path';
@@ -117,6 +125,17 @@ export class MicroVMRuntimeContext implements RuntimeContext {
     }
   }
 
+      });
+    }
+  }
+
+  async dispose(): Promise<void> {
+    if (this.driver) {
+      await this.driver.stop();
+    }
+  }
+
+
   private getProxyKernelArgs(): string {
     const args: string[] = [];
     const vars = [
@@ -139,4 +158,19 @@ export class MicroVMRuntimeContext implements RuntimeContext {
 
     return args.join(' ');
   }
+
+  async execute(
+    command: string,
+    options?: ExecutionOptions,
+  ): Promise<ExecutionResult> {
+    throw new Error('MicroVM execute not implemented yet');
+  }
+
+  async spawn(
+    command: string,
+    options?: ExecutionOptions,
+  ): Promise<RuntimeProcess> {
+    throw new Error('MicroVM spawn not implemented yet');
+  }
+}
 }

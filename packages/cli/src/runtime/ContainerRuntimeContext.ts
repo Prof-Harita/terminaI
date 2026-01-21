@@ -5,8 +5,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { RuntimeContext } from '@terminai/core';
+import type {
+  RuntimeContext,
+  ExecutionOptions,
+  ExecutionResult,
+} from '@terminai/core';
 import { execSync } from 'node:child_process';
+import { RuntimeProcess } from '@terminai/core';
+import { RuntimeProcess } from '@terminai/core';
 
 /**
  * ContainerRuntimeContext - Docker/Podman Container Runtime (Phase 3)
@@ -62,5 +68,21 @@ export class ContainerRuntimeContext implements RuntimeContext {
     // Cleanup any containers if we started them (roadmap item)
     // Currently we rely on PersistentShell to manage the process,
     // so there's not much state here yet.
+  }
+
+  async execute(
+    command: string,
+    options?: ExecutionOptions,
+  ): Promise<ExecutionResult> {
+    throw new Error(
+      'Container runtime execution not implemented (Deferred to Phase 3)',
+    );
+  }
+
+  async spawn(
+    command: string,
+    options?: ExecutionOptions,
+  ): Promise<RuntimeProcess> {
+    throw new Error('Container Runtime spawn not implemented (Phase 3)');
   }
 }

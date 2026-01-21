@@ -5,7 +5,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { RuntimeContext } from '@terminai/core';
+import type {
+  RuntimeContext,
+  ExecutionOptions,
+  ExecutionResult,
+  RuntimeProcess,
+} from '@terminai/core';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
@@ -130,5 +135,60 @@ export class LocalRuntimeContext implements RuntimeContext {
 
   async dispose(): Promise<void> {
     // Nothing to dispose for local runtime yet
+  }
+
+  async spawn(
+    command: string,
+    options?: ExecutionOptions,
+  ): Promise<RuntimeProcess> {
+    const { spawn } = await import('node:child_process');
+    const args = options?.args ?? [];
+    const child = spawn(command, args, {
+      cwd: options?.cwd,
+      env: { ...process.env, ...options?.env },
+      stdio: 'pipe',
+    });
+    return child as unknown as RuntimeProcess;
+  }
+
+  async execute(
+    command: string,
+    options?: ExecutionOptions,
+  ): Promise<ExecutionResult> {
+    const { spawn } = await import('node:child_process');
+
+    return new Promise((resolve, reject) => {
+      const args = options?.args ?? [];
+      const child = spawn(command, args, {
+        cwd: options?.cwd,
+        env: { ...process.env, ...options?.env },
+        stdio: ['ignore', 'pipe', 'pipe'],
+        timeout: options?.timeout,
+      });
+
+      let stdout = '';
+      let stderr = '';
+
+      child.stdout?.on('data', (data) => {
+        stdout += data.toString();
+      });
+
+      child.stderr?.on('data', (data) => {
+        stderr += data.toString();
+      });
+
+      child.on('error', (err) => {
+        reject(err);
+      });
+
+      child.on('close', (code) => {
+        // child_process.spawn might return null exitCode on signal kill
+        resolve({
+          stdout,
+          stderr,
+          exitCode: code ?? -1,
+        });
+      });
+    });
   }
 }

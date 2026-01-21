@@ -38,6 +38,7 @@ import { AuthProviderType } from '../config/config.js';
 import { GoogleCredentialProvider } from '../mcp/google-auth-provider.js';
 import { ServiceAccountImpersonationProvider } from '../mcp/sa-impersonation-provider.js';
 import { DiscoveredMCPTool } from './mcp-tool.js';
+import { RuntimeStdioClientTransport } from '../mcp/RuntimeStdioClientTransport.js';
 
 import type { CallableTool, FunctionCall, Part, Tool } from '@google/genai';
 import { basename } from 'node:path';
@@ -138,6 +139,7 @@ export class McpClient {
         this.serverConfig,
         this.debugMode,
         this.workspaceContext,
+        this.cliConfig,
       );
 
       this.registerNotificationHandlers();
@@ -1330,6 +1332,7 @@ export async function connectToMcpServer(
   mcpServerConfig: MCPServerConfig,
   debugMode: boolean,
   workspaceContext: WorkspaceContext,
+  cliConfig?: Config,
 ): Promise<Client> {
   const mcpClient = new Client(
     {
@@ -1394,8 +1397,10 @@ export async function connectToMcpServer(
   try {
     const transport = await createTransport(
       mcpServerName,
+      mcpServerName,
       mcpServerConfig,
       debugMode,
+      cliConfig,
     );
     try {
       await mcpClient.connect(transport, {
@@ -1712,6 +1717,7 @@ export async function createTransport(
   mcpServerName: string,
   mcpServerConfig: MCPServerConfig,
   debugMode: boolean,
+  cliConfig?: Config,
 ): Promise<Transport> {
   const noUrl = !mcpServerConfig.url && !mcpServerConfig.httpUrl;
   if (noUrl) {
@@ -1779,6 +1785,22 @@ export async function createTransport(
   }
 
   if (mcpServerConfig.command) {
+    const runtime = cliConfig?.getRuntimeContext();
+    if (runtime) {
+      // Use Sovereign Runtime Bridge
+      const transport = new RuntimeStdioClientTransport(
+        runtime,
+        mcpServerConfig.command,
+        mcpServerConfig.args || [],
+        {
+          ...process.env,
+          ...(mcpServerConfig.env || {}),
+        } as Record<string, string>,
+      );
+      // TODO: Attach debug logger to RuntimeProcess stderr if possible
+      return transport;
+    }
+
     const transport = new StdioClientTransport({
       command: mcpServerConfig.command,
       args: mcpServerConfig.args || [],

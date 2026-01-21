@@ -252,6 +252,44 @@ function getSanitizedEnv(): NodeJS.ProcessEnv {
  */
 
 export class ShellExecutionService {
+  private static async executeWithRuntime(
+    command: string,
+    cwd: string,
+    onOutputEvent: (event: ShellOutputEvent) => void,
+    signal: AbortSignal,
+    runtimeContext: RuntimeContext,
+  ): Promise<ShellExecutionHandle> {
+    const executionPromise = runtimeContext
+      .execute(command, { cwd })
+      .then((res) => {
+        if (res.stdout) onOutputEvent({ type: 'data', chunk: res.stdout });
+        if (res.stderr) onOutputEvent({ type: 'data', chunk: res.stderr });
+        return {
+          rawOutput: Buffer.from(res.stdout + res.stderr),
+          output: res.stdout + res.stderr,
+          exitCode: res.exitCode,
+          signal: null,
+          error: null,
+          aborted: false,
+          pid: undefined,
+          executionMethod: 'child_process' as const,
+        };
+      })
+      .catch((err) => {
+        return {
+          rawOutput: Buffer.from(''),
+          output: '',
+          exitCode: 1,
+          signal: null,
+          error: err,
+          aborted: false,
+          pid: undefined,
+          executionMethod: 'none' as const,
+        };
+      });
+    return { pid: undefined, result: executionPromise };
+  }
+
   private static activePtys = new Map<number, ActivePty>();
   /**
    * Executes a shell command using `node-pty`, capturing all output and lifecycle events.
@@ -270,7 +308,18 @@ export class ShellExecutionService {
     abortSignal: AbortSignal,
     shouldUseNodePty: boolean,
     shellExecutionConfig: ShellExecutionConfig,
+    runtimeContext?: RuntimeContext,
   ): Promise<ShellExecutionHandle> {
+    if (runtimeContext) {
+      // C1/C2: Use Sovereign Runtime Bridge
+      return this.executeWithRuntime(
+        commandToExecute,
+        cwd,
+        onOutputEvent,
+        abortSignal,
+        runtimeContext,
+      );
+    }
     if (shouldUseNodePty) {
       const ptyInfo = await getPty();
       if (ptyInfo) {

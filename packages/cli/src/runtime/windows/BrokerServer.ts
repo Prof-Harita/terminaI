@@ -199,6 +199,11 @@ export class BrokerServer extends EventEmitter {
       this.server.listen(this.pipePath, () => {
         this.isRunning = true;
         console.log(`[BrokerServer] Listening on ${this.pipePath}`);
+        console.warn(
+          '[BrokerServer] WARNING: Named Pipe ACLs are currently OPEN. ' +
+            'This is a temporary state until native module is updated (Phase 3). ' +
+            'Ensure this machine is single-tenant.',
+        );
         resolve();
       });
     });

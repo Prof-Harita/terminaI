@@ -3,7 +3,7 @@
 > **Purpose**: This document is the single source of truth for AI agents working
 > on TerminAI. Read this completely before making any changes.
 >
-> **Last Updated**: January 17, 2026  
+> **Last Updated**: January 21, 2026  
 > **Scope**: All packages, all workflows, all agents
 
 ---
@@ -80,10 +80,12 @@ TerminAI is an **AI-powered system operator** — not just a coding assistant.
 terminaI/
 ├── packages/
 │   ├── core/           # 🧠 Engine: tools, policy, safety, telemetry
-│   ├── cli/            # ⌨️  Terminal UI (Ink/React)
+│   ├── cli/            # ⌨️  Terminal UI (Ink/React) + RuntimeManager
 │   ├── desktop/        # 🖥️  Tauri app + PTY bridge
 │   ├── a2a-server/     # 🔌 Agent-to-Agent control plane
 │   ├── termai/         # 🚀 The `terminai` launcher
+│   ├── microvm/        # 🔐 Micro-VM runtime (Firecracker/Hyper-V/Virt.fw)
+│   ├── sandbox-image/  # 📦 Docker/container image + T-APTS Python package
 │   ├── evolution-lab/  # 🧪 Automated testing harness (Docker-default)
 │   ├── cloud-relay/    # ☁️  Cloud relay server
 │   ├── test-utils/     # 🧰 Testing utilities
@@ -806,6 +808,196 @@ TerminAI is forked from
 
 ---
 
+## Sovereign Runtime Architecture
+
+### Philosophy: Environment-Agnostic Autonomy
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                   THE SOVEREIGN RUNTIME THESIS                           │
+│                                                                          │
+│   "Drop an agent anywhere. It learns what it has. It builds what it     │
+│    needs. It executes within guardrails. It adapts or fails gracefully."│
+│                                                                          │
+│   We are building ENVIRONMENT-AGNOSTIC AUTONOMY for all users.          │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+TerminAI must run on **any user's machine** regardless of whether they have
+Docker, Python, or any other dependency pre-installed.
+
+### Three-Tiered Execution Strategy
+
+**Priority Order** (Platform-Specific):
+
+| Platform | Tier 1 (Primary)       | Tier 1.5 (Secondary) | Tier 2 (Fallback)    |
+| -------- | ---------------------- | -------------------- | -------------------- |
+| Linux    | Micro-VM (Firecracker) | —                    | Managed Local (venv) |
+| Windows  | Micro-VM (Hyper-V)     | Windows AppContainer | Managed Local (venv) |
+| macOS    | Micro-VM (Virt.fw)     | —                    | Managed Local (venv) |
+
+**Container (Docker/Podman)** is deferred to Phase 3 as an optional enhancement.
+
+### Architecture Components
+
+**Location**: `packages/cli/src/runtime/` and `packages/core/src/computer/`
+
+```
+packages/cli/src/runtime/
+├── RuntimeManager.ts              # Tier selection orchestrator
+├── LocalRuntimeContext.ts         # Tier 2: Managed venv + T-APTS
+├── ContainerRuntimeContext.ts     # [Stub] Phase 3: Docker/Podman
+└── windows/
+    ├── WindowsBrokerContext.ts    # Tier 1.5: AppContainer "Brain & Hands"
+    ├── BrokerServer.ts            # Named Pipe IPC server
+    ├── BrokerClient.ts            # IPC client (in AppContainer)
+    └── native.ts                  # Windows API wrappers
+
+packages/microvm/
+└── src/
+    └── MicroVMRuntimeContext.ts   # Tier 1: Firecracker/Hyper-V/Virt.fw
+
+packages/core/src/computer/
+├── RuntimeContext.ts              # Core interface (all tiers implement)
+├── PersistentShell.ts             # Tool execution (accepts pythonPath)
+└── ComputerSessionManager.ts      # Session lifecycle (uses RuntimeContext)
+```
+
+### RuntimeContext Interface
+
+All runtime tiers implement this contract:
+
+```typescript
+export interface RuntimeContext {
+  /** Runtime tier type */
+  readonly type: 'container' | 'local' | 'windows-appcontainer' | 'microvm';
+
+  /** Whether execution is isolated from host */
+  readonly isIsolated: boolean;
+
+  /** Human-readable name for logging/telemetry */
+  readonly displayName: string;
+
+  /** Full path to python executable (tier-specific) */
+  readonly pythonPath: string;
+
+  /** T-APTS version available in this runtime */
+  readonly taptsVersion: string;
+
+  /** Perform health check on the runtime */
+  healthCheck(): Promise<{ ok: boolean; error?: string }>;
+
+  /** Clean up resources (if any) */
+  dispose(): Promise<void>;
+}
+```
+
+### Tier Selection Logic
+
+**File**: `packages/cli/src/runtime/RuntimeManager.ts`
+
+```typescript
+async getContext(): Promise<RuntimeContext> {
+  // Tier 1 (Priority): Micro-VM (Linux/macOS/Windows with Hyper-V)
+  if (await this.isMicroVMAvailable()) {
+    return new MicroVMRuntimeContext(this.cliVersion);
+  }
+
+  // Tier 1.5 (Windows only): AppContainer Broker
+  if (process.platform === 'win32' && await this.isWindowsBrokerAvailable()) {
+    return new WindowsBrokerContext(this.cliVersion);
+  }
+
+  // [Container skipped gracefully - Phase 3]
+
+  // Tier 2: Managed Local (Fallback)
+  if (await this.isSystemPythonAvailable()) {
+    return new LocalRuntimeContext(this.cliVersion);
+  }
+
+  throw new Error('No suitable runtime found. Install Python 3.10+ or Docker.');
+}
+```
+
+### Integration with Safety Architecture
+
+**Runtime type influences security policy**:
+
+```typescript
+// In safety/context-builder.ts
+if (!runtimeContext.isIsolated) {
+  // Host execution: apply elevated scrutiny for system paths
+  if (actionProfile.targetPaths.some(isSystemPath)) {
+    reviewLevel = Math.max(reviewLevel, 'B');
+  }
+}
+```
+
+**Audit events include runtime metadata**:
+
+```typescript
+// In audit/ledger.ts
+runtime: {
+  type: this.runtimeContext.type,           // 'microvm' | 'local' | etc.
+  tier: this.getTierNumber(type),           // 1, 1.5, or 2
+  isIsolated: this.runtimeContext.isIsolated // true/false
+}
+```
+
+### Key Design Principles
+
+1. **Adaptive Runtime Selection**: Pick best available tier for the platform
+2. **Graceful Degradation**: Fall back to less isolated tiers if necessary
+3. **User Transparency**: Log which tier is selected and why
+4. **Safety Integration**: Runtime context influences approval levels
+5. **Audit Trail**: Every execution tagged with runtime tier
+
+### Developer Guidelines
+
+**When adding new runtime-dependent features**:
+
+1. ✅ **Use RuntimeContext.pythonPath** — Don't hardcode Python paths
+2. ✅ **Check RuntimeContext.isIsolated** — Adjust safety accordingly
+3. ✅ **Test across tiers** — Verify Local, Micro-VM, Windows AppContainer
+4. ✅ **Handle healthCheck failures** — Implement graceful fallback
+5. ❌ **Don't bypass RuntimeManager** — Always use getContext()
+
+**When working with PersistentShell**:
+
+```typescript
+// ✅ GOOD: Use RuntimeContext.pythonPath
+const shell = new PersistentShell({
+  language: 'python',
+  cwd: '/workspace',
+  pythonPath: runtimeContext.pythonPath, // Tier-aware
+});
+
+// ❌ BAD: Hardcode Python path
+const shell = new PersistentShell({
+  language: 'python',
+  cwd: '/workspace',
+  pythonPath: '/usr/bin/python3', // Breaks Micro-VM/AppContainer
+});
+```
+
+### Key Architecture Documents
+
+| Document                                          | Purpose                             |
+| ------------------------------------------------- | ----------------------------------- |
+| `docs-terminai/architecture-sovereign-runtime.md` | Complete architecture specification |
+| `local/tasks-sovereign-runtime.md`                | Implementation task list            |
+| `local/sovereign-runtime-prompt.md`               | Final integration review prompt     |
+
+### Environment Variables
+
+| Variable                     | Purpose                        |
+| ---------------------------- | ------------------------------ |
+| `TERMINAI_ALLOW_DIRECT_HOST` | Bypass Tier 2 consent prompt   |
+| `TERMINAI_PYTHON_PATH`       | Override Python discovery      |
+| `TERMINAI_SKIP_DOCKER`       | Force skip to Tier 2 (testing) |
+
+---
+
 ## Common Pitfalls
 
 ### ❌ Don't: Bypass Governance
@@ -891,15 +1083,17 @@ Always run `/A-context` or review this file first. Context prevents rework.
 
 ### Environment Variables
 
-| Variable               | Purpose                                    |
-| ---------------------- | ------------------------------------------ |
-| `TERMINAI_API_KEY`     | Gemini API key                             |
-| `TERMINAI_BASE_URL`    | Override Gemini endpoint                   |
-| `TERMINAI_SANDBOX`     | Enable sandboxing (`true\|docker\|podman`) |
-| `TERMINAI_SYSTEM_MD`   | Path to custom system instructions         |
-| `TERMINAI_PROJECT_DIR` | Override project root detection            |
-| `DEBUG`                | Enable debug mode                          |
-| `DEV`                  | Enable dev mode (React DevTools)           |
+| Variable                     | Purpose                                            |
+| ---------------------------- | -------------------------------------------------- |
+| `TERMINAI_API_KEY`           | Gemini API key                                     |
+| `TERMINAI_BASE_URL`          | Override Gemini endpoint                           |
+| `TERMINAI_SANDBOX`           | Runtime tier selection (auto/microvm/local/docker) |
+| `TERMINAI_PYTHON_PATH`       | Override Python discovery                          |
+| `TERMINAI_ALLOW_DIRECT_HOST` | Skip Tier 2 consent prompt                         |
+| `TERMINAI_SYSTEM_MD`         | Path to custom system instructions                 |
+| `TERMINAI_PROJECT_DIR`       | Override project root detection                    |
+| `DEBUG`                      | Enable debug mode                                  |
+| `DEV`                        | Enable dev mode (React DevTools)                   |
 
 **Legacy Support**: All `GEMINI_*` variables work via
 `applyTerminaiEnvAliases()`.

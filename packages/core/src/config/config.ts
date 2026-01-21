@@ -574,7 +574,10 @@ export class Config {
   private readonly replToolConfig: ReplToolConfig;
   private readonly checkerRunner: CheckerRunner;
   private readonly checkerRegistry: CheckerRegistry;
+  private readonly checkerRegistry: CheckerRegistry;
   private readonly contextBuilder: ContextBuilder;
+  private runtimeContext?: RuntimeContext;
+  private runtimeContext?: RuntimeContext;
 
   constructor(params: ConfigParameters) {
     this.sessionId = params.sessionId;
@@ -799,23 +802,33 @@ export class Config {
       params.brain?.authority ?? DEFAULT_BRAIN_AUTHORITY,
       policyBrainAuthority,
     );
-    configureGuiAutomation(params.guiAutomation);
-    this.guiAutomationSettings = getGuiAutomationConfig();
-    this.auditSettings = {
-      redactUiTypedText:
-        params.audit?.redactUiTypedText ??
-        this.guiAutomationSettings.redactTypedTextByDefault ??
-        true,
-      retentionDays: params.audit?.retentionDays ?? 30,
-      exportFormat: params.audit?.exportFormat ?? 'jsonl',
-      exportRedaction: params.audit?.exportRedaction ?? 'enterprise',
-    };
+
+    this.toolRegistry = new ToolRegistry(this);
+    this.promptRegistry = new PromptRegistry();
+    this.resourceRegistry = new ResourceRegistry();
+    this.agentRegistry = new AgentRegistry();
+    this.modelConfigService = new ModelConfigService(
+      params.modelConfigServiceConfig,
+    );
+    this.modelRouterService = new ModelRouterService(
+      params.disableModelRouterForAuth,
+    );
     this.auditLedger = new FileAuditLedger(
       new Storage(this.targetDir).getSessionAuditPath(this.sessionId),
-      {
-        redactUiTypedText: this.auditSettings.redactUiTypedText,
-      },
+      undefined,
+      this.sessionId,
     );
+    this.auditSettings = params.audit ?? {};
+    this.guiAutomationSettings = params.guiAutomation ?? {};
+  }
+
+  setRuntimeContext(context: RuntimeContext): void {
+    this.runtimeContext = context;
+  }
+
+  getRuntimeContext(): RuntimeContext | undefined {
+    return this.runtimeContext;
+  }
     this.providerConfig = params.providerConfig ?? {
       provider: LlmProviderId.GEMINI,
     };

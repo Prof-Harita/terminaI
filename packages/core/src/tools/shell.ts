@@ -367,6 +367,7 @@ export class ShellToolInvocation extends BaseToolInvocation<
           combinedController.signal,
           this.config.getEnableInteractiveShell(),
           { ...shellExecutionConfig, pager: 'cat' },
+          this.config.getRuntimeContext(), // Pass RuntimeContext
         );
 
       if (pid && setPidCallback) {

@@ -49,9 +49,21 @@ class DiscoveredToolInvocation extends BaseToolInvocation<
     _updateOutput?: (output: string) => void,
   ): Promise<ToolResult> {
     const callCommand = this.config.getToolCallCommand()!;
-    const child = spawn(callCommand, [this.originalToolName]);
-    child.stdin.write(JSON.stringify(this.params));
-    child.stdin.end();
+    const runtime = this.config.getRuntimeContext();
+    let child;
+
+    if (runtime) {
+      child = await runtime.spawn(callCommand, {
+        args: [this.originalToolName],
+      });
+    } else {
+      child = spawn(callCommand, [this.originalToolName]);
+    }
+
+    if (child.stdin) {
+      child.stdin.write(JSON.stringify(this.params));
+      child.stdin.end();
+    }
 
     let stdout = '';
     let stderr = '';
@@ -310,7 +322,15 @@ export class ToolRegistry {
           'Tool discovery command is empty or contains only whitespace.',
         );
       }
-      const proc = spawn(cmdParts[0] as string, cmdParts.slice(1) as string[]);
+      const runtime = this.config.getRuntimeContext();
+      let proc;
+      if (runtime) {
+        proc = await runtime.spawn(cmdParts[0] as string, {
+          args: cmdParts.slice(1) as string[],
+        });
+      } else {
+        proc = spawn(cmdParts[0] as string, cmdParts.slice(1) as string[]);
+      }
       let stdout = '';
       const stdoutDecoder = new StringDecoder('utf8');
       let stderr = '';

@@ -20,6 +20,8 @@
  * - "The Hands" (this context): Admin privileges, no network, executes commands
  * - "The Brain" (child process): AppContainer, has network, talks to LLM
  *
+ * - "The Brain" (child process): AppContainer, has network, talks to LLM
+ *
  * @see docs-terminai/architecture-sovereign-runtime.md Appendix M
  */
 
@@ -35,6 +37,7 @@ import {
   createErrorResponse,
   type ExecuteResult,
 } from './BrokerSchema.js';
+import type { ExecutionOptions } from '@terminai/core';
 
 // Native module loaded lazily
 let native: typeof import('./native.js') | null = null;
@@ -206,6 +209,20 @@ export class WindowsBrokerContext implements RuntimeContext {
     }
   }
 
+      default:
+        return `Unknown error: ${error}`;
+    }
+  }
+
+  async execute(
+    command: string,
+    options?: ExecutionOptions,
+  ): Promise<ExecuteResult> {
+    throw new Error(
+      'WindowsBrokerContext host-side execution not implemented. Logic should run inside the AppContainer.',
+    );
+  }
+
   /**
    * Handle incoming IPC requests from the Brain process.
    */
@@ -258,6 +275,10 @@ export class WindowsBrokerContext implements RuntimeContext {
   /**
    * Handle 'execute' request.
    */
+  /**
+   * Handle 'execute' request.
+   * HARDENED: Only allows specific commands and disables shell execution.
+   */
   private async handleExecute(
     request: Extract<BrokerRequest, { type: 'execute' }>,
     respond: (response: BrokerResponse) => void,
@@ -268,12 +289,28 @@ export class WindowsBrokerContext implements RuntimeContext {
     const cwd = request.cwd ?? this.workspacePath;
     const timeout = request.timeout ?? 30000;
 
+    // Security: Strict Allowlist
+    const ALLOWED_COMMANDS = ['echo', 'dir']; // Minimal allowlist for connectivity check
+    // Real sidecars should be registered and invoked by specific ID, not arbitrary command string.
+
+    if (!ALLOWED_COMMANDS.includes(request.command)) {
+      respond(
+        createSuccessResponse({
+          exitCode: 1,
+          stdout: '',
+          stderr: `Command '${request.command}' is not allowed by Windows Broker policy.`,
+          timedOut: false,
+        }),
+      );
+      return;
+    }
+
     return new Promise((resolve) => {
       const proc = spawn(request.command, args, {
         cwd,
         env: { ...process.env, ...request.env },
         timeout,
-        shell: true,
+        shell: false, // CRITICAL: Disable shell to prevent injection
       });
 
       let stdout = '';
@@ -305,6 +342,7 @@ export class WindowsBrokerContext implements RuntimeContext {
           stdout,
           stderr,
           timedOut,
+          stderr: stderr || (code !== 0 ? 'Process failed' : ''),
         };
         respond(createSuccessResponse(result));
         resolve();
@@ -561,5 +599,19 @@ export class WindowsBrokerContext implements RuntimeContext {
     }
 
     console.log('[WindowsBrokerContext] Disposed');
+  }
+
+  async execute(
+    command: string,
+    options?: ExecutionOptions,
+  ): Promise<ExecutionResult> {
+    throw new Error('Windows Broker execute not implemented yet');
+  }
+
+  async spawn(
+    command: string,
+    options?: ExecutionOptions,
+  ): Promise<RuntimeProcess> {
+    throw new Error('Windows Broker spawn not implemented yet');
   }
 }

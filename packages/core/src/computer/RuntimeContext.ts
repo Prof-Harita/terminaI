@@ -13,6 +13,35 @@
  * - Tier 2 (Local): System Python + managed venv
  * - Tier 1.5 (Micro-VM): Lightweight VM with isolation (future)
  */
+
+export interface ExecutionOptions {
+  /** Arguments to pass to the command */
+  args?: string[];
+  /** Working directory */
+  cwd?: string;
+  /** Environment variables to merge */
+  env?: NodeJS.ProcessEnv;
+  /** Timeout in milliseconds */
+  timeout?: number;
+}
+
+export interface RuntimeProcess {
+  stdout?: NodeJS.ReadableStream;
+  stderr?: NodeJS.ReadableStream;
+  stdin?: NodeJS.WritableStream;
+  kill(signal?: NodeJS.Signals | number): boolean;
+  on(
+    event: 'exit' | 'close' | 'error',
+    listener: (...args: any[]) => void,
+  ): this;
+}
+
+export interface ExecutionResult {
+  stdout: string;
+  stderr: string;
+  exitCode: number | null;
+}
+
 export interface RuntimeContext {
   /** Runtime tier type */
   readonly type: 'container' | 'local' | 'windows-appcontainer' | 'microvm';
@@ -34,4 +63,16 @@ export interface RuntimeContext {
 
   /** Clean up resources (containers, temp files) */
   dispose(): Promise<void>;
+
+  /**
+   * Execute a command within the runtime environment.
+   * This is the "Runtime Bridge" that ensures all tools use the active runtime
+   * instead of bypassing to the host.
+   */
+  execute(
+    command: string,
+    options?: ExecutionOptions,
+  ): Promise<ExecutionResult>;
+
+  spawn(command: string, options?: ExecutionOptions): Promise<RuntimeProcess>;
 }
