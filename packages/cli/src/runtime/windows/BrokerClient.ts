@@ -126,8 +126,10 @@ export class BrokerClient extends EventEmitter {
         resolve();
       });
 
-      this.socket.on('data', (data) => {
-        this.handleData(data);
+      this.socket.on('data', (data: Buffer | string) => {
+        const buffer =
+          typeof data === 'string' ? Buffer.from(data, 'utf-8') : data;
+        this.handleData(buffer);
       });
 
       this.socket.on('error', (error) => {

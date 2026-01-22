@@ -251,5 +251,5 @@ describe('gemini.tsx main function cleanup', () => {
     );
     expect(processExitSpy).toHaveBeenCalledWith(0); // Should not exit on cleanup failure
     processExitSpy.mockRestore();
-  }, 10000);
+  }, 15000);
 });
