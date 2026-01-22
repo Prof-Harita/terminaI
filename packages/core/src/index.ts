@@ -219,6 +219,8 @@ export { Storage } from './config/storage.js';
 export * from './hooks/index.js';
 
 // Export test utils
+export { makeFakeConfig } from './test-utils/config.js';
+
 // Export hooks types
 
 // Export hook types
