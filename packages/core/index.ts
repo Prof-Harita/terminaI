@@ -41,7 +41,6 @@ export {
   ExtensionUpdateEvent,
   ModelSlashCommandEvent,
 } from './src/telemetry/types.js';
-export { makeFakeConfig } from './src/test-utils/config.js';
 export * from './src/utils/pathReader.js';
 export { logModelSlashCommand } from './src/telemetry/loggers.js';
 export { KeychainTokenStorage } from './src/mcp/token-storage/keychain-token-storage.js';
