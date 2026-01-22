@@ -14,6 +14,10 @@ import type {
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export class LocalRuntimeContext implements RuntimeContext {
   readonly type = 'local';
@@ -92,14 +96,18 @@ export class LocalRuntimeContext implements RuntimeContext {
 
     const { execSync } = await import('node:child_process');
     try {
-      // Upgrade pip first
-      execSync(`"${pythonExecutable}" -m pip install --upgrade pip`, {
-        stdio: 'ignore',
-      });
+      // Upgrade pip and setuptools first
+      execSync(
+        `"${pythonExecutable}" -m pip install --upgrade pip setuptools`,
+        {
+          stdio: 'ignore',
+        },
+      );
       // Install T-APTS
       // Task 9: Use --no-index --no-deps for security (no PyPI fallback, stdlib-only)
+      // Use --no-build-isolation to use the installed setuptools instead of hitting PyPI for build environment
       execSync(
-        `"${pythonExecutable}" -m pip install "${aptsPath}" --no-index --no-deps`,
+        `"${pythonExecutable}" -m pip install "${aptsPath}" --no-index --no-deps --no-build-isolation`,
         {
           stdio: 'ignore',
         },
