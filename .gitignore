@@ -92,3 +92,6 @@ local/*
 codex-cli/
 opencode/
 opencode-openai-auth/
+
+# Build artifacts
+packages/cli/build/
