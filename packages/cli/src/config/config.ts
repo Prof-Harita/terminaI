@@ -14,8 +14,15 @@ import { extensionsCommand } from '../commands/extensions.js';
 import { hooksCommand } from '../commands/hooks.js';
 import { voiceCommand } from '../commands/voice.js';
 import type {
- ExtensionEvents ,
-  type Config,
+  ExtensionEvents,
+  Config,
+  ReplSandboxTier,
+  GeminiCLIExtension,
+  OutputFormat,
+  ConfigParameters,
+} from '@terminai/core';
+import {
+  FileDiscoveryService,
   ConfigBuilder,
   setGeminiMdFilename as setServerGeminiMdFilename,
   getCurrentGeminiMdFilename,
@@ -24,12 +31,10 @@ import type {
   DEFAULT_GEMINI_EMBEDDING_MODEL,
   DEFAULT_FILE_FILTERING_OPTIONS,
   DEFAULT_MEMORY_FILE_FILTERING_OPTIONS,
-  FileDiscoveryService,
   WRITE_FILE_TOOL_NAME,
   SHELL_TOOL_NAMES,
   SHELL_TOOL_NAME,
   REPL_TOOL_NAME,
-  type ReplSandboxTier,
   resolveTelemetrySettings,
   FatalConfigError,
   getPty,
@@ -39,9 +44,7 @@ import type {
   WEB_FETCH_TOOL_NAME,
   getVersion,
   PREVIEW_GEMINI_MODEL_AUTO,
-  type GeminiCLIExtension,
-  type OutputFormat,
-  type ConfigParameters } from '@terminai/core';
+} from '@terminai/core';
 import type { Settings } from './settings.js';
 
 import { loadSandboxConfig } from './sandboxConfig.js';

@@ -13,11 +13,14 @@ import { createMockCommandContext } from '../../test-utils/mockCommandContext.js
 import { MessageType } from '../types.js';
 import type { LoadedSettings } from '../../config/settings.js';
 import type {
- LoadServerHierarchicalMemoryResponse ,
+  LoadServerHierarchicalMemoryResponse,
+  FileDiscoveryService,
+} from '@terminai/core';
+import {
   getErrorMessage,
   refreshServerHierarchicalMemory,
   SimpleExtensionLoader,
-  type FileDiscoveryService } from '@terminai/core';
+} from '@terminai/core';
 
 vi.mock('@terminai/core', async (importOriginal) => {
   const original = await importOriginal<typeof import('@terminai/core')>();
