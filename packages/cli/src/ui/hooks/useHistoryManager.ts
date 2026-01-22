@@ -7,7 +7,7 @@
 
 import { useState, useRef, useCallback, useMemo } from 'react';
 import type { HistoryItem } from '../types.js';
-import type { ChatRecordingService } from '@terminai/core/src/services/chatRecordingService.js';
+import type { ChatRecordingService } from '@terminai/core';
 
 // Type for the updater function passed to updateHistoryItem
 type HistoryItemUpdater = (

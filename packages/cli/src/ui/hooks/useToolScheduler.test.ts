@@ -30,11 +30,10 @@ import {
   DEFAULT_TRUNCATE_TOOL_OUTPUT_THRESHOLD,
   ToolConfirmationOutcome,
   ApprovalMode,
-  MockTool,
   HookSystem,
   PREVIEW_GEMINI_MODEL,
-  createMockMessageBus,
 } from '@terminai/core';
+import { MockTool, createMockMessageBus } from '@terminai/core/test-utils';
 import { ToolCallStatus } from '../types.js';
 
 // Mocks

@@ -12,13 +12,12 @@ import type { SlashCommand, CommandContext } from './types.js';
 import { createMockCommandContext } from '../../test-utils/mockCommandContext.js';
 import { MessageType } from '../types.js';
 import type { LoadedSettings } from '../../config/settings.js';
-import {
+import type {
+ LoadServerHierarchicalMemoryResponse ,
   getErrorMessage,
   refreshServerHierarchicalMemory,
   SimpleExtensionLoader,
-  type FileDiscoveryService,
-} from '@terminai/core';
-import type { LoadServerHierarchicalMemoryResponse } from '@terminai/core/index.js';
+  type FileDiscoveryService } from '@terminai/core';
 
 vi.mock('@terminai/core', async (importOriginal) => {
   const original = await importOriginal<typeof import('@terminai/core')>();

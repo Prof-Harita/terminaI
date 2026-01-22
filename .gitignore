@@ -71,6 +71,7 @@ local/
 test_output*.txt
 packages/desktop/src-tauri/bin/
 packages/desktop/src-tauri/resources/
+packages/microvm/resources/vmlinux-x86_64.bin
 
 
 .env

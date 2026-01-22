@@ -52,11 +52,16 @@ if (!nodeMajor || nodeMajor < MIN_NODE_MAJOR) {
 }
 
 const expectedMajor = readNvmrcMajor();
-if (expectedMajor && expectedMajor !== nodeMajor) {
+if (expectedMajor && nodeMajor < expectedMajor) {
   console.error(
     `Node.js version mismatch. .nvmrc expects v${expectedMajor}, current is ${process.version}.`,
   );
   process.exit(1);
+}
+if (expectedMajor && nodeMajor > expectedMajor) {
+  console.warn(
+    `Note: Node.js version ${process.version} is newer than .nvmrc (v${expectedMajor}). allowing locally.`,
+  );
 }
 
 requireCommand('git', 'git');

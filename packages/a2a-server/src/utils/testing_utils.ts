@@ -18,7 +18,7 @@ import {
   GeminiClient,
   HookSystem,
 } from '@terminai/core';
-import { createMockMessageBus } from '@terminai/core/src/test-utils/mock-message-bus.js';
+import { createMockMessageBus } from '@terminai/core/test-utils';
 import type { Config, Storage } from '@terminai/core';
 import type express from 'express';
 import type { Server } from 'node:http';

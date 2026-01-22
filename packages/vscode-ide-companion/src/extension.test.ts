@@ -8,10 +8,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as vscode from 'vscode';
 import { activate } from './extension.js';
-import {
-  IDE_DEFINITIONS,
-  detectIdeFromEnv,
-} from '@terminai/core/src/ide/detect-ide.js';
+import { IDE_DEFINITIONS, detectIdeFromEnv } from '@terminai/core';
 
 vi.mock('@terminai/core/src/ide/detect-ide.js', async () => {
   const actual = await vi.importActual('@terminai/core/src/ide/detect-ide.js');

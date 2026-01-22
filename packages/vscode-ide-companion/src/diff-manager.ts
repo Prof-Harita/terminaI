@@ -8,7 +8,7 @@
 import {
   IdeDiffAcceptedNotificationSchema,
   IdeDiffRejectedNotificationSchema,
-} from '@terminai/core/src/ide/types.js';
+} from '@terminai/core';
 import { type JSONRPCNotification } from '@modelcontextprotocol/sdk/types.js';
 import * as path from 'node:path';
 import * as vscode from 'vscode';

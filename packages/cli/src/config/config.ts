@@ -13,7 +13,8 @@ import { mcpCommand } from '../commands/mcp.js';
 import { extensionsCommand } from '../commands/extensions.js';
 import { hooksCommand } from '../commands/hooks.js';
 import { voiceCommand } from '../commands/voice.js';
-import {
+import type {
+ ExtensionEvents ,
   type Config,
   ConfigBuilder,
   setGeminiMdFilename as setServerGeminiMdFilename,
@@ -40,8 +41,7 @@ import {
   PREVIEW_GEMINI_MODEL_AUTO,
   type GeminiCLIExtension,
   type OutputFormat,
-  type ConfigParameters,
-} from '@terminai/core';
+  type ConfigParameters } from '@terminai/core';
 import type { Settings } from './settings.js';
 
 import { loadSandboxConfig } from './sandboxConfig.js';
@@ -55,7 +55,6 @@ import {
   resolvePolicyBrainAuthority,
 } from './policy.js';
 import { ExtensionManager } from './extension-manager.js';
-import type { ExtensionEvents } from '@terminai/core/src/utils/extensionLoader.js';
 import { requestConsentNonInteractive } from './extensions/consent.js';
 import { promptForSetting } from './extensions/extensionSettings.js';
 import type { EventEmitter } from 'node:stream';

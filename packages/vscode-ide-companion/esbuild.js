@@ -53,7 +53,7 @@ async function main() {
       /* add to the end of plugins array */
       esbuildProblemMatcherPlugin,
     ],
-    loader: { '.node': 'file' },
+    loader: { '.node': 'file', '.wasm': 'file' },
   });
   if (watch) {
     await ctx.watch();

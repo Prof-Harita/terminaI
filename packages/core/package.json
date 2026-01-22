@@ -20,6 +20,16 @@
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./test-utils": {
+      "types": "./dist/src/test-utils/index.d.ts",
+      "default": "./dist/src/test-utils/index.js"
+    }
+  },
   "dependencies": {
     "@google/genai": "^1.30.0",
     "@iarna/toml": "^2.2.5",
@@ -72,8 +82,7 @@
     "@lydell/node-pty-darwin-x64": "1.1.0",
     "@lydell/node-pty-linux-x64": "1.1.0",
     "@lydell/node-pty-win32-arm64": "1.1.0",
-    "@lydell/node-pty-win32-x64": "1.1.0",
-    "node-pty": "^1.0.0"
+    "@lydell/node-pty-win32-x64": "1.1.0"
   },
   "devDependencies": {
     "@terminai/test-utils": "file:../test-utils",

@@ -42,7 +42,7 @@ import {
   listenOnLocalhost,
   closeServer,
 } from '../utils/testing_utils.js';
-import { MockTool } from '@terminai/core';
+import { MockTool } from '@terminai/core/test-utils';
 import type { Command, CommandContext } from '../commands/types.js';
 
 const mockToolConfirmationFn = async () =>
