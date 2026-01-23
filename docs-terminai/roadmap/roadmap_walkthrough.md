@@ -198,3 +198,34 @@ Broker.
   - Path Jail: Read `C:\Windows\win.ini` → blocked.
   - Injection: `echo hello && calc` → calculator does NOT open.
   - CWD Escape: Set `cwd: "C:\\Windows"` → rejected.
+
+## Day 03: Runtime Tier Visibility + Health Checks
+
+**Objective:** Ensure users and logs show runtime tier; if runtime is broken,
+fail early with a clear, actionable fix.
+
+### 1. Startup Health Checks
+
+- **Issue:** `RuntimeManager.getContext()` called `context.initialize()` but
+  never called `context.healthCheck()`. Broken runtimes caused mid-task crashes.
+- **Fix:** Added `healthCheck()` call immediately after `initialize()` for all 4
+  runtime paths (MicroVM, Container, Windows Broker, Local).
+- **Fail-Fast:** If health check fails, `context.dispose()` is called and an
+  error is thrown with actionable message.
+
+### 2. User-Facing Runtime Display
+
+- **Issue:** Runtime tier was only logged internally, not shown to user.
+- **Fix:** Added clear `[TerminaI] Runtime: X (Tier Y)` message after successful
+  health check for each tier.
+
+### 3. Audit Integration (Already Complete)
+
+- `FileAuditLedger.append()` already injects `runtime: {type, tier, isIsolated}`
+  into every audit event via `setRuntimeContext()`.
+
+### Verification
+
+- Typecheck passes for `RuntimeManager.ts` (unrelated error in
+  `verify_microvm_context.ts`).
+- Manual: Break Docker → should see fail-fast error with clear message.
