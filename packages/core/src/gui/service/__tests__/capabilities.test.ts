@@ -68,7 +68,6 @@ describe('DesktopAutomationService - Capabilities Enforcement', () => {
         target: 'name:"Click Me"',
         button: 'left',
         clickCount: 1,
-        verify: true,
       }),
     ).resolves.not.toThrow();
   });
@@ -91,7 +90,6 @@ describe('DesktopAutomationService - Capabilities Enforcement', () => {
         target: 'Click Me',
         button: 'left',
         clickCount: 1,
-        verify: true,
       }),
     ).rejects.toThrow("Driver does not support 'canClick'.");
   });
@@ -113,7 +111,7 @@ describe('DesktopAutomationService - Capabilities Enforcement', () => {
       svc.type({
         text: 'hello',
         mode: 'insert',
-        verify: true,
+
         redactInLogs: false,
       }),
     ).rejects.toThrow("Driver does not support 'canType'.");
@@ -136,7 +134,6 @@ describe('DesktopAutomationService - Capabilities Enforcement', () => {
       svc.scroll({
         deltaX: 0,
         deltaY: 100,
-        verify: true,
       }),
     ).rejects.toThrow("Driver does not support 'canScroll'.");
   });

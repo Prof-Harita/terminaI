@@ -4,7 +4,7 @@
   "private": true,
   "description": "TerminAI Sovereign Sandbox Image",
   "scripts": {
-    "build": "cd ../.. && node scripts/build_sandbox.js"
+    "build": "cd ../.. && node scripts/build_sandbox.js -s"
   },
   "devDependencies": {
     "@terminai/core": "file:../core"

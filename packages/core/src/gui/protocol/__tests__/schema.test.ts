@@ -21,7 +21,6 @@ describe('DAP Schemas', () => {
       expect(parsed.success).toBe(true);
       if (parsed.success) {
         expect(parsed.data.button).toBe('left');
-        expect(parsed.data.verify).toBe(true);
       }
     });
 
@@ -31,7 +30,6 @@ describe('DAP Schemas', () => {
         button: 'right',
         clickCount: 2,
         modifiers: ['ctrl', 'shift'],
-        verify: false,
       };
       const parsed = UiClickSchema.safeParse(input);
       expect(parsed.success).toBe(true);

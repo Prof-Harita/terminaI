@@ -1,0 +1,16 @@
+FROM node:20-bookworm
+
+# Install build dependencies for native modules
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    make \
+    g++ \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Check node version matches .nvmrc (best effort, warns if mismatch)
+# RUN node -v
+
+CMD ["npm", "run", "preflight"]

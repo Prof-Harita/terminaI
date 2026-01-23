@@ -5,11 +5,34 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
+import os from 'node:os';
 import { escapePath, unescapePath, isSubpath, shortenPath } from './paths.js';
 
-// POSIX escapePath tests - skip on Windows since behavior differs
-describe.skipIf(process.platform === 'win32')('escapePath (POSIX)', () => {
+const { platformMock } = vi.hoisted(() => ({
+  platformMock: vi.fn(() => 'linux'),
+}));
+
+vi.mock('node:os', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('node:os')>();
+  return {
+    ...actual,
+    platform: platformMock,
+    default: {
+      ...actual,
+      platform: platformMock,
+    },
+  };
+});
+
+// POSIX escapePath tests
+describe('escapePath (POSIX)', () => {
+  beforeAll(() => {
+    vi.mocked(os.platform).mockReturnValue('linux');
+  });
+  afterAll(() => {
+    vi.mocked(os.platform).mockReset();
+  });
   it.each([
     ['spaces', 'my file.txt', 'my\\ file.txt'],
     ['tabs', 'file\twith\ttabs.txt', 'file\\\twith\\\ttabs.txt'],
@@ -91,8 +114,14 @@ describe.skipIf(process.platform === 'win32')('escapePath (POSIX)', () => {
   });
 });
 
-// Windows-specific escapePath tests - verifies double-quoting behavior
-describe.skipIf(process.platform !== 'win32')('escapePath (Windows)', () => {
+// Windows-specific escapePath tests
+describe('escapePath (Windows)', () => {
+  beforeAll(() => {
+    vi.mocked(os.platform).mockReturnValue('win32');
+  });
+  afterAll(() => {
+    vi.mocked(os.platform).mockReset();
+  });
   it('should use double-quoting for paths with spaces', () => {
     expect(escapePath('my file.txt')).toBe('"my file.txt"');
   });
@@ -132,8 +161,14 @@ describe.skipIf(process.platform !== 'win32')('escapePath (Windows)', () => {
   });
 });
 
-// POSIX unescapePath tests - skip on Windows since it uses different escaping
-describe.skipIf(process.platform === 'win32')('unescapePath (POSIX)', () => {
+// POSIX unescapePath tests
+describe('unescapePath (POSIX)', () => {
+  beforeAll(() => {
+    vi.mocked(os.platform).mockReturnValue('linux');
+  });
+  afterAll(() => {
+    vi.mocked(os.platform).mockReset();
+  });
   it.each([
     ['spaces', 'my\\ file.txt', 'my file.txt'],
     ['tabs', 'file\\\twith\\\ttabs.txt', 'file\twith\ttabs.txt'],
@@ -240,18 +275,12 @@ describe('isSubpath', () => {
 });
 
 describe('isSubpath on Windows', () => {
-  const originalPlatform = process.platform;
-
   beforeAll(() => {
-    Object.defineProperty(process, 'platform', {
-      value: 'win32',
-    });
+    vi.mocked(os.platform).mockReturnValue('win32');
   });
 
   afterAll(() => {
-    Object.defineProperty(process, 'platform', {
-      value: originalPlatform,
-    });
+    vi.mocked(os.platform).mockReset();
   });
 
   it('should return true for a direct subpath on Windows', () => {
@@ -303,7 +332,13 @@ describe('isSubpath on Windows', () => {
 });
 
 describe('shortenPath', () => {
-  describe.skipIf(process.platform === 'win32')('on POSIX', () => {
+  describe('on POSIX', () => {
+    beforeAll(() => {
+      vi.mocked(os.platform).mockReturnValue('linux');
+    });
+    afterAll(() => {
+      vi.mocked(os.platform).mockReset();
+    });
     it('should not shorten a path that is shorter than maxLen', () => {
       const p = '/path/to/file.txt';
       expect(shortenPath(p, 40)).toBe(p);
@@ -404,7 +439,13 @@ describe('shortenPath', () => {
     });
   });
 
-  describe.skipIf(process.platform !== 'win32')('on Windows', () => {
+  describe('on Windows', () => {
+    beforeAll(() => {
+      vi.mocked(os.platform).mockReturnValue('win32');
+    });
+    afterAll(() => {
+      vi.mocked(os.platform).mockReset();
+    });
     it('should not shorten a path that is shorter than maxLen', () => {
       const p = 'C\\Users\\Test\\file.txt';
       expect(shortenPath(p, 40)).toBe(p);

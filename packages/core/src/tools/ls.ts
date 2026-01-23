@@ -38,6 +38,16 @@ export interface LSToolParams {
     respect_git_ignore?: boolean;
     respect_gemini_ignore?: boolean;
   };
+
+  /**
+   * Pagination offset (optional, defaults to 0)
+   */
+  offset?: number;
+
+  /**
+   * Pagination limit (optional, defaults to 100)
+   */
+  limit?: number;
 }
 
 /**
@@ -222,17 +232,40 @@ class LSToolInvocation extends BaseToolInvocation<LSToolParams, ToolResult> {
         return a.name.localeCompare(b.name);
       });
 
+      // Apply pagination
+      const offset = this.params.offset ?? 0;
+      // Cap the limit to a reasonable maximum to prevent context flooding
+      const MAX_LIMIT = 1000;
+      const limit = Math.min(this.params.limit ?? 100, MAX_LIMIT);
+      const totalCount = entries.length;
+
+      const paginatedEntries = entries.slice(offset, offset + limit);
+      const hasMore = offset + limit < totalCount;
+      const shownCount = paginatedEntries.length;
+
       // Create formatted content for LLM
-      const directoryContent = entries
+      const directoryContent = paginatedEntries
         .map((entry) => `${entry.isDirectory ? '[DIR] ' : ''}${entry.name}`)
         .join('\n');
 
-      let resultMessage = `Directory listing for ${resolvedDirPath}:\n${directoryContent}`;
+      let resultMessage = `Directory listing for ${resolvedDirPath}`;
+      if (totalCount > limit) {
+        resultMessage += ` (Showing ${offset + 1}-${offset + shownCount} of ${totalCount})`;
+      }
+      resultMessage += `:\n${directoryContent}`;
+
       if (ignoredCount > 0) {
         resultMessage += `\n\n(${ignoredCount} ignored)`;
       }
 
-      let displayMessage = `Listed ${entries.length} item(s).`;
+      if (hasMore) {
+        resultMessage += `\n\n(${totalCount - (offset + shownCount)} more items. Use offset=${offset + limit} to see more)`;
+      }
+
+      let displayMessage = `Listed ${shownCount} item(s)`;
+      if (totalCount > shownCount) {
+        displayMessage += ` (Total: ${totalCount})`;
+      }
       if (ignoredCount > 0) {
         displayMessage += ` (${ignoredCount} ignored)`;
       }
@@ -296,6 +329,15 @@ export class LSTool extends BaseDeclarativeTool<LSToolParams, ToolResult> {
                 type: 'boolean',
               },
             },
+          },
+          offset: {
+            description: 'Optional: Start index for pagination (defaults to 0)',
+            type: 'number',
+          },
+          limit: {
+            description:
+              'Optional: Number of items to return (defaults to 100)',
+            type: 'number',
           },
         },
         required: ['dir_path'],

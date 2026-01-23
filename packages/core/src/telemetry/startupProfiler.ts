@@ -244,6 +244,13 @@ export class StartupProfiler {
     // Clear all phases.
     this.phases.clear();
   }
+
+  /**
+   * Resets the profiler state. Intended for testing purposes.
+   */
+  reset(): void {
+    this.phases.clear();
+  }
 }
 
 export const startupProfiler = StartupProfiler.getInstance();

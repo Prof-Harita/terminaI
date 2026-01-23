@@ -11,7 +11,6 @@ import type {
   ExecutionResult,
   RuntimeProcess,
 } from '@terminai/core';
-import { execSync } from 'node:child_process';
 
 /**
  * ContainerRuntimeContext - Docker/Podman Container Runtime (Phase 3)
@@ -35,27 +34,20 @@ export class ContainerRuntimeContext implements RuntimeContext {
   readonly isIsolated = true;
   readonly displayName = 'Docker Container';
 
-  // In the container, Python is at a fixed path (guaranteed by the image)
-  readonly pythonPath = '/usr/bin/python3';
+  // Python path in the container (from Dockerfile)
+  readonly pythonPath = '/opt/terminai/venv/bin/python3';
   readonly taptsVersion: string;
 
+  private containerId: string | null = null;
+  private readonly imageName = 'terminai-sandbox:latest';
+
   constructor(cliVersion: string) {
-    // Ideally we'd validte the container image version here
-    // For now, we assume implicit compatibility
     this.taptsVersion = cliVersion;
   }
 
   async healthCheck(): Promise<{ ok: boolean; error?: string }> {
+    const { execSync } = await import('node:child_process');
     try {
-      // Check if container is running or accessible
-      // Since this class represents the *context*, and the actual running
-      // might happen via PersistentShell wrapping a docker command,
-      // we need to clarify if this Context implies "running inside" or "managing from outside".
-
-      // Architecture implication:
-      // This context manages the runtime.
-      // If we are using standard docker/podman, we might just check if the daemon is up.
-
       execSync('docker info', { stdio: 'ignore' });
       return { ok: true };
     } catch (_error) {
@@ -63,25 +55,115 @@ export class ContainerRuntimeContext implements RuntimeContext {
     }
   }
 
+  async initialize(): Promise<void> {
+    const { execSync } = await import('node:child_process');
+
+    // 1. Check Docker availability
+    try {
+      execSync('docker info', { stdio: 'ignore' });
+    } catch {
+      throw new Error('Docker is not available or not reachable.');
+    }
+
+    // 2. Start the container
+    try {
+      // Run detached, clean up on exit, init process, override entrypoint to keep alive
+      this.containerId = execSync(
+        `docker run -d --rm --init --entrypoint tail ${this.imageName} -f /dev/null`,
+        { encoding: 'utf-8' },
+      ).trim();
+    } catch (e) {
+      throw new Error(
+        `Failed to start sandbox container (${this.imageName}): ${e}`,
+      );
+    }
+  }
+
   async dispose(): Promise<void> {
-    // Cleanup any containers if we started them (roadmap item)
-    // Currently we rely on PersistentShell to manage the process,
-    // so there's not much state here yet.
+    if (this.containerId) {
+      const { execSync } = await import('node:child_process');
+      try {
+        execSync(`docker rm -f ${this.containerId}`, { stdio: 'ignore' });
+      } catch {
+        // Ignore errors during cleanup
+      }
+      this.containerId = null;
+    }
   }
 
   async execute(
-    _command: string,
-    _options?: ExecutionOptions,
+    command: string,
+    options?: ExecutionOptions,
   ): Promise<ExecutionResult> {
-    throw new Error(
-      'Container runtime execution not implemented (Deferred to Phase 3)',
-    );
+    const { execFile } = await import('node:child_process');
+
+    if (!this.containerId) {
+      throw new Error('Container not initialized. Call initialize() first.');
+    }
+
+    return new Promise((resolve) => {
+      const args = ['exec'];
+
+      // Working directory
+      args.push('-w', options?.cwd || '/home/node');
+
+      // Environment variables
+      if (options?.env) {
+        Object.entries(options.env).forEach(([k, v]) => {
+          args.push('-e', `${k}=${v}`);
+        });
+      }
+
+      // Container ID
+      args.push(this.containerId!);
+
+      // Command (wrapped in sh -c for shell features)
+      args.push('/bin/sh', '-c', command);
+
+      execFile(
+        'docker',
+        args,
+        { encoding: 'utf-8' },
+        (error, stdout, stderr) => {
+          resolve({
+            stdout: stdout,
+            stderr: stderr,
+            exitCode: error ? ((error as any).code ?? 1) : 0,
+          });
+        },
+      );
+    });
   }
 
   async spawn(
-    _command: string,
-    _options?: ExecutionOptions,
+    command: string,
+    options?: ExecutionOptions,
   ): Promise<RuntimeProcess> {
-    throw new Error('Container Runtime spawn not implemented (Phase 3)');
+    const { spawn } = await import('node:child_process');
+    if (!this.containerId) {
+      throw new Error('Container not initialized. Call initialize() first.');
+    }
+
+    const args = ['exec', '-i']; // -i for interaction (stdin)
+
+    // Working directory
+    args.push('-w', options?.cwd || '/home/node');
+
+    // Environment variables
+    if (options?.env) {
+      Object.entries(options.env).forEach(([k, v]) => {
+        args.push('-e', `${k}=${v}`);
+      });
+    }
+
+    // Container ID
+    args.push(this.containerId);
+
+    // Command (wrapped in sh -c)
+    args.push('/bin/sh', '-c', command);
+
+    // Use spawn directly for streaming
+    const child = spawn('docker', args);
+    return child as unknown as RuntimeProcess;
   }
 }

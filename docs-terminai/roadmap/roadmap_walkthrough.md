@@ -229,3 +229,157 @@ fail early with a clear, actionable fix.
 - Typecheck passes for `RuntimeManager.ts` (unrelated error in
   `verify_microvm_context.ts`).
 - Manual: Break Docker → should see fail-fast error with clear message.
+
+## Day 6: ATS Evaluation Runner (Measurement)
+
+**Objective:** Make ATS-50 measurable and repeatable, locking in a systematic
+evaluation routine for the "Road to 90%".
+
+### 1. ATS Runner Implementation
+
+- **Component:** `scripts/verify-ats.sh`.
+- **Logic:** A comprehensive bash runner that embeds all 50 ATS task
+  definitions.
+  - `--task <ID>`: Prints the EXACT prompt, evidence criteria (pass), and
+    failure conditions for any of the 50 tasks.
+  - `--list`: Lists all tasks with their titles for easy reference.
+- **Integration:** Added `npm run verify:ats` as the standard entry point.
+
+### 2. Scoreboard & Tracking
+
+- **New Asset:** `docs-terminai/roadmap/scoreboard.md`.
+- **Purpose:** A living document tracking pass/fail status for all 50 tasks
+  across Linux, Windows, and macOS.
+- **Categories:** Organized tasks into categories (File/Disk, System
+  Diagnostics, Security, etc.) for trend analysis.
+
+### 3. Verification
+
+- All runner commands tested successfully:
+  - ✅ `npm run verify:ats -- --help` (Usage)
+  - ✅ `npm run verify:ats -- --list` (Task index)
+  - ✅ `npm run verify:ats -- --task 01` (Task details)
+  - ✅ Task data renders with ANSI colors for human readability.
+- **Rollout:** Baseline for all subsequent "ATS Closure" work (Days 21-70).
+
+## Days 7-19: Stability & Hygiene Marathon
+
+**Objective:** Stabilize the codebase, improve developer experience, and ensure
+native performance across platforms.
+
+### 1. Hygiene & Version Drift
+
+- **Lockfile Integrity:** Implemented `check-lockfile.js` to ensure
+  `package-lock.json` remains in sync with `package.json` across all workspaces.
+- **Linting & Formatting:** Enforced stricter `eslint` and `prettier` rules in
+  CI.
+- **Dependency Management:** Audited and pinned dependencies to prevent drift.
+
+### 2. Windows Native Strategy
+
+- **Path Handling:** Audited codebase for hardcoded `/` separators, switching to
+  `path.join()` and `path.normalize()` where appropriate (precursor to Day 20
+  work).
+- **PowerShell Support:** Verified shell execution strategies for PowerShell vs
+  cmd.exe.
+
+### 3. Docker Runtime Refinement
+
+- **Lifecycle Management:** Hardened `ContainerRuntimeContext` disposal logic to
+  prevent orphaned containers.
+- **Image Optimization:** Reduced sandbox image size by stripping unnecessary
+  build artifacts.
+
+### 4. Documentation
+
+- **Roadmap Updates:** Centralized tracking in `docs-terminai/roadmap/`.
+- **Developer Guides:** Updated project documentation and setup scripts.
+
+### 5. Flaky Tests
+
+- **Teardown Logic:** Identified issues with global state persistence in tests
+  (leading to Day 20's `startupProfiler` fix).
+- **CI Stability:** Tuned timeout values and retries for CI environments.
+
+# Walkthrough - Day 20: Windows Test Identity
+
+## Goal
+
+Enable comprehensive testing of Windows-specific path logic (`shortenPath`,
+`escapePath`) on non-Windows environments and fix flaky CLI tests caused by
+persistent singleton state.
+
+## Changes
+
+### Core Package
+
+#### [paths.ts](file:///home/profharita/Code/terminaI/packages/core/src/utils/paths.ts)
+
+- Refactored `shortenPath` to dynamically select `path.win32` or `path.posix`
+  based on `os.platform()`.
+- Refactored `escapePath` to use `os.platform()` instead of `process.platform`
+  for better testability.
+
+#### [startupProfiler.ts](file:///home/profharita/Code/terminaI/packages/core/src/telemetry/startupProfiler.ts)
+
+- Added `reset()` method to `StartupProfiler` to allow clearing state between
+  tests.
+
+### Tests
+
+#### [paths.test.ts](file:///home/profharita/Code/terminaI/packages/core/src/utils/paths.test.ts)
+
+- Replaced `describe.skipIf` with `vi.mock('node:os')` to enforce specific
+  platforms during tests.
+- Updated expectations to match correct `path.win32` parsing behavior
+  (preserving drive letters).
+
+#### [gemini.test.tsx](file:///home/profharita/Code/terminaI/packages/cli/src/gemini.test.tsx)
+
+- Replaced unstable `vi.resetModules()` with `startupProfiler.reset()`.
+- Updated `@terminai/core` mock to correctly handle `startupProfiler` class
+  instance methods (`start`, `reset`).
+
+## Verification Results
+
+### Automated Tests
+
+- `packages/core/src/utils/paths.test.ts`: **Passed** (All POSIX and Windows
+  cases verified on Linux).
+- `packages/cli/src/gemini.test.tsx`: **Passed** (No more "phase already active"
+  errors).
+
+## Phase 4: Agentic Harness (Upgrade)
+
+**Objective:** Upgrade from manual copy-paste validation to an interactive,
+data-driven workflow.
+
+### 1. Harness Script (`scripts/harness-ats.ts`)
+
+- **Interactive Runner:** Wrapper around `terminai` that:
+  - Selects task (01-50).
+  - Spawns the agent with the **exact** prompt.
+  - Prompts you for immediate pass/fail grading on exit.
+  - Updates the scoreboard automatically.
+
+### 2. Data Extraction
+
+- **Source of Truth:** Extracted all 50 task definitions from bash script to
+  [ats-tasks.ts](file:///home/profharita/Code/terminaI/scripts/data/ats-tasks.ts).
+- **Benefits:** Type-safe, reusable, single maintenance point.
+
+### 3. Scoreboard 2.0
+
+- **Columns Added:** Runtime, Session, Result, Notes, Actions.
+- **Persistence:** Harness writes result symbols (✅/❌) and notes directly to
+  markdown.
+
+### Usage
+
+```bash
+# Run task 01 interactively
+npm run harness:ats -- 01
+
+# Run all tasks in sequence
+npm run harness:ats
+```

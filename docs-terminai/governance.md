@@ -49,3 +49,19 @@ For PRs that can execute commands or expose remote control:
 - Are secrets redacted from logs and UI?
 - Is there an audit trail (or at least deterministic logging) for user actions?
 - Are defaults safe (loopback binding, least privilege, minimal permissions)?
+
+## Merge Policy (Required Checks)
+
+To maintain stability and safety, the following checks are **REQUIRED** for all
+PRs targeting `main`:
+
+1.  **`ci` (Aggregator)**: The main CI job that runs lint, build, and tests must
+    pass.
+2.  **`forbidden_artifacts`**: No binary artifacts (.node, .exe, etc.) may be
+    present in the PR diff.
+
+The following checks are **ADVISORY** (Non-Blocking):
+
+1.  **`link_checker`**: Link failures should be fixed but must not block code
+    validation.
+2.  **`codeql`**: Security scanning results are reviewed asynchronously.

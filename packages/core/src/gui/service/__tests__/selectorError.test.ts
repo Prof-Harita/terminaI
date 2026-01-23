@@ -37,7 +37,6 @@ describe('DesktopAutomationService - Selector Errors', () => {
         target: 'role=Button &&',
         button: 'left',
         clickCount: 1,
-        verify: true,
       }),
     ).rejects.toThrow(/Invalid selector syntax: "role=Button &&"/);
   });

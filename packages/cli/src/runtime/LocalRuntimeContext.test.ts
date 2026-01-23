@@ -99,4 +99,28 @@ describe('LocalRuntimeContext', () => {
       expect.anything(),
     );
   });
+
+  it('should execute command using shell: true', async () => {
+    // Mock spawn for execute
+    const spawnMock = vi.fn().mockReturnValue({
+      stdout: { on: vi.fn() },
+      stderr: { on: vi.fn() },
+      on: vi.fn().mockImplementation((event, cb) => {
+        if (event === 'close') cb(0);
+      }),
+    });
+
+    vi.mocked(child_process.spawn).mockImplementation(spawnMock as any);
+
+    await context.execute('echo "hello world"');
+
+    // This assertion expects shell: true, which is currently missing
+    expect(spawnMock).toHaveBeenCalledWith(
+      'echo "hello world"',
+      expect.any(Array),
+      expect.objectContaining({
+        shell: true,
+      }),
+    );
+  });
 });

@@ -42,6 +42,16 @@ export interface GrepToolParams {
    * File pattern to include in the search (e.g. "*.js", "*.{ts,tsx}")
    */
   include?: string;
+
+  /**
+   * Pagination offset (optional, defaults to 0)
+   */
+  offset?: number;
+
+  /**
+   * Pagination limit (optional, defaults to 100, max 1000)
+   */
+  limit?: number;
 }
 
 /**
@@ -159,39 +169,68 @@ class GrepToolInvocation extends BaseToolInvocation<
         return { llmContent: noMatchMsg, returnDisplay: `No matches found` };
       }
 
-      // Group matches by file
-      const matchesByFile = allMatches.reduce(
+      // Group matches by file (logic removed as unused)
+
+      // Flatten back to array for pagination, keeping file grouping stability if we wanted,
+      // but here we just paginate the flat list of matches effectively.
+      // However, the previous code grouped by file for display.
+      // Let's paginate the matches themselves, then regroup for display.
+      // Or better: filter the flat matches based on offset/limit.
+
+      const offset = this.params.offset ?? 0;
+      const MAX_LIMIT = 1000;
+      const limit = Math.min(this.params.limit ?? 100, MAX_LIMIT);
+      const totalCount = allMatches.length;
+
+      const paginatedMatches = allMatches.slice(offset, offset + limit);
+      const shownCount = paginatedMatches.length;
+      const hasMore = offset + limit < totalCount;
+
+      // Re-group *only the paginated matches* for display
+      const displayMatchesByFile = paginatedMatches.reduce(
         (acc, match) => {
           const fileKey = match.filePath;
           if (!acc[fileKey]) {
             acc[fileKey] = [];
           }
           acc[fileKey].push(match);
+          // They are likely already sorted by virtue of traversal, but sorting again for safety
           acc[fileKey].sort((a, b) => a.lineNumber - b.lineNumber);
           return acc;
         },
         {} as Record<string, GrepMatch[]>,
       );
 
-      const matchCount = allMatches.length;
-      const matchTerm = matchCount === 1 ? 'match' : 'matches';
+      const matchTerm = totalCount === 1 ? 'match' : 'matches';
 
-      let llmContent = `Found ${matchCount} ${matchTerm} for pattern "${this.params.pattern}" ${searchLocationDescription}${this.params.include ? ` (filter: "${this.params.include}")` : ''}:
----
-`;
+      let llmContent = `Found ${totalCount} ${matchTerm} for pattern "${this.params.pattern}" ${searchLocationDescription}${this.params.include ? ` (filter: "${this.params.include}")` : ''}`;
 
-      for (const filePath in matchesByFile) {
+      if (totalCount > limit || offset > 0) {
+        llmContent += ` (Showing ${offset + 1}-${offset + shownCount} of ${totalCount})`;
+      }
+      llmContent += ':\n---\n';
+
+      for (const filePath in displayMatchesByFile) {
         llmContent += `File: ${filePath}\n`;
-        matchesByFile[filePath].forEach((match) => {
+        displayMatchesByFile[filePath].forEach((match) => {
           const trimmedLine = match.line.trim();
           llmContent += `L${match.lineNumber}: ${trimmedLine}\n`;
         });
         llmContent += '---\n';
       }
 
+      if (hasMore) {
+        llmContent += `\n(${totalCount - (offset + shownCount)} more ${matchTerm}. Use offset=${offset + limit} to see more)`;
+      }
+
+      let displayMessage = `Found ${shownCount} ${matchTerm}`;
+      if (totalCount > shownCount) {
+        displayMessage += ` (Total: ${totalCount})`;
+      }
+
       return {
         llmContent: llmContent.trim(),
-        returnDisplay: `Found ${matchCount} ${matchTerm}`,
+        returnDisplay: displayMessage,
       };
     } catch (error) {
       debugLogger.warn(`Error during GrepLogic execution: ${error}`);
@@ -513,6 +552,15 @@ export class GrepTool extends BaseDeclarativeTool<GrepToolParams, ToolResult> {
             description:
               "Optional: A glob pattern to filter which files are searched (e.g., '*.js', '*.{ts,tsx}', 'src/**'). If omitted, searches all files (respecting potential global ignores).",
             type: 'string',
+          },
+          offset: {
+            description: 'Optional: Start index for pagination (defaults to 0)',
+            type: 'number',
+          },
+          limit: {
+            description:
+              'Optional: Number of items to return (defaults to 100, max 1000)',
+            type: 'number',
           },
         },
         required: ['pattern'],

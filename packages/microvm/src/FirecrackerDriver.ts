@@ -2,6 +2,10 @@ import { spawn, ChildProcess } from 'child_process';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as http from 'http';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export interface FirecrackerConfig {
   kernelPath: string;
@@ -28,7 +32,7 @@ export class FirecrackerDriver {
     private readonly config: FirecrackerConfig,
     private readonly binaryPath: string = path.join(
       __dirname,
-      '../../resources/firecracker',
+      '../resources/firecracker',
     ),
   ) {}
 
@@ -46,9 +50,16 @@ export class FirecrackerDriver {
       this.binaryPath,
       ['--api-sock', this.config.socketPath],
       {
-        stdio: ['ignore', 'ignore', 'ignore'], // TODO: Redirect logs
+        stdio: ['ignore', 'pipe', 'pipe'],
         detached: false,
       },
+    );
+
+    this.process.stdout?.on('data', (d) =>
+      console.log('[FC stdout]', d.toString()),
+    );
+    this.process.stderr?.on('data', (d) =>
+      console.error('[FC stderr]', d.toString()),
     );
 
     this.process.on('error', (err) => {
@@ -113,10 +124,8 @@ export class FirecrackerDriver {
   }
 
   private async configureBootSource(): Promise<void> {
-    let bootArgs = 'console=ttyS0 reboot=k panic=1 pci=off';
-    if (this.config.kernelArgs) {
-      bootArgs += ` ${this.config.kernelArgs}`;
-    }
+    let bootArgs =
+      this.config.kernelArgs || 'console=ttyS0 reboot=k panic=1 pci=off';
 
     await this.request('PUT', '/boot-source', {
       kernel_image_path: this.config.kernelPath,
@@ -243,6 +252,7 @@ export class FirecrackerDriver {
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
+          'Content-Length': Buffer.byteLength(JSON.stringify(body)),
         },
       };
 
@@ -250,15 +260,22 @@ export class FirecrackerDriver {
         if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
           resolve();
         } else {
-          res.resume(); // consume body
-          reject(
-            new Error(`Firecracker API ${path} failed: ${res.statusCode}`),
-          );
+          let body = '';
+          res.on('data', (c) => (body += c));
+          res.on('end', () => {
+            reject(
+              new Error(
+                `Firecracker API ${path} failed: ${res.statusCode} - ${body}`,
+              ),
+            );
+          });
         }
       });
 
       req.on('error', reject);
-      req.write(JSON.stringify(body));
+      const jsonBody = JSON.stringify(body);
+      console.log(`[FirecrackerDriver] ${method} ${path} Payload:`, jsonBody);
+      req.write(jsonBody);
       req.end();
     });
   }

@@ -75,7 +75,6 @@ export class UiClickXyTool extends UiToolBase<UiClickXyArgs> {
           coordinateSpace: { type: 'string', enum: ['screen', 'window'] },
           button: { type: 'string', enum: ['left', 'right', 'middle'] },
           clickCount: { type: 'number' },
-          verify: { type: 'boolean' },
         },
         required: ['x', 'y'],
       },

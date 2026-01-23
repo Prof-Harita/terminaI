@@ -65,7 +65,7 @@ describe('DesktopAutomationService - Smart Redaction', () => {
       target: 'name:"Password"',
       text: 'secret',
       mode: 'insert',
-      verify: true,
+
       // Intentionally omit `redactInLogs` to exercise smart-redaction inference.
     } as unknown as UiTypeArgs);
 
@@ -112,7 +112,6 @@ describe('DesktopAutomationService - Smart Redaction', () => {
       text: 'user',
       redactInLogs: false,
       mode: 'insert',
-      verify: true,
     });
     expect(typeSpy).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -126,7 +125,6 @@ describe('DesktopAutomationService - Smart Redaction', () => {
       text: 'user',
       redactInLogs: true,
       mode: 'insert',
-      verify: true,
     });
     expect(typeSpy).toHaveBeenCalledWith(
       expect.objectContaining({

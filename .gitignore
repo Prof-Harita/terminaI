@@ -95,3 +95,4 @@ opencode-openai-auth/
 
 # Build artifacts
 packages/cli/build/
+packages/sandbox-image/python/build/

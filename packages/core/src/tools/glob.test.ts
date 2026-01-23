@@ -232,6 +232,45 @@ describe('GlobTool', () => {
     });
   });
 
+  describe('pagination', () => {
+    beforeEach(async () => {
+      // Create 5 files for pagination testing
+      for (let i = 1; i <= 5; i++) {
+        await fs.writeFile(path.join(tempRootDir, `file${i}.page`), `content${i}`);
+      }
+    });
+
+    it('should respect the limit parameter', async () => {
+      const params: GlobToolParams = { pattern: '*.page', limit: 2 };
+      const invocation = globTool.build(params);
+      const result = await invocation.execute(abortSignal);
+      
+      const llmContent = partListUnionToString(result.llmContent);
+      expect(llmContent).toContain('Showing 1-2 of 5');
+      // Should find 5 files total but show only 2
+      expect(llmContent).toContain('file1.page'); // Sort might be non-deterministic if mtime is same, but usually alpha for ties
+      // We need to count newlines or verify specific files are missing if we rely on sort
+    });
+
+    it('should respect the offset parameter', async () => {
+      const params: GlobToolParams = { pattern: '*.page', limit: 2, offset: 2 };
+      const invocation = globTool.build(params);
+      const result = await invocation.execute(abortSignal);
+      
+      const llmContent = partListUnionToString(result.llmContent);
+      expect(llmContent).toContain('Showing 3-4 of 5');
+    });
+
+    it('should show "more items" message when truncated', async () => {
+       const params: GlobToolParams = { pattern: '*.page', limit: 2 };
+       const invocation = globTool.build(params);
+       const result = await invocation.execute(abortSignal);
+       
+       const llmContent = partListUnionToString(result.llmContent);
+       expect(llmContent).toContain('3 more items. Use offset=2 to see more');
+    });
+  });
+
   describe('validateToolParams', () => {
     it.each([
       {

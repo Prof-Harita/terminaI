@@ -418,4 +418,55 @@ describe('GrepTool', () => {
       expect(invocation.getDescription()).toBe("'testPattern' within ./");
     });
   });
+
+  describe('pagination', () => {
+    it('should paginate results with limit and offset', async () => {
+      // Create a file with 10 matches
+      const content = Array.from({ length: 10 }, (_, i) => `match ${i}`).join(
+        '\n',
+      );
+      await fs.writeFile(path.join(tempRootDir, 'many_matches.txt'), content);
+
+      // First page (limit 4)
+      const inv1 = grepTool.build({ pattern: 'match', limit: 4, offset: 0 });
+      const res1 = await inv1.execute(abortSignal);
+
+      expect(res1.llmContent).toContain('Found 10 matches');
+      expect(res1.llmContent).toContain('(Showing 1-4 of 10)');
+      expect(res1.llmContent).toContain('L1: match 0');
+      expect(res1.llmContent).toContain('L4: match 3');
+      expect(res1.llmContent).not.toContain('L5: match 4');
+      expect(res1.llmContent).toContain(
+        '(6 more matches. Use offset=4 to see more)',
+      );
+
+      // Second page (offset 4, limit 4)
+      const inv2 = grepTool.build({ pattern: 'match', limit: 4, offset: 4 });
+      const res2 = await inv2.execute(abortSignal);
+
+      expect(res2.llmContent).toContain('(Showing 5-8 of 10)');
+      expect(res2.llmContent).toContain('L5: match 4');
+      expect(res2.llmContent).toContain('L8: match 7');
+      expect(res2.llmContent).not.toContain('L9: match 8');
+      expect(res2.llmContent).toContain(
+        '(2 more matches. Use offset=8 to see more)',
+      );
+    });
+
+    it('should enforce default limit of 100', async () => {
+      // Create a file with 150 matches
+      const content = Array.from({ length: 150 }, (_, i) => `match ${i}`).join(
+        '\n',
+      );
+      await fs.writeFile(path.join(tempRootDir, 'huge.txt'), content);
+
+      const inv = grepTool.build({ pattern: 'match' }); // No limit specified
+      const res = await inv.execute(abortSignal);
+
+      expect(res.llmContent).toContain('(Showing 1-100 of 150)');
+      expect(res.llmContent).toContain(
+        '(50 more matches. Use offset=100 to see more)',
+      );
+    });
+  });
 });

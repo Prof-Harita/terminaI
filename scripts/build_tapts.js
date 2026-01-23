@@ -55,31 +55,51 @@ if (!existsSync(outDir)) {
   mkdirSync(outDir, { recursive: true });
 }
 
+const venvDir = join(taptsDir, '.venv');
+const venvPython = join(venvDir, 'bin', 'python3');
+
+// 1. Ensure venv exists
+if (!existsSync(venvDir)) {
+  console.log(`Creating venv at ${venvDir}...`);
+  try {
+    execSync(`python3 -m venv "${venvDir}"`, { stdio: 'inherit' });
+  } catch {
+    if (requireTapts) {
+      console.error('Failed to create venv');
+      process.exit(1);
+    }
+    console.warn('Skipping T-APTS build: Failed to create venv');
+    process.exit(0);
+  }
+}
+
+// 2. Ensure build tool is installed
 try {
-  execSync('python3 -c "import build"', {
-    stdio: 'ignore',
-    cwd: taptsDir,
-  });
-} catch (error) {
-  const message =
-    'python3 build module is missing. Install with `python3 -m pip install build`.';
+  execSync(`"${venvPython}" -m pip install build`, { stdio: 'ignore' });
+} catch {
   if (requireTapts) {
-    console.error(message);
-    console.error(error);
+    console.error('Failed to install build tool in venv');
     process.exit(1);
   }
-  console.warn(`Skipping T-APTS wheel build: ${message}`);
+  console.warn('Skipping T-APTS build: Failed to install build tool');
   process.exit(0);
 }
 
+// 3. Build the wheel
 try {
-  execSync('python3 -m build --wheel --outdir ../../../packages/cli/dist/', {
+  console.log('Building T-APTS wheel...');
+  // Ensure output dir exists
+  if (!existsSync(outDir)) {
+    mkdirSync(outDir, { recursive: true });
+  }
+
+  execSync(`"${venvPython}" -m build --wheel --outdir "${outDir}"`, {
     stdio: 'inherit',
     cwd: taptsDir,
   });
+  console.log(`T-APTS wheel built successfully in ${outDir}`);
 } catch (error) {
-  const message =
-    'Failed to build T-APTS wheel. Ensure python3 -m build is available.';
+  const message = 'Failed to build T-APTS wheel.';
   if (requireTapts) {
     console.error(message);
     console.error(error);

@@ -77,7 +77,6 @@ export class UiTypeTool extends UiToolBase<UiTypeArgs> {
           },
           mode: { type: 'string', enum: ['insert', 'replace', 'append'] },
           redactInLogs: { type: 'boolean' },
-          verify: { type: 'boolean' },
         },
         required: ['text'],
       },
