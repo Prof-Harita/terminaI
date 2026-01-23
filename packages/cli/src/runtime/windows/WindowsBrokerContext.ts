@@ -39,6 +39,7 @@ import {
   createErrorResponse,
   type ExecuteResult,
 } from './BrokerSchema.js';
+import { parse } from 'shell-quote';
 
 // Native module loaded lazily
 let native: typeof import('./native.js') | null = null;
@@ -87,6 +88,25 @@ export class WindowsBrokerContext implements RuntimeContext {
   readonly type = 'windows-appcontainer' as const;
   readonly isIsolated = true;
   readonly displayName = 'Windows AppContainer Sandbox';
+
+  private static readonly ALLOWED_COMMANDS = [
+    'echo',
+    'dir',
+    'cd',
+    'python',
+    'python3',
+    'pip',
+    'node',
+    'npm',
+    'npx',
+    'git',
+    'powershell',
+    'pwsh',
+    'cmd',
+    'net',
+    'ipconfig',
+    'whoami',
+  ];
 
   private readonly cliVersion: string;
   private readonly workspacePath: string;
@@ -208,6 +228,55 @@ export class WindowsBrokerContext implements RuntimeContext {
   }
 
   /**
+   * Safe command parsing using shell-quote.
+   */
+  private parseCommand(command: string): { cmd: string; args: string[] } {
+    const parsed = parse(command);
+    const args: string[] = [];
+    for (const entry of parsed) {
+      if (typeof entry === 'string') {
+        args.push(entry);
+      } else if ('op' in entry) {
+        // Stop at first operator to prevent injection
+        break;
+      }
+    }
+    if (args.length === 0) return { cmd: '', args: [] };
+    return { cmd: args[0], args: args.slice(1) };
+  }
+
+  /**
+   * Validate that a path is strictly within the workspace directory.
+   * Prevents directory traversal attacks (e.g. "../../../Windows/System32").
+   */
+  private validatePath(requestedPath: string): string {
+    // 1. Resolve to absolute path
+    const targetPath = path.resolve(this.workspacePath, requestedPath);
+
+    // 2. Normalize to lower-case for comparison (Windows is case-insensitive)
+    // We check if targetPath starts with workspacePath.
+    // Note: This simple string check assumes standard path separators.
+    const normalizedTarget = targetPath.toLowerCase();
+    const normalizedWorkspace = this.workspacePath.toLowerCase();
+
+    // 3. Check for containment
+    // We append a separator to ensure we match directory boundaries (avoid /workspace-fake vs /workspace)
+    // unless it is exactly the workspace root.
+    const isRoot = normalizedTarget === normalizedWorkspace;
+    const isChild = normalizedTarget.startsWith(
+      normalizedWorkspace + path.sep.toLowerCase(),
+    );
+
+    if (!isRoot && !isChild) {
+      throw new Error(
+        `Access Denied: Path '${requestedPath}' is outside the authorized workspace.`,
+      );
+    }
+
+    return targetPath;
+  }
+
+  /**
    * Handle incoming IPC requests from the Brain process.
    */
   private async handleRequest(
@@ -270,11 +339,22 @@ export class WindowsBrokerContext implements RuntimeContext {
     const cwd = request.cwd ?? this.workspacePath;
     const timeout = request.timeout ?? 30000;
 
-    // Security: Strict Allowlist
-    const ALLOWED_COMMANDS = ['echo', 'dir']; // Minimal allowlist for connectivity check
-    // Real sidecars should be registered and invoked by specific ID, not arbitrary command string.
+    // Security: Validate CWD
+    try {
+      this.validatePath(cwd);
+    } catch (error) {
+      respond(
+        createSuccessResponse({
+          exitCode: 1,
+          stdout: '',
+          stderr: (error as Error).message,
+          timedOut: false,
+        }),
+      );
+      return;
+    }
 
-    if (!ALLOWED_COMMANDS.includes(request.command)) {
+    if (!WindowsBrokerContext.ALLOWED_COMMANDS.includes(request.command)) {
       respond(
         createSuccessResponse({
           exitCode: 1,
@@ -345,13 +425,12 @@ export class WindowsBrokerContext implements RuntimeContext {
     request: Extract<BrokerRequest, { type: 'readFile' }>,
     respond: (response: BrokerResponse) => void,
   ): Promise<void> {
-    const filePath = path.isAbsolute(request.path)
-      ? request.path
-      : path.join(this.workspacePath, request.path);
-
     const encoding = request.encoding ?? 'utf-8';
 
     try {
+      // Security: Validate Path
+      const filePath = this.validatePath(request.path);
+
       const content = await fs.readFile(filePath, {
         encoding: encoding === 'base64' ? null : 'utf-8',
       });
@@ -376,13 +455,12 @@ export class WindowsBrokerContext implements RuntimeContext {
     request: Extract<BrokerRequest, { type: 'writeFile' }>,
     respond: (response: BrokerResponse) => void,
   ): Promise<void> {
-    const filePath = path.isAbsolute(request.path)
-      ? request.path
-      : path.join(this.workspacePath, request.path);
-
     const encoding = request.encoding ?? 'utf-8';
 
     try {
+      // Security: Validate Path
+      const filePath = this.validatePath(request.path);
+
       if (request.createDirs) {
         await fs.mkdir(path.dirname(filePath), { recursive: true });
       }
@@ -410,11 +488,10 @@ export class WindowsBrokerContext implements RuntimeContext {
     request: Extract<BrokerRequest, { type: 'listDir' }>,
     respond: (response: BrokerResponse) => void,
   ): Promise<void> {
-    const dirPath = path.isAbsolute(request.path)
-      ? request.path
-      : path.join(this.workspacePath, request.path);
-
     try {
+      // Security: Validate Path
+      const dirPath = this.validatePath(request.path);
+
       const entries = await fs.readdir(dirPath, { withFileTypes: true });
       const includeHidden = request.includeHidden ?? false;
 
@@ -480,7 +557,7 @@ export class WindowsBrokerContext implements RuntimeContext {
         'powershell',
         ['-NoProfile', '-Command', request.script],
         {
-          cwd: request.cwd ?? this.workspacePath,
+          cwd: this.validatePath(request.cwd ?? this.workspacePath),
           timeout,
         },
       );
@@ -582,16 +659,62 @@ export class WindowsBrokerContext implements RuntimeContext {
   }
 
   async execute(
-    _command: string,
-    _options?: ExecutionOptions,
+    command: string,
+    options?: ExecutionOptions,
   ): Promise<ExecutionResult> {
-    throw new Error('Windows Broker execute not implemented yet');
+    const { spawn } = await import('node:child_process');
+
+    // Parse command safely
+    const { cmd, args } = this.parseCommand(command);
+
+    if (!WindowsBrokerContext.ALLOWED_COMMANDS.includes(cmd)) {
+      throw new Error(
+        `Command '${cmd}' is not allowed by Windows Broker policy.`,
+      );
+    }
+
+    return new Promise((resolve) => {
+      const child = spawn(cmd, args, {
+        cwd: this.validatePath(options?.cwd || this.workspacePath),
+        env: { ...process.env, ...options?.env },
+        shell: false, // Enforce no shell
+      });
+
+      let stdout = '';
+      let stderr = '';
+
+      child.stdout?.on('data', (d) => (stdout += d));
+      child.stderr?.on('data', (d) => (stderr += d));
+
+      child.on('close', (code) => {
+        resolve({
+          stdout,
+          stderr,
+          exitCode: code ?? 0,
+        });
+      });
+    });
   }
 
   async spawn(
-    _command: string,
-    _options?: ExecutionOptions,
+    command: string,
+    options?: ExecutionOptions,
   ): Promise<RuntimeProcess> {
-    throw new Error('Windows Broker spawn not implemented yet');
+    const { spawn } = await import('node:child_process');
+
+    // Parse command safely
+    const { cmd, args } = this.parseCommand(command);
+
+    if (!WindowsBrokerContext.ALLOWED_COMMANDS.includes(cmd)) {
+      throw new Error(
+        `Command '${cmd}' is not allowed by Windows Broker policy.`,
+      );
+    }
+
+    return spawn(cmd, args, {
+      cwd: this.validatePath(options?.cwd || this.workspacePath),
+      env: { ...process.env, ...options?.env },
+      shell: false,
+    }) as unknown as RuntimeProcess;
   }
 }
