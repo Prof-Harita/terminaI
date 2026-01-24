@@ -23,11 +23,13 @@
 
 import * as net from 'node:net';
 import { EventEmitter } from 'node:events';
+import { randomUUID } from 'node:crypto';
 import {
   BrokerRequestSchema,
   BrokerResponseSchema,
   type BrokerRequest,
   type BrokerResponse,
+  type BrokerErrorCode,
   isErrorResponse,
 } from './BrokerSchema.js';
 
@@ -40,6 +42,10 @@ export interface BrokerClientOptions {
   requestTimeout?: number;
   /** Whether to auto-reconnect on connection loss */
   autoReconnect?: boolean;
+  /** Handshake token required by BrokerServer */
+  handshakeToken: string;
+  /** Optional client version */
+  clientVersion?: string;
 }
 
 export interface BrokerClientEvents {
@@ -54,7 +60,10 @@ export interface BrokerClientEvents {
  *
  * Usage:
  * ```typescript
- * const client = new BrokerClient({ pipePath: '\\\\.\\pipe\\terminai-xxx' });
+ * const client = new BrokerClient({
+ *   pipePath: '\\\\.\\pipe\\terminai-xxx',
+ *   handshakeToken: 'token',
+ * });
  * await client.connect();
  *
  * // Execute a command
@@ -73,6 +82,8 @@ export class BrokerClient extends EventEmitter {
   private readonly connectTimeout: number;
   private readonly requestTimeout: number;
   private readonly autoReconnect: boolean;
+  private readonly handshakeToken: string;
+  private readonly clientVersion?: string;
 
   private isConnected = false;
   private reconnectAttempt = 0;
@@ -80,14 +91,13 @@ export class BrokerClient extends EventEmitter {
   private reconnectDelay = 1000;
 
   private pendingRequests = new Map<
-    number,
+    string,
     {
       resolve: (response: BrokerResponse) => void;
       reject: (error: Error) => void;
       timer: NodeJS.Timeout;
     }
   >();
-  private requestCounter = 0;
   private responseBuffer = '';
 
   constructor(options: BrokerClientOptions) {
@@ -96,6 +106,8 @@ export class BrokerClient extends EventEmitter {
     this.connectTimeout = options.connectTimeout ?? 5000;
     this.requestTimeout = options.requestTimeout ?? 30000;
     this.autoReconnect = options.autoReconnect ?? true;
+    this.handshakeToken = options.handshakeToken;
+    this.clientVersion = options.clientVersion;
   }
 
   /**
@@ -118,16 +130,25 @@ export class BrokerClient extends EventEmitter {
         reject(new Error(`Connection timeout after ${this.connectTimeout}ms`));
       }, this.connectTimeout);
 
-      this.socket = net.createConnection(this.pipePath, () => {
+      this.socket = net.createConnection(this.pipePath, async () => {
         clearTimeout(timeoutId);
         this.isConnected = true;
-        this.reconnectAttempt = 0;
-        this.emit('connected');
-        resolve();
+        try {
+          await this.hello();
+          this.reconnectAttempt = 0;
+          this.emit('connected');
+          resolve();
+        } catch (error) {
+          this.isConnected = false;
+          this.socket?.end();
+          reject(error);
+        }
       });
 
-      this.socket.on('data', (data) => {
-        this.handleData(data);
+      this.socket.on('data', (data: Buffer | string) => {
+        const buffer =
+          typeof data === 'string' ? Buffer.from(data, 'utf-8') : data;
+        this.handleData(buffer);
       });
 
       this.socket.on('error', (error) => {
@@ -199,17 +220,11 @@ export class BrokerClient extends EventEmitter {
         const parsed = JSON.parse(message);
         const response = BrokerResponseSchema.parse(parsed);
 
-        // Match response to pending request
-        // For now, we use a simple FIFO approach
-        // In a real implementation, we'd include a request ID
-        const [firstId] = this.pendingRequests.keys();
-        if (firstId !== undefined) {
-          const pending = this.pendingRequests.get(firstId);
-          if (pending) {
-            clearTimeout(pending.timer);
-            this.pendingRequests.delete(firstId);
-            pending.resolve(response);
-          }
+        const pending = this.pendingRequests.get(response.id);
+        if (pending) {
+          clearTimeout(pending.timer);
+          this.pendingRequests.delete(response.id);
+          pending.resolve(response);
         }
       } catch (error) {
         console.error('[BrokerClient] Failed to parse response:', error);
@@ -220,27 +235,41 @@ export class BrokerClient extends EventEmitter {
   /**
    * Send a request to the Broker.
    */
-  private async sendRequest(request: BrokerRequest): Promise<BrokerResponse> {
+  private async sendRequest(
+    request: Omit<BrokerRequest, 'id'>,
+  ): Promise<BrokerResponse> {
     if (!this.isConnected || !this.socket) {
       throw new Error('Not connected to Broker');
     }
 
-    // Validate request
-    BrokerRequestSchema.parse(request);
+    const requestId = randomUUID();
+    const requestWithId = { ...request, id: requestId } as BrokerRequest;
+    BrokerRequestSchema.parse(requestWithId);
 
     return new Promise((resolve, reject) => {
-      const id = ++this.requestCounter;
-
       const timer = setTimeout(() => {
-        this.pendingRequests.delete(id);
+        this.pendingRequests.delete(requestId);
         reject(new Error(`Request timeout after ${this.requestTimeout}ms`));
       }, this.requestTimeout);
 
-      this.pendingRequests.set(id, { resolve, reject, timer });
+      this.pendingRequests.set(requestId, { resolve, reject, timer });
 
       // Send request as newline-delimited JSON
-      this.socket!.write(JSON.stringify(request) + '\n');
+      this.socket!.write(JSON.stringify(requestWithId) + '\n');
     });
+  }
+
+  private async hello(): Promise<void> {
+    const response = await this.sendRequest({
+      type: 'hello',
+      token: this.handshakeToken,
+      clientVersion: this.clientVersion,
+    } as any);
+    if (isErrorResponse(response)) {
+      const code = response.code as BrokerErrorCode | undefined;
+      const suffix = code ? ` (${code})` : '';
+      throw new Error(`${response.error}${suffix}`);
+    }
   }
 
   /**
@@ -265,7 +294,7 @@ export class BrokerClient extends EventEmitter {
    * Ping the Broker to verify connectivity.
    */
   async ping(): Promise<{ pong: boolean; timestamp: number }> {
-    const response = await this.sendRequest({ type: 'ping' });
+    const response = await this.sendRequest({ type: 'ping' } as any);
     if (isErrorResponse(response)) {
       throw new Error(response.error);
     }
@@ -282,6 +311,7 @@ export class BrokerClient extends EventEmitter {
       cwd?: string;
       env?: Record<string, string>;
       timeout?: number;
+      mode?: 'exec' | 'shell';
     },
   ): Promise<{
     exitCode: number;
@@ -293,10 +323,11 @@ export class BrokerClient extends EventEmitter {
       type: 'execute',
       command,
       args,
+      mode: options?.mode,
       cwd: options?.cwd,
       env: options?.env,
       timeout: options?.timeout,
-    });
+    } as any);
 
     if (isErrorResponse(response)) {
       throw new Error(response.error);
@@ -321,7 +352,7 @@ export class BrokerClient extends EventEmitter {
       type: 'readFile',
       path: filePath,
       encoding,
-    });
+    } as any);
 
     if (isErrorResponse(response)) {
       throw new Error(response.error);
@@ -347,7 +378,7 @@ export class BrokerClient extends EventEmitter {
       content,
       encoding: options?.encoding,
       createDirs: options?.createDirs,
-    });
+    } as any);
 
     if (isErrorResponse(response)) {
       throw new Error(response.error);
@@ -372,7 +403,7 @@ export class BrokerClient extends EventEmitter {
       type: 'listDir',
       path: dirPath,
       includeHidden,
-    });
+    } as any);
 
     if (isErrorResponse(response)) {
       throw new Error(response.error);
@@ -401,7 +432,7 @@ export class BrokerClient extends EventEmitter {
       script,
       cwd: options?.cwd,
       timeout: options?.timeout,
-    });
+    } as any);
 
     if (isErrorResponse(response)) {
       throw new Error(response.error);
@@ -425,7 +456,7 @@ export class BrokerClient extends EventEmitter {
       type: 'amsiScan',
       content,
       filename,
-    });
+    } as any);
 
     if (isErrorResponse(response)) {
       throw new Error(response.error);

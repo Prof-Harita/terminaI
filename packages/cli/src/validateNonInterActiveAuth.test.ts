@@ -16,14 +16,9 @@ import {
   type Mock,
 } from 'vitest';
 import { validateNonInteractiveAuth } from './validateNonInterActiveAuth.js';
-import {
-  AuthType,
-  OutputFormat,
-  makeFakeConfig,
-  debugLogger,
-  ExitCodes,
-} from '@terminai/core';
 import type { Config } from '@terminai/core';
+import { AuthType, OutputFormat, debugLogger, ExitCodes } from '@terminai/core';
+import { makeFakeConfig } from '@terminai/core/test-utils';
 import * as auth from './config/auth.js';
 import { type LoadedSettings } from './config/settings.js';
 

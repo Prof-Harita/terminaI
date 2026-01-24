@@ -100,6 +100,7 @@ describe.skipIf(process.platform === 'win32')('ShellTool', () => {
       getSecurityProfile: vi.fn().mockReturnValue('balanced'),
       getApprovalPin: vi.fn().mockReturnValue('000000'),
       getRuntimeContext: vi.fn().mockReturnValue(undefined),
+      isSystemOperatorMode: vi.fn().mockReturnValue(false),
     } as unknown as Config;
 
     shellTool = new ShellTool(mockConfig);
@@ -188,6 +189,56 @@ describe.skipIf(process.platform === 'win32')('ShellTool', () => {
         dir_path: path.join(tempRootDir, 'subdir'),
       });
       expect(invocation).toBeDefined();
+    });
+
+    // Task 13: Add unit tests for outside-workspace approval flow
+    describe('System Operator Mode', () => {
+      it('should allow ~/Downloads in System Operator mode', () => {
+        (mockConfig.isSystemOperatorMode as Mock).mockReturnValue(true);
+        const downloadsPath = path.join(os.homedir(), 'Downloads');
+
+        const invocation = shellTool.build({
+          command: 'ls',
+          dir_path: downloadsPath,
+        });
+        expect(invocation).toBeDefined();
+      });
+
+      it('should block arbitrary paths even in System Operator mode', () => {
+        (mockConfig.isSystemOperatorMode as Mock).mockReturnValue(true);
+        const etcPath = '/etc';
+
+        expect(() =>
+          shellTool.build({ command: 'ls', dir_path: etcPath }),
+        ).toThrow(/not within any of the registered workspace directories/);
+      });
+
+      it('should elevate review level for outside-workspace operations', async () => {
+        (mockConfig.isSystemOperatorMode as Mock).mockReturnValue(true);
+        // We need to support build implementation detail or mock getConfirmationDetails internals?
+        // Actually, build() creates ShellToolInvocation. We can call getConfirmationDetails on it.
+        // However, `getConfirmationDetails` is protected. We might need to cast to any or check public behavior if possible.
+        // But let's check validation first. Validation passes (as per test 1 above).
+        // Then execution requires confirmation.
+
+        const downloadsPath = path.join(os.homedir(), 'Downloads');
+        const invocation = shellTool.build({
+          command: 'ls',
+          dir_path: downloadsPath,
+        });
+
+        // Use 'shouldConfirmExecute' which calls getConfirmationDetails essentially
+        const confirmation = await invocation.shouldConfirmExecute(
+          new AbortController().signal,
+        );
+
+        expect(confirmation).not.toBe(false);
+        // Verify it bumped to at least B (impl detail: outsideWorkspaceWarning triggers reasons.unshift)
+        // We can check if 'Operating outside workspace' is in explanation
+        expect((confirmation as any).explanation).toContain(
+          'Operating outside workspace',
+        );
+      });
     });
   });
 

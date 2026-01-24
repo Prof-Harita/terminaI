@@ -115,6 +115,7 @@ export function buildShellActionProfile(args: {
   command: string;
   cwd: string;
   workspaces: string[];
+  outsideWorkspace?: boolean;
   provenance?: Provenance[];
 }): ActionProfile {
   const { command, workspaces, provenance = ['unknown'] } = args;
@@ -211,43 +212,47 @@ export function buildShellActionProfile(args: {
   const operations = Array.from(operationsSet);
 
   // Step 5: Determine outsideWorkspace
-  let outsideWorkspace = false;
+  let outsideWorkspace = args.outsideWorkspace ?? false;
 
-  // Simple heuristic: check for obvious outside-workspace paths
-  const dangerousPaths = [
-    '/',
-    '/etc',
-    '/var',
-    '/usr',
-    '/bin',
-    '/sbin',
-    '/home',
-  ];
-  for (const path of dangerousPaths) {
-    // Check for exact match or path followed by space/slash
-    if (
-      normalized.includes(` ${path} `) ||
-      normalized.includes(` ${path}/`) ||
-      normalized.endsWith(` ${path}`) ||
-      normalized === path ||
-      normalized.startsWith(`${path}/`)
-    ) {
-      // Verify it's not within a workspace
-      const isInWorkspace = workspaces.some((ws) => path.startsWith(ws));
-      if (!isInWorkspace) {
-        outsideWorkspace = true;
-        break;
+  if (!outsideWorkspace) {
+    // Simple heuristic: check for obvious outside-workspace paths
+    const dangerousPaths = [
+      '/',
+      '/etc',
+      '/var',
+      '/usr',
+      '/bin',
+      '/sbin',
+      '/home',
+    ];
+    for (const pathToRemove of dangerousPaths) {
+      // Check for exact match or path followed by space/slash
+      if (
+        normalized.includes(` ${pathToRemove} `) ||
+        normalized.includes(` ${pathToRemove}/`) ||
+        normalized.endsWith(` ${pathToRemove}`) ||
+        normalized === pathToRemove ||
+        normalized.startsWith(`${pathToRemove}/`)
+      ) {
+        // Verify it's not within a workspace
+        const isInWorkspace = workspaces.some((ws) =>
+          pathToRemove.startsWith(ws),
+        );
+        if (!isInWorkspace) {
+          outsideWorkspace = true;
+          break;
+        }
       }
     }
-  }
 
-  // Check for home directory (~)
-  if (normalized.includes('~')) {
-    const isHomeInWorkspace = workspaces.some((ws) =>
-      ws.startsWith(process.env['HOME'] || ''),
-    );
-    if (!isHomeInWorkspace) {
-      outsideWorkspace = true;
+    // Check for home directory (~)
+    if (!outsideWorkspace && normalized.includes('~')) {
+      const isHomeInWorkspace = workspaces.some((ws) =>
+        ws.startsWith(process.env['HOME'] || ''),
+      );
+      if (!isHomeInWorkspace) {
+        outsideWorkspace = true;
+      }
     }
   }
 

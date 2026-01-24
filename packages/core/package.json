@@ -28,7 +28,8 @@
     "./test-utils": {
       "types": "./dist/src/test-utils/index.d.ts",
       "default": "./dist/src/test-utils/index.js"
-    }
+    },
+    "./src/*": "./src/*"
   },
   "dependencies": {
     "@google/genai": "^1.30.0",

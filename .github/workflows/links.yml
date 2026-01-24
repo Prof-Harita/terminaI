@@ -1,14 +1,14 @@
 name: 'Links'
 
 on:
-  push:
-    branches: ['main']
-  pull_request:
-    branches: ['main']
-  repository_dispatch:
-  workflow_dispatch:
   schedule:
     - cron: '00 18 * * *'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'docs-terminai/**'
+      - '**/*.md'
+  workflow_dispatch:
 
 jobs:
   linkChecker:

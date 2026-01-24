@@ -16,6 +16,7 @@ import {
 } from './tools.js';
 import { type Config } from '../config/config.js';
 import { type MessageBus } from '../confirmation-bus/message-bus.js';
+import { debugLogger } from '../index.js';
 import { computerSessionManager } from '../computer/ComputerSessionManager.js';
 import { truncateOutput } from '../computer/truncateOutput.js';
 import { classifyRisk } from '../safety/risk-classifier.js';
@@ -151,7 +152,53 @@ class ReplToolInvocation extends BaseToolInvocation<
 
     // 1. Get/Create Session
     let session = computerSessionManager.getSession(sessionName);
+    const runtimeContext = this.config.getRuntimeContext?.();
+
+    // Task 9: Fix REPL Execution Target Awareness
+    // Strictly route to Docker REPL when runtime is container to avoid python path mismatches
+    if (runtimeContext?.type === 'container') {
+      // Since we returned earlier if sandboxTier === 'tier2', this block always runs for tier1.
+      // If runtime is container, we force upgrade to Docker REPL if we are not already in tier2 mode (locked to tier1).
+      {
+        debugLogger.log(
+          'repl',
+          'Runtime is container, forcing routing to Docker REPL',
+        );
+        const result = await executeDockerRepl({
+          language,
+          code,
+          timeoutMs,
+          image: replConfig.dockerImage || 'terminai-sandbox:latest', // Fallback image if not set
+          workspaceDir: this.config.getTargetDir(),
+        });
+
+        // Return result immediately as we bypassed session manager
+        // We still want truncation and error detection though
+        let output = truncateOutput(result.output);
+        if (this.detectError(language, output)) {
+          output +=
+            '\n\n⚠️ Error detected. Review the traceback above and try a fix.';
+        }
+        if (result.timedOut) {
+          output += '\n\n⚠️ Execution timed out and was terminated.';
+        }
+        return {
+          llmContent: output,
+          returnDisplay: output,
+        };
+      }
+    }
+
     if (!session) {
+      if (runtimeContext && runtimeContext.executionEnvironment !== 'host') {
+        // Warn for other non-host environments (e.g. microvm if not handled above)
+        const msg =
+          `[REPL] Starting session on host while active runtime is ${runtimeContext.type}. ` +
+          `Note: Inter-environment state (files, variables) will not be synchronized automatically.`;
+        console.warn(msg);
+        debugLogger.warn('repl', msg);
+      }
+
       const sandbox = createTier1Sandbox(language);
       session = computerSessionManager.createSession(
         sessionName,

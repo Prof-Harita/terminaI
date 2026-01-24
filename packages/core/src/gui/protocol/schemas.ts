@@ -163,7 +163,6 @@ export const UiClickSchema = z.object({
   button: z.enum(['left', 'right', 'middle']).optional().default('left'),
   clickCount: z.number().int().min(1).optional().default(1),
   modifiers: z.array(z.enum(['ctrl', 'alt', 'shift', 'meta'])).optional(),
-  verify: z.boolean().optional().default(true),
 });
 
 export const UiTypeSchema = z.object({
@@ -171,25 +170,21 @@ export const UiTypeSchema = z.object({
   target: z.string().optional(), // If omitted, types into currently focused element
   mode: z.enum(['insert', 'replace', 'append']).optional().default('insert'),
   redactInLogs: z.boolean().optional().default(false),
-  verify: z.boolean().optional().default(true),
 });
 
 export const UiKeySchema = z.object({
   keys: z.array(z.string()), // e.g. ["Control", "c"]
   target: z.string().optional(),
-  verify: z.boolean().optional().default(true),
 });
 
 export const UiScrollSchema = z.object({
   target: z.string().optional(),
   deltaX: z.number().optional().default(0),
   deltaY: z.number().optional().default(0),
-  verify: z.boolean().optional().default(true),
 });
 
 export const UiFocusSchema = z.object({
   target: z.string(),
-  verify: z.boolean().optional().default(true),
 });
 
 export const UiWaitSchema = z.object({
@@ -212,7 +207,6 @@ export const UiClickXySchema = z.object({
   x: z.number(),
   y: z.number(),
   coordinateSpace: z.enum(['screen', 'window']).optional().default('screen'),
-  verify: z.boolean().optional().default(false),
 });
 
 // Types for validation of structure (inferred)

@@ -143,9 +143,12 @@ export function shortenPath(filePath: string, maxLen: number = 35): string {
     )}`;
   };
 
-  const parsedPath = path.parse(filePath);
+  const isWindows = os.platform() === 'win32';
+  const pathModule = isWindows ? path.win32 : path;
+
+  const parsedPath = pathModule.parse(filePath);
   const root = parsedPath.root;
-  const separator = path.sep;
+  const separator = pathModule.sep;
 
   // Get segments of the path *after* the root
   const relativePath = filePath.substring(root.length);
@@ -317,7 +320,7 @@ export function makeRelative(
  */
 export function escapePath(filePath: string): string {
   // Windows: Use double-quoting which works in PowerShell and CMD
-  if (process.platform === 'win32') {
+  if (os.platform() === 'win32') {
     // Only quote if it contains special characters
     if (SHELL_SPECIAL_CHARS.test(filePath)) {
       // Escape internal double-quotes by doubling them

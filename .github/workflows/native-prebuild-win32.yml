@@ -1,0 +1,42 @@
+name: native-prebuild-win32
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'packages/cli/native/**'
+      - 'packages/cli/binding.gyp'
+      - '.github/workflows/native-prebuild-win32.yml'
+
+jobs:
+  build-win32-x64:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build native module
+        working-directory: packages/cli
+        run: npx node-gyp rebuild
+
+      - name: Package native artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp packages/cli/build/Release/terminai_native.node packages/native-win32-x64/terminai_native.node
+          cd packages/native-win32-x64
+          npm pack
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-win32-x64
+          path: packages/native-win32-x64/*.tgz

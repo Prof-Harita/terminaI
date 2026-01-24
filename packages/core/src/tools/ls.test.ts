@@ -92,7 +92,7 @@ describe('LSTool', () => {
 
       expect(result.llmContent).toContain('[DIR] subdir');
       expect(result.llmContent).toContain('file1.txt');
-      expect(result.returnDisplay).toBe('Listed 2 item(s).');
+      expect(result.returnDisplay).toBe('Listed 2 item(s)');
     });
 
     it('should list files from secondary workspace directory', async () => {
@@ -107,7 +107,7 @@ describe('LSTool', () => {
       const result = await invocation.execute(abortSignal);
 
       expect(result.llmContent).toContain('secondary-file.txt');
-      expect(result.returnDisplay).toBe('Listed 1 item(s).');
+      expect(result.returnDisplay).toBe('Listed 1 item(s)');
     });
 
     it('should handle empty directories', async () => {
@@ -132,7 +132,7 @@ describe('LSTool', () => {
 
       expect(result.llmContent).toContain('file1.txt');
       expect(result.llmContent).not.toContain('file2.log');
-      expect(result.returnDisplay).toBe('Listed 1 item(s).');
+      expect(result.returnDisplay).toBe('Listed 1 item(s)');
     });
 
     it('should respect gitignore patterns', async () => {
@@ -146,7 +146,7 @@ describe('LSTool', () => {
       expect(result.llmContent).toContain('file1.txt');
       expect(result.llmContent).not.toContain('file2.log');
       // .git is always ignored by default.
-      expect(result.returnDisplay).toBe('Listed 2 item(s). (2 ignored)');
+      expect(result.returnDisplay).toBe('Listed 2 item(s) (2 ignored)');
     });
 
     it('should respect geminiignore patterns', async () => {
@@ -158,7 +158,7 @@ describe('LSTool', () => {
 
       expect(result.llmContent).toContain('file1.txt');
       expect(result.llmContent).not.toContain('file2.log');
-      expect(result.returnDisplay).toBe('Listed 2 item(s). (1 ignored)');
+      expect(result.returnDisplay).toBe('Listed 2 item(s) (1 ignored)');
     });
 
     it('should handle non-directory paths', async () => {
@@ -245,7 +245,7 @@ describe('LSTool', () => {
       // Should still list the other files
       expect(result.llmContent).toContain('file1.txt');
       expect(result.llmContent).not.toContain('problematic.txt');
-      expect(result.returnDisplay).toBe('Listed 1 item(s).');
+      expect(result.returnDisplay).toBe('Listed 1 item(s)');
 
       statSpy.mockRestore();
     });
@@ -298,7 +298,108 @@ describe('LSTool', () => {
       const result = await invocation.execute(abortSignal);
 
       expect(result.llmContent).toContain('secondary-file.txt');
-      expect(result.returnDisplay).toBe('Listed 1 item(s).');
+      expect(result.returnDisplay).toBe('Listed 1 item(s)');
+    });
+  });
+  describe('pagination', () => {
+    it('should paginate results', async () => {
+      // Create 10 files
+      for (let i = 0; i < 10; i++) {
+        await fs.writeFile(
+          path.join(tempRootDir, `file${i}.txt`),
+          `content${i}`,
+        );
+      }
+
+      // First page (Limit 4)
+      const inv1 = lsTool.build({ dir_path: tempRootDir, limit: 4, offset: 0 });
+      const res1 = await inv1.execute(abortSignal);
+
+      expect(res1.llmContent).toContain('file0.txt');
+      expect(res1.llmContent).toContain('file3.txt');
+      expect(res1.llmContent).not.toContain('file4.txt');
+      expect(res1.llmContent).toContain('(Showing 1-4 of 10)');
+      expect(res1.llmContent).toContain(
+        '(6 more items. Use offset=4 to see more)',
+      );
+
+      // Second page (Offset 4, Limit 4)
+      const inv2 = lsTool.build({ dir_path: tempRootDir, limit: 4, offset: 4 });
+      const res2 = await inv2.execute(abortSignal);
+
+      expect(res2.llmContent).toContain('file4.txt');
+      expect(res2.llmContent).toContain('file7.txt');
+      expect(res2.llmContent).not.toContain('file3.txt');
+      expect(res2.llmContent).not.toContain('file8.txt');
+      expect(res2.llmContent).toContain('(Showing 5-8 of 10)');
+      expect(res2.llmContent).toContain(
+        '(2 more items. Use offset=8 to see more)',
+      );
+
+      // Third page (Offset 8, Limit 4) - partial page
+      const inv3 = lsTool.build({ dir_path: tempRootDir, limit: 4, offset: 8 });
+      const res3 = await inv3.execute(abortSignal);
+
+      expect(res3.llmContent).toContain('file8.txt');
+      expect(res3.llmContent).toContain('file9.txt');
+      expect(res3.llmContent).toContain('(Showing 9-10 of 10)');
+      // Should not show "more items" message
+      expect(res3.llmContent).not.toContain('more items');
+    });
+
+    it('should handle offset larger than total', async () => {
+      await fs.writeFile(path.join(tempRootDir, 'file1.txt'), 'content1');
+      const inv = lsTool.build({
+        dir_path: tempRootDir,
+        offset: 10,
+        limit: 10,
+      });
+      const res = await inv.execute(abortSignal);
+
+      expect(res.llmContent).toContain('Directory listing for');
+      expect(res.returnDisplay).toBe('Listed 0 item(s) (Total: 1)');
+    });
+
+    it('should clamp limit to MAX_LIMIT (1000)', async () => {
+      // Create 1001 files (just enough to test limit)
+      // We mock fs.readdir to avoid creating actual files which is slow/flaky
+      // We need to spy on fs.readdir and fs.stat
+      const manyFiles = Array.from({ length: 1005 }, (_, i) => `file${i}.txt`);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      vi.spyOn(fs, 'readdir').mockResolvedValue(manyFiles as any);
+      vi.spyOn(fs, 'stat').mockImplementation(async (p) => {
+        const pathStr = p.toString();
+        if (pathStr === tempRootDir) {
+          return {
+            isDirectory: () => true,
+            mtime: new Date(),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } as any;
+        }
+        return {
+          isDirectory: () => false,
+          size: 100,
+          mtime: new Date(),
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any;
+      });
+
+      // Force a large limit
+      const inv = lsTool.build({
+        dir_path: tempRootDir,
+        limit: 5000,
+      });
+      const res = await inv.execute(abortSignal);
+
+      // Should show 1-1000
+      expect(res.llmContent).toContain('(Showing 1-1000 of 1005)');
+      expect(res.llmContent).toContain(
+        '(5 more items. Use offset=1000 to see more)',
+      );
+      expect(res.returnDisplay).toBe('Listed 1000 item(s) (Total: 1005)');
+
+      vi.restoreAllMocks();
     });
   });
 });

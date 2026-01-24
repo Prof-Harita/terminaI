@@ -1,6 +1,16 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { spawn, type ChildProcess } from 'node:child_process';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export interface MacVZConfig {
   kernelPath: string;
@@ -9,11 +19,11 @@ export interface MacVZConfig {
   memorySizeMB: number;
   cpuCount: number;
   vsockPath?: string;
-  sharedDirs?: {
+  sharedDirs?: Array<{
     hostPath: string;
     tag: string;
     readonly: boolean;
-  }[];
+  }>;
 }
 
 export class MacVZDriver {
@@ -53,7 +63,7 @@ export class MacVZDriver {
           if (status.status === 'running') {
             resolve();
           } else if (status.status === 'error') {
-            this.stop().finally(() => reject(new Error(status.message)));
+            void this.stop().finally(() => reject(new Error(status.message)));
           }
         } catch {
           // Ignore non-JSON logs (maybe from boot)

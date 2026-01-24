@@ -110,11 +110,26 @@ Promise.allSettled([
       writeFileSync('./bundle/esbuild.json', JSON.stringify(metafile, null, 2));
     }
   }),
+  esbuild.build({
+    ...baseConfig,
+    banner: {
+      js: `import { createRequire } from 'module'; const require = createRequire(import.meta.url); globalThis.__filename = require('url').fileURLToPath(import.meta.url); globalThis.__dirname = require('path').dirname(globalThis.__filename);`,
+    },
+    entryPoints: ['packages/cli/src/runtime/windows/agent-brain.ts'],
+    outfile: 'packages/cli/dist/agent-brain.js',
+    define: {
+      'process.env.CLI_VERSION': JSON.stringify(pkg.version),
+    },
+  }),
   esbuild.build(a2aServerConfig),
 ]).then((results) => {
-  const [cliResult, a2aResult] = results;
+  const [cliResult, brainResult, a2aResult] = results;
   if (cliResult.status === 'rejected') {
     console.error('gemini.js build failed:', cliResult.reason);
+    process.exit(1);
+  }
+  if (brainResult.status === 'rejected') {
+    console.error('agent-brain build failed:', brainResult.reason);
     process.exit(1);
   }
   // error in a2a-server bundling will not stop gemini.js bundling process

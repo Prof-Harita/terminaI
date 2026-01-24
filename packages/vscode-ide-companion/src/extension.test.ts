@@ -8,13 +8,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as vscode from 'vscode';
 import { activate } from './extension.js';
-import { IDE_DEFINITIONS, detectIdeFromEnv } from '@terminai/core';
+import { IDE_DEFINITIONS } from '@terminai/core';
+import { detectIdeFromEnv } from '@terminai/core/src/ide/detect-ide.js';
 
 vi.mock('@terminai/core/src/ide/detect-ide.js', async () => {
-  const actual = await vi.importActual('@terminai/core/src/ide/detect-ide.js');
+  const actual = await vi.importActual<
+    typeof import('@terminai/core/src/ide/detect-ide.js')
+  >('@terminai/core/src/ide/detect-ide.js');
   return {
     ...actual,
-    detectIdeFromEnv: vi.fn(() => IDE_DEFINITIONS.vscode),
+    detectIdeFromEnv: vi.fn(() => actual.IDE_DEFINITIONS.vscode),
   };
 });
 
@@ -227,6 +230,7 @@ describe('activate', () => {
         const showInformationMessageMock = vi.mocked(
           vscode.window.showInformationMessage,
         );
+        showInformationMessageMock.mockClear();
 
         await activate(context);
 

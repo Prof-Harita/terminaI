@@ -1,5 +1,4 @@
 #!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
 
 echo "Running full local CI verification before push..."
 ./scripts/verify-ci.sh

@@ -1,0 +1,2602 @@
+
+> @terminai/cli@0.28.0 test
+> vitest run --passWithNoTests --no-color
+
+
+ RUN  v3.2.4 /home/profharita/Code/terminaI/packages/cli
+      Coverage enabled with v8
+
+stderr | src/runtime/RuntimeManager.test.ts > RuntimeManager > should fallback to LocalRuntimeContext if system python is available and user approves
+
+[33m[WARNING] Direct Host Access Mode Detected[0m
+You are about to allow TerminaI to execute code directly on your host machine.
+This grants the agent full access to your files and network with your user privileges.
+For better isolation, please install Docker or Podman (Tier 1).
+
+stdout | src/runtime/RuntimeManager.test.ts > RuntimeManager > should fallback to LocalRuntimeContext if system python is available and user approves
+[TerminaI] Runtime: Local Host (Tier 2)
+
+stdout | src/runtime/RuntimeManager.test.ts > RuntimeManager > should respect TERMINAI_ALLOW_DIRECT_HOST env var
+[TerminaI] Runtime: Local Host (Tier 2)
+
+stderr | src/runtime/RuntimeManager.test.ts > RuntimeManager > should deny access if user rejects prompt
+
+[33m[WARNING] Direct Host Access Mode Detected[0m
+You are about to allow TerminaI to execute code directly on your host machine.
+This grants the agent full access to your files and network with your user privileges.
+For better isolation, please install Docker or Podman (Tier 1).
+
+ ❯ src/runtime/RuntimeManager.test.ts (5 tests | 1 failed) 149ms
+   × RuntimeManager > should fall through when docker is available but containers are deferred 123ms
+     → expected [Function] to throw error including 'No suitable runtime found' but got 'Failed to start sandbox container (te…'
+   ✓ RuntimeManager > should fallback to LocalRuntimeContext if system python is available and user approves 17ms
+   ✓ RuntimeManager > should respect TERMINAI_ALLOW_DIRECT_HOST env var 5ms
+   ✓ RuntimeManager > should deny access if user rejects prompt 2ms
+   ✓ RuntimeManager > should fail if no runtime is available 1ms
+ ✓ src/utils/cleanup-scenario.test.ts (1 test) 475ms
+   ✓ Sandbox E2E Scenario: Cleanup Downloads > should correctly classify files when run inside sandbox  473ms
+
+🌐 Web Remote available at: http://127.0.0.1:41242/ui?token=d83d505fb88a08314fbc3c49a91a5fa57e6ac7df3f6f637de6cb826fb6d40647
+   (assets served from /home/profharita/Code/terminaI/packages/cli/packages/web-client)
+stdout | src/utils/webRemoteServer.test.ts > webRemoteServer > starts server and sets allowed origins
+▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+█ ▄▄▄▄▄ █▀█ █▄▀ ▀█▀ ▄ ▄█▄▀█▀▀ █ ▄▄▄▄▄ █
+█ █   █ █▀▀▀█ ▀▀▀▀▀▀██▄▀▄▀▀█▄ █ █   █ █
+█ █▄▄▄█ █▀ █▀▀▀▀▀█▀█▄▄▄█▄▀▄▄▀██ █▄▄▄█ █
+█▄▄▄▄▄▄▄█▄▀ ▀▄█▄▀▄█▄▀ ▀ █▄█▄█ █▄▄▄▄▄▄▄█
+█▄▄   ▀▄▄  ▀▄▀▄▄█▄▄▀▀▄▀▀▀▀▄▀█▀ █▄█▄▀▄██
+██▀ ▄▀ ▄▄ █ █▀▄█▄██▀█ ▀▀█▀▄▀  ▀ ▀█▀▄█▄█
+█   █  ▄ ▄▄▀█▄▄▀▄▀▄▀▀▀▀▄▀▀▄▄▄▀▀▄▄▄▄ ▀██
+█ ▄▀▀█▀▄▀▀▄  ▄▄▄▄▄▄▀▀ ▀▀▀▀█▄▄▄█▄█ ▀▄█ █
+██▄██▄▄▄ ▄▄▄▄▀▄▄▄▀▄▄▀▄▀▀▀▀▄▀█▀▀▄▄▄▀▄▀▄█
+█ ▀▄ █▀▄ █▀▀█▀█▄▄▀▄▄█  ▄█ █ ▄ ▄ ▄█▀█▄ █
+█▄ █ ▀▀▄▄▄▀▄█▄▄▀▄▄▄▀▀▄█▀ ▀▄▀█▀▀▄▄▄▀▄ ▄█
+█▄█▀█▄ ▄▄██  ▄█▄  ▄▀█▄ ▀█ ██ ▀█▄▀  ▄▄ █
+█▀▀▄█▀█▄▄███▄▀▄▀▄▀▄▄▀▀▀▄▀▀▄▀▄ █▄█▄█▄ ▄█
+█ ██▀▀ ▄▀▀█▄█▀██ ▀▄▀▀▀ ▀█▀█ ▄  ███▀▄▄ █
+█▄█▄█▄▄▄█ ▀▄█▄▄▀▄▀▄▀▀▀█▀▀▄▄▄█ ▄▄▄ ▄ ███
+█ ▄▄▄▄▄ █▄ ▀ ▄▄▄▄ ▄▀█  ▀█ ▄▄▀ █▄█  ▄▄ █
+█ █   █ █  ▀▄ ▄▀▄▄▄▄▀▄▀▀ ▀▄▄▄▄    ▀▄█▄█
+█ █▄▄▄█ █ ▀▀▀██▄▄▄▄▀█▄ ▀█ ▄█   ▀█▀ █▄ █
+█▄▄▄▄▄▄▄█▄█▄██▄█▄▄▄▄███▄▄█▄███▄▄▄▄▄▄▄▄█
+
+
+ ✓ src/utils/webRemoteServer.test.ts (3 tests) 4210ms
+   ✓ webRemoteServer > detects loopback hosts  4141ms
+ ❯ src/ui/hooks/useQuotaAndFallback.test.ts (12 tests | 12 failed) 9ms
+   × useQuotaAndFallback > should register a fallback handler on initialization 5ms
+     → (0 , makeFakeConfig) is not a function
+   × useQuotaAndFallback > Fallback Handler Logic > should return null and take no action if authType is not LOGIN_WITH_GOOGLE 0ms
+     → (0 , makeFakeConfig) is not a function
+   × useQuotaAndFallback > Fallback Handler Logic > Interactive Fallback > should set an interactive request for a terminal quota error 0ms
+     → (0 , makeFakeConfig) is not a function
+   × useQuotaAndFallback > Fallback Handler Logic > Interactive Fallback > should handle race conditions by stopping subsequent requests 0ms
+     → (0 , makeFakeConfig) is not a function
+   × useQuotaAndFallback > Fallback Handler Logic > Interactive Fallback > should handle generic error correctly 0ms
+     → (0 , makeFakeConfig) is not a function
+   × useQuotaAndFallback > Fallback Handler Logic > Interactive Fallback > should handle retryable quota error correctly 0ms
+     → (0 , makeFakeConfig) is not a function
+   × useQuotaAndFallback > Fallback Handler Logic > Interactive Fallback > should handle ModelNotFoundError correctly 0ms
+     → (0 , makeFakeConfig) is not a function
+   × useQuotaAndFallback > handleProQuotaChoice > should do nothing if there is no pending pro quota request 0ms
+     → (0 , makeFakeConfig) is not a function
+   × useQuotaAndFallback > handleProQuotaChoice > should resolve intent to "retry_later" 0ms
+     → (0 , makeFakeConfig) is not a function
+   × useQuotaAndFallback > handleProQuotaChoice > should resolve intent to "retry_always" and add info message on continue 0ms
+     → (0 , makeFakeConfig) is not a function
+   × useQuotaAndFallback > handleProQuotaChoice > should show a special message when falling back from the preview model 0ms
+     → (0 , makeFakeConfig) is not a function
+   × useQuotaAndFallback > handleProQuotaChoice > should show a special message when falling back from the preview model, but do not show periodical check message for flash model fallback 0ms
+     → (0 , makeFakeConfig) is not a function
+ ✓ src/config/extension.test.ts (73 tests) 281ms
+ ❯ src/ui/components/AppHeader.test.tsx (8 tests | 8 failed) 13ms
+   × <AppHeader /> > should render the banner with default text 7ms
+     → makeFakeConfig is not a function
+   × <AppHeader /> > should render the banner with warning text 1ms
+     → makeFakeConfig is not a function
+   × <AppHeader /> > should not render the banner when no flags are set 1ms
+     → makeFakeConfig is not a function
+   × <AppHeader /> > should render the banner when previewFeatures is disabled 1ms
+     → makeFakeConfig is not a function
+   × <AppHeader /> > should not render the banner when previewFeatures is enabled 1ms
+     → makeFakeConfig is not a function
+   × <AppHeader /> > should not render the default banner if shown count is 5 or more 1ms
+     → makeFakeConfig is not a function
+   × <AppHeader /> > should increment the version count when default banner is displayed 1ms
+     → makeFakeConfig is not a function
+   × <AppHeader /> > should render banner text with unescaped newlines 1ms
+     → makeFakeConfig is not a function
+ ✓ src/nonInteractiveCli.test.ts (35 tests) 523ms
+   ✓ runNonInteractive > should handle cancellation (Ctrl+C)  404ms
+stderr | src/services/BuiltinCommandLoader.test.ts > BuiltinCommandLoader profile > should not include profile command when isDevelopment is false
+Current logger will be overwritten from Error: 
+    at DiagAPI.setLogger (/home/profharita/Code/terminaI/node_modules/@opentelemetry/api/src/api/diag.ts:97:23)
+    at /home/profharita/Code/terminaI/packages/core/src/telemetry/sdk.ts:92:6
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at VitestExecutor.runModule (file:///home/profharita/Code/terminaI/node_modules/vite-node/dist/client.mjs:397:4)
+    at VitestExecutor.directRequest (file:///home/profharita/Code/terminaI/node_modules/vite-node/dist/client.mjs:375:3)
+    at VitestExecutor.cachedRequest (file:///home/profharita/Code/terminaI/node_modules/vite-node/dist/client.mjs:189:11)
+    at VitestExecutor.dependencyRequest (file:///home/profharita/Code/terminaI/node_modules/vite-node/dist/client.mjs:239:10)
+    at /home/profharita/Code/terminaI/packages/core/src/telemetry/loggers.ts:74:1
+    at VitestExecutor.runModule (file:///home/profharita/Code/terminaI/node_modules/vite-node/dist/client.mjs:397:4)
+    at VitestExecutor.directRequest (file:///home/profharita/Code/terminaI/node_modules/vite-node/dist/client.mjs:375:3)
+Current logger will overwrite one already registered from Error: 
+    at DiagAPI.setLogger (/home/profharita/Code/terminaI/node_modules/@opentelemetry/api/src/api/diag.ts:97:23)
+    at /home/profharita/Code/terminaI/packages/core/src/telemetry/sdk.ts:92:6
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at VitestExecutor.runModule (file:///home/profharita/Code/terminaI/node_modules/vite-node/dist/client.mjs:397:4)
+    at VitestExecutor.directRequest (file:///home/profharita/Code/terminaI/node_modules/vite-node/dist/client.mjs:375:3)
+    at VitestExecutor.cachedRequest (file:///home/profharita/Code/terminaI/node_modules/vite-node/dist/client.mjs:189:11)
+    at VitestExecutor.dependencyRequest (file:///home/profharita/Code/terminaI/node_modules/vite-node/dist/client.mjs:239:10)
+    at /home/profharita/Code/terminaI/packages/core/src/telemetry/loggers.ts:74:1
+    at VitestExecutor.runModule (file:///home/profharita/Code/terminaI/node_modules/vite-node/dist/client.mjs:397:4)
+    at VitestExecutor.directRequest (file:///home/profharita/Code/terminaI/node_modules/vite-node/dist/client.mjs:375:3)
+
+ ✓ src/ui/components/messages/DiffRenderer.test.tsx (26 tests) 424ms
+ ✓ src/ui/hooks/useShellHistory.test.ts (7 tests) 553ms
+ ✓ src/ui/components/messages/ToolGroupMessage.test.tsx (19 tests) 556ms
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to ForwardRef(ScrollableList) inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ ✓ src/ui/components/shared/ScrollableList.test.tsx (3 tests) 1146ms
+   ✓ ScrollableList Demo Behavior > Keyboard Navigation > should handle scroll keys correctly  881ms
+ ✓ src/runtime/__tests__/windows-appcontainer.test.ts (23 tests | 8 skipped) 325ms
+ ✓ src/ui/components/ThemeDialog.test.tsx (9 tests) 1039ms
+   ✓ ThemeDialog Snapshots > should render correctly in theme selection mode  364ms
+ ✓ src/ui/components/HistoryItemDisplay.test.tsx (19 tests) 642ms
+ ✓ src/ui/hooks/useAtCompletion.test.ts (15 tests) 1605ms
+ ✓ src/ui/components/InputPrompt.test.tsx (115 tests) 1557ms
+stderr | src/services/BuiltinCommandLoader.test.ts > BuiltinCommandLoader profile > should include profile command when isDevelopment is true
+Current logger will be overwritten from Error: 
+    at DiagAPI.setLogger (/home/profharita/Code/terminaI/node_modules/@opentelemetry/api/src/api/diag.ts:97:23)
+    at /home/profharita/Code/terminaI/packages/core/src/telemetry/sdk.ts:92:6
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at VitestExecutor.runModule (file:///home/profharita/Code/terminaI/node_modules/vite-node/dist/client.mjs:397:4)
+    at VitestExecutor.directRequest (file:///home/profharita/Code/terminaI/node_modules/vite-node/dist/client.mjs:375:3)
+    at VitestExecutor.cachedRequest (file:///home/profharita/Code/terminaI/node_modules/vite-node/dist/client.mjs:189:11)
+    at VitestExecutor.dependencyRequest (file:///home/profharita/Code/terminaI/node_modules/vite-node/dist/client.mjs:239:10)
+    at /home/profharita/Code/terminaI/packages/core/src/telemetry/loggers.ts:74:1
+    at VitestExecutor.runModule (file:///home/profharita/Code/terminaI/node_modules/vite-node/dist/client.mjs:397:4)
+    at VitestExecutor.directRequest (file:///home/profharita/Code/terminaI/node_modules/vite-node/dist/client.mjs:375:3)
+Current logger will overwrite one already registered from Error: 
+    at DiagAPI.setLogger (/home/profharita/Code/terminaI/node_modules/@opentelemetry/api/src/api/diag.ts:97:23)
+    at /home/profharita/Code/terminaI/packages/core/src/telemetry/sdk.ts:92:6
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at VitestExecutor.runModule (file:///home/profharita/Code/terminaI/node_modules/vite-node/dist/client.mjs:397:4)
+    at VitestExecutor.directRequest (file:///home/profharita/Code/terminaI/node_modules/vite-node/dist/client.mjs:375:3)
+    at VitestExecutor.cachedRequest (file:///home/profharita/Code/terminaI/node_modules/vite-node/dist/client.mjs:189:11)
+    at VitestExecutor.dependencyRequest (file:///home/profharita/Code/terminaI/node_modules/vite-node/dist/client.mjs:239:10)
+    at /home/profharita/Code/terminaI/packages/core/src/telemetry/loggers.ts:74:1
+    at VitestExecutor.runModule (file:///home/profharita/Code/terminaI/node_modules/vite-node/dist/client.mjs:397:4)
+    at VitestExecutor.directRequest (file:///home/profharita/Code/terminaI/node_modules/vite-node/dist/client.mjs:375:3)
+
+ ❯ src/ui/AppContainer.test.tsx (62 tests | 62 failed) 222ms
+   × AppContainer State Management > Basic Rendering > renders without crashing with minimal props 17ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Basic Rendering > renders with startup warnings 2ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > State Initialization > initializes with theme error from initialization result 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > State Initialization > handles debug mode state 1ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Context Providers > provides AppContext with correct values 1ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Context Providers > provides UIStateContext with state management 1ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Context Providers > provides UIActionsContext with action handlers 1ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Context Providers > provides ConfigContext with config object 1ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Settings Integration > handles settings with all display options disabled 2ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Settings Integration > handles settings with memory usage enabled 2ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Version Handling > handles version format: 1.0.0 4ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Version Handling > handles version format: 2.1.3-beta 5ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Version Handling > handles version format: 3.0.0-nightly 4ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Error Handling > handles config methods that might throw 2ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Error Handling > handles undefined settings gracefully 5ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Provider Hierarchy > establishes correct provider nesting order 6ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Session Resumption > handles resumed session data correctly 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Session Resumption > renders without resumed session data 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Session Resumption > initializes chat recording service when config has it 2ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Session Recording Integration > provides chat recording service configuration 2ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Session Recording Integration > handles session recording when messages are added 2ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Session Resume Flow > accepts resumed session data 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Session Resume Flow > does not attempt resume when client is not initialized 2ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Token Counting from Session Stats > tracks token counts from session messages 4ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Quota and Fallback Integration > passes a null proQuotaRequest to UIStateContext by default 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Quota and Fallback Integration > passes a valid proQuotaRequest to UIStateContext when provided by the hook 2ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Quota and Fallback Integration > passes the handleProQuotaChoice function to UIActionsContext 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Terminal Title Update Feature > verifies useStdout is mocked 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Terminal Title Update Feature > should not update terminal title when showStatusInTitle is false 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Terminal Title Update Feature > should not update terminal title when hideWindowTitle is true 2ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Terminal Title Update Feature > should update terminal title with thought subject when in active state 2ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Terminal Title Update Feature > should update terminal title with default text when in Idle state and no thought subject 6ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Terminal Title Update Feature > should update terminal title when in WaitingForConfirmation state with thought subject 4ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Terminal Title Update Feature > should pad title to exactly 80 characters 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Terminal Title Update Feature > should use correct ANSI escape code format 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Terminal Title Update Feature > should use CLI_TITLE environment variable when set 2ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Queue Error Message > should set and clear the queue error message after a timeout 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Queue Error Message > should reset the timer if a new error message is set 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Terminal Height Calculation > should prevent terminal height from being less than 1 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Keyboard Input Handling (CTRL+C / CTRL+D) > CTRL+C > should cancel ongoing request on first press 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Keyboard Input Handling (CTRL+C / CTRL+D) > CTRL+C > should quit on second press 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Keyboard Input Handling (CTRL+C / CTRL+D) > CTRL+C > should reset press count after a timeout 2ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Keyboard Input Handling (CTRL+C / CTRL+D) > CTRL+D > should do nothing if text buffer is not empty 19ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Keyboard Input Handling (CTRL+C / CTRL+D) > CTRL+D > should quit on second press if buffer is empty 2ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Keyboard Input Handling (CTRL+C / CTRL+D) > CTRL+D > should reset press count after a timeout 2ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Copy Mode (CTRL+S) > 'Normal Mode' > should NOT toggle mouse off when Ctrl+S is pressed 8ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Copy Mode (CTRL+S) > 'Alternate Buffer Mode' > should toggle mouse off when Ctrl+S is pressed 2ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Copy Mode (CTRL+S) > 'Alternate Buffer Mode' > should toggle mouse back on when Ctrl+S is pressed again 7ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Copy Mode (CTRL+S) > 'Alternate Buffer Mode' > should exit copy mode on any key press 4ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Model Dialog Integration > should provide isModelDialogOpen in the UIStateContext 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Model Dialog Integration > should provide model dialog actions in the UIActionsContext 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > CoreEvents Integration > subscribes to UserFeedback and drains backlog on mount 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > CoreEvents Integration > unsubscribes from UserFeedback on unmount 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > CoreEvents Integration > adds history item when UserFeedback event is received 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > CoreEvents Integration > updates currentModel when ModelChanged event is received 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Shell Interaction > should not crash if resizing the pty fails 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > passes replayEvents to useReplay hook 6ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Banner Text > should render placeholder banner text for USE_GEMINI auth type 4ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > onCancelSubmit Behavior > clears the prompt when onCancelSubmit is called with shouldRestorePrompt=false 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > onCancelSubmit Behavior > restores the prompt when onCancelSubmit is called with shouldRestorePrompt=true (or undefined) 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > onCancelSubmit Behavior > input history is independent from conversation history (survives /clear) 3ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+   × AppContainer State Management > Regression Tests > does not refresh static on startup if banner text is empty 4ms
+     → [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+ ✓ src/services/BuiltinCommandLoader.test.ts (10 tests) 3042ms
+   ✓ BuiltinCommandLoader profile > should not include profile command when isDevelopment is false  1797ms
+   ✓ BuiltinCommandLoader profile > should include profile command when isDevelopment is true  1232ms
+ ✓ src/ui/hooks/useSlashCompletion.test.ts (25 tests) 533ms
+ ✓ src/config/config.integration.test.ts (14 tests) 339ms
+stdout | src/ui/auth/useAuth.test.tsx > useAuth > useAuthCommand > should initialize with Unauthenticated state
+Authenticated via "oauth-personal".
+
+stderr | src/ui/auth/useAuth.test.tsx > useAuth > useAuthCommand > should initialize with Unauthenticated state
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stdout | src/ui/auth/useAuth.test.tsx > useAuth > useAuthCommand > should authenticate if USE_GEMINI and key is found
+Authenticated via "gemini-api-key".
+
+stdout | src/ui/auth/useAuth.test.tsx > useAuth > useAuthCommand > should authenticate if USE_GEMINI and env key is found
+Authenticated via "gemini-api-key".
+Authenticated via "gemini-api-key".
+
+stdout | src/ui/auth/useAuth.test.tsx > useAuth > useAuthCommand > should prioritize env key over stored key when both are present
+Authenticated via "gemini-api-key".
+Authenticated via "gemini-api-key".
+
+stdout | src/ui/auth/useAuth.test.tsx > useAuth > useAuthCommand > should authenticate successfully for valid auth type
+Authenticated via "oauth-personal".
+
+stdout | src/gemini_cleanup.test.tsx > gemini.tsx main function cleanup > should log error when cleanupExpiredSessions fails
+[DEBUG] CLI: main() called
+
+stdout | src/gemini.test.tsx > gemini.tsx main function > verifies that we dont load the config before relaunchAppInChildProcess
+[DEBUG] CLI: main() called
+
+stderr | src/gemini.test.tsx > gemini.tsx main function kitty protocol > should call setRawMode and detectCapabilities when isInteractive is true
+[DEBUG] CLI: main() called
+
+
+[2m════════════════════════════[0m[1m[38;2;226;35;26m terminaI │ 07:01:07 [0m[2m═════════════════════════════[0m
+
+]2;TerminaI - cli[DEBUG] CLI: main() called[DEBUG] CLI: main() calledstderr | src/gemini.test.tsx > gemini.tsx main function kitty protocol > should handle --'listSessions' flag
+[DEBUG] CLI: main() called
+
+stderr | src/gemini.test.tsx > gemini.tsx main function kitty protocol > should handle --'deleteSession' flag
+[DEBUG] CLI: main() called
+
+stderr | src/gemini.test.tsx > gemini.tsx main function kitty protocol > should handle sandbox activation
+[DEBUG] CLI: main() called
+
+ ✓ src/ui/auth/AuthDialog.test.tsx (22 tests) 362ms
+stderr | src/gemini.test.tsx > gemini.tsx main function kitty protocol > should log warning when theme is not found
+[DEBUG] CLI: main() called
+
+stderr | src/gemini.test.tsx > gemini.tsx main function kitty protocol > should handle session selector error
+[DEBUG] CLI: main() called
+
+stderr | src/gemini.test.tsx > gemini.tsx main function kitty protocol > should read from stdin in non-interactive mode
+[DEBUG] CLI: main() called
+
+stderr | src/gemini.test.tsx > gemini.tsx main function exit codes > should exit with 42 for invalid input combination (prompt-interactive with non-TTY)
+[DEBUG] CLI: main() called
+
+stderr | src/gemini.test.tsx > gemini.tsx main function exit codes > should exit with 41 for auth failure during sandbox setup
+[DEBUG] CLI: main() called
+
+stderr | src/gemini.test.tsx > gemini.tsx main function exit codes > should exit with 42 for session resume failure
+[DEBUG] CLI: main() called
+
+stderr | src/gemini.test.tsx > gemini.tsx main function exit codes > should exit with 42 for no input provided
+[DEBUG] CLI: main() called
+
+
+[2m════════════════════════════[0m[1m[38;2;226;35;26m terminaI │ 07:01:08 [0m[2m═════════════════════════════[0m
+
+]2;TerminaI - root[?7lError: The --prompt-interactive flag cannot be used when input is piped from stdin.
+]2;TerminaI - root[?7l]2;TerminaI - root[?7l]2;TerminaI - root[?7l ✓ src/ui/hooks/vim.test.tsx (87 tests) 471ms
+]2;TerminaI - root[?7l]2;TerminaI - root[?7l ✓ src/ui/utils/MarkdownDisplay.test.tsx (30 tests) 503ms
+ ✓ src/ui/auth/useAuth.test.tsx (15 tests) 370ms
+ ✓ src/gemini_cleanup.test.tsx (1 test) 4753ms
+   ✓ gemini.tsx main function cleanup > should log error when cleanupExpiredSessions fails  4748ms
+ ✓ src/ui/components/FolderTrustDialog.test.tsx (8 tests) 315ms
+ ✓ src/ui/components/shared/text-buffer.test.ts (166 tests) 271ms
+ ✓ src/services/FileCommandLoader.test.ts (40 tests) 506ms
+ ✓ src/gemini.test.tsx (33 tests | 1 skipped) 138ms
+ ✓ src/ui/components/StatsDisplay.test.tsx (14 tests) 219ms
+ ✓ src/ui/contexts/KeypressContext.test.tsx (87 tests) 249ms
+ ✓ src/ui/components/messages/ToolConfirmationMessage.test.tsx (12 tests) 307ms
+ ✓ src/ui/components/messages/ToolMessage.test.tsx (12 tests) 244ms
+ ✓ src/ui/components/GradientRegression.test.tsx (5 tests) 214ms
+ ✓ src/ui/components/shared/VirtualizedList.test.tsx (9 tests) 319ms
+ ✓ src/ui/components/messages/ToolResultDisplay.test.tsx (8 tests) 260ms
+stdout | src/commands/mcp/add.test.ts > mcp add command > should add a stdio server to project settings
+MCP server "my-server" added to project settings. (stdio)
+
+stdout | src/commands/mcp/add.test.ts > mcp add command > should handle multiple env vars before positional args
+MCP server "my-server" added to project settings. (stdio)
+
+stdout | src/commands/mcp/add.test.ts > mcp add command > should add an sse server to user settings
+MCP server "sse-server" added to user settings. (sse)
+
+stdout | src/commands/mcp/add.test.ts > mcp add command > should add an http server to project settings
+MCP server "http-server" added to project settings. (http)
+
+stdout | src/commands/mcp/add.test.ts > mcp add command > should add an sse server using --type alias
+MCP server "sse-server" added to user settings. (sse)
+
+stdout | src/commands/mcp/add.test.ts > mcp add command > should add an http server using --type alias
+MCP server "http-server" added to project settings. (http)
+
+stdout | src/commands/mcp/add.test.ts > mcp add command > should handle MCP server args with -- separator
+MCP server "my-server" added to project settings. (stdio)
+
+stdout | src/commands/mcp/add.test.ts > mcp add command > should handle unknown options as MCP server args
+MCP server "test-server" added to project settings. (stdio)
+
+stdout | src/commands/mcp/add.test.ts > mcp add command > when handling scope and directory > when in a project directory > should use project scope by default
+MCP server "test-server" added to project settings. (stdio)
+
+stdout | src/commands/mcp/add.test.ts > mcp add command > when handling scope and directory > when in a project directory > should use project scope when --scope=project is used
+MCP server "test-server" added to project settings. (stdio)
+
+stdout | src/commands/mcp/add.test.ts > mcp add command > when handling scope and directory > when in a project directory > should use user scope when --scope=user is used
+MCP server "test-server" added to user settings. (stdio)
+
+stdout | src/commands/mcp/add.test.ts > mcp add command > when handling scope and directory > when in a subdirectory of a project > should use project scope by default
+MCP server "test-server" added to project settings. (stdio)
+
+stdout | src/commands/mcp/add.test.ts > mcp add command > when handling scope and directory > when in the home directory > should use user scope when --scope=user is used
+MCP server "test-server" added to user settings. (stdio)
+
+stdout | src/commands/mcp/add.test.ts > mcp add command > when handling scope and directory > when in a subdirectory of home (not a project) > should use project scope by default
+MCP server "test-server" added to project settings. (stdio)
+
+stdout | src/commands/mcp/add.test.ts > mcp add command > when handling scope and directory > when in a subdirectory of home (not a project) > should write to the WORKSPACE scope, not the USER scope
+MCP server "my-new-server" added to project settings. (stdio)
+
+stdout | src/commands/mcp/add.test.ts > mcp add command > when handling scope and directory > when outside of home (not a project) > should use project scope by default
+MCP server "test-server" added to project settings. (stdio)
+
+stdout | src/commands/mcp/add.test.ts > mcp add command > when updating an existing server > should update the existing server in the project scope
+MCP server "existing-server" is already configured within project settings.
+MCP server "existing-server" updated in project settings.
+
+stdout | src/commands/mcp/add.test.ts > mcp add command > when updating an existing server > should update the existing server in the user scope
+MCP server "existing-server" is already configured within user settings.
+MCP server "existing-server" updated in user settings.
+
+ ✓ src/ui/hooks/useExtensionUpdates.test.tsx (4 tests) 212ms
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ ✓ src/ui/auth/OpenAIChatGptOAuthSetupDialog.test.tsx (3 tests) 213ms
+ ✓ src/commands/mcp/add.test.ts (20 tests) 132ms
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+(node:3001181) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 error listeners added to [EventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ src/ui/components/AlternateBufferQuittingDisplay.test.tsx (5 tests) 129ms
+ ✓ src/config/extensions/github.test.ts (33 tests) 169ms
+ ✓ src/ui/components/shared/MaxSizedBox.test.tsx (21 tests) 158ms
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ ✓ src/ui/hooks/useCommandCompletion.test.tsx (21 tests) 143ms
+ ✓ src/ui/components/ModelStatsDisplay.test.tsx (7 tests) 145ms
+stderr | updateHookTypesDev (/home/profharita/Code/terminaI/node_modules/react-reconciler/cjs/react-reconciler.development.js:3128:19)
+React has detected a change in the order of Hooks called by TestComponent. This will lead to bugs and errors if not fixed. For more information, read the Rules of Hooks: https://react.dev/link/rules-of-hooks
+
+   Previous render            Next render
+   ------------------------------------------------------
+1. useMemo                    useMemo
+2. useReducer                 useReducer
+3. useMemo                    useMemo
+4. useMemo                    useMemo
+5. useState                   useState
+6. useEffect                  useEffect
+7. useEffect                  useEffect
+8. useEffect                  useEffect
+9. useCallback                useCallback
+10. useCallback               useCallback
+11. useCallback               useCallback
+12. useCallback               useCallback
+13. useCallback               useCallback
+14. useCallback               useCallback
+15. useCallback               useCallback
+16. useCallback               useCallback
+17. useCallback               useCallback
+18. useCallback               useCallback
+19. useCallback               useCallback
+20. useCallback               useCallback
+21. useCallback               useCallback
+22. useCallback               useCallback
+23. useCallback               useCallback
+24. useCallback               useCallback
+25. useCallback               useCallback
+26. useCallback               useCallback
+27. useCallback               useCallback
+28. useCallback               useCallback
+29. useCallback               useCallback
+30. useCallback               useCallback
+31. useCallback               useCallback
+32. useCallback               useCallback
+33. useCallback               useCallback
+34. useCallback               useCallback
+35. useCallback               useCallback
+36. useCallback               useCallback
+37. useCallback               useCallback
+38. useCallback               useCallback
+39. useCallback               useCallback
+40. useCallback               useCallback
+41. useCallback               useCallback
+42. useCallback               useCallback
+43. useCallback               useCallback
+44. useCallback               useCallback
+45. useCallback               useCallback
+46. useCallback               useCallback
+47. useCallback               useCallback
+48. useCallback               useCallback
+49. useCallback               useCallback
+50. useCallback               useCallback
+51. useCallback               useCallback
+52. useCallback               useCallback
+53. useCallback               useCallback
+54. useCallback               useCallback
+55. useMemo                   useMemo
+56. useCallback               useCallback
+57. useCallback               useCallback
+58. useCallback               useCallback
+59. useCallback               useCallback
+60. useCallback               useCallback
+61. useMemo                   useMemo
+62. useState                  useState
+63. useState                  useState
+64. useState                  useState
+65. useState                  useState
+66. useState                  useState
+67. useState                  useState
+68. useCallback               useCallback
+69. useCallback               useCallback
+70. useCallback               useCallback
+71. useMemo                   useMemo
+72. useEffect                 useState
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Root inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to TestComponent inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ ✓ src/ui/components/Footer.test.tsx (21 tests) 133ms
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Root inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Root inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Root inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stdout | src/ui/hooks/useIncludeDirsTrust.test.tsx > useIncludeDirsTrust > when folder trust is enabled and workspace is trusted > should add trusted dirs, collect untrusted errors, and open dialog for undefined
+Creating custom dialog with undecidedDirs: [ [32m'/undefined'[39m ]
+
+ ✓ src/ui/components/messages/ToolMessageRawMarkdown.test.tsx (6 tests) 145ms
+ ✓ src/ui/hooks/useIncludeDirsTrust.test.tsx (6 tests) 188ms
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Root inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ ✓ src/ui/commands/authCommand.test.ts (11 tests) 122ms
+ ✓ src/ui/components/PermissionsModifyTrustDialog.test.tsx (7 tests) 198ms
+ ✓ src/ui/components/LoadingIndicator.test.tsx (16 tests) 175ms
+ ✓ src/ui/components/messages/Todo.test.tsx (14 tests) 132ms
+(node:3001444) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 mcp-client-update listeners added to [EventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(Use `node --trace-warnings ...` to show where the warning was created)
+stderr | src/ui/components/Composer.test.tsx
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/ui/components/Composer.test.tsx
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/ui/components/Composer.test.tsx
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/ui/components/Composer.test.tsx
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/ui/components/Composer.test.tsx
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/ui/components/Composer.test.tsx
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/ui/components/Composer.test.tsx
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/ui/components/Composer.test.tsx
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/ui/components/Composer.test.tsx
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/ui/components/Composer.test.tsx
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/ui/components/Composer.test.tsx
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/ui/components/Composer.test.tsx
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ ✓ src/ui/components/Composer.test.tsx (20 tests) 187ms
+stderr | src/ui/components/Composer.test.tsx
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ ✓ src/ui/components/Help.test.tsx (3 tests) 207ms
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | ../../node_modules/react-reconciler/cjs/react-reconciler.development.js:13614:19
+An update to Spinner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ ✓ src/ui/components/AboutBox.test.tsx (8 tests) 133ms
+ ✓ src/ui/components/SessionBrowser.test.tsx (6 tests) 187ms
+stdout | src/ui/commands/setupGithubCommand.test.ts > setupGithubCommand > throws an error when download fails
+Failed to download required setup files:  Error: Invalid response code downloading https://raw.githubusercontent.com/google-github-actions/run-gemini-cli/refs/tags/v1.2.3/examples/workflows/gemini-dispatch/gemini-dispatch.yml: 404 - Not Found
+    at [90m/home/profharita/Code/terminaI/packages/cli/[39msrc/ui/commands/setupGithubCommand.ts:132:17
+    at async Promise.all (index 0)
+    at downloadFiles [90m(/home/profharita/Code/terminaI/packages/cli/[39msrc/ui/commands/setupGithubCommand.ts:159:3[90m)[39m
+    at async Promise.all (index 0)
+    at downloadSetupFiles [90m(/home/profharita/Code/terminaI/packages/cli/[39msrc/ui/commands/setupGithubCommand.ts:185:5[90m)[39m
+    at Object.action [90m(/home/profharita/Code/terminaI/packages/cli/[39msrc/ui/commands/setupGithubCommand.ts:242:5[90m)[39m
+    at [90m/home/profharita/Code/terminaI/packages/cli/[39msrc/ui/commands/setupGithubCommand.test.ts:220:5
+    at file:///home/profharita/Code/terminaI/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:20
+
+stdout | src/ui/commands/setupGithubCommand.test.ts > updateGitignore > handles file system errors gracefully
+Failed to update .gitignore: Error: ENOENT: no such file or directory, open '/tmp/update-gitignore-m6MxMn/non-existent/.gitignore'
+[90m    at open (node:internal/fs/promises:642:25)[39m
+[90m    at Object.writeFile (node:internal/fs/promises:1249:14)[39m
+    at Module.updateGitignore [90m(/home/profharita/Code/terminaI/packages/cli/[39msrc/ui/commands/setupGithubCommand.ts:83:7[90m)[39m
+    at [90m/home/profharita/Code/terminaI/packages/cli/[39msrc/ui/commands/setupGithubCommand.test.ts:323:5
+    at file:///home/profharita/Code/terminaI/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:20 {
+  errno: [33m-2[39m,
+  code: [32m'ENOENT'[39m,
+  syscall: [32m'open'[39m,
+  path: [32m'/tmp/update-gitignore-m6MxMn/non-existent/.gitignore'[39m
+}
+
+ ✓ src/ui/commands/setupGithubCommand.test.ts (10 tests) 91ms
+ ✓ src/ui/privacy/CloudFreePrivacyNotice.test.tsx (9 tests) 142ms
+ ✓ src/ui/components/messages/CompressionMessage.test.tsx (8 tests) 95ms
+ ✓ src/ui/components/IdeTrustChangeDialog.test.tsx (6 tests) 137ms
+ ✓ src/ui/components/ShellConfirmationDialog.test.tsx (4 tests) 154ms
+ ✓ src/ui/components/messages/GeminiMessage.test.tsx (4 tests) 209ms
+ ✓ src/ui/hooks/useToolScheduler.test.ts (23 tests) 202ms
+ ✓ src/utils/cleanup.test.ts (8 tests) 55ms
+ ✓ src/ui/components/ExitWarning.test.tsx (4 tests) 124ms
+ ✓ src/ui/hooks/usePhraseCycler.test.tsx (13 tests) 142ms
+ ✓ src/ui/hooks/useSelectionList.test.tsx (45 tests) 205ms
+ ✓ src/ui/components/views/McpStatus.test.tsx (12 tests) 195ms
+ ✓ src/ui/hooks/useReverseSearchCompletion.test.tsx (10 tests) 105ms
+ ✓ src/ui/hooks/useTimer.test.tsx (8 tests) 51ms
+ ✓ src/ui/components/LoopDetectionConfirmation.test.tsx (2 tests) 116ms
+stdout | src/zed-integration/zedIntegration.test.ts > GeminiAgent > should create a new session
+[STARTUP] StartupProfiler.flush() called with [33m0[39m phases
+
+stdout | src/zed-integration/zedIntegration.test.ts > GeminiAgent > should create a new session with mcp servers
+[STARTUP] StartupProfiler.flush() called with [33m0[39m phases
+
+stdout | src/zed-integration/zedIntegration.test.ts > GeminiAgent > should handle authentication failure gracefully
+[STARTUP] StartupProfiler.flush() called with [33m0[39m phases
+
+stdout | src/zed-integration/zedIntegration.test.ts > GeminiAgent > should initialize file system service if client supports it
+[STARTUP] StartupProfiler.flush() called with [33m0[39m phases
+
+stdout | src/zed-integration/zedIntegration.test.ts > GeminiAgent > should cancel a session
+[STARTUP] StartupProfiler.flush() called with [33m0[39m phases
+
+stdout | src/zed-integration/zedIntegration.test.ts > GeminiAgent > should delegate prompt to session
+[STARTUP] StartupProfiler.flush() called with [33m0[39m phases
+
+TEST: calling prompt
+TEST: waiting for streamStarted
+TEST: asyncStream started
+TEST: waiting for read
+TEST: streamStarted
+TEST: cancelled
+TEST: stream closed
+TEST: read returned done=true
+TEST: releasing lock
+TEST: result received {"stopReason":"cancelled"}
+stderr | src/zed-integration/zedIntegration.test.ts > Session > should ignore files based on configuration
+Path ignored.txt is ignored and will be skipped.
+No valid file paths found in @ commands to read.
+
+ ✓ src/zed-integration/zedIntegration.test.ts (20 tests) 82ms
+ ✓ src/ui/components/AnsiOutput.test.tsx (12 tests) 83ms
+ ✓ src/ui/components/ToolStatsDisplay.test.tsx (5 tests) 98ms
+ ✓ src/ui/components/shared/EnumSelector.test.tsx (9 tests) 113ms
+ ✓ src/utils/sandbox.test.ts (7 tests) 103ms
+ ✓ src/ui/components/MultiFolderTrustDialog.test.tsx (8 tests) 142ms
+ ✓ src/ui/components/shared/DescriptiveRadioButtonSelect.test.tsx (2 tests) 90ms
+ ✓ src/ui/components/ConsentPrompt.test.tsx (5 tests) 95ms
+ ✓ src/ui/components/ShowMoreLines.test.tsx (5 tests) 50ms
+ ✓ src/ui/commands/memoryCommand.test.ts (11 tests) 24ms
+ ✓ src/ui/components/Banner.test.tsx (3 tests) 58ms
+ ✓ src/voice/voiceController.test.ts (2 tests) 37ms
+ ✓ src/ui/privacy/CloudPaidPrivacyNotice.test.tsx (2 tests) 64ms
+ ✓ src/ui/components/SessionSummaryDisplay.test.tsx (1 test) 93ms
+ ✓ src/ui/components/ProQuotaDialog.test.tsx (8 tests) 87ms
+ ✓ src/ui/components/messages/ShellToolMessage.test.tsx (3 tests) 105ms
+ ✓ src/ui/contexts/MouseContext.test.tsx (15 tests) 55ms
+ ✓ src/ui/hooks/usePermissionsModifyTrust.test.ts (13 tests) 59ms
+ ✓ src/ui/hooks/shellCommandProcessor.test.tsx (20 tests) 102ms
+ ✓ src/utils/sessionCleanup.test.ts (70 tests) 96ms
+ ✓ src/commands/extensions/examples/mcp-server/example.test.ts (7 tests) 95ms
+ ✓ src/ui/components/ContextSummaryDisplay.test.tsx (4 tests) 83ms
+ ✓ src/ui/hooks/usePrivacySettings.test.tsx (4 tests) 76ms
+ ✓ src/ui/hooks/useGitBranchName.test.tsx (7 tests) 61ms
+ ✓ src/ui/components/Notifications.test.tsx (8 tests) 62ms
+ ✓ src/ui/auth/ProviderWizard.test.tsx (4 tests) 60ms
+ ✓ src/ui/components/views/ExtensionsList.test.tsx (10 tests) 84ms
+ ✓ src/utils/sessionUtils.test.ts (20 tests) 57ms
+ ✓ src/ui/auth/AuthProviderWizardFlow.test.tsx (5 tests) 62ms
+ ✓ src/ui/components/DialogManager.test.tsx (18 tests) 103ms
+ ✓ src/ui/components/LogoutConfirmationDialog.test.tsx (5 tests) 108ms
+ ✓ src/ui/components/views/ToolsList.test.tsx (3 tests) 100ms
+ ✓ src/ui/components/messages/UserMessage.test.tsx (3 tests) 35ms
+ ✓ src/ui/commands/chatCommand.test.ts (30 tests) 66ms
+stdout | src/config/settings.test.ts > Settings Loading and Merging > migrateDeprecatedSettings > should migrate disabled extensions from user and workspace settings
+Migrating deprecated extensions.disabled settings from User settings...
+Migrating deprecated extensions.disabled settings from Workspace settings...
+
+stderr | src/config/settings.test.ts > Settings Loading and Merging > migrateDeprecatedSettings > should migrate disabled extensions from user and workspace settings
+[WARN] Skipping unreadable directory: /mock/workspace (ENOENT: no such file or directory, stat '/mock/workspace')
+
+stderr | src/config/settings.test.ts > Settings Loading and Merging > migrateDeprecatedSettings > should not do anything if there are no deprecated settings
+[WARN] Skipping unreadable directory: /mock/workspace (ENOENT: no such file or directory, stat '/mock/workspace')
+
+ ✓ src/config/extensions/extensionSettings.test.ts (23 tests) 77ms
+ ✓ src/utils/userStartupWarnings.test.ts (3 tests) 12ms
+ ✓ src/config/settings.test.ts (67 tests | 3 skipped) 49ms
+ ✓ src/config/keyBindings.test.ts (6 tests) 18ms
+ ✓ src/ui/components/DetailedMessagesDisplay.test.tsx (3 tests) 65ms
+ ✓ src/ui/components/shared/Scrollable.test.tsx (4 tests) 86ms
+ ✓ src/ui/hooks/useEditorSettings.test.tsx (10 tests) 72ms
+ ✓ src/ui/components/VoiceOrb.test.tsx (2 tests) 65ms
+ ✓ src/ui/commands/extensionsCommand.test.ts (38 tests) 60ms
+ ✓ src/ui/components/shared/TextInput.test.tsx (11 tests) 75ms
+ ✓ src/ui/commands/restoreCommand.test.ts (13 tests) 58ms
+ ✓ src/utils/readStdin.test.ts (6 tests) 28ms
+ ✓ src/ui/components/PrepareLabel.test.tsx (6 tests) 69ms
+ ✓ src/ui/auth/AuthInProgress.test.tsx (5 tests) 87ms
+ ✓ src/ui/components/ShellModeIndicator.test.tsx (1 test) 45ms
+ ✓ src/ui/components/SuggestionsDisplay.test.tsx (6 tests) 78ms
+ ✓ src/services/prompt-processors/shellProcessor.test.ts (33 tests) 71ms
+ ✓ src/ui/components/StickyHeader.test.tsx (2 tests) 61ms
+ ✓ src/ui/components/shared/vim-buffer-actions.test.ts (74 tests) 46ms
+ ✓ src/ui/hooks/useAutoAcceptIndicator.test.ts (17 tests) 69ms
+ ✓ src/ui/components/ConsoleSummaryDisplay.test.tsx (3 tests) 58ms
+ ✓ src/ui/components/CliSpinner.test.tsx (1 test) 60ms
+ ✓ src/ui/hooks/useKeypress.test.tsx (22 tests) 57ms
+ ✓ src/ui/components/GeminiRespondingSpinner.test.tsx (5 tests) 54ms
+ ✓ src/ui/auth/ApiAuthDialog.test.tsx (6 tests) 95ms
+ ✓ src/ui/components/shared/RadioButtonSelect.test.tsx (5 tests) 55ms
+ ✓ src/ui/utils/CodeColorizer.test.tsx (1 test) 72ms
+ ✓ src/ui/hooks/useMessageQueue.test.tsx (14 tests) 66ms
+ ✓ src/ui/privacy/PrivacyNotice.test.tsx (4 tests) 49ms
+ ✓ src/ui/kit/InteractiveBox.test.tsx (2 tests) 64ms
+ ✓ src/ui/hooks/useConsoleMessages.test.tsx (7 tests) 44ms
+ ✓ src/ui/hooks/useAnimatedScrollbar.test.tsx (7 tests) 40ms
+ ✓ src/ui/commands/hooksCommand.test.ts (24 tests) 72ms
+ ✓ src/ui/components/ConfigInitDisplay.test.tsx (4 tests) 60ms
+ ✓ src/test-utils/render.test.tsx (6 tests) 61ms
+ ✓ src/utils/handleAutoUpdate.test.ts (19 tests) 41ms
+ ✓ src/ui/components/Table.test.tsx (3 tests) 65ms
+ ✓ src/config/settingsSchema.test.ts (18 tests) 28ms
+ ✓ src/ui/hooks/useHistoryManager.test.ts (8 tests) 44ms
+ ✓ src/ui/components/DebugProfiler.test.tsx (13 tests) 47ms
+ ✓ src/ui/contexts/SessionContext.test.tsx (4 tests) 26ms
+ ✓ src/ui/privacy/GeminiPrivacyNotice.test.tsx (2 tests) 60ms
+ ✓ src/commands/extensions/enable.test.ts (7 tests) 36ms
+stdout | src/commands/mcp/remove.test.ts > mcp remove command > unit tests with mocks > should remove a server from project settings
+Server "test-server" removed from project settings.
+
+ ✓ src/commands/mcp/remove.test.ts (6 tests) 67ms
+ ✓ src/ui/hooks/useFolderTrust.test.ts (12 tests) 62ms
+ ✓ src/utils/errors.test.ts (28 tests) 33ms
+ ✓ src/ui/hooks/useSessionResume.test.ts (12 tests) 51ms
+ ✓ src/ui/components/QueuedMessageDisplay.test.tsx (5 tests) 76ms
+ ✓ src/ui/components/MemoryUsageDisplay.test.tsx (2 tests) 67ms
+ ✓ src/ui/components/RawMarkdownIndicator.test.tsx (2 tests) 41ms
+ ✓ src/config/extensions/extensionEnablement.test.ts (48 tests) 43ms
+ ✓ src/ui/hooks/useFlickerDetector.test.ts (6 tests) 21ms
+ ✓ src/commands/hooks/migrate.test.ts (17 tests) 36ms
+ ✓ src/ui/hooks/useIdeTrustListener.test.tsx (5 tests) 53ms
+ ✓ src/ui/hooks/useLoadingIndicator.test.tsx (6 tests) 54ms
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should create a working PolicyEngine from basic settings
+[PolicyEngine.check] toolCall.name: run_shell_command, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=run_shell_command, decision=allow, priority=2.3, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should create a working PolicyEngine from basic settings
+[PolicyEngine.check] toolCall.name: write_file, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=write_file, decision=deny, priority=2.4, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should create a working PolicyEngine from basic settings
+[PolicyEngine.check] toolCall.name: edit_file, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=edit_file, decision=ask_user, priority=1.01, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should create a working PolicyEngine from basic settings
+[PolicyEngine.check] toolCall.name: unknown_tool, stringifiedArgs: undefined
+[PolicyEngine.check] NO MATCH - using default decision: ask_user
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle MCP server wildcard patterns correctly
+[PolicyEngine.check] toolCall.name: allowed-server__tool1, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=allowed-server__*, decision=allow, priority=2.1, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle MCP server wildcard patterns correctly
+[PolicyEngine.check] toolCall.name: allowed-server__another_tool, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=allowed-server__*, decision=allow, priority=2.1, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle MCP server wildcard patterns correctly
+[PolicyEngine.check] toolCall.name: trusted-server__tool1, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=trusted-server__*, decision=allow, priority=2.2, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle MCP server wildcard patterns correctly
+[PolicyEngine.check] toolCall.name: trusted-server__special_tool, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=trusted-server__*, decision=allow, priority=2.2, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle MCP server wildcard patterns correctly
+[PolicyEngine.check] toolCall.name: blocked-server__tool1, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=blocked-server__*, decision=deny, priority=2.9, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle MCP server wildcard patterns correctly
+[PolicyEngine.check] toolCall.name: blocked-server__any_tool, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=blocked-server__*, decision=deny, priority=2.9, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle MCP server wildcard patterns correctly
+[PolicyEngine.check] toolCall.name: unknown-server__tool, stringifiedArgs: undefined
+[PolicyEngine.check] NO MATCH - using default decision: ask_user
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should correctly prioritize specific tool excludes over MCP server wildcards
+[PolicyEngine.check] toolCall.name: my-server__safe-tool, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=my-server__*, decision=allow, priority=2.1, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should correctly prioritize specific tool excludes over MCP server wildcards
+[PolicyEngine.check] toolCall.name: my-server__dangerous-tool, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=my-server__dangerous-tool, decision=deny, priority=2.4, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle complex mixed configurations
+[PolicyEngine.check] toolCall.name: read_file, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=read_file, decision=allow, priority=1.05, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle complex mixed configurations
+[PolicyEngine.check] toolCall.name: list_files, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=list_files, decision=allow, priority=1.05, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle complex mixed configurations
+[PolicyEngine.check] toolCall.name: glob_files, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=glob_files, decision=deny, priority=2.4, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle complex mixed configurations
+[PolicyEngine.check] toolCall.name: edit_file, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=edit_file, decision=ask_user, priority=1.01, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle complex mixed configurations
+[PolicyEngine.check] toolCall.name: custom-tool, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=custom-tool, decision=allow, priority=2.3, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle complex mixed configurations
+[PolicyEngine.check] toolCall.name: my-server__special-tool, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=my-server__special-tool, decision=allow, priority=2.3, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle complex mixed configurations
+[PolicyEngine.check] toolCall.name: allowed-server__tool, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=allowed-server__*, decision=allow, priority=2.1, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle complex mixed configurations
+[PolicyEngine.check] toolCall.name: trusted-server__tool, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=trusted-server__*, decision=allow, priority=2.2, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle complex mixed configurations
+[PolicyEngine.check] toolCall.name: blocked-server__tool, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=blocked-server__*, decision=deny, priority=2.9, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle complex mixed configurations
+[PolicyEngine.check] toolCall.name: write_to_file, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=write_to_file, decision=ask_user, priority=1.01, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle YOLO mode correctly
+[PolicyEngine.check] toolCall.name: run_shell_command, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=undefined, decision=allow, priority=1.999, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle YOLO mode correctly
+[PolicyEngine.check] toolCall.name: write_to_file, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=undefined, decision=allow, priority=1.999, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle YOLO mode correctly
+[PolicyEngine.check] toolCall.name: unknown_tool, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=undefined, decision=allow, priority=1.999, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle YOLO mode correctly
+[PolicyEngine.check] toolCall.name: dangerous-tool, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=dangerous-tool, decision=deny, priority=2.4, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle AUTO_EDIT mode correctly
+[PolicyEngine.check] toolCall.name: edit_file, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=edit_file, decision=allow, priority=1.015, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle AUTO_EDIT mode correctly
+[PolicyEngine.check] toolCall.name: write_to_file, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=write_to_file, decision=allow, priority=1.015, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle AUTO_EDIT mode correctly
+[PolicyEngine.check] toolCall.name: run_shell_command, stringifiedArgs: undefined
+[PolicyEngine.check] NO MATCH - using default decision: ask_user
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should verify priority ordering works correctly in practice
+[PolicyEngine.check] toolCall.name: blocked-tool, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=blocked-tool, decision=deny, priority=2.4, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should verify priority ordering works correctly in practice
+[PolicyEngine.check] toolCall.name: blocked-server__any, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=blocked-server__*, decision=deny, priority=2.9, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should verify priority ordering works correctly in practice
+[PolicyEngine.check] toolCall.name: specific-tool, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=specific-tool, decision=allow, priority=2.3, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should verify priority ordering works correctly in practice
+[PolicyEngine.check] toolCall.name: trusted-server__any, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=trusted-server__*, decision=allow, priority=2.2, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should verify priority ordering works correctly in practice
+[PolicyEngine.check] toolCall.name: mcp-server__any, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=mcp-server__*, decision=allow, priority=2.1, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should verify priority ordering works correctly in practice
+[PolicyEngine.check] toolCall.name: glob_files, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=glob_files, decision=allow, priority=1.05, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle edge case: MCP server with both trust and exclusion
+[PolicyEngine.check] toolCall.name: conflicted-server__tool, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=conflicted-server__*, decision=deny, priority=2.9, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle edge case: specific tool allowed but server excluded
+[PolicyEngine.check] toolCall.name: my-server__special-tool, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=my-server__*, decision=deny, priority=2.9, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle edge case: specific tool allowed but server excluded
+[PolicyEngine.check] toolCall.name: my-server__other-tool, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=my-server__*, decision=deny, priority=2.9, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should verify non-interactive mode transformation
+[PolicyEngine.check] toolCall.name: unknown_tool, stringifiedArgs: undefined
+[PolicyEngine.check] NO MATCH - using default decision: ask_user
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should verify non-interactive mode transformation
+[PolicyEngine.check] toolCall.name: run_shell_command, stringifiedArgs: undefined
+[PolicyEngine.check] NO MATCH - using default decision: ask_user
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle empty settings gracefully
+[PolicyEngine.check] toolCall.name: write_to_file, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=write_to_file, decision=ask_user, priority=1.01, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle empty settings gracefully
+[PolicyEngine.check] toolCall.name: edit_file, stringifiedArgs: undefined
+[PolicyEngine.check] MATCHED rule: toolName=edit_file, decision=ask_user, priority=1.01, argsPattern=none
+
+stdout | src/config/policy-engine.integration.test.ts > Policy Engine Integration Tests > Policy configuration produces valid PolicyEngine config > should handle empty settings gracefully
+[PolicyEngine.check] toolCall.name: unknown, stringifiedArgs: undefined
+[PolicyEngine.check] NO MATCH - using default decision: ask_user
+
+ ✓ src/ui/hooks/useFocus.test.tsx (6 tests) 44ms
+ ✓ src/config/policy-engine.integration.test.ts (12 tests) 120ms
+ ✓ src/utils/commentJson.test.ts (12 tests) 22ms
+stderr | src/ui/themes/theme-manager.test.ts > ThemeManager > when loading a theme from a file > should not load a theme if the file does not exist
+Theme file at "./my-theme.json" is outside your home directory. Only load themes from trusted sources.
+
+stderr | src/ui/themes/theme-manager.test.ts > ThemeManager > when loading a theme from a file > should not load a theme from a file with invalid JSON
+Theme file at "./my-theme.json" is outside your home directory. Only load themes from trusted sources.
+
+ ✓ src/config/trustedFolders.test.ts (23 tests) 21ms
+ ✓ src/ui/themes/theme-manager.test.ts (12 tests) 22ms
+ ✓ src/ui/components/QuittingDisplay.test.tsx (2 tests) 35ms
+ ✓ src/ui/components/ThemedGradient.test.tsx (1 test) 35ms
+ ✓ src/ui/components/messages/InfoMessage.test.tsx (3 tests) 70ms
+ ✓ src/ui/hooks/useMouse.test.ts (4 tests) 24ms
+ ✓ src/ui/components/messages/WarningMessage.test.tsx (2 tests) 46ms
+ ✓ src/ui/contexts/ScrollProvider.drag.test.tsx (6 tests) 50ms
+ ✓ src/ui/contexts/ScrollProvider.test.tsx (9 tests) 74ms
+ ✓ src/ui/components/views/ChatList.test.tsx (3 tests) 61ms
+stdout | src/commands/extensions/validate.test.ts > handleValidate > should validate an extension from a local dir
+Extension local-ext-name has been successfully validated.
+
+stderr | src/commands/extensions/validate.test.ts > handleValidate > should warn if version is not formatted with semver
+Validation warnings:
+  - Warning: Version '1' does not appear to be standard semver (e.g., 1.0.0).
+
+stdout | src/commands/extensions/validate.test.ts > handleValidate > should warn if version is not formatted with semver
+Extension valid-name has been successfully validated.
+
+ ✓ src/commands/extensions/validate.test.ts (5 tests) 37ms
+stdout | src/commands/extensions/new.test.ts > extensions new command > should create directory when no template is provided
+Successfully created new extension at /some/path.
+You can install this using "gemini extensions link /some/path" to test it out.
+
+stdout | src/commands/extensions/new.test.ts > extensions new command > should create directory and copy files when path does not exist
+Successfully created new extension from template "context" at /some/path.
+You can install this using "gemini extensions link /some/path" to test it out.
+
+ ✓ src/commands/extensions/new.test.ts (4 tests) 33ms
+ ✓ src/ui/hooks/useInputHistoryStore.test.ts (14 tests) 62ms
+ ✓ src/ui/keyMatchers.test.ts (44 tests) 27ms
+ ✓ src/ui/components/UpdateNotification.test.tsx (1 test) 51ms
+ ✓ src/ui/hooks/useBatchedScroll.test.ts (7 tests) 30ms
+ ✓ src/ui/utils/terminalCapabilityManager.test.ts (7 tests) 16ms
+ ✓ src/ui/components/AutoAcceptIndicator.test.tsx (3 tests) 42ms
+ ✓ src/config/extensions/update.test.ts (10 tests) 24ms
+ ✓ src/config/extensions/consent.test.ts (17 tests) 28ms
+ ✓ src/ui/commands/statsCommand.test.ts (4 tests) 32ms
+ ✓ src/ui/hooks/useBanner.test.ts (6 tests) 36ms
+ ✓ src/ui/components/messages/ErrorMessage.test.tsx (2 tests) 78ms
+ ✓ src/ui/components/Tips.test.tsx (2 tests) 61ms
+stderr | src/ui/utils/commandUtils.test.ts > commandUtils > getUrlOpenCommand > on unmatched OS > should return xdg-open
+Unknown platform: unmatched. Attempting to open URLs with: xdg-open.
+
+ ✓ src/services/prompt-processors/atFileProcessor.test.ts (11 tests) 32ms
+ ✓ src/ui/utils/commandUtils.test.ts (22 tests) 42ms
+ ✓ src/ui/commands/auditCommand.test.ts (4 tests) 15ms
+stderr | src/ui/themes/color-utils.test.ts > Color Utils > resolveColor > should return undefined for invalid colors
+[ColorUtils] Could not resolve color "invalidcolor" to an Ink-compatible format.
+[ColorUtils] Could not resolve color "notacolor" to an Ink-compatible format.
+[ColorUtils] Could not resolve color "" to an Ink-compatible format.
+
+stderr | src/ui/themes/color-utils.test.ts > Color Utils > Consistency between validation and resolution > should have consistent behavior between isValidColor and resolveColor
+[ColorUtils] Could not resolve color "invalidcolor" to an Ink-compatible format.
+[ColorUtils] Could not resolve color "notacolor" to an Ink-compatible format.
+[ColorUtils] Could not resolve color "" to an Ink-compatible format.
+
+ ✓ src/ui/themes/color-utils.test.ts (27 tests) 18ms
+ ✓ src/ui/components/ShellInputPrompt.test.tsx (7 tests) 41ms
+ ✓ src/utils/settingsUtils.test.ts (73 tests) 44ms
+ ✓ src/commands/extensions/link.test.ts (5 tests) 15ms
+ ✓ src/ui/commands/ideCommand.test.ts (8 tests) 27ms
+ ✓ src/ui/hooks/useSessionBrowser.test.ts (7 tests) 37ms
+ ✓ src/voice/stt/StreamingWhisper.test.ts (3 tests) 43ms
+ ✓ src/ui/components/ContextUsageDisplay.test.tsx (3 tests) 38ms
+ ✓ src/ui/commands/docsCommand.test.ts (3 tests) 15ms
+ ✓ src/utils/sessions.test.ts (17 tests) 19ms
+ ✓ src/ui/components/CopyModeWarning.test.tsx (2 tests) 33ms
+stdout | src/utils/gitUtils.test.ts > isGitHubRepository > returns false if the git command fails
+Failed to get git remote: Error: oops
+    at [90m/home/profharita/Code/terminaI/packages/cli/[39msrc/utils/gitUtils.test.ts:30:13
+    at mockCall (file:///home/profharita/Code/terminaI/node_modules/[4m@vitest/spy[24m/dist/index.js:96:15)
+    at execSync (file:///home/profharita/Code/terminaI/node_modules/[4mtinyspy[24m/dist/index.js:47:80)
+    at Module.isGitHubRepository [90m(/home/profharita/Code/terminaI/packages/cli/[39msrc/utils/gitUtils.ts:19:7[90m)[39m
+    at [90m/home/profharita/Code/terminaI/packages/cli/[39msrc/utils/gitUtils.test.ts:32:12
+    at file:///home/profharita/Code/terminaI/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at file:///home/profharita/Code/terminaI/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at file:///home/profharita/Code/terminaI/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///home/profharita/Code/terminaI/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1863:10)
+
+stdout | src/utils/gitUtils.test.ts > getLatestRelease > throws an error if the fetch fails
+Failed to determine latest run-gemini-cli release: nope
+
+ ✓ src/ui/hooks/useInputHistory.test.ts (11 tests) 47ms
+stdout | src/utils/gitUtils.test.ts > getLatestRelease > throws an error if the fetch does not return a json body
+Failed to determine latest run-gemini-cli release: Error: Response did not include tag_name field
+    at Module.getLatestGitHubRelease [90m(/home/profharita/Code/terminaI/packages/cli/[39msrc/utils/gitUtils.ts:84:13[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
+    at [90m/home/profharita/Code/terminaI/packages/cli/[39msrc/utils/gitUtils.test.ts:136:5
+    at file:///home/profharita/Code/terminaI/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:20
+
+stdout | src/commands/extensions/install.test.ts > handleInstall > should install an extension from a http source
+Extension "http-extension" installed successfully and enabled.
+
+stdout | src/commands/extensions/install.test.ts > handleInstall > should install an extension from a https source
+Extension "https-extension" installed successfully and enabled.
+
+stdout | src/commands/extensions/install.test.ts > handleInstall > should install an extension from a git source
+Extension "git-extension" installed successfully and enabled.
+
+stdout | src/commands/extensions/install.test.ts > handleInstall > should install an extension from a sso source
+Extension "sso-extension" installed successfully and enabled.
+
+stdout | src/commands/extensions/install.test.ts > handleInstall > should install an extension from a local path
+Extension "local-extension" installed successfully and enabled.
+
+ ✓ src/utils/sessionCleanup.integration.test.ts (5 tests) 27ms
+ ✓ src/utils/gitUtils.test.ts (12 tests) 23ms
+ ✓ src/commands/extensions/install.test.ts (8 tests) 30ms
+ ✓ src/commands/mcp/list.test.ts (4 tests) 13ms
+ ✓ src/voice/ConversationStack.test.ts (4 tests) 7ms
+ ✓ src/ui/commands/compressCommand.test.ts (5 tests) 15ms
+ ✓ src/ui/commands/permissionsCommand.test.ts (7 tests) 17ms
+ ✓ src/services/prompt-processors/injectionParser.test.ts (21 tests) 14ms
+ ✓ src/ui/commands/directoryCommand.test.tsx (13 tests) 28ms
+stdout | src/ui/utils/clipboardUtils.test.ts > clipboardUtils > cleanupOldClipboardImages > should not throw errors
+Failed to clean up old clipboard images: Error: ENOENT: no such file or directory, scandir '/path/that/does/not/exist/.gemini-clipboard'
+[90m    at Proxy.readdir (node:internal/fs/promises:958:18)[39m
+    at Module.cleanupOldClipboardImages [90m(/home/profharita/Code/terminaI/packages/cli/[39msrc/ui/utils/clipboardUtils.ts:196:19[90m)[39m
+    at [90m/home/profharita/Code/terminaI/packages/cli/[39msrc/ui/utils/clipboardUtils.test.ts:104:7
+    at file:///home/profharita/Code/terminaI/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:20 {
+  errno: [33m-2[39m,
+  code: [32m'ENOENT'[39m,
+  syscall: [32m'scandir'[39m,
+  path: [32m'/path/that/does/not/exist/.gemini-clipboard'[39m
+}
+
+stdout | src/ui/utils/clipboardUtils.test.ts > clipboardUtils > cleanupOldClipboardImages > should complete without errors on valid directory
+Failed to clean up old clipboard images: Error: ENOENT: no such file or directory, scandir '.gemini-clipboard'
+[90m    at Proxy.readdir (node:internal/fs/promises:958:18)[39m
+    at Module.cleanupOldClipboardImages [90m(/home/profharita/Code/terminaI/packages/cli/[39msrc/ui/utils/clipboardUtils.ts:196:19[90m)[39m
+    at [90m/home/profharita/Code/terminaI/packages/cli/[39msrc/ui/utils/clipboardUtils.test.ts:110:7
+    at file:///home/profharita/Code/terminaI/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:20 {
+  errno: [33m-2[39m,
+  code: [32m'ENOENT'[39m,
+  syscall: [32m'scandir'[39m,
+  path: [32m'.gemini-clipboard'[39m
+}
+
+ ✓ src/ui/utils/textUtils.test.ts (10 tests) 20ms
+stderr | src/runtime/LocalRuntimeContext.test.ts > LocalRuntimeContext > should create venv if it does not exist
+Warning: T-APTS package not found. Runtime functionality may be limited.
+
+ ✓ src/runtime/LocalRuntimeContext.test.ts (5 tests) 13ms
+ ✓ src/ui/utils/clipboardUtils.test.ts (29 tests) 23ms
+ ✓ src/config/extensions/github_fetch.test.ts (8 tests) 16ms
+ ✓ src/core/initializer.test.ts (7 tests) 16ms
+ ✓ src/ui/utils/input.test.ts (6 tests) 6ms
+ ✓ src/ui/commands/policiesCommand.test.ts (4 tests) 27ms
+ ✓ src/ui/state/extensions.test.ts (15 tests) 9ms
+ ✓ src/ui/commands/quitCommand.test.ts (1 test) 9ms
+ ✓ src/ui/utils/computeStats.test.ts (12 tests) 8ms
+ ✓ src/utils/sandboxUtils.test.ts (17 tests) 26ms
+ ✓ src/services/McpPromptLoader.test.ts (31 tests) 26ms
+ ✓ src/ui/commands/initCommand.test.ts (3 tests) 11ms
+ ✓ src/utils/windowTitle.test.ts (7 tests) 7ms
+ ✓ src/ui/hooks/useMemoryMonitor.test.tsx (3 tests) 43ms
+ ✓ src/ui/hooks/useModelCommand.test.tsx (3 tests) 26ms
+ ✓ src/ui/hooks/useMouseClick.test.ts (2 tests) 30ms
+ ✓ src/ui/utils/textOutput.test.ts (10 tests) 14ms
+stdout | src/utils/sandboxCleanupE2E.test.ts > Sandbox E2E: Cleanup Downloads Scenario > should successfully run cleanup_downloads in sandbox
+Running sandbox health check for image: ghcr.io/prof-harita/terminai/sandbox:0.27.0
+Executing health check: docker run --rm ghcr.io/prof-harita/terminai/sandbox:0.27.0 python3 -c "import terminai_apts; print('T-APTS OK')"
+
+stdout | src/utils/sandboxCleanupE2E.test.ts > Sandbox E2E: Cleanup Downloads Scenario > should successfully run cleanup_downloads in sandbox
+Executing health check: docker run --rm ghcr.io/prof-harita/terminai/sandbox:0.27.0 python3 -c "from apts.model import ObjectTableLabels; assert hasattr(ObjectTableLabels,'TRANSIT'), 'Missing TRANSIT'"
+
+ ✓ src/utils/envVarResolver.test.ts (16 tests) 14ms
+ ✓ src/ui/hooks/useReactToolScheduler.test.ts (1 test) 30ms
+ ✓ src/utils/sandboxCleanupE2E.test.ts (1 test) 25ms
+ ✓ src/voice/VoiceStateMachine.test.ts (3 tests) 8ms
+ ✓ src/core/auth.test.ts (3 tests) 10ms
+ ✓ src/commands/extensions/disable.test.ts (12 tests) 18ms
+ ✓ src/utils/persistentState.test.ts (5 tests) 11ms
+ ✓ src/ui/commands/recipesCommand.test.ts (3 tests) 12ms
+stderr | src/utils/replay.test.ts > parseLogFile > should handle malformed lines
+Failed to parse log line: INVALID_JSON SyntaxError: Unexpected token 'I', "INVALID_JSON" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at Module.parseLogFile [90m(/home/profharita/Code/terminaI/packages/cli/[39msrc/utils/replay.ts:25:29[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
+    at [90m/home/profharita/Code/terminaI/packages/cli/[39msrc/utils/replay.test.ts:51:20
+    at file:///home/profharita/Code/terminaI/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:20
+
+ ✓ src/utils/replay.test.ts (2 tests) 10ms
+stdout | src/ui/commands/aboutCommand.test.ts > aboutCommand > should call addItem with all version info
+AboutCommand: Retrieved cached Google account { cachedAccount: [32m'test-email@example.com'[39m }
+
+stdout | src/ui/commands/aboutCommand.test.ts > aboutCommand > should show the correct sandbox environment variable
+AboutCommand: Retrieved cached Google account { cachedAccount: [32m'test-email@example.com'[39m }
+
+stdout | src/ui/commands/aboutCommand.test.ts > aboutCommand > should show sandbox-exec profile when applicable
+AboutCommand: Retrieved cached Google account { cachedAccount: [32m'test-email@example.com'[39m }
+
+stdout | src/ui/commands/aboutCommand.test.ts > aboutCommand > should not show ide client when it is not detected
+AboutCommand: Retrieved cached Google account { cachedAccount: [32m'test-email@example.com'[39m }
+
+ ✓ src/ui/commands/modelCommand.test.ts (3 tests) 7ms
+ ✓ src/services/CommandService.test.ts (11 tests) 28ms
+ ✓ src/ui/commands/aboutCommand.test.ts (5 tests) 15ms
+ ✓ src/ui/utils/updateCheck.test.ts (10 tests) 10ms
+ ✓ src/zed-integration/fileSystemService.test.ts (4 tests) 11ms
+ ✓ src/ui/commands/themeCommand.test.ts (2 tests) 7ms
+ ✓ src/commands/extensions/update.test.ts (8 tests) 21ms
+ ✓ src/ui/utils/InlineMarkdownRenderer.test.ts (7 tests) 12ms
+ ✓ src/ui/commands/privacyCommand.test.ts (2 tests) 9ms
+ ✓ src/ui/commands/toolsCommand.test.ts (4 tests) 14ms
+ ✓ src/ui/commands/mcpCommand.test.ts (5 tests) 22ms
+ ✓ src/config/extensions/storage.test.ts (5 tests) 19ms
+ ✓ src/utils/commands.test.ts (12 tests) 12ms
+ ✓ src/ui/utils/mouse.test.ts (17 tests) 13ms
+ ✓ src/ui/commands/bugCommand.test.ts (2 tests) 8ms
+ ✓ src/ui/utils/highlight.test.ts (16 tests) 9ms
+ ✓ src/commands/mcp.test.ts (3 tests) 31ms
+ ✓ src/config/settings-validation.test.ts (22 tests) 16ms
+ ✓ src/utils/updateEventEmitter.test.ts (1 test) 6ms
+ ✓ src/ui/utils/formatters.test.ts (14 tests) 6ms
+ ✓ src/ui/commands/editorCommand.test.ts (2 tests) 9ms
+ ✓ src/voice/tts/auto.test.ts (4 tests) 8ms
+ ✓ src/ui/commands/corgiCommand.test.ts (2 tests) 6ms
+ ✓ src/voice/spokenReply.test.ts (4 tests) 10ms
+ ✓ src/ui/commands/helpCommand.test.ts (2 tests) 14ms
+ ✓ src/utils/relaunch.test.ts (8 tests) 17ms
+stdout | src/ui/commands/copyCommand.test.ts > copyCommand > should handle clipboard copy error
+Clipboard access denied
+
+stdout | src/ui/commands/copyCommand.test.ts > copyCommand > should handle non-Error clipboard errors
+String error
+
+ ✓ src/utils/dialogScopeUtils.test.ts (4 tests) 5ms
+ ✓ src/test-utils/mockCommandContext.test.ts (3 tests) 10ms
+ ✓ src/ui/commands/copyCommand.test.ts (11 tests) 19ms
+ ✓ src/utils/checks.test.ts (3 tests) 6ms
+ ✓ src/utils/events.test.ts (2 tests) 8ms
+ ✓ src/ui/utils/markdownUtilities.test.ts (7 tests) 6ms
+ ✓ src/ui/commands/clearCommand.test.ts (2 tests) 8ms
+ ✓ src/config/auth.test.ts (12 tests) 8ms
+ ✓ src/config/settingPaths.test.ts (2 tests) 7ms
+ ✓ src/commands/extensions/uninstall.test.ts (9 tests) 20ms
+ ✓ src/commands/utils.test.ts (2 tests) 6ms
+ ✓ src/utils/deepMerge.test.ts (17 tests) 18ms
+ ✓ src/utils/resolvePath.test.ts (7 tests) 16ms
+ ✓ src/ui/commands/settingsCommand.test.ts (2 tests) 12ms
+ ✓ src/ui/utils/terminalSetup.test.ts (9 tests) 23ms
+ ✓ src/config/settings_repro.test.ts (1 test) 17ms
+ ✓ src/utils/math.test.ts (7 tests) 16ms
+ ✓ src/config/sandboxConfig.test.ts (27 tests) 26ms
+ ✓ src/commands/extensions/list.test.ts (5 tests) 36ms
+ ✓ src/ui/utils/directoryUtils.test.ts (5 tests) 7ms
+ ✓ src/validateNonInterActiveAuth.test.ts (17 tests) 30ms
+ ✓ src/commands/extensions.test.tsx (3 tests) 12ms
+ ✓ src/utils/processUtils.test.ts (1 test) 5ms
+ ✓ src/services/prompt-processors/argumentProcessor.test.ts (2 tests) 6ms
+ ✓ src/ui/commands/terminalSetupCommand.test.ts (5 tests) 8ms
+ ✓ src/config/extensions/variables.test.ts (10 tests) 9ms
+ ✓ src/ui/utils/displayUtils.test.ts (8 tests) 9ms
+ ✓ src/ui/commands/sessionsCommand.test.ts (4 tests) 7ms
+ ✓ src/utils/installationInfo.test.ts (16 tests) 10ms
+ ✓ src/ui/utils/ui-sizing.test.ts (10 tests) 9ms
+stdout | src/utils/sandboxHealthCheck.test.ts > runSandboxHealthCheck > should pass when all checks succeed
+Running sandbox health check for image: ghcr.io/prof-harita/terminai/sandbox:0.27.0
+Executing health check: docker run --rm ghcr.io/prof-harita/terminai/sandbox:0.27.0 python3 -c "import terminai_apts; print('T-APTS OK')"
+
+stdout | src/utils/sandboxHealthCheck.test.ts > runSandboxHealthCheck > should pass when all checks succeed
+Executing health check: docker run --rm ghcr.io/prof-harita/terminai/sandbox:0.27.0 python3 -c "from apts.model import ObjectTableLabels; assert hasattr(ObjectTableLabels,'TRANSIT'), 'Missing TRANSIT'"
+
+stdout | src/utils/sandboxHealthCheck.test.ts > runSandboxHealthCheck > should fail when T-APTS is missing
+Running sandbox health check for image: ghcr.io/prof-harita/terminai/sandbox:0.27.0
+Executing health check: docker run --rm ghcr.io/prof-harita/terminai/sandbox:0.27.0 python3 -c "import terminai_apts; print('T-APTS OK')"
+
+stdout | src/utils/sandboxHealthCheck.test.ts > runSandboxHealthCheck > should fail when ObjectTableLabels.TRANSIT is missing
+Running sandbox health check for image: ghcr.io/prof-harita/terminai/sandbox:0.27.0
+Executing health check: docker run --rm ghcr.io/prof-harita/terminai/sandbox:0.27.0 python3 -c "import terminai_apts; print('T-APTS OK')"
+
+stdout | src/utils/sandboxHealthCheck.test.ts > runSandboxHealthCheck > should fail when ObjectTableLabels.TRANSIT is missing
+Executing health check: docker run --rm ghcr.io/prof-harita/terminai/sandbox:0.27.0 python3 -c "from apts.model import ObjectTableLabels; assert hasattr(ObjectTableLabels,'TRANSIT'), 'Missing TRANSIT'"
+
+ ✓ src/utils/sandboxHealthCheck.test.ts (3 tests) 4ms
+ ✓ src/core/theme.test.ts (3 tests) 4ms
+ ✓ src/ui/utils/clipboardUtils.windows.test.ts (1 test) 3ms
+ ✓ src/utils/startupWarnings.test.ts (4 tests) 4ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/ui/App.test.tsx [ src/ui/App.test.tsx ]
+TypeError: makeFakeConfig is not a function
+ ❯ src/ui/App.test.tsx:86:22
+     84|   };
+     85| 
+     86|   const mockConfig = makeFakeConfig();
+       |                      ^
+     87| 
+     88|   const mockSettingsFile: SettingsFile = {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/85]⎯
+
+ FAIL  src/ui/hooks/slashCommandProcessor.test.tsx [ src/ui/hooks/slashCommandProcessor.test.tsx ]
+Error: [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+vi[33m.[39m[34mmock[39m([35mimport[39m([32m"@terminai/core"[39m)[33m,[39m [35masync[39m (importOriginal) [33m=>[39m {
+  [35mconst[39m actual [33m=[39m [35mawait[39m [34mimportOriginal[39m()
+  [35mreturn[39m {
+    [33m...[39mactual[33m,[39m
+    [90m// your mocked methods[39m
+  }
+})
+
+ ❯ src/ui/hooks/slashCommandProcessor.test.tsx:135:22
+    133|   const mockSetQuittingMessages = vi.fn();
+    134| 
+    135|   const mockConfig = makeFakeConfig({});
+       |                      ^
+    136|   const mockSettings = {} as LoadedSettings;
+    137| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/85]⎯
+
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 83 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/runtime/RuntimeManager.test.ts > RuntimeManager > should fall through when docker is available but containers are deferred
+AssertionError: expected [Function] to throw error including 'No suitable runtime found' but got 'Failed to start sandbox container (te…'
+
+Expected: [32m"[7mNo suitable runtime foun[27md"[39m
+Received: [31m"[7mFailed to start sandbox container (terminai-sandbox:latest): Error: Command faile[27md"[39m
+
+ ❯ src/runtime/RuntimeManager.test.ts:39:5
+     37|     });
+     38| 
+     39|     await expect(runtimeManager.getContext()).rejects.toThrow(
+       |     ^
+     40|       'No suitable runtime found',
+     41|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/85]⎯
+
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Basic Rendering > renders without crashing with minimal props
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Basic Rendering > renders with startup warnings
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > State Initialization > initializes with theme error from initialization result
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > State Initialization > handles debug mode state
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Context Providers > provides AppContext with correct values
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Context Providers > provides UIStateContext with state management
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Context Providers > provides UIActionsContext with action handlers
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Context Providers > provides ConfigContext with config object
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Settings Integration > handles settings with all display options disabled
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Settings Integration > handles settings with memory usage enabled
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Version Handling > handles version format: 1.0.0
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Version Handling > handles version format: 2.1.3-beta
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Version Handling > handles version format: 3.0.0-nightly
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Error Handling > handles config methods that might throw
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Error Handling > handles undefined settings gracefully
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Provider Hierarchy > establishes correct provider nesting order
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Session Resumption > handles resumed session data correctly
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Session Resumption > renders without resumed session data
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Session Resumption > initializes chat recording service when config has it
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Session Recording Integration > provides chat recording service configuration
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Session Recording Integration > handles session recording when messages are added
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Session Resume Flow > accepts resumed session data
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Session Resume Flow > does not attempt resume when client is not initialized
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Token Counting from Session Stats > tracks token counts from session messages
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Quota and Fallback Integration > passes a null proQuotaRequest to UIStateContext by default
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Quota and Fallback Integration > passes a valid proQuotaRequest to UIStateContext when provided by the hook
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Quota and Fallback Integration > passes the handleProQuotaChoice function to UIActionsContext
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Terminal Title Update Feature > verifies useStdout is mocked
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Terminal Title Update Feature > should not update terminal title when showStatusInTitle is false
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Terminal Title Update Feature > should not update terminal title when hideWindowTitle is true
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Terminal Title Update Feature > should update terminal title with thought subject when in active state
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Terminal Title Update Feature > should update terminal title with default text when in Idle state and no thought subject
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Terminal Title Update Feature > should update terminal title when in WaitingForConfirmation state with thought subject
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Terminal Title Update Feature > should pad title to exactly 80 characters
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Terminal Title Update Feature > should use correct ANSI escape code format
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Terminal Title Update Feature > should use CLI_TITLE environment variable when set
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Queue Error Message > should set and clear the queue error message after a timeout
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Queue Error Message > should reset the timer if a new error message is set
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Terminal Height Calculation > should prevent terminal height from being less than 1
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Keyboard Input Handling (CTRL+C / CTRL+D) > CTRL+C > should cancel ongoing request on first press
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Keyboard Input Handling (CTRL+C / CTRL+D) > CTRL+C > should quit on second press
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Keyboard Input Handling (CTRL+C / CTRL+D) > CTRL+C > should reset press count after a timeout
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Keyboard Input Handling (CTRL+C / CTRL+D) > CTRL+D > should do nothing if text buffer is not empty
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Keyboard Input Handling (CTRL+C / CTRL+D) > CTRL+D > should quit on second press if buffer is empty
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Keyboard Input Handling (CTRL+C / CTRL+D) > CTRL+D > should reset press count after a timeout
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Copy Mode (CTRL+S) > 'Normal Mode' > should NOT toggle mouse off when Ctrl+S is pressed
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Copy Mode (CTRL+S) > 'Alternate Buffer Mode' > should toggle mouse off when Ctrl+S is pressed
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Copy Mode (CTRL+S) > 'Alternate Buffer Mode' > should toggle mouse back on when Ctrl+S is pressed again
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Copy Mode (CTRL+S) > 'Alternate Buffer Mode' > should exit copy mode on any key press
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Model Dialog Integration > should provide isModelDialogOpen in the UIStateContext
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Model Dialog Integration > should provide model dialog actions in the UIActionsContext
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > CoreEvents Integration > subscribes to UserFeedback and drains backlog on mount
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > CoreEvents Integration > unsubscribes from UserFeedback on unmount
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > CoreEvents Integration > adds history item when UserFeedback event is received
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > CoreEvents Integration > updates currentModel when ModelChanged event is received
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Shell Interaction > should not crash if resizing the pty fails
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > passes replayEvents to useReplay hook
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Banner Text > should render placeholder banner text for USE_GEMINI auth type
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > onCancelSubmit Behavior > clears the prompt when onCancelSubmit is called with shouldRestorePrompt=false
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > onCancelSubmit Behavior > restores the prompt when onCancelSubmit is called with shouldRestorePrompt=true (or undefined)
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > onCancelSubmit Behavior > input history is independent from conversation history (survives /clear)
+ FAIL  src/ui/AppContainer.test.tsx > AppContainer State Management > Regression Tests > does not refresh static on startup if banner text is empty
+Error: [vitest] No "makeFakeConfig" export is defined on the "@terminai/core" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+vi[33m.[39m[34mmock[39m([35mimport[39m([32m"@terminai/core"[39m)[33m,[39m [35masync[39m (importOriginal) [33m=>[39m {
+  [35mconst[39m actual [33m=[39m [35mawait[39m [34mimportOriginal[39m()
+  [35mreturn[39m {
+    [33m...[39mactual[33m,[39m
+    [90m// your mocked methods[39m
+  }
+})
+
+ ❯ src/ui/AppContainer.test.tsx:371:18
+    369| 
+    370|     // Mock Config
+    371|     mockConfig = makeFakeConfig();
+       |                  ^
+    372| 
+    373|     // Mock config's getTargetDir to return consistent workspace direc…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/85]⎯
+
+ FAIL  src/ui/components/AppHeader.test.tsx > <AppHeader /> > should render the banner with default text
+TypeError: makeFakeConfig is not a function
+ ❯ src/ui/components/AppHeader.test.tsx:34:24
+     32| 
+     33|   it('should render the banner with default text', () => {
+     34|     const mockConfig = makeFakeConfig();
+       |                        ^
+     35|     const uiState = {
+     36|       bannerData: {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/85]⎯
+
+ FAIL  src/ui/components/AppHeader.test.tsx > <AppHeader /> > should render the banner with warning text
+TypeError: makeFakeConfig is not a function
+ ❯ src/ui/components/AppHeader.test.tsx:54:24
+     52| 
+     53|   it('should render the banner with warning text', () => {
+     54|     const mockConfig = makeFakeConfig();
+       |                        ^
+     55|     const uiState = {
+     56|       bannerData: {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/85]⎯
+
+ FAIL  src/ui/components/AppHeader.test.tsx > <AppHeader /> > should not render the banner when no flags are set
+TypeError: makeFakeConfig is not a function
+ ❯ src/ui/components/AppHeader.test.tsx:74:24
+     72| 
+     73|   it('should not render the banner when no flags are set', () => {
+     74|     const mockConfig = makeFakeConfig();
+       |                        ^
+     75|     const uiState = {
+     76|       bannerData: {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/85]⎯
+
+ FAIL  src/ui/components/AppHeader.test.tsx > <AppHeader /> > should render the banner when previewFeatures is disabled
+TypeError: makeFakeConfig is not a function
+ ❯ src/ui/components/AppHeader.test.tsx:93:24
+     91| 
+     92|   it('should render the banner when previewFeatures is disabled', () =…
+     93|     const mockConfig = makeFakeConfig({ previewFeatures: false });
+       |                        ^
+     94|     const uiState = {
+     95|       bannerData: {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/85]⎯
+
+ FAIL  src/ui/components/AppHeader.test.tsx > <AppHeader /> > should not render the banner when previewFeatures is enabled
+TypeError: makeFakeConfig is not a function
+ ❯ src/ui/components/AppHeader.test.tsx:113:24
+    111| 
+    112|   it('should not render the banner when previewFeatures is enabled', (…
+    113|     const mockConfig = makeFakeConfig({ previewFeatures: true });
+       |                        ^
+    114|     const uiState = {
+    115|       bannerData: {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/85]⎯
+
+ FAIL  src/ui/components/AppHeader.test.tsx > <AppHeader /> > should not render the default banner if shown count is 5 or more
+TypeError: makeFakeConfig is not a function
+ ❯ src/ui/components/AppHeader.test.tsx:133:24
+    131|   it('should not render the default banner if shown count is 5 or more…
+    132|     persistentStateMock.get.mockReturnValue(5);
+    133|     const mockConfig = makeFakeConfig();
+       |                        ^
+    134|     const uiState = {
+    135|       bannerData: {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/85]⎯
+
+ FAIL  src/ui/components/AppHeader.test.tsx > <AppHeader /> > should increment the version count when default banner is displayed
+TypeError: makeFakeConfig is not a function
+ ❯ src/ui/components/AppHeader.test.tsx:153:24
+    151|   it('should increment the version count when default banner is displa…
+    152|     persistentStateMock.get.mockReturnValue({});
+    153|     const mockConfig = makeFakeConfig();
+       |                        ^
+    154|     const uiState = {
+    155|       bannerData: {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/85]⎯
+
+ FAIL  src/ui/components/AppHeader.test.tsx > <AppHeader /> > should render banner text with unescaped newlines
+TypeError: makeFakeConfig is not a function
+ ❯ src/ui/components/AppHeader.test.tsx:179:24
+    177| 
+    178|   it('should render banner text with unescaped newlines', () => {
+    179|     const mockConfig = makeFakeConfig();
+       |                        ^
+    180|     const uiState = {
+    181|       bannerData: {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/85]⎯
+
+ FAIL  src/ui/hooks/useQuotaAndFallback.test.ts > useQuotaAndFallback > should register a fallback handler on initialization
+TypeError: (0 , makeFakeConfig) is not a function
+ ❯ src/ui/hooks/useQuotaAndFallback.test.ts:48:18
+     46| 
+     47|   beforeEach(() => {
+     48|     mockConfig = makeFakeConfig();
+       |                  ^
+     49|     mockGoogleApiError = {
+     50|       code: 429,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/85]⎯
+
+ FAIL  src/ui/hooks/useQuotaAndFallback.test.ts > useQuotaAndFallback > Fallback Handler Logic > should return null and take no action if authType is not LOGIN_WITH_GOOGLE
+ FAIL  src/ui/hooks/useQuotaAndFallback.test.ts > useQuotaAndFallback > handleProQuotaChoice > should do nothing if there is no pending pro quota request
+ FAIL  src/ui/hooks/useQuotaAndFallback.test.ts > useQuotaAndFallback > handleProQuotaChoice > should resolve intent to "retry_later"
+ FAIL  src/ui/hooks/useQuotaAndFallback.test.ts > useQuotaAndFallback > handleProQuotaChoice > should resolve intent to "retry_always" and add info message on continue
+ FAIL  src/ui/hooks/useQuotaAndFallback.test.ts > useQuotaAndFallback > handleProQuotaChoice > should show a special message when falling back from the preview model
+ FAIL  src/ui/hooks/useQuotaAndFallback.test.ts > useQuotaAndFallback > handleProQuotaChoice > should show a special message when falling back from the preview model, but do not show periodical check message for flash model fallback
+TypeError: (0 , makeFakeConfig) is not a function
+ ❯ src/ui/hooks/useQuotaAndFallback.test.ts:48:18
+     46| 
+     47|   beforeEach(() => {
+     48|     mockConfig = makeFakeConfig();
+       |                  ^
+     49|     mockGoogleApiError = {
+     50|       code: 429,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/85]⎯
+
+ FAIL  src/ui/hooks/useQuotaAndFallback.test.ts > useQuotaAndFallback > Fallback Handler Logic > Interactive Fallback > should set an interactive request for a terminal quota error
+ FAIL  src/ui/hooks/useQuotaAndFallback.test.ts > useQuotaAndFallback > Fallback Handler Logic > Interactive Fallback > should handle race conditions by stopping subsequent requests
+ FAIL  src/ui/hooks/useQuotaAndFallback.test.ts > useQuotaAndFallback > Fallback Handler Logic > Interactive Fallback > should handle generic error correctly
+ FAIL  src/ui/hooks/useQuotaAndFallback.test.ts > useQuotaAndFallback > Fallback Handler Logic > Interactive Fallback > should handle retryable quota error correctly
+ FAIL  src/ui/hooks/useQuotaAndFallback.test.ts > useQuotaAndFallback > Fallback Handler Logic > Interactive Fallback > should handle ModelNotFoundError correctly
+TypeError: (0 , makeFakeConfig) is not a function
+ ❯ src/ui/hooks/useQuotaAndFallback.test.ts:48:18
+     46| 
+     47|   beforeEach(() => {
+     48|     mockConfig = makeFakeConfig();
+       |                  ^
+     49|     mockGoogleApiError = {
+     50|       code: 429,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/85]⎯
+
+
+  Snapshots  6 obsolete
+             ↳ src/ui/components/AppHeader.test.tsx
+               · <AppHeader /> > should not render the banner when no flags are set 1
+               · <AppHeader /> > should not render the banner when previewFeatures is enabled 1
+               · <AppHeader /> > should not render the default banner if shown count is 5 or more 1
+               · <AppHeader /> > should render the banner when previewFeatures is disabled 1
+               · <AppHeader /> > should render the banner with default text 1
+               · <AppHeader /> > should render the banner with warning text 1
+
+ Test Files  6 failed | 293 passed (299)
+      Tests  83 failed | 3470 passed | 12 skipped (3565)
+   Start at  07:00:58
+   Duration  52.00s (transform 15.47s, setup 7.86s, collect 707.97s, tests 41.05s, environment 72ms, prepare 31.58s)
+
+JUNIT report written to /home/profharita/Code/terminaI/packages/cli/junit.xml
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path /home/profharita/Code/terminaI/packages/cli
+npm error workspace @terminai/cli@0.28.0
+npm error location /home/profharita/Code/terminaI/packages/cli
+npm error command failed
+npm error command sh -c vitest run --passWithNoTests --no-color

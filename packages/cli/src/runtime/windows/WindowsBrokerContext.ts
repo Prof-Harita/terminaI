@@ -25,11 +25,21 @@
 import * as path from 'node:path';
 import * as os from 'node:os';
 import * as fs from 'node:fs/promises';
-import type {
-  RuntimeContext,
-  ExecutionOptions,
-  ExecutionResult,
-  RuntimeProcess,
+import * as fsSync from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { randomUUID } from 'node:crypto';
+import {
+  ApprovalMode,
+  type AuditActor,
+  type AuditEvent,
+  type AuditEventType,
+  type AuditLedger,
+  type AuditProvenance,
+  type AuditReviewLevel,
+  type RuntimeContext,
+  type ExecutionOptions,
+  type ExecutionResult,
+  type RuntimeProcess,
 } from '@terminai/core';
 import { BrokerServer } from './BrokerServer.js';
 import {
@@ -39,6 +49,10 @@ import {
   createErrorResponse,
   type ExecuteResult,
 } from './BrokerSchema.js';
+import { parse } from 'shell-quote';
+import { BrokerPolicyEngine } from './BrokerPolicyEngine.js';
+import { canonicalizePath, classifyZone } from './PathUtils.js';
+import { ApprovalService } from './ApprovalService.js';
 
 // Native module loaded lazily
 let native: typeof import('./native.js') | null = null;
@@ -85,23 +99,45 @@ export interface WindowsBrokerContextOptions {
  */
 export class WindowsBrokerContext implements RuntimeContext {
   readonly type = 'windows-appcontainer' as const;
+  readonly executionEnvironment = 'appcontainer';
   readonly isIsolated = true;
   readonly displayName = 'Windows AppContainer Sandbox';
 
   private readonly cliVersion: string;
   private readonly workspacePath: string;
   private readonly brainScript: string;
+  private handshakeToken: string | null = null;
 
   private brokerServer: BrokerServer | null = null;
   private brainPid: number | null = null;
   private _pythonPath: string | null = null;
+  private readonly policyEngine: BrokerPolicyEngine;
+  private approvalService: ApprovalService;
+  private auditLedger?: AuditLedger;
+  private auditSessionId?: string;
 
   constructor(options: WindowsBrokerContextOptions) {
     this.cliVersion = options.cliVersion;
     this.workspacePath =
       options.workspacePath ??
       path.join(os.homedir(), '.terminai', 'workspace');
-    this.brainScript = options.brainScript ?? 'agent-brain.js';
+    this.brainScript = options.brainScript ?? this.resolveBrainScript();
+    this.policyEngine = new BrokerPolicyEngine({
+      commands: [
+        'diskpart',
+        'format',
+        'dd',
+        'vssadmin',
+        'bcdedit',
+        'mimikatz',
+        'secretsdump',
+      ],
+    });
+    this.approvalService = new ApprovalService({
+      approvalMode: ApprovalMode.DEFAULT,
+      approvalPin: process.env['TERMINAI_APPROVAL_PIN'] ?? '000000',
+      isInteractive: process.stdin.isTTY,
+    });
   }
 
   /**
@@ -146,13 +182,18 @@ export class WindowsBrokerContext implements RuntimeContext {
     // Step 1: Ensure workspace exists
     await fs.mkdir(this.workspacePath, { recursive: true });
 
-    // Step 2 & 3: Create AppContainer and grant ACLs
-    // This is handled by the native module in createAppContainerSandbox
+    const appContainerSid = native.ensureAppContainerProfile();
+    if (!appContainerSid) {
+      throw new Error('Failed to ensure AppContainer profile');
+    }
 
     // Step 4: Start Broker server
+    this.handshakeToken = randomUUID();
     this.brokerServer = new BrokerServer({
       workspacePath: this.workspacePath,
       checkNodePermissions: true,
+      handshakeToken: this.handshakeToken,
+      appContainerSid,
     });
 
     // Set up request handler
@@ -170,10 +211,17 @@ export class WindowsBrokerContext implements RuntimeContext {
     // Step 5: Spawn Brain in AppContainer
     const commandLine = `node "${this.brainScript}" --pipe="${this.brokerServer.path}"`;
 
-    const result = native.createAppContainerSandbox(
+    const env = {
+      TERMINAI_BROKER_PIPE: this.brokerServer.path,
+      TERMINAI_HANDSHAKE_TOKEN: this.handshakeToken,
+      TERMINAI_WORKSPACE_PATH: this.workspacePath,
+      TERMINAI_CLI_VERSION: this.cliVersion,
+    };
+    const result = native.createAppContainerSandboxWithEnv(
       commandLine,
       this.workspacePath,
-      true, // Enable internet access for LLM calls
+      true,
+      env,
     );
 
     if (result < 0) {
@@ -185,6 +233,41 @@ export class WindowsBrokerContext implements RuntimeContext {
     console.log(
       `[WindowsBrokerContext] Brain process started with PID ${this.brainPid}`,
     );
+
+    const handshakeTimeoutMs = 10_000;
+    const start = Date.now();
+    while (
+      this.brokerServer &&
+      !this.brokerServer.hasHandshake &&
+      Date.now() - start < handshakeTimeoutMs
+    ) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+
+    if (!this.brokerServer?.hasHandshake) {
+      await this.brokerServer?.stop();
+      throw new Error('Brain handshake not completed within timeout');
+    }
+  }
+
+  private resolveBrainScript(): string {
+    const currentFile = fileURLToPath(import.meta.url);
+    const currentDir = path.dirname(currentFile);
+    const distPath = path.join(currentDir, '..', '..', 'agent-brain.js');
+    if (fsSync.existsSync(distPath)) {
+      return distPath;
+    }
+    const cwdPath = path.join(
+      process.cwd(),
+      'packages',
+      'cli',
+      'dist',
+      'agent-brain.js',
+    );
+    if (fsSync.existsSync(cwdPath)) {
+      return cwdPath;
+    }
+    return 'agent-brain.js';
   }
 
   /**
@@ -208,6 +291,132 @@ export class WindowsBrokerContext implements RuntimeContext {
   }
 
   /**
+   * Safe command parsing using shell-quote.
+   */
+  private parseCommand(command: string): { cmd: string; args: string[] } {
+    const parsed = parse(command);
+    const args: string[] = [];
+    for (const entry of parsed) {
+      if (typeof entry === 'string') {
+        args.push(entry);
+      } else if ('op' in entry) {
+        // Stop at first operator to prevent injection
+        break;
+      }
+    }
+    if (args.length === 0) return { cmd: '', args: [] };
+    return { cmd: args[0], args: args.slice(1) };
+  }
+
+  /**
+   * Resolve a path and optionally restrict to workspace.
+   */
+  private resolvePath(
+    requestedPath: string,
+    options?: { baseDir?: string; restrictToWorkspace?: boolean },
+  ): string {
+    const baseDir = options?.baseDir ?? this.workspacePath;
+    const restrict = options?.restrictToWorkspace ?? true;
+    const targetPath = path.resolve(baseDir, requestedPath);
+
+    if (!restrict) {
+      return targetPath;
+    }
+
+    const normalizedTarget = targetPath.toLowerCase();
+    const normalizedWorkspace = this.workspacePath.toLowerCase();
+
+    const isRoot = normalizedTarget === normalizedWorkspace;
+    const isChild = normalizedTarget.startsWith(
+      normalizedWorkspace + path.sep.toLowerCase(),
+    );
+
+    if (!isRoot && !isChild) {
+      throw new Error(
+        `Access Denied: Path '${requestedPath}' is outside the authorized workspace.`,
+      );
+    }
+
+    return targetPath;
+  }
+
+  private pickHighestRiskZone(
+    zones: Array<ReturnType<typeof classifyZone>>,
+  ): ReturnType<typeof classifyZone> {
+    const order: Array<ReturnType<typeof classifyZone>> = [
+      'secrets',
+      'system',
+      'config',
+      'userHome',
+      'workspace',
+      'unknown',
+    ];
+    for (const zone of order) {
+      if (zones.includes(zone)) {
+        return zone;
+      }
+    }
+    return 'unknown';
+  }
+
+  setPolicyServices(options: {
+    approvalMode: ApprovalMode;
+    approvalPin: string;
+    isInteractive: boolean;
+    auditLedger?: AuditLedger;
+    sessionId?: string;
+  }): void {
+    this.approvalService = new ApprovalService({
+      approvalMode: options.approvalMode,
+      approvalPin: options.approvalPin,
+      isInteractive: options.isInteractive,
+    });
+    this.auditLedger = options.auditLedger;
+    this.auditSessionId = options.sessionId;
+  }
+
+  private async appendAuditEvent(
+    eventType: AuditEventType,
+    toolName: string,
+    callId: string,
+    reviewLevel?: AuditReviewLevel,
+    actor?: AuditActor,
+    provenance: AuditProvenance[] = ['tool_output'],
+    args?: Record<string, unknown>,
+    result?: { success: boolean; errorType?: string; exitCode?: number },
+  ): Promise<void> {
+    if (!this.auditLedger || !this.auditSessionId) {
+      return;
+    }
+
+    const event: AuditEvent = {
+      version: 1,
+      timestamp: new Date().toISOString(),
+      eventType,
+      sessionId: this.auditSessionId,
+      provenance,
+      reviewLevel,
+      actor,
+      tool: {
+        callId,
+        toolName,
+        toolKind: 'runtime',
+        args,
+        result,
+      },
+    };
+
+    try {
+      await this.auditLedger.append(event);
+    } catch (error) {
+      console.warn(
+        '[WindowsBrokerContext] Failed to append audit event:',
+        (error as Error).message,
+      );
+    }
+  }
+
+  /**
    * Handle incoming IPC requests from the Brain process.
    */
   private async handleRequest(
@@ -217,7 +426,12 @@ export class WindowsBrokerContext implements RuntimeContext {
     try {
       switch (request.type) {
         case 'ping':
-          respond(createSuccessResponse({ pong: true, timestamp: Date.now() }));
+          respond(
+            createSuccessResponse(request.id, {
+              pong: true,
+              timestamp: Date.now(),
+            }),
+          );
           break;
 
         case 'execute':
@@ -244,15 +458,25 @@ export class WindowsBrokerContext implements RuntimeContext {
           await this.handleAmsiScan(request, respond);
           break;
 
+        case 'hello':
+          // Handled by BrokerServer, but needed for type exhaustiveness
+          respond(createSuccessResponse(request.id, { pong: true }));
+          break;
+
         default: {
           const _exhaustive: never = request;
           void _exhaustive;
-          respond(createErrorResponse('Unknown request type'));
+          respond(
+            createErrorResponse(
+              (request as any).id || '',
+              'Unknown request type',
+            ),
+          );
           break;
         }
       }
     } catch (error) {
-      respond(createErrorResponse((error as Error).message));
+      respond(createErrorResponse(request.id, (error as Error).message));
     }
   }
 
@@ -269,34 +493,190 @@ export class WindowsBrokerContext implements RuntimeContext {
     const args = request.args ?? [];
     const cwd = request.cwd ?? this.workspacePath;
     const timeout = request.timeout ?? 30000;
+    const mode = request.mode ?? 'exec';
 
-    // Security: Strict Allowlist
-    const ALLOWED_COMMANDS = ['echo', 'dir']; // Minimal allowlist for connectivity check
-    // Real sidecars should be registered and invoked by specific ID, not arbitrary command string.
-
-    if (!ALLOWED_COMMANDS.includes(request.command)) {
+    let resolvedCwd = cwd;
+    try {
+      resolvedCwd = this.resolvePath(cwd, { restrictToWorkspace: false });
+    } catch (error) {
       respond(
-        createSuccessResponse({
+        createSuccessResponse(request.id, {
           exitCode: 1,
           stdout: '',
-          stderr: `Command '${request.command}' is not allowed by Windows Broker policy.`,
+          stderr: (error as Error).message,
           timedOut: false,
         }),
       );
       return;
     }
 
-    return new Promise((resolve) => {
-      const proc = spawn(request.command, args, {
-        cwd,
-        env: { ...process.env, ...request.env },
-        timeout,
-        shell: false, // CRITICAL: Disable shell to prevent injection
+    const canonicalCwd = await canonicalizePath(resolvedCwd);
+    let zone = classifyZone(
+      canonicalCwd,
+      this.workspacePath,
+      path.join(os.homedir(), '.terminai'),
+    );
+
+    let scriptPath: string | null = null;
+    const scriptArg = args.find((arg) =>
+      /\.(ps1|bat|cmd|js|py|vbs|psm1|psd1)$/i.test(arg),
+    );
+    if (scriptArg) {
+      scriptPath = this.resolvePath(scriptArg, {
+        baseDir: resolvedCwd,
+        restrictToWorkspace: false,
       });
+      const canonicalScript = await canonicalizePath(scriptPath);
+      const scriptZone = classifyZone(
+        canonicalScript,
+        this.workspacePath,
+        path.join(os.homedir(), '.terminai'),
+      );
+      zone = this.pickHighestRiskZone([zone, scriptZone]);
+    }
+
+    const classification = this.policyEngine.classifyAction({
+      command: request.command,
+      args,
+      mode,
+      cwd: canonicalCwd,
+      zone,
+      targetPaths: scriptPath ? [scriptPath] : undefined,
+    });
+
+    await this.appendAuditEvent(
+      'tool.requested',
+      'windows-broker.execute',
+      request.id,
+      classification.level === 'DENY' ? undefined : classification.level,
+      { kind: 'policy' },
+      ['tool_output'],
+      {
+        command: request.command,
+        args,
+        mode,
+        cwd: canonicalCwd,
+        zone,
+        policy: {
+          level: classification.level,
+          reason: classification.reason,
+          riskFactors: classification.riskFactors,
+        },
+      },
+    );
+
+    if (classification.level === 'DENY') {
+      respond(
+        createErrorResponse(request.id, classification.reason, 'POLICY_DENIED'),
+      );
+      return;
+    }
+
+    const reviewLevel = classification.level;
+
+    if (scriptPath) {
+      if (!native?.isAmsiAvailable) {
+        respond(
+          createErrorResponse(
+            request.id,
+            'AMSI not available for script execution',
+            'AMSI_BLOCKED',
+          ),
+        );
+        return;
+      }
+      try {
+        const scan = native.amsiScanFile(scriptPath);
+        if (!scan.clean) {
+          respond(
+            createErrorResponse(
+              request.id,
+              `AMSI blocked script execution: ${scan.description}`,
+              'AMSI_BLOCKED',
+            ),
+          );
+          return;
+        }
+      } catch (error) {
+        respond(
+          createErrorResponse(
+            request.id,
+            `AMSI scan failed: ${(error as Error).message}`,
+            'AMSI_BLOCKED',
+          ),
+        );
+        return;
+      }
+    }
+
+    if (classification.level !== 'A') {
+      await this.appendAuditEvent(
+        'tool.awaiting_approval',
+        'windows-broker.execute',
+        request.id,
+        classification.level,
+        { kind: 'policy' },
+      );
+
+      const approved = await this.approvalService.requestApproval(
+        classification,
+        {
+          command: request.command,
+          args,
+          mode,
+          cwd: canonicalCwd,
+          zone,
+          targetPaths: scriptPath ? [scriptPath] : undefined,
+        },
+      );
+
+      await this.appendAuditEvent(
+        approved ? 'tool.approved' : 'tool.denied',
+        'windows-broker.execute',
+        request.id,
+        reviewLevel,
+        { kind: approved ? 'user' : 'policy' },
+      );
+
+      if (!approved) {
+        respond(
+          createErrorResponse(
+            request.id,
+            'Execution denied by user approval',
+            'APPROVAL_DENIED',
+          ),
+        );
+        return;
+      }
+    }
+
+    return new Promise((resolve) => {
+      const proc =
+        mode === 'shell'
+          ? spawn('cmd', ['/c', request.command], {
+              cwd: resolvedCwd,
+              env: { ...process.env, ...request.env },
+              timeout,
+              shell: false,
+            })
+          : spawn(request.command, args, {
+              cwd: resolvedCwd,
+              env: { ...process.env, ...request.env },
+              timeout,
+              shell: false,
+            });
 
       let stdout = '';
       let stderr = '';
       let timedOut = false;
+
+      void this.appendAuditEvent(
+        'tool.execution_started',
+        'windows-broker.execute',
+        request.id,
+        reviewLevel,
+        { kind: 'system' },
+      );
 
       proc.stdout?.on('data', (data) => {
         stdout += data.toString();
@@ -313,7 +693,17 @@ export class WindowsBrokerContext implements RuntimeContext {
           stderr: error.message,
           timedOut: false,
         };
-        respond(createSuccessResponse(result));
+        respond(createSuccessResponse(request.id, result));
+        void this.appendAuditEvent(
+          'tool.execution_failed',
+          'windows-broker.execute',
+          request.id,
+          reviewLevel,
+          { kind: 'system' },
+          ['tool_output'],
+          undefined,
+          { success: false, errorType: 'EXECUTION_ERROR' },
+        );
         resolve();
       });
 
@@ -324,11 +714,23 @@ export class WindowsBrokerContext implements RuntimeContext {
           timedOut,
           stderr: stderr || (code !== 0 ? 'Process failed' : ''),
         };
-        respond(createSuccessResponse(result));
+        respond(createSuccessResponse(request.id, result));
+        void this.appendAuditEvent(
+          'tool.execution_finished',
+          'windows-broker.execute',
+          request.id,
+          reviewLevel,
+          { kind: 'system' },
+          ['tool_output'],
+          undefined,
+          {
+            success: (code ?? 1) === 0,
+            exitCode: code ?? -1,
+          },
+        );
         resolve();
       });
 
-      // Handle timeout
       setTimeout(() => {
         if (!proc.killed) {
           timedOut = true;
@@ -345,13 +747,12 @@ export class WindowsBrokerContext implements RuntimeContext {
     request: Extract<BrokerRequest, { type: 'readFile' }>,
     respond: (response: BrokerResponse) => void,
   ): Promise<void> {
-    const filePath = path.isAbsolute(request.path)
-      ? request.path
-      : path.join(this.workspacePath, request.path);
-
     const encoding = request.encoding ?? 'utf-8';
 
     try {
+      // Security: Validate Path
+      const filePath = this.resolvePath(request.path);
+
       const content = await fs.readFile(filePath, {
         encoding: encoding === 'base64' ? null : 'utf-8',
       });
@@ -361,10 +762,13 @@ export class WindowsBrokerContext implements RuntimeContext {
           ? (content as Buffer).toString('base64')
           : content;
 
-      respond(createSuccessResponse(data));
+      respond(createSuccessResponse(request.id, data));
     } catch (error) {
       respond(
-        createErrorResponse(`Failed to read file: ${(error as Error).message}`),
+        createErrorResponse(
+          request.id,
+          `Failed to read file: ${(error as Error).message}`,
+        ),
       );
     }
   }
@@ -376,13 +780,12 @@ export class WindowsBrokerContext implements RuntimeContext {
     request: Extract<BrokerRequest, { type: 'writeFile' }>,
     respond: (response: BrokerResponse) => void,
   ): Promise<void> {
-    const filePath = path.isAbsolute(request.path)
-      ? request.path
-      : path.join(this.workspacePath, request.path);
-
     const encoding = request.encoding ?? 'utf-8';
 
     try {
+      // Security: Validate Path
+      const filePath = this.resolvePath(request.path);
+
       if (request.createDirs) {
         await fs.mkdir(path.dirname(filePath), { recursive: true });
       }
@@ -393,10 +796,11 @@ export class WindowsBrokerContext implements RuntimeContext {
           : request.content;
 
       await fs.writeFile(filePath, content);
-      respond(createSuccessResponse({ written: true }));
+      respond(createSuccessResponse(request.id, { written: true }));
     } catch (error) {
       respond(
         createErrorResponse(
+          request.id,
           `Failed to write file: ${(error as Error).message}`,
         ),
       );
@@ -410,11 +814,10 @@ export class WindowsBrokerContext implements RuntimeContext {
     request: Extract<BrokerRequest, { type: 'listDir' }>,
     respond: (response: BrokerResponse) => void,
   ): Promise<void> {
-    const dirPath = path.isAbsolute(request.path)
-      ? request.path
-      : path.join(this.workspacePath, request.path);
-
     try {
+      // Security: Validate Path
+      const dirPath = this.resolvePath(request.path);
+
       const entries = await fs.readdir(dirPath, { withFileTypes: true });
       const includeHidden = request.includeHidden ?? false;
 
@@ -440,10 +843,11 @@ export class WindowsBrokerContext implements RuntimeContext {
           }),
       );
 
-      respond(createSuccessResponse(results));
+      respond(createSuccessResponse(request.id, results));
     } catch (error) {
       respond(
         createErrorResponse(
+          request.id,
           `Failed to list directory: ${(error as Error).message}`,
         ),
       );
@@ -458,20 +862,112 @@ export class WindowsBrokerContext implements RuntimeContext {
     respond: (response: BrokerResponse) => void,
   ): Promise<void> {
     // AMSI scan before execution
-    if (native?.isAmsiAvailable) {
-      const scanResult = native.amsiScanBuffer(request.script, 'script.ps1');
-      if (!scanResult.clean) {
+    if (!native?.isAmsiAvailable) {
+      respond(
+        createErrorResponse(
+          request.id,
+          'AMSI not available for script execution',
+          'AMSI_BLOCKED',
+        ),
+      );
+      return;
+    }
+    const scanResult = native.amsiScanBuffer(request.script, 'script.ps1');
+    if (!scanResult.clean) {
+      respond(
+        createErrorResponse(
+          request.id,
+          `AMSI blocked script execution: ${scanResult.description}`,
+          'AMSI_BLOCKED',
+        ),
+      );
+      return;
+    }
+
+    const canonicalCwd = await canonicalizePath(
+      this.resolvePath(request.cwd ?? this.workspacePath, {
+        restrictToWorkspace: false,
+      }),
+    );
+    const zone = classifyZone(
+      canonicalCwd,
+      this.workspacePath,
+      path.join(os.homedir(), '.terminai'),
+    );
+    const classification = this.policyEngine.classifyAction({
+      command: 'powershell',
+      args: [],
+      mode: 'shell',
+      cwd: canonicalCwd,
+      zone,
+    });
+
+    await this.appendAuditEvent(
+      'tool.requested',
+      'windows-broker.powershell',
+      request.id,
+      classification.level === 'DENY' ? undefined : classification.level,
+      { kind: 'policy' },
+      ['tool_output'],
+      {
+        command: 'powershell',
+        mode: 'shell',
+        cwd: canonicalCwd,
+        zone,
+        policy: {
+          level: classification.level,
+          reason: classification.reason,
+          riskFactors: classification.riskFactors,
+        },
+      },
+    );
+
+    if (classification.level === 'DENY') {
+      respond(
+        createErrorResponse(request.id, classification.reason, 'POLICY_DENIED'),
+      );
+      return;
+    }
+
+    const reviewLevel = classification.level;
+
+    if (classification.level !== 'A') {
+      await this.appendAuditEvent(
+        'tool.awaiting_approval',
+        'windows-broker.powershell',
+        request.id,
+        reviewLevel,
+        { kind: 'policy' },
+      );
+      const approved = await this.approvalService.requestApproval(
+        classification,
+        {
+          command: 'powershell',
+          args: [],
+          mode: 'shell',
+          cwd: canonicalCwd,
+          zone,
+        },
+      );
+      await this.appendAuditEvent(
+        approved ? 'tool.approved' : 'tool.denied',
+        'windows-broker.powershell',
+        request.id,
+        reviewLevel,
+        { kind: approved ? 'user' : 'policy' },
+      );
+      if (!approved) {
         respond(
           createErrorResponse(
-            `AMSI blocked script execution: ${scanResult.description}`,
-            'AMSI_BLOCKED',
+            request.id,
+            'PowerShell execution denied by user approval',
+            'APPROVAL_DENIED',
           ),
         );
         return;
       }
     }
 
-    // Execute PowerShell script
     const { spawn } = await import('node:child_process');
     const timeout = request.timeout ?? 60000;
 
@@ -480,7 +976,9 @@ export class WindowsBrokerContext implements RuntimeContext {
         'powershell',
         ['-NoProfile', '-Command', request.script],
         {
-          cwd: request.cwd ?? this.workspacePath,
+          cwd: this.resolvePath(request.cwd ?? this.workspacePath, {
+            restrictToWorkspace: false,
+          }),
           timeout,
         },
       );
@@ -488,6 +986,14 @@ export class WindowsBrokerContext implements RuntimeContext {
       let stdout = '';
       let stderr = '';
       let timedOut = false;
+
+      void this.appendAuditEvent(
+        'tool.execution_started',
+        'windows-broker.powershell',
+        request.id,
+        reviewLevel,
+        { kind: 'system' },
+      );
 
       proc.stdout?.on('data', (data) => {
         stdout += data.toString();
@@ -504,7 +1010,20 @@ export class WindowsBrokerContext implements RuntimeContext {
           stderr,
           timedOut,
         };
-        respond(createSuccessResponse(result));
+        respond(createSuccessResponse(request.id, result));
+        void this.appendAuditEvent(
+          'tool.execution_finished',
+          'windows-broker.powershell',
+          request.id,
+          reviewLevel,
+          { kind: 'system' },
+          ['tool_output'],
+          undefined,
+          {
+            success: (code ?? 1) === 0,
+            exitCode: code ?? -1,
+          },
+        );
         resolve();
       });
 
@@ -526,17 +1045,13 @@ export class WindowsBrokerContext implements RuntimeContext {
   ): Promise<void> {
     if (!native?.isAmsiAvailable) {
       respond(
-        createSuccessResponse({
-          clean: true,
-          result: 0,
-          description: 'AMSI not available',
-        }),
+        createErrorResponse(request.id, 'AMSI not available', 'AMSI_BLOCKED'),
       );
       return;
     }
 
     const result = native.amsiScanBuffer(request.content, request.filename);
-    respond(createSuccessResponse(result));
+    respond(createSuccessResponse(request.id, result));
   }
 
   /**
@@ -553,7 +1068,9 @@ export class WindowsBrokerContext implements RuntimeContext {
       return { ok: false, error: 'Brain process not started' };
     }
 
-    // TODO: Send ping to Brain and verify response
+    if (!this.brokerServer?.hasHandshake) {
+      return { ok: false, error: 'Brain handshake not completed' };
+    }
 
     return { ok: true };
   }
@@ -582,16 +1099,50 @@ export class WindowsBrokerContext implements RuntimeContext {
   }
 
   async execute(
-    _command: string,
-    _options?: ExecutionOptions,
+    command: string,
+    options?: ExecutionOptions,
   ): Promise<ExecutionResult> {
-    throw new Error('Windows Broker execute not implemented yet');
+    const { spawn } = await import('node:child_process');
+
+    // Parse command safely
+    const { cmd, args } = this.parseCommand(command);
+
+    return new Promise((resolve) => {
+      const child = spawn(cmd, args, {
+        cwd: this.resolvePath(options?.cwd || this.workspacePath),
+        env: { ...process.env, ...options?.env },
+        shell: false, // Enforce no shell
+      });
+
+      let stdout = '';
+      let stderr = '';
+
+      child.stdout?.on('data', (d) => (stdout += d));
+      child.stderr?.on('data', (d) => (stderr += d));
+
+      child.on('close', (code) => {
+        resolve({
+          stdout,
+          stderr,
+          exitCode: code ?? 0,
+        });
+      });
+    });
   }
 
   async spawn(
-    _command: string,
-    _options?: ExecutionOptions,
+    command: string,
+    options?: ExecutionOptions,
   ): Promise<RuntimeProcess> {
-    throw new Error('Windows Broker spawn not implemented yet');
+    const { spawn } = await import('node:child_process');
+
+    // Parse command safely
+    const { cmd, args } = this.parseCommand(command);
+
+    return spawn(cmd, args, {
+      cwd: this.resolvePath(options?.cwd || this.workspacePath),
+      env: { ...process.env, ...options?.env },
+      shell: false,
+    }) as unknown as RuntimeProcess;
   }
 }

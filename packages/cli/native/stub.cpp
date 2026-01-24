@@ -29,6 +29,18 @@ Napi::Value CreateAppContainerSandbox(const Napi::CallbackInfo& info) {
     return env.Null();
 }
 
+Napi::Value CreateAppContainerSandboxWithEnv(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::Error::New(env, "AppContainer is only available on Windows")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+}
+
+Napi::Value EnsureAppContainerProfile(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    return Napi::String::New(env, "");
+}
+
 Napi::Value GetAppContainerSid(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     return Napi::String::New(env, "");

@@ -118,6 +118,8 @@ enum class AppContainerError : int32_t {
  * @see architecture-sovereign-runtime.md Appendix M.6.1
  */
 Napi::Value CreateAppContainerSandbox(const Napi::CallbackInfo& info);
+Napi::Value CreateAppContainerSandboxWithEnv(const Napi::CallbackInfo& info);
+Napi::Value EnsureAppContainerProfile(const Napi::CallbackInfo& info);
 
 /**
  * Get the SID of the TerminAI AppContainer profile.

@@ -29,6 +29,10 @@
   "dependencies": {
     "@terminai/cli": "file:../cli"
   },
+  "optionalDependencies": {
+    "@terminai/native-win32-x64": "0.28.0",
+    "@terminai/native-win32-arm64": "0.28.0"
+  },
   "devDependencies": {
     "@types/node": "^20.11.24",
     "typescript": "^5.3.3",

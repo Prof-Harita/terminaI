@@ -59,11 +59,20 @@ export interface ExecutionResult {
   stdout: string;
   stderr: string;
   exitCode: number | null;
+  /** Optional: System/Runtime error details for attribution */
+  runtimeError?: string;
 }
 
 export interface RuntimeContext {
   /** Runtime tier type */
   readonly type: 'container' | 'local' | 'windows-appcontainer' | 'microvm';
+
+  /** The type of environment where execution actually happens */
+  readonly executionEnvironment:
+    | 'host'
+    | 'container'
+    | 'microvm'
+    | 'appcontainer';
 
   /** Whether execution is isolated from host filesystem */
   readonly isIsolated: boolean;

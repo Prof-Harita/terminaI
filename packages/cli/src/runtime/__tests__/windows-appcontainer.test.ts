@@ -21,6 +21,7 @@
 import { describe, it, expect, beforeAll, vi } from 'vitest';
 import * as path from 'node:path';
 import * as os from 'node:os';
+import { randomUUID } from 'node:crypto';
 
 // ============================================================================
 // Test Configuration
@@ -50,6 +51,7 @@ describe('BrokerSchema', () => {
   describe('Request Validation', () => {
     it('validates execute request', () => {
       const request = {
+        id: randomUUID(),
         type: 'execute',
         command: 'node',
         args: ['--version'],
@@ -59,6 +61,7 @@ describe('BrokerSchema', () => {
 
     it('validates readFile request', () => {
       const request = {
+        id: randomUUID(),
         type: 'readFile',
         path: '/path/to/file',
         encoding: 'utf-8',
@@ -68,6 +71,7 @@ describe('BrokerSchema', () => {
 
     it('validates writeFile request', () => {
       const request = {
+        id: randomUUID(),
         type: 'writeFile',
         path: '/path/to/file',
         content: 'hello world',
@@ -77,6 +81,7 @@ describe('BrokerSchema', () => {
 
     it('validates listDir request', () => {
       const request = {
+        id: randomUUID(),
         type: 'listDir',
         path: '/path/to/dir',
         includeHidden: true,
@@ -86,6 +91,7 @@ describe('BrokerSchema', () => {
 
     it('validates powershell request', () => {
       const request = {
+        id: randomUUID(),
         type: 'powershell',
         script: 'Get-Process',
         timeout: 5000,
@@ -95,6 +101,7 @@ describe('BrokerSchema', () => {
 
     it('validates amsiScan request', () => {
       const request = {
+        id: randomUUID(),
         type: 'amsiScan',
         content: 'some script content',
         filename: 'test.ps1',
@@ -103,38 +110,50 @@ describe('BrokerSchema', () => {
     });
 
     it('validates ping request', () => {
-      const request = { type: 'ping' };
+      const request = { id: randomUUID(), type: 'ping' };
       expect(() => BrokerRequestSchema.parse(request)).not.toThrow();
     });
 
     it('rejects invalid request type', () => {
-      const request = { type: 'invalid', data: 'test' };
+      const request = { id: randomUUID(), type: 'invalid', data: 'test' };
       expect(() => BrokerRequestSchema.parse(request)).toThrow();
     });
 
     it('rejects execute with empty command', () => {
-      const request = { type: 'execute', command: '' };
+      const request = { id: randomUUID(), type: 'execute', command: '' };
       expect(() => BrokerRequestSchema.parse(request)).toThrow();
     });
   });
 
   describe('Response Helpers', () => {
     it('creates success response', () => {
-      const response = createSuccessResponse({ result: 'ok' });
+      const response = createSuccessResponse(randomUUID(), { result: 'ok' });
       expect(response.success).toBe(true);
       expect(response.data).toEqual({ result: 'ok' });
     });
 
     it('creates error response', () => {
-      const response = createErrorResponse('Something went wrong', 'ERR_CODE');
+      const response = createErrorResponse(
+        randomUUID(),
+        'Something went wrong',
+        'EXECUTION_ERROR',
+      );
       expect(response.success).toBe(false);
       expect(response.error).toBe('Something went wrong');
-      expect(response.code).toBe('ERR_CODE');
+      expect(response.code).toBe('EXECUTION_ERROR');
     });
 
     it('validates response schema', () => {
-      const successResponse = { success: true, data: { foo: 'bar' } };
-      const errorResponse = { success: false, error: 'test error' };
+      const successResponse = {
+        id: randomUUID(),
+        success: true,
+        data: { foo: 'bar' },
+      };
+      const errorResponse = {
+        id: randomUUID(),
+        success: false,
+        error: 'test error',
+      };
 
       expect(() => BrokerResponseSchema.parse(successResponse)).not.toThrow();
       expect(() => BrokerResponseSchema.parse(errorResponse)).not.toThrow();
@@ -174,6 +193,7 @@ describe('BrokerServer and BrokerClient', () => {
     const server = new BrokerServer({
       workspacePath: os.tmpdir(),
       checkNodePermissions: false, // Skip Windows-specific checks
+      handshakeToken: 'test-token-1234567890',
     });
 
     expect(server.id).toBeDefined();
@@ -188,6 +208,7 @@ describe('BrokerServer and BrokerClient', () => {
       pipePath: '\\\\.\\pipe\\test-pipe',
       connectTimeout: 1000,
       autoReconnect: false,
+      handshakeToken: 'test-token-1234567890',
     });
 
     expect(client.connected).toBe(false);
@@ -195,18 +216,29 @@ describe('BrokerServer and BrokerClient', () => {
 
   // Full IPC test (requires actual pipe, skip if not Windows)
   skipOnNonWindows('BrokerServer and Client can communicate', async () => {
+    const native = await import('../windows/native.js');
+    const sid = native.ensureAppContainerProfile();
+    if (!sid) {
+      if (isWindows && process.env['CI']) {
+        throw new Error('Native module required in Windows CI');
+      }
+      console.log('Native module not available, skipping test');
+      return;
+    }
     const { BrokerServer } = await import('../windows/BrokerServer.js');
     const { BrokerClient } = await import('../windows/BrokerClient.js');
 
     const server = new BrokerServer({
       workspacePath: os.tmpdir(),
       checkNodePermissions: false,
+      handshakeToken: 'test-token-1234567890',
+      appContainerSid: sid,
     });
 
     // Set up request handler
     server.on('request', (req, respond) => {
       if (req.type === 'ping') {
-        respond({ success: true, data: { pong: true } });
+        respond({ id: req.id, success: true, data: { pong: true } });
       }
     });
 
@@ -216,6 +248,7 @@ describe('BrokerServer and BrokerClient', () => {
       const client = new BrokerClient({
         pipePath: server.path,
         autoReconnect: false,
+        handshakeToken: 'test-token-1234567890',
       });
 
       await client.connect();
@@ -223,6 +256,87 @@ describe('BrokerServer and BrokerClient', () => {
 
       expect(result.pong).toBe(true);
 
+      await client.disconnect();
+    } finally {
+      await server.stop();
+    }
+  });
+
+  skipOnNonWindows('rejects invalid handshake token', async () => {
+    const native = await import('../windows/native.js');
+    const sid = native.ensureAppContainerProfile();
+    if (!sid) {
+      if (isWindows && process.env['CI']) {
+        throw new Error('Native module required in Windows CI');
+      }
+      console.log('Native module not available, skipping test');
+      return;
+    }
+    const { BrokerServer } = await import('../windows/BrokerServer.js');
+    const { BrokerClient } = await import('../windows/BrokerClient.js');
+
+    const server = new BrokerServer({
+      workspacePath: os.tmpdir(),
+      checkNodePermissions: false,
+      handshakeToken: 'correct-token-1234567890',
+      appContainerSid: sid,
+    });
+
+    await server.start();
+
+    try {
+      const client = new BrokerClient({
+        pipePath: server.path,
+        autoReconnect: false,
+        handshakeToken: 'wrong-token-1234567890',
+      });
+
+      await expect(client.connect()).rejects.toThrow(/Handshake failed/);
+    } finally {
+      await server.stop();
+    }
+  });
+
+  skipOnNonWindows('handles concurrent requests', async () => {
+    const native = await import('../windows/native.js');
+    const sid = native.ensureAppContainerProfile();
+    if (!sid) {
+      if (isWindows && process.env['CI']) {
+        throw new Error('Native module required in Windows CI');
+      }
+      console.log('Native module not available, skipping test');
+      return;
+    }
+    const { BrokerServer } = await import('../windows/BrokerServer.js');
+    const { BrokerClient } = await import('../windows/BrokerClient.js');
+
+    const server = new BrokerServer({
+      workspacePath: os.tmpdir(),
+      checkNodePermissions: false,
+      handshakeToken: 'concurrency-token-1234567890',
+      appContainerSid: sid,
+    });
+
+    server.on('request', (req, respond) => {
+      if (req.type === 'ping') {
+        respond({ id: req.id, success: true, data: { pong: true } });
+      }
+    });
+
+    await server.start();
+
+    try {
+      const client = new BrokerClient({
+        pipePath: server.path,
+        autoReconnect: false,
+        handshakeToken: 'concurrency-token-1234567890',
+      });
+
+      await client.connect();
+      const results = await Promise.all(
+        Array.from({ length: 10 }, () => client.ping()),
+      );
+      expect(results.every((r) => r.pong === true)).toBe(true);
       await client.disconnect();
     } finally {
       await server.stop();
@@ -278,7 +392,7 @@ describe('WindowsBrokerContext', () => {
     );
 
     // This depends on whether native module is built
-    const available = WindowsBrokerContext.isAvailable();
+    const available = await WindowsBrokerContext.isAvailable();
     expect(typeof available).toBe('boolean');
   });
 
@@ -288,6 +402,9 @@ describe('WindowsBrokerContext', () => {
     );
 
     if (!WindowsBrokerContext.isAvailable()) {
+      if (isWindows && process.env['CI']) {
+        throw new Error('Native module required in Windows CI');
+      }
       console.log('Native module not available, skipping test');
       return;
     }
@@ -303,7 +420,11 @@ describe('WindowsBrokerContext', () => {
   });
 
   // Full initialization test requires Admin, skip in CI
-  it.skip('can initialize and dispose', async () => {
+  skipOnNonWindows('can initialize and dispose', async () => {
+    if (process.env['TERMINAI_RUN_WINDOWS_INTEGRATION'] !== '1') {
+      console.log('Set TERMINAI_RUN_WINDOWS_INTEGRATION=1 to run');
+      return;
+    }
     const { WindowsBrokerContext } = await import(
       '../windows/WindowsBrokerContext.js'
     );
@@ -349,6 +470,9 @@ describe('RuntimeManager Windows Tier Selection', () => {
     );
 
     if (!WindowsBrokerContext.isAvailable()) {
+      if (isWindows && process.env['CI']) {
+        throw new Error('Native module required in Windows CI');
+      }
       console.log('Native module not available, skipping test');
       return;
     }

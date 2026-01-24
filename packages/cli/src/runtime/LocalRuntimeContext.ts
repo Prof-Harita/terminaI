@@ -14,9 +14,14 @@ import type {
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export class LocalRuntimeContext implements RuntimeContext {
   readonly type = 'local';
+  readonly executionEnvironment = 'host';
   readonly isIsolated = false;
   readonly displayName = 'Host Python (Direct Access)';
 
@@ -92,14 +97,18 @@ export class LocalRuntimeContext implements RuntimeContext {
 
     const { execSync } = await import('node:child_process');
     try {
-      // Upgrade pip first
-      execSync(`"${pythonExecutable}" -m pip install --upgrade pip`, {
-        stdio: 'ignore',
-      });
+      // Upgrade pip and setuptools first
+      execSync(
+        `"${pythonExecutable}" -m pip install --upgrade pip setuptools`,
+        {
+          stdio: 'ignore',
+        },
+      );
       // Install T-APTS
       // Task 9: Use --no-index --no-deps for security (no PyPI fallback, stdlib-only)
+      // Use --no-build-isolation to use the installed setuptools instead of hitting PyPI for build environment
       execSync(
-        `"${pythonExecutable}" -m pip install "${aptsPath}" --no-index --no-deps`,
+        `"${pythonExecutable}" -m pip install "${aptsPath}" --no-index --no-deps --no-build-isolation`,
         {
           stdio: 'ignore',
         },
@@ -110,19 +119,52 @@ export class LocalRuntimeContext implements RuntimeContext {
   }
 
   private resolveAptsPath(): string | null {
-    // Try to resolve relative to this file (works in dev/monorepo)
-    // packages/cli/src/runtime -> packages/sandbox-image/python
-    const candidates = [
+    // 1. Try to resolve source relative to this file (dev/monorepo)
+    const sourceCandidates = [
       path.resolve(__dirname, '../../../../sandbox-image/python'), // From src
-      path.resolve(__dirname, '../../../sandbox-image/python'), // From dist (maybe?)
+      path.resolve(__dirname, '../../../sandbox-image/python'), // From dist
       path.resolve(process.cwd(), 'packages/sandbox-image/python'), // Fallback to repo root
     ];
 
-    for (const p of candidates) {
+    for (const p of sourceCandidates) {
       if (fs.existsSync(path.join(p, 'pyproject.toml'))) {
         return p;
       }
     }
+
+    // 2. Try to resolve wheel in dist (bundled/production)
+    // We look for a file matching `terminai_apts-*.whl`
+
+    // In standard build:
+    // packages/cli/src/runtime/LocalRuntimeContext.ts
+    // packages/cli/dist/index.js (bundled)
+    // Wheel is in packages/cli/dist/terminai_apts-*.whl
+
+    // If running from source (ts-node): __dirname is packages/cli/src/runtime
+    // dist is packages/cli/dist
+    const cliDist = path.resolve(__dirname, '../../dist');
+    if (fs.existsSync(cliDist)) {
+      const files = fs.readdirSync(cliDist);
+      const wheel = files.find(
+        (f) => f.startsWith('terminai_apts-') && f.endsWith('.whl'),
+      );
+      if (wheel) return path.join(cliDist, wheel);
+    }
+
+    // If running from dist (bundled): __dirname might be packages/cli/dist/runtime?
+    // Or if bundled into single file, __dirname is virtual or weird.
+    // Assuming file copy structure or standard tsc output:
+    // packages/cli/dist/runtime/LocalRuntimeContext.js
+    // Then dist is ../
+    const relativeDist = path.resolve(__dirname, '../');
+    if (fs.existsSync(relativeDist)) {
+      const files = fs.readdirSync(relativeDist);
+      const wheel = files.find(
+        (f) => f.startsWith('terminai_apts-') && f.endsWith('.whl'),
+      );
+      if (wheel) return path.join(relativeDist, wheel);
+    }
+
     return null;
   }
 
@@ -167,6 +209,7 @@ export class LocalRuntimeContext implements RuntimeContext {
         env: { ...process.env, ...options?.env },
         stdio: ['ignore', 'pipe', 'pipe'],
         timeout: options?.timeout,
+        shell: true,
       });
 
       let stdout = '';

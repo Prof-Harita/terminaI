@@ -30,6 +30,7 @@ import {
   type Config,
   type ResumedSessionData,
   debugLogger,
+  startupProfiler,
 } from '@terminai/core';
 import { act } from 'react';
 import { type InitializationResult } from './core/initializer.js';
@@ -91,6 +92,11 @@ vi.mock('@terminai/core', async (importOriginal) => {
     enterAlternateScreen: vi.fn(),
     disableLineWrapping: vi.fn(),
     getVersion: vi.fn(() => Promise.resolve('1.0.0')),
+    startupProfiler: {
+      reset: vi.fn(),
+      start: vi.fn(() => ({ end: vi.fn() })),
+      flush: vi.fn(),
+    },
   };
 });
 
@@ -273,6 +279,7 @@ describe('gemini.tsx main function', () => {
       }
     });
     vi.restoreAllMocks();
+    startupProfiler.reset();
   });
 
   it('verifies that we dont load the config before relaunchAppInChildProcess', async () => {

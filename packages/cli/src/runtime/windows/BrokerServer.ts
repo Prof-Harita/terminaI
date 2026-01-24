@@ -23,14 +23,21 @@
 import * as net from 'node:net';
 import * as path from 'node:path';
 import { execSync } from 'node:child_process';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, timingSafeEqual } from 'node:crypto';
 import { EventEmitter } from 'node:events';
 import {
   BrokerRequestSchema,
   BrokerResponseSchema,
   type BrokerRequest,
   type BrokerResponse,
+  createErrorResponse,
+  createSuccessResponse,
 } from './BrokerSchema.js';
+import {
+  createSecurePipeServer,
+  ensureAppContainerProfile,
+  getAppContainerSid,
+} from './native.js';
 
 // Well-known SID for "ALL APPLICATION PACKAGES" (AppContainers)
 const ALL_APP_PACKAGES_SID = 'S-1-15-2-1';
@@ -42,6 +49,10 @@ export interface BrokerServerOptions {
   workspacePath: string;
   /** Whether to run Node.js permission check on startup */
   checkNodePermissions?: boolean;
+  /** Handshake token required from client */
+  handshakeToken: string;
+  /** AppContainer SID for pipe ACL */
+  appContainerSid?: string;
 }
 
 export interface BrokerServerEvents {
@@ -64,12 +75,16 @@ export interface BrokerServerEvents {
  * 4. Handles JSON-RPC style messages validated by Zod schemas
  */
 export class BrokerServer extends EventEmitter {
-  private server: net.Server | null = null;
+  private securePipe: ReturnType<typeof createSecurePipeServer> | null = null;
+  private fallbackServer: net.Server | null = null;
   private readonly sessionId: string;
   private readonly pipePath: string;
 
   private readonly checkNodePermissions: boolean;
+  private readonly handshakeToken: string;
+  private readonly appContainerSid?: string;
   private isRunning = false;
+  private handshakeComplete = false;
 
   constructor(options: BrokerServerOptions) {
     super();
@@ -77,6 +92,8 @@ export class BrokerServer extends EventEmitter {
     this.pipePath = `\\\\.\\pipe\\terminai-${this.sessionId}`;
 
     this.checkNodePermissions = options.checkNodePermissions ?? true;
+    this.handshakeToken = options.handshakeToken;
+    this.appContainerSid = options.appContainerSid;
   }
 
   /**
@@ -166,119 +183,259 @@ export class BrokerServer extends EventEmitter {
     // Step 1: Ensure Node.js is accessible by AppContainers
     await this.ensureNodeAccessible();
 
-    // Step 2: Create Named Pipe server
+    const sid =
+      this.appContainerSid ||
+      ensureAppContainerProfile() ||
+      getAppContainerSid();
+
+    if (sid) {
+      this.securePipe = createSecurePipeServer(this.pipePath, sid);
+      this.securePipe.listen();
+      this.isRunning = true;
+      this.emit('connection', this.sessionId);
+
+      this.handlePipeLoop().catch((error) => {
+        this.emit('error', error);
+      });
+      return;
+    }
+
+    if (process.env['TERMINAI_UNSAFE_OPEN_PIPE'] === '1') {
+      await this.startOpenPipe();
+      return;
+    }
+
+    throw new Error('AppContainer SID not available');
+  }
+
+  /**
+   * Whether a secure AppContainer-restricted pipe is active.
+   */
+  get isSecure(): boolean {
+    return this.securePipe !== null && this.fallbackServer === null;
+  }
+
+  private async startOpenPipe(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.server = net.createServer((socket) => {
-        this.handleConnection(socket);
+      this.fallbackServer = net.createServer((socket) => {
+        this.handleFallbackConnection(socket);
       });
 
-      this.server.on('error', (error) => {
+      this.fallbackServer.on('error', (error) => {
         this.emit('error', error);
         if (!this.isRunning) {
           reject(error);
         }
       });
 
-      this.server.on('close', () => {
+      this.fallbackServer.on('close', () => {
         this.isRunning = false;
         this.emit('close');
       });
 
-      // Step 3: Listen on Named Pipe
-      // TODO (Task 40): Apply ACL to restrict access to AppContainer SID only
-      // Current limitation: Node.js net.createServer() doesn't support SECURITY_ATTRIBUTES
-      // Required implementation:
-      //   1. Native module to create pipe with custom DACL
-      //   2. Use Windows CreateNamedPipe() with SECURITY_ATTRIBUTES
-      //   3. Grant access only to S-1-15-2-1 (AppContainer SID)
-      //
-      // Alternative: Use named-pipe-wrapper library or implement in native.ts
-      // For now: Pipe is accessible by any process (security gap on Windows)
-      //
-      // See: https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createnamedpipea
-      this.server.listen(this.pipePath, () => {
+      this.fallbackServer.listen(this.pipePath, () => {
         this.isRunning = true;
-        console.log(`[BrokerServer] Listening on ${this.pipePath}`);
-        console.warn(
-          '[BrokerServer] WARNING: Named Pipe ACLs are currently OPEN. ' +
-            'This is a temporary state until native module is updated (Phase 3). ' +
-            'Ensure this machine is single-tenant.',
-        );
         resolve();
       });
     });
   }
 
-  /**
-   * Handle a new client connection.
-   *
-   * Each connection:
-   * 1. Generates a unique client ID
-   * 2. Buffers incoming data for complete JSON messages
-   * 3. Validates requests against BrokerRequestSchema
-   * 4. Emits 'request' event for processing
-   */
-  private handleConnection(socket: net.Socket): void {
-    const clientId = randomUUID();
+  private async handlePipeLoop(): Promise<void> {
+    if (!this.securePipe) {
+      return;
+    }
+
+    while (this.isRunning) {
+      try {
+        this.handshakeComplete = false;
+        await this.securePipe.acceptConnection();
+        let buffer = '';
+
+        while (this.isRunning && this.securePipe.isConnected()) {
+          const chunk = await this.securePipe.read();
+          buffer += chunk;
+
+          const messages = buffer.split('\n');
+          buffer = messages.pop() ?? '';
+
+          for (const message of messages) {
+            if (!message.trim()) continue;
+            await this.handleMessage(message);
+          }
+        }
+      } catch (error) {
+        this.emit('error', error as Error);
+      }
+    }
+  }
+
+  private async handleMessage(message: string): Promise<void> {
+    if (!this.securePipe) {
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(message);
+      const validated = BrokerRequestSchema.parse(parsed);
+
+      if (!this.handshakeComplete) {
+        if (validated.type !== 'hello') {
+          await this.writeResponse(
+            createErrorResponse(
+              validated.id,
+              'Handshake required',
+              'HANDSHAKE_REQUIRED',
+            ),
+          );
+          return;
+        }
+
+        const tokenOk =
+          validated.token.length === this.handshakeToken.length &&
+          timingSafeEqual(
+            Buffer.from(validated.token),
+            Buffer.from(this.handshakeToken),
+          );
+
+        if (!tokenOk) {
+          await this.writeResponse(
+            createErrorResponse(
+              validated.id,
+              'Handshake failed',
+              'HANDSHAKE_FAILED',
+            ),
+          );
+          return;
+        }
+
+        this.handshakeComplete = true;
+        await this.writeResponse(
+          createSuccessResponse(validated.id, {
+            sessionId: this.sessionId,
+            connectedAt: new Date().toISOString(),
+          }),
+        );
+        return;
+      }
+
+      if (validated.type === 'hello') {
+        await this.writeResponse(
+          createSuccessResponse(validated.id, {
+            sessionId: this.sessionId,
+            connectedAt: new Date().toISOString(),
+          }),
+        );
+        return;
+      }
+
+      this.emit('request', validated, async (response: BrokerResponse) => {
+        const validatedResponse = BrokerResponseSchema.parse(response);
+        await this.writeResponse(validatedResponse);
+      });
+    } catch (error) {
+      const requestId = randomUUID();
+      const errorResponse = createErrorResponse(
+        requestId,
+        `Invalid request: ${(error as Error).message}`,
+        'INVALID_REQUEST',
+      );
+      await this.writeResponse(errorResponse);
+    }
+  }
+
+  private handleFallbackConnection(socket: net.Socket): void {
     let buffer = '';
+    this.handshakeComplete = false;
 
-    this.emit('connection', clientId);
-
-    socket.on('data', (data) => {
+    socket.on('data', async (data) => {
       buffer += data.toString('utf-8');
-
-      // Process complete JSON messages (delimited by newlines)
       const messages = buffer.split('\n');
       buffer = messages.pop() ?? '';
 
       for (const message of messages) {
         if (!message.trim()) continue;
-
         try {
           const parsed = JSON.parse(message);
           const validated = BrokerRequestSchema.parse(parsed);
 
-          // Emit request event with response callback
-          this.emit('request', validated, (response: BrokerResponse) => {
+          if (!this.handshakeComplete) {
+            if (validated.type !== 'hello') {
+              const response = createErrorResponse(
+                validated.id,
+                'Handshake required',
+                'HANDSHAKE_REQUIRED',
+              );
+              socket.write(JSON.stringify(response) + '\n');
+              continue;
+            }
+
+            const tokenOk =
+              validated.token.length === this.handshakeToken.length &&
+              timingSafeEqual(
+                Buffer.from(validated.token),
+                Buffer.from(this.handshakeToken),
+              );
+
+            if (!tokenOk) {
+              const response = createErrorResponse(
+                validated.id,
+                'Handshake failed',
+                'HANDSHAKE_FAILED',
+              );
+              socket.write(JSON.stringify(response) + '\n');
+              continue;
+            }
+
+            this.handshakeComplete = true;
+            const response = createSuccessResponse(validated.id, {
+              sessionId: this.sessionId,
+              connectedAt: new Date().toISOString(),
+            });
+            socket.write(JSON.stringify(response) + '\n');
+            continue;
+          }
+
+          this.emit('request', validated, async (response: BrokerResponse) => {
             const validatedResponse = BrokerResponseSchema.parse(response);
             socket.write(JSON.stringify(validatedResponse) + '\n');
           });
         } catch (error) {
-          // Send error response for invalid requests
-          const errorResponse: BrokerResponse = {
-            success: false,
-            error: `Invalid request: ${(error as Error).message}`,
-          };
-          socket.write(JSON.stringify(errorResponse) + '\n');
+          const response = createErrorResponse(
+            randomUUID(),
+            `Invalid request: ${(error as Error).message}`,
+            'INVALID_REQUEST',
+          );
+          socket.write(JSON.stringify(response) + '\n');
         }
       }
     });
 
     socket.on('error', (error) => {
-      console.error(`[BrokerServer] Client ${clientId} error:`, error.message);
+      this.emit('error', error);
     });
+  }
 
-    socket.on('close', () => {
-      console.log(`[BrokerServer] Client ${clientId} disconnected`);
-    });
+  private async writeResponse(response: BrokerResponse): Promise<void> {
+    if (!this.securePipe) {
+      return;
+    }
+    await this.securePipe.write(`${JSON.stringify(response)}\n`);
   }
 
   /**
    * Stop the Named Pipe server.
    */
   async stop(): Promise<void> {
-    return new Promise((resolve) => {
-      if (!this.server) {
-        resolve();
-        return;
-      }
-
-      this.server.close(() => {
-        this.server = null;
-        this.isRunning = false;
-        resolve();
-      });
-    });
+    if (this.securePipe) {
+      this.securePipe.close();
+      this.securePipe = null;
+    }
+    if (this.fallbackServer) {
+      this.fallbackServer.close();
+      this.fallbackServer = null;
+    }
+    this.isRunning = false;
+    this.emit('close');
   }
 
   /**
@@ -286,5 +443,9 @@ export class BrokerServer extends EventEmitter {
    */
   get running(): boolean {
     return this.isRunning;
+  }
+
+  get hasHandshake(): boolean {
+    return this.handshakeComplete;
   }
 }

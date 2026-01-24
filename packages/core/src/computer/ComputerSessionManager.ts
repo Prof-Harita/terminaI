@@ -9,6 +9,7 @@ import { PersistentShell } from './PersistentShell.js';
 import type { RuntimeContext } from './RuntimeContext.js';
 import { debugLogger } from '../index.js';
 import * as fs from 'node:fs';
+import { execSync } from 'node:child_process';
 
 export interface ReplSession {
   name: string;
@@ -73,11 +74,24 @@ export class ComputerSessionManager implements ComputerSessionManagerInterface {
     const sessionRef: { current: ReplSession | undefined } = {
       current: undefined,
     };
+
+    let effectivePythonPath = this.runtimeContext?.pythonPath;
+
+    // Detect container path leak: container paths won't exist on host
+    if (effectivePythonPath?.includes('/opt/terminai/')) {
+      if (!fs.existsSync(effectivePythonPath)) {
+        console.warn(
+          `[REPL] Container pythonPath "${effectivePythonPath}" not found on host, discovering local Python`,
+        );
+        effectivePythonPath = this.discoverLocalPython();
+      }
+    }
+
     const shell = new PersistentShell({
       language,
       cwd,
       env,
-      pythonPath: this.runtimeContext?.pythonPath,
+      pythonPath: effectivePythonPath,
       onOutput: (data) => {
         const activeSession = sessionRef.current ?? this.sessions.get(name);
         if (activeSession) {
@@ -277,6 +291,19 @@ export class ComputerSessionManager implements ComputerSessionManagerInterface {
         debugLogger.warn(`Failed to cleanup ${cleanupPath}: ${error}`);
       }
     }
+  }
+
+  private discoverLocalPython(): string | undefined {
+    const candidates = ['python3', 'python', '/usr/bin/python3'];
+    for (const cmd of candidates) {
+      try {
+        execSync(`${cmd} --version`, { stdio: 'ignore' });
+        return cmd;
+      } catch {
+        // try next
+      }
+    }
+    return undefined;
   }
 }
 

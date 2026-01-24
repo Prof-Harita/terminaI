@@ -307,14 +307,6 @@ export class DesktopAutomationService {
       // console.warn(`Ambiguous selector: ${args.target} found ${matches.length} matches.`);
     }
 
-    if (args.verify && targetNode.states?.enabled === false) {
-      return {
-        status: 'error',
-        driver: snapshot.driver,
-        message: `Element found but disabled: ${args.target}`,
-      };
-    }
-
     // 3. Execute - pass target selector AND bounds for fallback click
     const refinedArgs: Record<string, unknown> = {
       ...args,
@@ -331,7 +323,7 @@ export class DesktopAutomationService {
     );
 
     // 4. Post-Action Verification (basic)
-    if (actionResult.status === 'success' && args.verify) {
+    if (actionResult.status === 'success') {
       // Invalidate cache immediately after action
       this.lastSnapshot = undefined;
       this.lastSnapshotTime = 0;

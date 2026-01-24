@@ -15,8 +15,9 @@
   },
   "scripts": {
     "prebuild": "node ../../scripts/build_tapts.js",
-    "build": "node ../../scripts/build_package.js",
-    "build:tapts": "cd ../../packages/sandbox-image/python && python3 -m build --wheel --outdir ../../../packages/cli/dist/",
+    "prebuild:native": "node scripts/prebuild.js",
+    "build": "npm run prebuild:native && node ../../scripts/build_package.js",
+    "build:tapts": "node ../../scripts/build_tapts.js",
     "start": "node dist/index.js",
     "debug": "node --inspect-brk dist/index.js",
     "lint": "eslint . --ext .ts,.tsx",
@@ -73,6 +74,10 @@
     "wrap-ansi": "9.0.2",
     "yargs": "^17.7.2",
     "zod": "^3.23.8"
+  },
+  "optionalDependencies": {
+    "@terminai/native-win32-x64": "0.28.0",
+    "@terminai/native-win32-arm64": "0.28.0"
   },
   "devDependencies": {
     "@babel/runtime": "^7.27.6",

@@ -83,6 +83,16 @@ export interface GlobToolParams {
    * Whether to respect .geminiignore patterns (optional, defaults to true)
    */
   respect_gemini_ignore?: boolean;
+
+  /**
+   * Pagination offset (optional, defaults to 0)
+   */
+  offset?: number;
+
+  /**
+   * Pagination limit (optional, defaults to 1000)
+   */
+  limit?: number;
 }
 
 class GlobToolInvocation extends BaseToolInvocation<
@@ -210,26 +220,49 @@ class GlobToolInvocation extends BaseToolInvocation<
         oneDayInMs,
       );
 
-      const sortedAbsolutePaths = sortedEntries.map((entry) =>
+      // Apply pagination
+      const offset = this.params.offset ?? 0;
+      const MAX_LIMIT = 2000;
+      const limit = Math.min(this.params.limit ?? 1000, MAX_LIMIT);
+      const totalCount = sortedEntries.length;
+
+      const paginatedEntries = sortedEntries.slice(offset, offset + limit);
+      const shownCount = paginatedEntries.length;
+      const hasMore = offset + limit < totalCount;
+
+      const sortedAbsolutePaths = paginatedEntries.map((entry) =>
         entry.fullpath(),
       );
       const fileListDescription = sortedAbsolutePaths.join('\n');
-      const fileCount = sortedAbsolutePaths.length;
 
-      let resultMessage = `Found ${fileCount} file(s) matching "${this.params.pattern}"`;
+      let resultMessage = `Found ${totalCount} file(s) matching "${this.params.pattern}"`;
       if (searchDirectories.length === 1) {
         resultMessage += ` within ${searchDirectories[0]}`;
       } else {
         resultMessage += ` across ${searchDirectories.length} workspace directories`;
       }
+
+      if (totalCount > limit) {
+        resultMessage += ` (Showing ${offset + 1}-${offset + shownCount} of ${totalCount})`;
+      }
+
       if (ignoredCount > 0) {
         resultMessage += ` (${ignoredCount} additional files were ignored)`;
       }
       resultMessage += `, sorted by modification time (newest first):\n${fileListDescription}`;
 
+      if (hasMore) {
+        resultMessage += `\n\n(${totalCount - (offset + shownCount)} more items. Use offset=${offset + limit} to see more)`;
+      }
+
+      let displayMessage = `Found ${totalCount} matching file(s)`;
+      if (totalCount > shownCount) {
+        displayMessage = `Found ${shownCount} matching file(s) (Total: ${totalCount})`;
+      }
+
       return {
         llmContent: resultMessage,
-        returnDisplay: `Found ${fileCount} matching file(s)`,
+        returnDisplay: displayMessage,
       };
     } catch (error) {
       debugLogger.warn(`GlobLogic execute Error`, error);
@@ -288,6 +321,15 @@ export class GlobTool extends BaseDeclarativeTool<GlobToolParams, ToolResult> {
               'Optional: Whether to respect .geminiignore patterns when finding files. Defaults to true.',
             type: 'boolean',
           },
+          offset: {
+            description: 'Optional: Start index for pagination (defaults to 0)',
+            type: 'number',
+          },
+          limit: {
+            description:
+              'Optional: Number of items to return (defaults to 1000)',
+            type: 'number',
+          },
         },
         required: ['pattern'],
         type: 'object',
@@ -330,6 +372,13 @@ export class GlobTool extends BaseDeclarativeTool<GlobToolParams, ToolResult> {
       params.pattern.trim() === ''
     ) {
       return "The 'pattern' parameter cannot be empty.";
+    }
+
+    if (params.limit !== undefined && params.limit <= 0) {
+      return "The 'limit' parameter must be a positive integer.";
+    }
+    if (params.offset !== undefined && params.offset < 0) {
+      return "The 'offset' parameter must be a non-negative integer.";
     }
 
     return null;

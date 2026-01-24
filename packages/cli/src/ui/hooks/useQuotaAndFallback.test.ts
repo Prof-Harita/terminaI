@@ -23,13 +23,13 @@ import {
   UserTierId,
   AuthType,
   TerminalQuotaError,
-  makeFakeConfig,
   type GoogleApiError,
   RetryableQuotaError,
   PREVIEW_GEMINI_MODEL,
   ModelNotFoundError,
   DEFAULT_GEMINI_FLASH_MODEL,
 } from '@terminai/core';
+import { makeFakeConfig } from '@terminai/core/test-utils';
 import { useQuotaAndFallback } from './useQuotaAndFallback.js';
 import type { UseHistoryManagerReturn } from './useHistoryManager.js';
 import { MessageType } from '../types.js';

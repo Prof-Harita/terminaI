@@ -25,8 +25,8 @@ import {
   type GeminiClient,
   SlashCommandStatus,
   ToolConfirmationOutcome,
-  makeFakeConfig,
 } from '@terminai/core';
+import { makeFakeConfig } from '@terminai/core/test-utils';
 import { appEvents } from '../../utils/events.js';
 
 const {

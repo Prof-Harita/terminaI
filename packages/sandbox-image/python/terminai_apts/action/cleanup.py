@@ -26,14 +26,14 @@ def classify_file(path: Path) -> ObjectTableLabels:
 
 import os
 
-def cleanup_downloads(
+def scan_downloads(
     downloads_dir: Optional[Path] = None,
-    dry_run: bool = True,
+    # dry_run parameter removed as this is purely a scan tool
     scan_limit: int = 10000
 ) -> Dict[str, List[str]]:
     """
-    Analyze downloads directory and propose cleanup actions.
-    Includes a scan_limit to prevent hanging on massive directories.
+    Analyze downloads directory and classify files for potential cleanup.
+    This is a READ-ONLY operation. It does NOT delete any files.
     """
     if downloads_dir is None:
         downloads_dir = Path.home() / "Downloads"
@@ -60,3 +60,15 @@ def cleanup_downloads(
                 count += 1
 
     return results
+
+def cleanup_downloads(
+    downloads_dir: Optional[Path] = None,
+    dry_run: bool = True,
+    scan_limit: int = 10000
+) -> Dict[str, List[str]]:
+    """
+    DEPRECATED: Use scan_downloads() instead.
+    This function was misleadingly named; it only scans and never deletes.
+    """
+    print("WARNING: cleanup_downloads is deprecated. It only scans files. Use delete_files to remove them.")
+    return scan_downloads(downloads_dir, scan_limit)

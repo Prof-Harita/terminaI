@@ -5,7 +5,8 @@
       "sources": [
         "native/main.cpp",
         "native/appcontainer_manager.cpp",
-        "native/amsi_scanner.cpp"
+        "native/amsi_scanner.cpp",
+        "native/pipe_security.cpp"
       ],
       "include_dirs": ["<!@(node -p \"require('node-addon-api').include\")"],
       "dependencies": ["<!(node -p \"require('node-addon-api').gyp\")"],

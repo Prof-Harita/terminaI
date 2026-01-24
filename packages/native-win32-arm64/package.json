@@ -1,0 +1,7 @@
+{
+  "name": "@terminai/native-win32-arm64",
+  "version": "0.28.0",
+  "private": true,
+  "private": true,
+  "main": "index.js"
+}
