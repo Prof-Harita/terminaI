@@ -366,6 +366,7 @@ describe('LSTool', () => {
       // We need to spy on fs.readdir and fs.stat
       const manyFiles = Array.from({ length: 1005 }, (_, i) => `file${i}.txt`);
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       vi.spyOn(fs, 'readdir').mockResolvedValue(manyFiles as any);
       vi.spyOn(fs, 'stat').mockImplementation(async (p) => {
         const pathStr = p.toString();
@@ -373,12 +374,14 @@ describe('LSTool', () => {
           return {
             isDirectory: () => true,
             mtime: new Date(),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
           } as any;
         }
         return {
           isDirectory: () => false,
           size: 100,
           mtime: new Date(),
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any;
       });
 

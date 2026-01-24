@@ -1,6 +1,14 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { LocalRuntimeContext } from './src/runtime/LocalRuntimeContext';
-import * as path from 'path';
-import * as fs from 'fs';
+
+import * as path from 'node:path';
+import * as fs from 'node:fs';
 
 async function main() {
   try {
@@ -27,7 +35,9 @@ async function main() {
     // Cleanup
     try {
       fs.unlinkSync(testFile);
-    } catch {}
+    } catch {
+      // ignore
+    }
 
     console.log('STDOUT:', result.stdout);
     if (result.stderr) console.error('STDERR:', result.stderr);

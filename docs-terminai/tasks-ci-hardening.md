@@ -1,15 +1,21 @@
 # CI hardening tasks (final bible)
 
-**Purpose**: Give you a deterministic, low-maintenance CI system that stays green locally and on GitHub Actions. This document is designed to be followed by a less-capable agent step-by-step, with concrete verification at each step.
+**Purpose**: Give you a deterministic, low-maintenance CI system that stays
+green locally and on GitHub Actions. This document is designed to be followed by
+a less-capable agent step-by-step, with concrete verification at each step.
 
 **Primary objective**: You can spend your time on product, not CI.
 
 **Non-negotiable priorities**:
 
-1. **Windows `npm ci` first**. If Windows cannot install deterministically, you do not have CI.
+1. **Windows `npm ci` first**. If Windows cannot install deterministically, you
+   do not have CI.
 2. **Noise kill**. Docs/link drift must never mask “can we build and test?”
-3. **Forbidden artifacts gate**. `.gitignore` is insufficient; CI must hard-fail forbidden binaries in PR diffs and in the repository.
-4. **Linux hermetic native compilation** stays in plan, but it is not the first lever. Use Docker primarily as a prebuild factory and “golden environment”, not as a blanket replacement for Actions runners.
+3. **Forbidden artifacts gate**. `.gitignore` is insufficient; CI must hard-fail
+   forbidden binaries in PR diffs and in the repository.
+4. **Linux hermetic native compilation** stays in plan, but it is not the first
+   lever. Use Docker primarily as a prebuild factory and “golden environment”,
+   not as a blanket replacement for Actions runners.
 
 **How to use this document**:
 
@@ -19,8 +25,10 @@
 
 **References**:
 
-- `docs-terminai/CI_Scorched_Earth_Roadmap.md` (strategy; this file operationalizes it and updates ordering)
-- `docs-terminai/CI_tech_debt.md` (background; especially Windows parity guidance)
+- `docs-terminai/CI_Scorched_Earth_Roadmap.md` (strategy; this file
+  operationalizes it and updates ordering)
+- `docs-terminai/CI_tech_debt.md` (background; especially Windows parity
+  guidance)
 - `.github/workflows/ci.yml` (current gate; will be modified by these tasks)
 - `scripts/verify-ci.sh` (local parity runner)
 
@@ -38,13 +46,19 @@
 
 ### Invariants you must enforce
 
-1. **One truth command**: `npm run preflight` is the canonical local+CI gate for Linux.
-2. **Windows gate**: Windows must run an explicit deterministic sequence (at minimum `npm ci` + build + tests) on `windows-latest`.
+1. **One truth command**: `npm run preflight` is the canonical local+CI gate for
+   Linux.
+2. **Windows gate**: Windows must run an explicit deterministic sequence (at
+   minimum `npm ci` + build + tests) on `windows-latest`.
 3. **No tracked build outputs**:
-   - Disallow committed artifacts (e.g., `packages/**/build/**`, `**/*.node`, `**/*.dll`, `**/*.exe`, `**/*.so`, `**/*.dylib`, `**/*.a`, `**/*.lib`, `**/*.o`, `**/*.obj`).
-   - If they are already tracked, you must remove them from git history or at least from the branch state, and then enforce the rule.
+   - Disallow committed artifacts (e.g., `packages/**/build/**`, `**/*.node`,
+     `**/*.dll`, `**/*.exe`, `**/*.so`, `**/*.dylib`, `**/*.a`, `**/*.lib`,
+     `**/*.o`, `**/*.obj`).
+   - If they are already tracked, you must remove them from git history or at
+     least from the branch state, and then enforce the rule.
 4. **Noise gates cannot block core signal**:
-   - Link checking, bundle-size, and similar “nice-to-have” checks must be non-blocking or must be path-filtered to only run when relevant.
+   - Link checking, bundle-size, and similar “nice-to-have” checks must be
+     non-blocking or must be path-filtered to only run when relevant.
 
 ---
 
@@ -52,7 +66,8 @@
 
 ### Task 0.1: Identify the “required checks” policy for merges
 
-**Objective**: Make CI fail/succeed for the right reasons. Ensure that the required checks for merging are only the strict code-health gates.
+**Objective**: Make CI fail/succeed for the right reasons. Ensure that the
+required checks for merging are only the strict code-health gates.
 
 **Prerequisites**: None
 
@@ -63,21 +78,27 @@
      - `gh api repos/:owner/:repo/branches/main/protection --jq '.'`
 2. Decide which checks must be required for merge:
    - Required: the aggregator job (typically the `ci` job in `ci.yml`)
-   - Not required: link checker, CodeQL (unless policy demands), bundle size comments
-3. If branch protection is not enabled, enable it and set required checks explicitly:
-   - Use `gh api` to set branch protection and required checks (adapt to your repo):
+   - Not required: link checker, CodeQL (unless policy demands), bundle size
+     comments
+3. If branch protection is not enabled, enable it and set required checks
+   explicitly:
+   - Use `gh api` to set branch protection and required checks (adapt to your
+     repo):
      - `gh api -X PUT repos/:owner/:repo/branches/main/protection -f required_status_checks.strict=true -f enforce_admins=true`
-     - Then set the required status checks contexts to the aggregator check name(s).
+     - Then set the required status checks contexts to the aggregator check
+       name(s).
 
 **Definition of done**:
 
-- You can name the exact required checks (by check name) and document them in `docs-terminai/governance.md` or in this file.
+- You can name the exact required checks (by check name) and document them in
+  `docs-terminai/governance.md` or in this file.
 
 ---
 
 ### Task 0.2: Demote link checking so it does not block merges
 
-**Objective**: Stop link checker failures (404s) from preventing you from validating builds/tests.
+**Objective**: Stop link checker failures (404s) from preventing you from
+validating builds/tests.
 
 **Files to inspect/modify**:
 
@@ -89,13 +110,17 @@
 **Path A (recommended): run link checker only on docs changes**
 
 1. Update `.github/workflows/ci.yml`:
-   - Add a conditional to `link_checker` so it only runs when relevant paths change (docs/markdown).
-   - If path filtering is hard in your current workflow, split link checker into a separate workflow that triggers on paths.
-2. Ensure that the `ci` aggregator job does **not** require `link_checker` to succeed for a merge.
+   - Add a conditional to `link_checker` so it only runs when relevant paths
+     change (docs/markdown).
+   - If path filtering is hard in your current workflow, split link checker into
+     a separate workflow that triggers on paths.
+2. Ensure that the `ci` aggregator job does **not** require `link_checker` to
+   succeed for a merge.
 
 **Concrete implementation note**:
 
-- GitHub Actions does not provide a simple built-in “files changed” boolean without an extra step.
+- GitHub Actions does not provide a simple built-in “files changed” boolean
+  without an extra step.
 - The most agent-proof approach is to move link checking into its own workflow:
   - `on: pull_request` with `paths: ['docs/**', 'docs-terminai/**', '**/*.md']`
   - `on: schedule` nightly
@@ -104,25 +129,30 @@
 **Path B: run link checker on schedule only**
 
 1. Remove `link_checker` from `ci.yml`.
-2. Create a new workflow (for example `.github/workflows/links.yml`) that runs nightly and on manual dispatch.
+2. Create a new workflow (for example `.github/workflows/links.yml`) that runs
+   nightly and on manual dispatch.
 
 **Verification**:
 
-- Trigger CI for a PR with only code changes and confirm link checking does not run (or does not block).
-- Trigger link checking intentionally with a docs-only PR (or run scheduled workflow) and confirm it still works.
+- Trigger CI for a PR with only code changes and confirm link checking does not
+  run (or does not block).
+- Trigger link checking intentionally with a docs-only PR (or run scheduled
+  workflow) and confirm it still works.
 
 ---
 
 ### Task 0.3: Add a first-job “forbidden artifacts” gate (hard fail)
 
-**Objective**: Prevent the “recursion loop” incident permanently by failing PRs that contain forbidden binaries or build outputs.
+**Objective**: Prevent the “recursion loop” incident permanently by failing PRs
+that contain forbidden binaries or build outputs.
 
 **Key principle**: `.gitignore` is not enforcement. CI must block the PR.
 
 **Files to add/modify**:
 
 - Add a script: `scripts/ci/forbidden-artifacts.js` (or similar)
-- Update `.github/workflows/ci.yml` to run it as the first job (before lint/build/tests)
+- Update `.github/workflows/ci.yml` to run it as the first job (before
+  lint/build/tests)
 
 **Actions**:
 
@@ -132,11 +162,13 @@
 2. Start with these patterns (expand as needed):
    - Forbidden paths:
      - `packages/**/build/**`
-     - `packages/**/dist/**` (if dist is generated; allowlist exceptions if required)
+     - `packages/**/dist/**` (if dist is generated; allowlist exceptions if
+       required)
      - `packages/**/coverage/**`
    - Forbidden extensions:
      - `.node`, `.dll`, `.exe`, `.so`, `.dylib`, `.a`, `.lib`, `.o`, `.obj`
-3. Add an allowlist mechanism for rare legitimate binaries (if any), and document it in the script.
+3. Add an allowlist mechanism for rare legitimate binaries (if any), and
+   document it in the script.
 4. Add the job to `.github/workflows/ci.yml` as a dependency for all other jobs.
 
 **Suggested script behavior (agent-proof)**:
@@ -150,22 +182,27 @@
 **Error message requirements**:
 
 - Print the exact offending paths.
-- Print the exact remediation steps (for example `git rm --cached <path>` and “add to .gitignore”).
+- Print the exact remediation steps (for example `git rm --cached <path>` and
+  “add to .gitignore”).
 
 **Verification**:
 
-- Create a throwaway branch/PR that adds a dummy forbidden file and confirm CI fails with a clear error message.
+- Create a throwaway branch/PR that adds a dummy forbidden file and confirm CI
+  fails with a clear error message.
 - Ensure normal PRs pass this job quickly.
 
 ---
 
 ### Task 0.4: Sanitize the repository state (remove currently tracked artifacts)
 
-**Objective**: If forbidden artifacts are already tracked, you must remove them or your new gate will either (a) fail forever, or (b) be forced to allowlist the very thing you want to prevent.
+**Objective**: If forbidden artifacts are already tracked, you must remove them
+or your new gate will either (a) fail forever, or (b) be forced to allowlist the
+very thing you want to prevent.
 
 **Known high-risk example** (verify on your current branch):
 
-- `packages/cli/build/Release/terminai_native.node` (an ELF `.node` binary) should not be tracked.
+- `packages/cli/build/Release/terminai_native.node` (an ELF `.node` binary)
+  should not be tracked.
 
 **Actions**:
 
@@ -183,7 +220,8 @@
 
 - `git ls-files | rg -n '^packages/cli/build/'` returns no results.
 - `git ls-files | rg -n '\\.node$'` returns no results.
-- `git ls-files | rg -n '\\.(dll|exe|so|dylib|a|lib|o|obj)$'` returns no results.
+- `git ls-files | rg -n '\\.(dll|exe|so|dylib|a|lib|o|obj)$'` returns no
+  results.
 - Your forbidden-artifacts CI job passes on `main`.
 
 ---
@@ -192,7 +230,8 @@
 
 ### Task 1.1: Turn Windows install into a diagnostic incident
 
-**Objective**: Make the Windows failure actionable by capturing the full, precise failure logs.
+**Objective**: Make the Windows failure actionable by capturing the full,
+precise failure logs.
 
 **Files to modify**:
 
@@ -215,15 +254,19 @@
 
 **Verification**:
 
-- Trigger CI and confirm the Windows job logs contain enough information to identify the failing package and step.
+- Trigger CI and confirm the Windows job logs contain enough information to
+  identify the failing package and step.
 
 ---
 
 ### Task 1.2: Eliminate “install-time” side effects in CI (especially `prepare`)
 
-**Objective**: Make `npm ci` do only dependency installation. Anything else should run as explicit CI steps.
+**Objective**: Make `npm ci` do only dependency installation. Anything else
+should run as explicit CI steps.
 
-**Why this matters**: If your root `package.json` runs heavyweight scripts during `prepare`, Windows install can fail before you even build/test. This is a common CI instability source.
+**Why this matters**: If your root `package.json` runs heavyweight scripts
+during `prepare`, Windows install can fail before you even build/test. This is a
+common CI instability source.
 
 **Files to inspect/modify**:
 
@@ -234,26 +277,33 @@
 **Actions**:
 
 1. Decide what `prepare` should do:
-   - Recommended: `prepare` only sets up local dev hooks (husky), and it must no-op in CI.
+   - Recommended: `prepare` only sets up local dev hooks (husky), and it must
+     no-op in CI.
 2. Implement a guarded prepare:
-   - Replace `prepare` with a node script (for example `node scripts/prepare.js`) that:
+   - Replace `prepare` with a node script (for example
+     `node scripts/prepare.js`) that:
      - exits early when `process.env.CI` is set
      - optionally exits early when `process.env.HUSKY === '0'`
-3. Move any required “bundle” or “generate” steps into CI explicit steps after `npm ci`.
+3. Move any required “bundle” or “generate” steps into CI explicit steps after
+   `npm ci`.
 
 **Concrete implementation pattern**:
 
 - Root `package.json`:
-  - Replace `prepare: "husky && npm run bundle"` with `prepare: "node scripts/prepare.js"`
+  - Replace `prepare: "husky && npm run bundle"` with
+    `prepare: "node scripts/prepare.js"`
 - New `scripts/prepare.js`:
   - If `CI=1`, print “Skipping prepare in CI” and exit 0.
-  - Otherwise run husky (and only run bundle locally if you have a strong reason).
+  - Otherwise run husky (and only run bundle locally if you have a strong
+    reason).
 - Update CI:
-  - Ensure `npm run bundle` (if needed) runs as an explicit workflow step after `npm ci`.
+  - Ensure `npm run bundle` (if needed) runs as an explicit workflow step after
+    `npm ci`.
 
 **Verification**:
 
-- On Windows CI, `npm ci` completes without running bundle/generate steps implicitly.
+- On Windows CI, `npm ci` completes without running bundle/generate steps
+  implicitly.
 - Linux CI still runs bundling explicitly where required.
 
 ---
@@ -277,7 +327,8 @@
    - Fix scripts that use bash-only syntax.
    - Fix path handling to be Windows-safe.
 4. If failure is from dependency tree / lockfile corruption:
-   - Recreate lockfile deterministically (document the exact Node/npm versions used).
+   - Recreate lockfile deterministically (document the exact Node/npm versions
+     used).
    - Ensure `npm ci` works on both Linux and Windows with the same lockfile.
 
 **Verification**:
@@ -304,7 +355,8 @@
 
 - Windows job proves at least:
   - TypeScript build succeeds
-  - Core test suites execute (or are explicitly skipped with justification and tracking)
+  - Core test suites execute (or are explicitly skipped with justification and
+    tracking)
 
 ---
 
@@ -312,7 +364,8 @@
 
 ### Task 2.1: Add a golden Linux build image
 
-**Objective**: Provide one stable Linux environment for native compilation and reproducible builds.
+**Objective**: Provide one stable Linux environment for native compilation and
+reproducible builds.
 
 **Files to add**:
 
@@ -369,14 +422,16 @@
 **Choose one**:
 
 1. **Prebuilds (recommended)**:
-   - CI builds `terminai_native` per platform and publishes artifacts for release.
+   - CI builds `terminai_native` per platform and publishes artifacts for
+     release.
    - Runtime prefers prebuilds; source compilation is dev-only fallback.
 2. **Build-from-source always**:
    - CI installs toolchains on every platform and compiles in every PR.
 
 **Verification**:
 
-- You can explain how a contributor on any OS gets a working native module without committing artifacts.
+- You can explain how a contributor on any OS gets a working native module
+  without committing artifacts.
 
 ---
 
@@ -389,7 +444,8 @@
 1. `.gitignore` for generated paths (still useful, but not sufficient).
 2. Pre-commit hook (local developer experience).
 3. CI forbidden-artifacts job (enforcement).
-4. Optional: server-side branch protection requiring the forbidden-artifacts check.
+4. Optional: server-side branch protection requiring the forbidden-artifacts
+   check.
 
 **Verification**:
 
@@ -401,7 +457,8 @@
 
 ### Task 4.1: Version alignment failures must be either automatic or release-only
 
-**Objective**: Stop random PR failures from “version drift” while keeping release safety.
+**Objective**: Stop random PR failures from “version drift” while keeping
+release safety.
 
 **Actions** (choose one path):
 
@@ -420,17 +477,20 @@
 
 **Verification**:
 
-- PRs do not fail due to version drift unless the contributor truly broke a required invariant.
+- PRs do not fail due to version drift unless the contributor truly broke a
+  required invariant.
 
 ---
 
 ### Task 4.2: Settings docs must be deterministic
 
-**Objective**: Prevent “Verify settings docs” failures that are caused by nondeterministic generation.
+**Objective**: Prevent “Verify settings docs” failures that are caused by
+nondeterministic generation.
 
 **Actions**:
 
-1. Ensure `npm run predocs:settings` and `npm run docs:settings -- --check` are deterministic.
+1. Ensure `npm run predocs:settings` and `npm run docs:settings -- --check` are
+   deterministic.
 2. If generation depends on environment, pin versions and normalize outputs.
 
 **Verification**:
@@ -443,13 +503,16 @@
 
 ### Task 5.1: Fix flaky suites with strict teardown
 
-**Objective**: Remove state leaks (for example `gemini.test.tsx` “phase already active”).
+**Objective**: Remove state leaks (for example `gemini.test.tsx` “phase already
+active”).
 
 **Actions**:
 
 1. For each flaky file:
-   - add `afterEach` that closes servers, resets singletons, clears env, and restores mocks
-2. Add a “repeat test” job (optional) that runs a small critical subset multiple times to detect flake.
+   - add `afterEach` that closes servers, resets singletons, clears env, and
+     restores mocks
+2. Add a “repeat test” job (optional) that runs a small critical subset multiple
+   times to detect flake.
 
 **Verification**:
 
@@ -459,13 +522,15 @@
 
 ### Task 5.2: Fix Windows OS identity mismatch in tests
 
-**Objective**: Stop tests from pretending they run on Linux while using Windows paths.
+**Objective**: Stop tests from pretending they run on Linux while using Windows
+paths.
 
 **Reference**: `docs-terminai/CI_tech_debt.md` (Windows CI flakiness section).
 
 **Actions**:
 
-1. Remove tests that mock `os.platform()` without also normalizing filesystem behavior.
+1. Remove tests that mock `os.platform()` without also normalizing filesystem
+   behavior.
 2. Use a virtual filesystem (for example `memfs`) when simulating another OS.
 3. Prefer platform-agnostic path building in tests:
    - never hardcode `/home/user/...`
@@ -473,7 +538,8 @@
 
 **Verification**:
 
-- The same tests pass on Linux and Windows without conditional skipping except where truly necessary.
+- The same tests pass on Linux and Windows without conditional skipping except
+  where truly necessary.
 
 ---
 
@@ -518,7 +584,8 @@ You should only do this phase after:
    - `npm ci`
    - `npm run build`
    - `npm test`
-2. If you ship native modules, verify the native path you expect is correct and does not require committed artifacts.
+2. If you ship native modules, verify the native path you expect is correct and
+   does not require committed artifacts.
 
 **Verification**:
 
@@ -532,4 +599,5 @@ You should only do this phase after:
 - Link checking does not block code merges.
 - Forbidden binaries/artifacts are blocked at CI level.
 - The repo contains no tracked build outputs.
-- Linux native compilation has a documented, reproducible golden environment (Docker) and a defined distribution strategy (ideally prebuilds).
+- Linux native compilation has a documented, reproducible golden environment
+  (Docker) and a defined distribution strategy (ideally prebuilds).

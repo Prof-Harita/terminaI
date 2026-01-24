@@ -110,6 +110,7 @@ describe('LocalRuntimeContext', () => {
       }),
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(child_process.spawn).mockImplementation(spawnMock as any);
 
     await context.execute('echo "hello world"');

@@ -126,8 +126,9 @@ export class ContainerRuntimeContext implements RuntimeContext {
         { encoding: 'utf-8' },
         (error, stdout, stderr) => {
           resolve({
-            stdout: stdout,
-            stderr: stderr,
+            stdout,
+            stderr,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             exitCode: error ? ((error as any).code ?? 1) : 0,
           });
         },

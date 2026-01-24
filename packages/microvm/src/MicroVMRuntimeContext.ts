@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import type {
   RuntimeContext,
   ExecutionOptions,
@@ -6,12 +13,12 @@ import type {
 } from '@terminai/core';
 import { FirecrackerDriver } from './FirecrackerDriver.js';
 import { MacVZDriver } from './MacVZDriver.js';
-import * as path from 'path';
-import * as os from 'os';
-import * as fs from 'fs';
-import * as net from 'net';
-import { EventEmitter } from 'events';
-import { fileURLToPath } from 'url';
+import * as path from 'node:path';
+import * as os from 'node:os';
+import * as fs from 'node:fs';
+import * as net from 'node:net';
+import { EventEmitter } from 'node:events';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -134,7 +141,7 @@ export class MicroVMRuntimeContext implements RuntimeContext {
         const sock = await this.connectToVsock(5000);
         sock.end();
         return;
-      } catch (e) {
+      } catch {
         await new Promise((r) => setTimeout(r, 200));
       }
     }
@@ -235,6 +242,7 @@ export class MicroVMRuntimeContext implements RuntimeContext {
     const sock = await this.connectToVsock(5000);
     // Use an EventEmitter that we cast to RuntimeProcess.
     // We treat it as 'any' internally to emit events easily.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const rp = new EventEmitter() as any;
 
     const payload = JSON.stringify({
@@ -271,7 +279,7 @@ export class MicroVMRuntimeContext implements RuntimeContext {
           rp.stderr?.emit('data', payload);
         } else if (type === 3) {
           // exit
-          const code = parseInt(payload.toString());
+          const code = parseInt(payload.toString(), 10);
           rp.emit('exit', code);
         } else if (type === 0) {
           // error
@@ -292,7 +300,8 @@ export class MicroVMRuntimeContext implements RuntimeContext {
       rp.emit('error', err);
     });
 
-    rp.kill = (signal?: any): boolean => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    rp.kill = (_signal?: any): boolean => {
       sock.destroy();
       return true;
     };

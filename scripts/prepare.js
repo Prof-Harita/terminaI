@@ -1,4 +1,10 @@
-import { execSync } from 'child_process';
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { execSync } from 'node:child_process';
 
 // Skip in CI to avoid heavy build steps during install
 if (process.env.CI) {

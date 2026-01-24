@@ -1,12 +1,18 @@
 # Prompt: Day 1–20 roadmap review (full-power, no sugarcoating)
 
-**Use this prompt when the human returns after completing Days 01–20 in** `docs-terminai/roadmap/roadmap.md`.
+**Use this prompt when the human returns after completing Days 01–20 in**
+`docs-terminai/roadmap/roadmap.md`.
 
-You are reviewing whether the “regain power + measurement + CI floor” work is truly done, without capability regressions, and whether it’s safe/wise to proceed to ATS closures (Days 21+).
+You are reviewing whether the “regain power + measurement + CI floor” work is
+truly done, without capability regressions, and whether it’s safe/wise to
+proceed to ATS closures (Days 21+).
 
-You must be brutally honest, evidence-based, and treat “power regressions” as P0.
+You must be brutally honest, evidence-based, and treat “power regressions” as
+P0.
 
-Do **not** edit `docs-terminai/roadmap/roadmap.md` unless the user explicitly asks. If you need to propose additions/changes, write a separate doc or open issues.
+Do **not** edit `docs-terminai/roadmap/roadmap.md` unless the user explicitly
+asks. If you need to propose additions/changes, write a separate doc or open
+issues.
 
 ---
 
@@ -16,19 +22,23 @@ Do **not** edit `docs-terminai/roadmap/roadmap.md` unless the user explicitly as
    - Branch name + commit SHA range (start SHA before Day 01 → current SHA).
    - Whether changes are merged to `main` or still on a branch.
 2. **Platforms actually tested**
-   - Linux distro + version, Windows version (and whether Windows tests ran on a real machine vs CI only).
+   - Linux distro + version, Windows version (and whether Windows tests ran on a
+     real machine vs CI only).
 3. **Verification outputs**
    - Linux: output (or log file) of `npm run preflight`.
    - Windows: output (or CI logs) of `npm ci`, `npm run build`, `npm test`.
 4. **Runtime proof artifacts**
    - A short session transcript proving:
-     - a basic `shell` command works (e.g., `echo hello`, `pwd`, list a directory)
+     - a basic `shell` command works (e.g., `echo hello`, `pwd`, list a
+       directory)
      - python runs in the managed environment (and can import `terminai_apts`)
-   - An audit export snippet showing runtime metadata attached to events (if implemented).
+   - An audit export snippet showing runtime metadata attached to events (if
+     implemented).
 5. **CI proof artifacts**
    - Links to the relevant GitHub Actions runs (or pasted logs) for the CI days.
 6. **If Windows AppContainer was enabled**
-   - How it was enabled; console output indicating the tier; any broker/native module logs.
+   - How it was enabled; console output indicating the tier; any broker/native
+     module logs.
 
 If any of the above are missing, pause and request them before concluding.
 
@@ -45,7 +55,8 @@ Deliver a review that includes:
    - Explicitly answer: “Did the runtime work nerf capability?” with evidence.
 5. **Readiness call**
    - Clear “Go / No-Go” for starting Day 21 ATS closures.
-6. **Top 10 next actions** (ordered) if No-Go, or “start with ATS‑01” guidance if Go.
+6. **Top 10 next actions** (ordered) if No-Go, or “start with ATS‑01” guidance
+   if Go.
 
 ---
 
@@ -71,7 +82,8 @@ Run tests appropriate to the changes (don’t skip just because CI is green).
 
 ## 4) Day-by-day acceptance checklist (Days 01–20)
 
-For each day, check **deliverable + definition of success** from `docs-terminai/roadmap/roadmap.md`.
+For each day, check **deliverable + definition of success** from
+`docs-terminai/roadmap/roadmap.md`.
 
 ### Day 01 — Runtime: restore shell power (bridge semantics)
 
@@ -83,7 +95,8 @@ Evidence required:
 
 Code smell checks:
 
-- `ShellExecutionService` routing to `runtimeContext.execute()` can silently change semantics. Validate the chosen contract is coherent.
+- `ShellExecutionService` routing to `runtimeContext.execute()` can silently
+  change semantics. Validate the chosen contract is coherent.
 
 ### Day 02 — Runtime: T‑APTS install works from npm package (wheel-first)
 
@@ -106,7 +119,8 @@ Evidence required:
 Evidence required:
 
 - No uncontrolled host execution path when “isolated” tier is selected.
-- If AppContainer is not production-ready, it is explicitly disabled with a clear message (do not pretend it’s secure).
+- If AppContainer is not production-ready, it is explicitly disabled with a
+  clear message (do not pretend it’s secure).
 
 Critical security checks:
 
@@ -125,7 +139,8 @@ Evidence required:
 Evidence required:
 
 - `scripts/verify-ats.sh` (or equivalent) exists and is usable.
-- `docs-terminai/roadmap/scoreboard.md` exists and has a clear pass/fail grid per OS.
+- `docs-terminai/roadmap/scoreboard.md` exists and has a clear pass/fail grid
+  per OS.
 - Evidence capture instructions are practical (audit export, logs, artifacts).
 
 ### Day 07 — CI: required checks and merge signal
@@ -146,7 +161,8 @@ Evidence required:
 
 Evidence required:
 
-- CI fails on a PR that introduces forbidden artifacts (clear error + remediation).
+- CI fails on a PR that introduces forbidden artifacts (clear error +
+  remediation).
 
 ### Day 10 — CI: sanitize tracked artifacts (make gate pass on main)
 
@@ -159,7 +175,8 @@ Evidence required:
 
 Evidence required:
 
-- If Windows fails, logs are actionable (toolchain, node/npm/python versions, failing step).
+- If Windows fails, logs are actionable (toolchain, node/npm/python versions,
+  failing step).
 
 ### Day 12 — CI: eliminate install-time side effects (`prepare`)
 
@@ -184,7 +201,8 @@ Evidence required:
 
 Evidence required:
 
-- Dockerfile (or equivalent) exists and can run Linux preflight deterministically.
+- Dockerfile (or equivalent) exists and can run Linux preflight
+  deterministically.
 - Clear local instructions exist and are validated once by the human.
 
 ### Day 16 — CI: native module distribution decision (no binary commits)
@@ -192,7 +210,8 @@ Evidence required:
 Evidence required:
 
 - A decision is written and enforced: no `.node` committed to git.
-- Contributors have a supported path to obtain native binaries (release artifacts, prebuild packages, etc.).
+- Contributors have a supported path to obtain native binaries (release
+  artifacts, prebuild packages, etc.).
 
 ### Day 17 — CI: version alignment drift (auto or release-only)
 
@@ -228,11 +247,12 @@ Evidence required:
 Declare “Go” only if all are true:
 
 1. **Shell power restored** (Day 01) with a regression test.
-2. **T‑APTS is deterministic** (Day 02) and verified via import in managed python.
+2. **T‑APTS is deterministic** (Day 02) and verified via import in managed
+   python.
 3. **Measurement exists** (Day 06): runner + scoreboard + evidence capture.
 4. **Windows CI floor is credible** (Days 11–14 at minimum).
 5. **No P0 security deception**
-   - If AppContainer/MicroVM are not real, they must be labeled as such, not marketed as “secure runtime”.
+   - If AppContainer/MicroVM are not real, they must be labeled as such, not
+     marketed as “secure runtime”.
 
 If any are false, output “No-Go” and list exact blockers.
-

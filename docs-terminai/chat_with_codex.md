@@ -1358,16 +1358,12 @@ outdated in relation to the current working tree.
 • Edited local/plan*final_mile_sovereign_runtime.md (+3 -4) 31 32 -2. **T-APTS
 install strategy is wrong for end-users (P0)** 32 +2. **T-APTS install is still
 fragile for end-users (P0)** 33 - The CLI npm package ships a
-`terminai_apts-*.whl` in `dist/`. 34 - - `LocalRuntimeContext` currently tries
-to install T-APTS from `packages/sandbox-image/python` (source tree), which will
-not exist for `npm i -g @terminai/cli`. 35 - - Net result: customers will hit
-“T-APTS not found” in exactly the scenarios the architecture was meant to
-harden. 34 + - `LocalRuntimeContext.resolveAptsPath()` tries source-first
-\_then* looks for the wheel, but the wheel search must match the actual `tsc`
-output layout (`dist/src/runtime/*` vs `          dist/*`). 35 + - Net result:
-customers can still end up in “T-APTS not found” / degraded mode unless the
-wheel path logic is correct and enforced by a startup health check. 36 ⋮ 173 If
-any answer is “no”, we are not ready for users. 174 -
+`terminai_apts-*.whl`in`dist/`. 34 - - `LocalRuntimeContext`currently tries to install T-APTS from`packages/sandbox-image/python`(source tree), which will not exist for`npm
+i -g
+@terminai/cli`. 35 - - Net result: customers will hit “T-APTS not found” in exactly the scenarios the architecture was meant to harden. 34 + - `LocalRuntimeContext.resolveAptsPath()`tries source-first \_then* looks for the wheel, but the wheel search must match the actual`tsc` output layout (`dist/src/runtime/_`vs`
+dist/_`). 35 + - Net result: customers can still end up in “T-APTS not found” /
+degraded mode unless the wheel path logic is correct and enforced by a startup
+health check. 36 ⋮ 173 If any answer is “no”, we are not ready for users. 174 -
 
 • I'm checking packages/core/src/audit/ledger.ts for runtime field inclusion,
 and step 4 should be completed soon. Before finalizing, I need to update the

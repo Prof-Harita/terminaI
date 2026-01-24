@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { ContainerRuntimeContext } from './ContainerRuntimeContext.js';
 
 async function main() {
@@ -68,4 +75,7 @@ async function main() {
   }
 }
 
-main();
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

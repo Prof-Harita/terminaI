@@ -12,6 +12,9 @@
   "bin": {
     "terminai-a2a-server": "dist/a2a-server.mjs"
   },
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "scripts": {
     "build": "node ../../scripts/build_package.js",
     "start": "node dist/src/http/server.js",

@@ -241,7 +241,7 @@ class GlobToolInvocation extends BaseToolInvocation<
       } else {
         resultMessage += ` across ${searchDirectories.length} workspace directories`;
       }
-      
+
       if (totalCount > limit) {
         resultMessage += ` (Showing ${offset + 1}-${offset + shownCount} of ${totalCount})`;
       }

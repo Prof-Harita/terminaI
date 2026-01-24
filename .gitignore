@@ -64,6 +64,7 @@ __pycache__/
 *.pyo
 .pytest_cache/
 venv/
+.venv/
 *.egg-info/
 
 # Local scratch files (not committed)
@@ -72,6 +73,8 @@ test_output*.txt
 packages/desktop/src-tauri/bin/
 packages/desktop/src-tauri/resources/
 packages/microvm/resources/vmlinux-x86_64.bin
+packages/microvm/resources/rootfs.ext4
+packages/microvm/resources/firecracker
 
 
 .env

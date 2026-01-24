@@ -1,4 +1,11 @@
-import { MicroVMRuntimeContext } from '../../../../packages/microvm/dist/MicroVMRuntimeContext.js';
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { MicroVMRuntimeContext } from '@terminai/microvm';
 
 async function main() {
   console.log('=== Verifying MicroVM Runtime Context ===');
@@ -59,4 +66,7 @@ async function main() {
   }
 }
 
-main();
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

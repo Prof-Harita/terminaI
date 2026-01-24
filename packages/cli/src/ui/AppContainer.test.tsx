@@ -23,12 +23,12 @@ import { AppContainer, type AppContainerProps } from './AppContainer.js';
 import { SettingsContext } from './contexts/SettingsContext.js';
 import {
   type Config,
-  makeFakeConfig,
   CoreEvent,
   type UserFeedbackPayload,
   type ResumedSessionData,
   AuthType,
 } from '@terminai/core';
+import { makeFakeConfig } from '@terminai/core/test-utils';
 
 // Mock coreEvents
 const mockCoreEvents = vi.hoisted(() => ({

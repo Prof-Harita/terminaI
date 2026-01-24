@@ -10,11 +10,8 @@ import { IDEServer } from './ide-server.js';
 import semver from 'semver';
 import { DiffContentProvider, DiffManager } from './diff-manager.js';
 import { createLogger } from './utils/logger.js';
-import {
-  detectIdeFromEnv,
-  IDE_DEFINITIONS,
-  type IdeInfo,
-} from '@terminai/core';
+import { IDE_DEFINITIONS, type IdeInfo } from '@terminai/core';
+import { detectIdeFromEnv } from '@terminai/core/src/ide/detect-ide.js';
 
 const CLI_IDE_COMPANION_IDENTIFIER = 'Google.gemini-cli-vscode-ide-companion';
 const INFO_MESSAGE_SHOWN_KEY = 'geminiCliInfoMessageShown';

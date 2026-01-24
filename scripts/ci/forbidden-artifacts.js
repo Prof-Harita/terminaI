@@ -1,5 +1,11 @@
-import { execSync } from 'child_process';
-import path from 'path';
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { execSync } from 'node:child_process';
+import path from 'node:path';
 
 // Configuration
 const FORBIDDEN_EXTENSIONS = new Set([
@@ -14,7 +20,7 @@ const FORBIDDEN_EXTENSIONS = new Set([
   '.a',
 ]);
 
-const FORBIDDEN_PATH_REGEX = /^packages\/.*\/build\//;
+const FORBIDDEN_PATH_REGEX = /^packages\/.*\/(build|\.venv|node_modules)\//;
 
 const ALLOWLIST = new Set([
   // Add legitimate binaries here if absolutely necessary (try to avoid this)
