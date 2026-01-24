@@ -117,10 +117,35 @@ export function useReactToolScheduler(
     async (completedToolCalls) => {
       // Log tool results for Phase 1
       for (const call of completedToolCalls) {
+        let effectiveStatus = call.status;
+
+        // Task 10: Fix tool_result status derivation
+        // Check for runtime errors in output content that might have been reported as success
+        if (call.status === 'success' && call.response.resultDisplay) {
+          const output =
+            typeof call.response.resultDisplay === 'string'
+              ? call.response.resultDisplay
+              : '';
+
+          const runtimeErrorPatterns = [
+            'OCI runtime exec failed',
+            'execvp(3) failed',
+            'docker: Error response from daemon',
+            'container process:',
+          ];
+
+          if (runtimeErrorPatterns.some((p) => output.includes(p))) {
+            effectiveStatus = 'error';
+            debugLogger.warn(
+              `[Scheduler] Detected runtime error in successful tool call: ${call.request.name}`,
+            );
+          }
+        }
+
         await logger?.logEventFull('tool_result', {
           callId: call.request.callId,
           name: call.request.name,
-          status: call.status,
+          status: effectiveStatus,
           result: call.response.resultDisplay,
           error: call.response.error?.message,
         });

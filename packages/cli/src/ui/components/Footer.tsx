@@ -20,6 +20,7 @@ import { useUIState } from '../contexts/UIStateContext.js';
 import { useConfig } from '../contexts/ConfigContext.js';
 import { useSettings } from '../contexts/SettingsContext.js';
 import { useVimMode } from '../contexts/VimModeContext.js';
+import { getRuntimeBannerInfoFromContext } from '../../runtime/windows/runtimeBanner.js';
 
 export const Footer: React.FC = () => {
   const uiState = useUIState();
@@ -43,6 +44,8 @@ export const Footer: React.FC = () => {
   const targetDir = config.getTargetDir();
   const debugMode = config.getDebugMode();
   const promptTokenCount = uiState.sessionStats.lastPromptTokenCount;
+  const runtime = config.getRuntimeContext?.();
+  const runtimeBanner = getRuntimeBannerInfoFromContext(runtime);
 
   const showMemoryUsage =
     (config.getDebugMode() || settings.merged.ui?.showMemoryUsage || false) &&
@@ -111,6 +114,15 @@ export const Footer: React.FC = () => {
         >
           {isTrustedFolder === false ? (
             <Text color={theme.status.warning}>untrusted</Text>
+          ) : runtime ? (
+            <Text
+              color={runtimeBanner.isolated ? 'green' : theme.status.warning}
+            >
+              {runtime.displayName}
+              {!runtimeBanner.isolated && (
+                <Text color={theme.text.secondary}> (no isolation)</Text>
+              )}
+            </Text>
           ) : process.env['SANDBOX'] &&
             process.env['SANDBOX'] !== 'sandbox-exec' ? (
             <Text color="green">

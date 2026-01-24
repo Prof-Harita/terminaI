@@ -105,6 +105,138 @@ std::string GetWindowsErrorMessage(DWORD error) {
     return message;
 }
 
+bool EnsureAppContainerProfile(PSID* outSid) {
+    if (g_appContainerSid != nullptr) {
+        *outSid = g_appContainerSid;
+        return true;
+    }
+
+    HRESULT hr = CreateAppContainerProfile(
+        CONTAINER_PROFILE_NAME,
+        CONTAINER_DISPLAY_NAME,
+        CONTAINER_DESCRIPTION,
+        nullptr, 0,
+        &g_appContainerSid
+    );
+
+    if (FAILED(hr)) {
+        if (hr == HRESULT_FROM_WIN32(ERROR_ALREADY_EXISTS)) {
+            hr = DeriveAppContainerSidFromAppContainerName(
+                CONTAINER_PROFILE_NAME,
+                &g_appContainerSid
+            );
+        }
+        if (FAILED(hr)) {
+            return false;
+        }
+    }
+
+    *outSid = g_appContainerSid;
+    return true;
+}
+
+int32_t CreateSandboxProcess(
+    const std::wstring& commandLine,
+    const std::wstring& workspacePath,
+    bool enableInternet,
+    const wchar_t* environmentBlock
+) {
+    PSID appContainerSid = nullptr;
+
+    if (!EnsureAppContainerProfile(&appContainerSid)) {
+        return static_cast<int32_t>(AppContainerError::ProfileCreationFailed);
+    }
+
+    if (!GrantWorkspaceAccess(workspacePath, appContainerSid)) {
+        return static_cast<int32_t>(AppContainerError::AclFailure);
+    }
+
+    std::vector<SID_AND_ATTRIBUTES> capabilities;
+    PSID internetClientSid = nullptr;
+    PSID privateNetworkSid = nullptr;
+
+    if (enableInternet) {
+        if (ConvertStringSidToSidW(CAPABILITY_INTERNET_CLIENT, &internetClientSid)) {
+            capabilities.push_back({ internetClientSid, SE_GROUP_ENABLED });
+        } else {
+            return static_cast<int32_t>(AppContainerError::CapabilityError);
+        }
+
+        if (ConvertStringSidToSidW(CAPABILITY_PRIVATE_NETWORK, &privateNetworkSid)) {
+            capabilities.push_back({ privateNetworkSid, SE_GROUP_ENABLED });
+        }
+    }
+
+    SECURITY_CAPABILITIES secCaps = {};
+    secCaps.AppContainerSid = appContainerSid;
+    secCaps.Capabilities = capabilities.empty() ? nullptr : capabilities.data();
+    secCaps.CapabilityCount = static_cast<DWORD>(capabilities.size());
+
+    SIZE_T attrListSize = 0;
+    InitializeProcThreadAttributeList(nullptr, 1, 0, &attrListSize);
+
+    std::vector<BYTE> attrListBuffer(attrListSize);
+    LPPROC_THREAD_ATTRIBUTE_LIST attrList =
+        reinterpret_cast<LPPROC_THREAD_ATTRIBUTE_LIST>(attrListBuffer.data());
+
+    if (!InitializeProcThreadAttributeList(attrList, 1, 0, &attrListSize)) {
+        if (internetClientSid) LocalFree(internetClientSid);
+        if (privateNetworkSid) LocalFree(privateNetworkSid);
+        return static_cast<int32_t>(AppContainerError::ProcessCreationFailed);
+    }
+
+    if (!UpdateProcThreadAttribute(
+        attrList, 0,
+        PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES,
+        &secCaps, sizeof(secCaps),
+        nullptr, nullptr
+    )) {
+        DeleteProcThreadAttributeList(attrList);
+        if (internetClientSid) LocalFree(internetClientSid);
+        if (privateNetworkSid) LocalFree(privateNetworkSid);
+        return static_cast<int32_t>(AppContainerError::ProcessCreationFailed);
+    }
+
+    STARTUPINFOEXW si = {};
+    si.StartupInfo.cb = sizeof(si);
+    si.lpAttributeList = attrList;
+
+    PROCESS_INFORMATION pi = {};
+
+    std::vector<wchar_t> cmdLine(commandLine.begin(), commandLine.end());
+    cmdLine.push_back(L'\0');
+
+    DWORD creationFlags = EXTENDED_STARTUPINFO_PRESENT | CREATE_NEW_CONSOLE;
+    if (environmentBlock != nullptr) {
+        creationFlags |= CREATE_UNICODE_ENVIRONMENT;
+    }
+
+    BOOL success = CreateProcessW(
+        nullptr,
+        cmdLine.data(),
+        nullptr, nullptr,
+        FALSE,
+        creationFlags,
+        environmentBlock ? (LPVOID)environmentBlock : nullptr,
+        workspacePath.c_str(),
+        reinterpret_cast<LPSTARTUPINFOW>(&si),
+        &pi
+    );
+
+    DeleteProcThreadAttributeList(attrList);
+    if (internetClientSid) LocalFree(internetClientSid);
+    if (privateNetworkSid) LocalFree(privateNetworkSid);
+
+    if (!success) {
+        return static_cast<int32_t>(AppContainerError::ProcessCreationFailed);
+    }
+
+    CloseHandle(pi.hThread);
+    CloseHandle(pi.hProcess);
+
+    return static_cast<int32_t>(pi.dwProcessId);
+}
+
 // ============================================================================
 // Task 42b: GrantWorkspaceAccess Implementation
 // ============================================================================
@@ -209,157 +341,62 @@ Napi::Value CreateAppContainerSandbox(const Napi::CallbackInfo& info) {
     std::wstring commandLine = Utf8ToWide(commandLineUtf8);
     std::wstring workspacePath = Utf8ToWide(workspacePathUtf8);
 
-    // ========================================================================
-    // Step 1: Create or Get AppContainer Profile
-    // ========================================================================
+    int32_t result = CreateSandboxProcess(commandLine, workspacePath, enableInternet, nullptr);
+    return Napi::Number::New(env, static_cast<int32_t>(result));
+}
 
-    if (g_appContainerSid == nullptr) {
-        HRESULT hr = CreateAppContainerProfile(
-            CONTAINER_PROFILE_NAME,
-            CONTAINER_DISPLAY_NAME,
-            CONTAINER_DESCRIPTION,
-            nullptr, 0,  // Capabilities added separately
-            &g_appContainerSid
-        );
+Napi::Value CreateAppContainerSandboxWithEnv(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
 
-        if (FAILED(hr)) {
-            if (hr == HRESULT_FROM_WIN32(ERROR_ALREADY_EXISTS)) {
-                // Profile already exists, derive the SID
-                hr = DeriveAppContainerSidFromAppContainerName(
-                    CONTAINER_PROFILE_NAME,
-                    &g_appContainerSid
-                );
-            }
-
-            if (FAILED(hr)) {
-                std::cerr << "[AppContainerManager] Failed to create/get profile: 0x"
-                          << std::hex << hr << std::endl;
-                return Napi::Number::New(env, static_cast<int32_t>(AppContainerError::ProfileCreationFailed));
-            }
-        }
+    if (info.Length() < 4 || !info[0].IsString() || !info[1].IsString() || !info[3].IsObject()) {
+        return Napi::Number::New(env, static_cast<int32_t>(AppContainerError::InvalidArguments));
     }
 
-    // ========================================================================
-    // Step 2: Grant Workspace Directory Access (CRITICAL!)
-    // ========================================================================
+    std::string commandLineUtf8 = info[0].As<Napi::String>().Utf8Value();
+    std::string workspacePathUtf8 = info[1].As<Napi::String>().Utf8Value();
+    bool enableInternet = info.Length() > 2 && info[2].IsBoolean()
+        ? info[2].As<Napi::Boolean>().Value()
+        : true;
 
-    if (!GrantWorkspaceAccess(workspacePath, g_appContainerSid)) {
-        return Napi::Number::New(env, static_cast<int32_t>(AppContainerError::AclFailure));
+    std::wstring commandLine = Utf8ToWide(commandLineUtf8);
+    std::wstring workspacePath = Utf8ToWide(workspacePathUtf8);
+
+    Napi::Object envObj = info[3].As<Napi::Object>();
+    Napi::Array keys = envObj.GetPropertyNames();
+
+    std::wstring envBlock;
+    for (uint32_t i = 0; i < keys.Length(); i++) {
+        std::string key = keys.Get(i).As<Napi::String>().Utf8Value();
+        std::string val = envObj.Get(key).As<Napi::Value>().ToString().Utf8Value();
+        envBlock += Utf8ToWide(key);
+        envBlock += L"=";
+        envBlock += Utf8ToWide(val);
+        envBlock += L'\0';
     }
+    envBlock += L'\0';
 
-    // ========================================================================
-    // Step 3: Define Capabilities
-    // ========================================================================
-
-    std::vector<SID_AND_ATTRIBUTES> capabilities;
-    PSID internetClientSid = nullptr;
-    PSID privateNetworkSid = nullptr;
-
-    if (enableInternet) {
-        // S-1-15-3-1 = internetClient capability (REQUIRED for LLM API calls)
-        if (ConvertStringSidToSidW(CAPABILITY_INTERNET_CLIENT, &internetClientSid)) {
-            capabilities.push_back({ internetClientSid, SE_GROUP_ENABLED });
-        } else {
-            std::cerr << "[AppContainerManager] Failed to convert internetClient SID" << std::endl;
-            return Napi::Number::New(env, static_cast<int32_t>(AppContainerError::CapabilityError));
-        }
-
-        // S-1-15-3-3 = privateNetworkClientServer (for local MCP servers)
-        if (ConvertStringSidToSidW(CAPABILITY_PRIVATE_NETWORK, &privateNetworkSid)) {
-            capabilities.push_back({ privateNetworkSid, SE_GROUP_ENABLED });
-        }
-    }
-
-    // ========================================================================
-    // Step 4: Prepare SECURITY_CAPABILITIES Structure
-    // ========================================================================
-
-    SECURITY_CAPABILITIES secCaps = {};
-    secCaps.AppContainerSid = g_appContainerSid;
-    secCaps.Capabilities = capabilities.empty() ? nullptr : capabilities.data();
-    secCaps.CapabilityCount = static_cast<DWORD>(capabilities.size());
-
-    // ========================================================================
-    // Step 5: Prepare Extended Startup Info with Attribute List
-    // ========================================================================
-
-    SIZE_T attrListSize = 0;
-    InitializeProcThreadAttributeList(nullptr, 1, 0, &attrListSize);
-
-    std::vector<BYTE> attrListBuffer(attrListSize);
-    LPPROC_THREAD_ATTRIBUTE_LIST attrList =
-        reinterpret_cast<LPPROC_THREAD_ATTRIBUTE_LIST>(attrListBuffer.data());
-
-    if (!InitializeProcThreadAttributeList(attrList, 1, 0, &attrListSize)) {
-        std::cerr << "[AppContainerManager] InitializeProcThreadAttributeList failed: "
-                  << GetWindowsErrorMessage(GetLastError()) << std::endl;
-        if (internetClientSid) LocalFree(internetClientSid);
-        if (privateNetworkSid) LocalFree(privateNetworkSid);
-        return Napi::Number::New(env, static_cast<int32_t>(AppContainerError::ProcessCreationFailed));
-    }
-
-    if (!UpdateProcThreadAttribute(
-        attrList, 0,
-        PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES,
-        &secCaps, sizeof(secCaps),
-        nullptr, nullptr
-    )) {
-        std::cerr << "[AppContainerManager] UpdateProcThreadAttribute failed: "
-                  << GetWindowsErrorMessage(GetLastError()) << std::endl;
-        DeleteProcThreadAttributeList(attrList);
-        if (internetClientSid) LocalFree(internetClientSid);
-        if (privateNetworkSid) LocalFree(privateNetworkSid);
-        return Napi::Number::New(env, static_cast<int32_t>(AppContainerError::ProcessCreationFailed));
-    }
-
-    // ========================================================================
-    // Step 6: Create Process in AppContainer
-    // ========================================================================
-
-    STARTUPINFOEXW si = {};
-    si.StartupInfo.cb = sizeof(si);
-    si.lpAttributeList = attrList;
-
-    PROCESS_INFORMATION pi = {};
-
-    // Make command line mutable for CreateProcessW
-    std::vector<wchar_t> cmdLine(commandLine.begin(), commandLine.end());
-    cmdLine.push_back(L'\0');
-
-    BOOL success = CreateProcessW(
-        nullptr,
-        cmdLine.data(),
-        nullptr, nullptr,
-        FALSE,
-        EXTENDED_STARTUPINFO_PRESENT | CREATE_UNICODE_ENVIRONMENT | CREATE_NEW_CONSOLE,
-        nullptr,
-        workspacePath.c_str(),
-        reinterpret_cast<LPSTARTUPINFOW>(&si),
-        &pi
+    int32_t result = CreateSandboxProcess(
+        commandLine,
+        workspacePath,
+        enableInternet,
+        envBlock.c_str()
     );
+    return Napi::Number::New(env, static_cast<int32_t>(result));
+}
 
-    // ========================================================================
-    // Step 7: Cleanup and Return
-    // ========================================================================
-
-    DeleteProcThreadAttributeList(attrList);
-    if (internetClientSid) LocalFree(internetClientSid);
-    if (privateNetworkSid) LocalFree(privateNetworkSid);
-
-    if (!success) {
-        std::cerr << "[AppContainerManager] CreateProcessW failed: "
-                  << GetWindowsErrorMessage(GetLastError()) << std::endl;
-        return Napi::Number::New(env, static_cast<int32_t>(AppContainerError::ProcessCreationFailed));
+Napi::Value EnsureAppContainerProfile(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    PSID sid = nullptr;
+    if (!EnsureAppContainerProfile(&sid) || sid == nullptr) {
+        return Napi::String::New(env, "");
     }
-
-    // Close handles we don't need (the process continues running)
-    CloseHandle(pi.hThread);
-    CloseHandle(pi.hProcess);
-
-    std::cout << "[AppContainerManager] Process " << pi.dwProcessId
-              << " created in AppContainer sandbox" << std::endl;
-
-    return Napi::Number::New(env, static_cast<int32_t>(pi.dwProcessId));
+    LPWSTR sidString = nullptr;
+    if (!ConvertSidToStringSidW(sid, &sidString)) {
+        return Napi::String::New(env, "");
+    }
+    std::string result = WideToUtf8(sidString);
+    LocalFree(sidString);
+    return Napi::String::New(env, result);
 }
 
 // ============================================================================

@@ -21,6 +21,22 @@
 
 import { z } from 'zod';
 
+export const BrokerErrorCodeSchema = z.enum([
+  'INVALID_REQUEST',
+  'HANDSHAKE_REQUIRED',
+  'HANDSHAKE_FAILED',
+  'AMSI_BLOCKED',
+  'POLICY_DENIED',
+  'APPROVAL_DENIED',
+  'EXECUTION_ERROR',
+]);
+
+export type BrokerErrorCode = z.infer<typeof BrokerErrorCodeSchema>;
+
+export const BaseRequestSchema = z.object({
+  id: z.string().uuid(),
+});
+
 // ============================================================================
 // Request Schemas
 // ============================================================================
@@ -29,12 +45,14 @@ import { z } from 'zod';
  * Execute a command with optional arguments and working directory.
  * This is the primary method for running tools in the privileged context.
  */
-export const ExecuteRequestSchema = z.object({
+export const ExecuteRequestSchema = BaseRequestSchema.extend({
   type: z.literal('execute'),
   /** Command or executable to run */
   command: z.string().min(1),
   /** Optional command arguments */
   args: z.array(z.string()).optional(),
+  /** Execution mode */
+  mode: z.enum(['exec', 'shell']).optional().default('exec'),
   /** Optional working directory (relative to workspace or absolute) */
   cwd: z.string().optional(),
   /** Optional environment variables to add/override */
@@ -47,7 +65,7 @@ export const ExecuteRequestSchema = z.object({
  * Read a file from the filesystem.
  * Path must be within the granted workspace.
  */
-export const ReadFileRequestSchema = z.object({
+export const ReadFileRequestSchema = BaseRequestSchema.extend({
   type: z.literal('readFile'),
   /** Absolute path or path relative to workspace */
   path: z.string().min(1),
@@ -59,7 +77,7 @@ export const ReadFileRequestSchema = z.object({
  * Write content to a file.
  * Path must be within the granted workspace.
  */
-export const WriteFileRequestSchema = z.object({
+export const WriteFileRequestSchema = BaseRequestSchema.extend({
   type: z.literal('writeFile'),
   /** Absolute path or path relative to workspace */
   path: z.string().min(1),
@@ -74,7 +92,7 @@ export const WriteFileRequestSchema = z.object({
 /**
  * List directory contents.
  */
-export const ListDirRequestSchema = z.object({
+export const ListDirRequestSchema = BaseRequestSchema.extend({
   type: z.literal('listDir'),
   /** Directory path to list */
   path: z.string().min(1),
@@ -86,7 +104,7 @@ export const ListDirRequestSchema = z.object({
  * Execute a PowerShell script.
  * Script is scanned by AMSI before execution.
  */
-export const PowerShellRequestSchema = z.object({
+export const PowerShellRequestSchema = BaseRequestSchema.extend({
   type: z.literal('powershell'),
   /** PowerShell script content */
   script: z.string().min(1),
@@ -99,7 +117,7 @@ export const PowerShellRequestSchema = z.object({
 /**
  * Scan content for malware using Windows AMSI.
  */
-export const AmsiScanRequestSchema = z.object({
+export const AmsiScanRequestSchema = BaseRequestSchema.extend({
   type: z.literal('amsiScan'),
   /** Content to scan */
   content: z.string(),
@@ -110,8 +128,14 @@ export const AmsiScanRequestSchema = z.object({
 /**
  * Health check / ping request.
  */
-export const PingRequestSchema = z.object({
+export const PingRequestSchema = BaseRequestSchema.extend({
   type: z.literal('ping'),
+});
+
+export const HelloRequestSchema = BaseRequestSchema.extend({
+  type: z.literal('hello'),
+  token: z.string().min(16),
+  clientVersion: z.string().optional(),
 });
 
 /**
@@ -125,6 +149,7 @@ export const BrokerRequestSchema = z.discriminatedUnion('type', [
   PowerShellRequestSchema,
   AmsiScanRequestSchema,
   PingRequestSchema,
+  HelloRequestSchema,
 ]);
 
 // ============================================================================
@@ -134,7 +159,12 @@ export const BrokerRequestSchema = z.discriminatedUnion('type', [
 /**
  * Successful response with optional data payload.
  */
-export const SuccessResponseSchema = z.object({
+export const BaseResponseSchema = z.object({
+  id: z.string().uuid(),
+  success: z.boolean(),
+});
+
+export const SuccessResponseSchema = BaseResponseSchema.extend({
   success: z.literal(true),
   /** Response data (type depends on request type) */
   data: z.unknown().optional(),
@@ -143,12 +173,12 @@ export const SuccessResponseSchema = z.object({
 /**
  * Error response with error message.
  */
-export const ErrorResponseSchema = z.object({
+export const ErrorResponseSchema = BaseResponseSchema.extend({
   success: z.literal(false),
   /** Human-readable error message */
   error: z.string(),
   /** Optional error code for programmatic handling */
-  code: z.string().optional(),
+  code: BrokerErrorCodeSchema.optional(),
 });
 
 /**
@@ -212,6 +242,7 @@ export type ListDirRequest = z.infer<typeof ListDirRequestSchema>;
 export type PowerShellRequest = z.infer<typeof PowerShellRequestSchema>;
 export type AmsiScanRequest = z.infer<typeof AmsiScanRequestSchema>;
 export type PingRequest = z.infer<typeof PingRequestSchema>;
+export type HelloRequest = z.infer<typeof HelloRequestSchema>;
 export type BrokerRequest = z.infer<typeof BrokerRequestSchema>;
 
 export type SuccessResponse = z.infer<typeof SuccessResponseSchema>;
@@ -222,6 +253,11 @@ export type ExecuteResult = z.infer<typeof ExecuteResultSchema>;
 export type ListDirResult = z.infer<typeof ListDirResultSchema>;
 export type AmsiScanResult = z.infer<typeof AmsiScanResultSchema>;
 
+export interface BrokerSession {
+  sessionId: string;
+  connectedAt: string;
+}
+
 // ============================================================================
 // Helper Functions
 // ============================================================================
@@ -229,18 +265,22 @@ export type AmsiScanResult = z.infer<typeof AmsiScanResultSchema>;
 /**
  * Create a success response.
  */
-export function createSuccessResponse(data?: unknown): SuccessResponse {
-  return { success: true, data };
+export function createSuccessResponse(
+  id: string,
+  data?: unknown,
+): SuccessResponse {
+  return { id, success: true, data };
 }
 
 /**
  * Create an error response.
  */
 export function createErrorResponse(
+  id: string,
   error: string,
-  code?: string,
+  code?: BrokerErrorCode,
 ): ErrorResponse {
-  return { success: false, error, code };
+  return { id, success: false, error, code };
 }
 
 /**

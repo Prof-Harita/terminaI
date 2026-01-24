@@ -6,6 +6,7 @@
  */
 
 import { execSync } from 'node:child_process';
+import * as fs from 'node:fs';
 
 import * as path from 'node:path';
 import * as os from 'node:os';
@@ -14,6 +15,7 @@ import process from 'node:process';
 import type { RuntimeContext } from '@terminai/core';
 import { LocalRuntimeContext } from './LocalRuntimeContext.js';
 import { MicroVMRuntimeContext } from '@terminai/microvm';
+import { checkAppContainerGate } from './windows/featureGate.js';
 
 // Conditionally import Windows-specific module
 // WindowsBrokerContext import moved to method to avoid Top-Level Await
@@ -75,19 +77,26 @@ export class RuntimeManager {
 
     // Tier 1.5 (Windows only): AppContainer Broker
     if ((await this.isWindowsBrokerAvailable()) && WindowsBrokerContextClass) {
-      const context = new WindowsBrokerContextClass({
-        cliVersion: this.cliVersion,
-        workspacePath: path.join(os.homedir(), '.terminai', 'workspace'),
-      });
-      await context.initialize();
-      const health = await context.healthCheck();
-      if (!health.ok) {
-        await context.dispose();
-        throw new Error(`Windows Broker health check failed: ${health.error}`);
+      try {
+        const context = new WindowsBrokerContextClass({
+          cliVersion: this.cliVersion,
+          workspacePath: path.join(os.homedir(), '.terminai', 'workspace'),
+        });
+        await context.initialize();
+        const health = await context.healthCheck();
+        if (!health.ok) {
+          await context.dispose();
+          throw new Error(`Windows Broker health check failed: ${health.error}`);
+        }
+        console.log('[TerminaI] Runtime: Windows AppContainer (Tier 1.5)');
+        this.cachedContext = context;
+        return context;
+      } catch (error) {
+        console.warn(
+          '[RuntimeManager] Windows AppContainer failed, falling back to host:',
+          (error as Error).message,
+        );
       }
-      console.log('[TerminaI] Runtime: Windows AppContainer (Tier 1.5)');
-      this.cachedContext = context;
-      return context;
     }
 
     // Tier 2: Managed Local (Fallback) - Requires explicit consent
@@ -132,8 +141,11 @@ export class RuntimeManager {
    * This is only true on Windows with the native module built.
    */
   private async isWindowsBrokerAvailable(): Promise<boolean> {
-    // Only available on Windows
-    if (process.platform !== 'win32') {
+    const gateResult = await checkAppContainerGate();
+    if (!gateResult.enabled) {
+      console.log(
+        `[RuntimeManager] Windows AppContainer disabled: ${gateResult.reason}`,
+      );
       return false;
     }
 
@@ -161,10 +173,34 @@ export class RuntimeManager {
   }
 
   /**
+   * Task 7: Detect if we are already running inside a container.
+   * Prevents nested container starts (Docker-in-Docker complexity).
+   */
+  private isInsideContainer(): boolean {
+    // 1. Check for /.dockerenv
+    if (fs.existsSync('/.dockerenv')) return true;
+
+    // 2. Check for docker/kubepods in cgroup
+    try {
+      const cgroup = fs.readFileSync('/proc/1/cgroup', 'utf-8');
+      return cgroup.includes('docker') || cgroup.includes('kubepods');
+    } catch {
+      return false;
+    }
+  }
+
+  /**
    * Task 5: Implement container detection logic
    * Checks for docker or podman DAEMON availability (not just binary)
    */
   private async isContainerRuntimeAvailable(): Promise<boolean> {
+    if (this.isInsideContainer()) {
+      console.log(
+        '[RuntimeManager] Already running inside a container. Disabling Tier 1.5 to prevent nesting.',
+      );
+      return false;
+    }
+
     // Check Docker daemon (not just binary)
     try {
       execSync('docker info', { stdio: 'ignore', timeout: 2000 });

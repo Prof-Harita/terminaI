@@ -147,6 +147,16 @@ export class PersistentShell {
         break;
     }
 
+    if (language === 'python' && this.options.pythonPath) {
+      try {
+        this.validateExecutable(this.options.pythonPath);
+      } catch (error) {
+        debugLogger.error(`Python validation failed: ${error}`);
+        this.options.onExit(1, null);
+        return;
+      }
+    }
+
     try {
       this.ptyProcess = this.ptyModule.module.spawn(command, args, {
         name: 'xterm-256color',
@@ -174,6 +184,33 @@ export class PersistentShell {
       );
       // Notify exit immediately if spawn failed
       this.options.onExit(1, null);
+    }
+  }
+
+  private validateExecutable(execPath: string): void {
+    // Check if path is absolute and exists
+    if (path.isAbsolute(execPath)) {
+      if (!fs.existsSync(execPath)) {
+        throw new Error(
+          `Python executable not found at "${execPath}". ` +
+            `This may indicate a runtime environment mismatch.`,
+        );
+      }
+    } else {
+      // Check if command is in PATH
+      try {
+        execSync(
+          os.platform() === 'win32' ? `where ${execPath}` : `which ${execPath}`,
+          {
+            stdio: 'ignore',
+          },
+        );
+      } catch {
+        throw new Error(
+          `Python executable "${execPath}" not found in PATH. ` +
+            `Ensure Python is installed and accessible.`,
+        );
+      }
     }
   }
 

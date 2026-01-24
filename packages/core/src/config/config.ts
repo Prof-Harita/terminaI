@@ -410,6 +410,7 @@ export interface ConfigParameters {
   audit?: AuditSettings;
   recipes?: RecipesSettings;
   guiAutomation?: Partial<GuiAutomationConfig>;
+  systemOperatorMode?: boolean;
 }
 
 export interface AuditSettings {
@@ -576,6 +577,7 @@ export class Config {
   private readonly checkerRegistry: CheckerRegistry;
   private readonly contextBuilder: ContextBuilder;
   private runtimeContext?: RuntimeContext;
+  private readonly systemOperatorMode: boolean;
 
   constructor(params: ConfigParameters) {
     this.sessionId = params.sessionId;
@@ -585,7 +587,13 @@ export class Config {
     this.sandbox = params.sandbox;
     this.targetDir = path.resolve(params.targetDir);
     this.folderTrust = params.folderTrust ?? false;
-    this.workspaceContext = new WorkspaceContext(this.targetDir, []);
+    this.workspaceContext = new WorkspaceContext(
+      {
+        targetDir: this.targetDir,
+        includeHomeDirectory: params.systemOperatorMode ?? false,
+      },
+      [],
+    );
     this.pendingIncludeDirectories = params.includeDirectories ?? [];
     this.debugMode = params.debugMode;
     this.question = params.question;
@@ -735,6 +743,7 @@ export class Config {
     this.enablePromptCompletion = params.enablePromptCompletion ?? false;
     this.fileExclusions = new FileExclusions(this);
     this.eventEmitter = params.eventEmitter;
+    this.systemOperatorMode = params.systemOperatorMode ?? false;
 
     // Safety Architecture Wiring
     this.contextBuilder = new ContextBuilder(this);
@@ -1264,6 +1273,10 @@ export class Config {
 
   getProjectRoot(): string {
     return this.targetDir;
+  }
+
+  isSystemOperatorMode(): boolean {
+    return this.systemOperatorMode;
   }
 
   getWorkspaceContext(): WorkspaceContext {

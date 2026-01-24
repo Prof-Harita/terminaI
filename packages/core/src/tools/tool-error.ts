@@ -61,6 +61,8 @@ export enum ToolErrorType {
 
   // Shell errors
   SHELL_EXECUTE_ERROR = 'shell_execute_error',
+  CONTAINER_RUNTIME_ERROR = 'container_runtime_error',
+  MICROVM_RUNTIME_ERROR = 'microvm_runtime_error',
 
   // DiscoveredTool-specific Errors
   DISCOVERED_TOOL_EXECUTION_ERROR = 'discovered_tool_execution_error',

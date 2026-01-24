@@ -21,6 +21,7 @@ const __dirname = path.dirname(__filename);
 
 export class LocalRuntimeContext implements RuntimeContext {
   readonly type = 'local';
+  readonly executionEnvironment = 'host';
   readonly isIsolated = false;
   readonly displayName = 'Host Python (Direct Access)';
 

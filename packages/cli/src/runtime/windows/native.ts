@@ -42,6 +42,17 @@ export interface NativeModule {
     enableInternet?: boolean,
   ) => number;
 
+  /** Create a process running in AppContainer sandbox with env block */
+  createAppContainerSandboxWithEnv: (
+    commandLine: string,
+    workspacePath: string,
+    enableInternet: boolean,
+    env: Record<string, string>,
+  ) => number;
+
+  /** Ensure AppContainer profile exists and return SID */
+  ensureAppContainerProfile: () => string;
+
   /** Get the SID of the TerminAI AppContainer profile */
   getAppContainerSid: () => string;
 
@@ -59,6 +70,24 @@ export interface NativeModule {
 
   /** Whether AMSI is initialized and available */
   isAmsiAvailable: boolean;
+
+  /** Native module version */
+  version: string;
+
+  SecurePipeServer: new (pipePath: string, appContainerSid: string) => {
+    listen(): void;
+    acceptConnection(): Promise<void>;
+    read(): Promise<string>;
+    write(data: string): Promise<void>;
+    close(): void;
+    isConnected(): boolean;
+    getPipePath(): string;
+  };
+
+  verifyPipeDacl: (
+    pipePath: string,
+    appContainerSid: string,
+  ) => { ok: boolean; details?: string; missing?: string[] };
 }
 
 // ============================================================================
@@ -67,6 +96,8 @@ export interface NativeModule {
 
 let nativeModule: NativeModule | null = null;
 let loadError: Error | null = null;
+let nativeModulePath: string | null = null;
+let nativeModuleSource: 'prebuild' | 'local' | 'unavailable' = 'unavailable';
 const requireFn = createRequire(import.meta.url);
 
 function loadNativeModule(): NativeModule | null {
@@ -79,8 +110,29 @@ function loadNativeModule(): NativeModule | null {
   }
 
   try {
-    // Native module is built by node-gyp to build/Release/terminai_native.node
-    // Try different possible locations
+    const arch = process.arch;
+    const prebuildPackage =
+      arch === 'x64'
+        ? '@terminai/native-win32-x64'
+        : arch === 'arm64'
+          ? '@terminai/native-win32-arm64'
+          : null;
+
+    if (prebuildPackage) {
+      try {
+        const prebuildPath = requireFn.resolve(
+          `${prebuildPackage}/terminai_native.node`,
+        );
+        nativeModule = requireFn(prebuildPath) as NativeModule;
+        nativeModulePath = prebuildPath;
+        nativeModuleSource = 'prebuild';
+        console.log('[native] Loaded native module from:', prebuildPath);
+        return nativeModule;
+      } catch {
+        // ignore
+      }
+    }
+
     const possiblePaths = [
       // When running from packages/cli/src/runtime/windows/
       path.join(
@@ -109,6 +161,8 @@ function loadNativeModule(): NativeModule | null {
     for (const modulePath of possiblePaths) {
       if (fs.existsSync(modulePath)) {
         nativeModule = requireFn(modulePath) as NativeModule;
+        nativeModulePath = modulePath;
+        nativeModuleSource = 'local';
         console.log('[native] Loaded native module from:', modulePath);
         return nativeModule;
       }
@@ -122,6 +176,25 @@ function loadNativeModule(): NativeModule | null {
     console.warn('[native] Failed to load native module:', loadError.message);
     return null;
   }
+}
+
+export interface NativeModuleStatus {
+  available: boolean;
+  source: 'prebuild' | 'local' | 'unavailable';
+  version: string;
+  path: string;
+  error?: string;
+}
+
+export function getNativeModuleStatus(): NativeModuleStatus {
+  const native = loadNativeModule();
+  return {
+    available: Boolean(native),
+    source: native ? nativeModuleSource : 'unavailable',
+    version: native?.version ?? '',
+    path: nativeModulePath ?? '',
+    error: loadError?.message,
+  };
 }
 
 // ============================================================================
@@ -178,6 +251,32 @@ export function createAppContainerSandbox(
   );
 }
 
+export function createAppContainerSandboxWithEnv(
+  commandLine: string,
+  workspacePath: string,
+  enableInternet: boolean,
+  env: Record<string, string>,
+): number {
+  const native = loadNativeModule();
+  if (!native) {
+    throw new Error('Native module not available');
+  }
+  return native.createAppContainerSandboxWithEnv(
+    commandLine,
+    workspacePath,
+    enableInternet,
+    env,
+  );
+}
+
+export function ensureAppContainerProfile(): string {
+  const native = loadNativeModule();
+  if (!native) {
+    return '';
+  }
+  return native.ensureAppContainerProfile();
+}
+
 /**
  * Get the SID of the TerminAI AppContainer profile.
  *
@@ -202,6 +301,36 @@ export function deleteAppContainerProfile(): boolean {
     return true;
   }
   return native.deleteAppContainerProfile();
+}
+
+export function getNativeVersion(): string {
+  const native = loadNativeModule();
+  if (!native) {
+    return '';
+  }
+  return native.version;
+}
+
+export function createSecurePipeServer(
+  pipePath: string,
+  appContainerSid: string,
+): InstanceType<NativeModule['SecurePipeServer']> {
+  const native = loadNativeModule();
+  if (!native) {
+    throw new Error('Native module not available');
+  }
+  return new native.SecurePipeServer(pipePath, appContainerSid);
+}
+
+export function verifyPipeDacl(
+  pipePath: string,
+  appContainerSid: string,
+): { ok: boolean; details?: string; missing?: string[] } {
+  const native = loadNativeModule();
+  if (!native) {
+    throw new Error('Native module not available');
+  }
+  return native.verifyPipeDacl(pipePath, appContainerSid);
 }
 
 /**

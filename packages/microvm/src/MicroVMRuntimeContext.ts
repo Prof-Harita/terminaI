@@ -55,6 +55,7 @@ export class MicroVMRuntimeContext implements RuntimeContext {
   }
 
   readonly type = 'microvm';
+  readonly executionEnvironment = 'microvm';
   readonly isIsolated = true;
   readonly displayName = 'Sovereign Runtime (Micro-VM)';
 

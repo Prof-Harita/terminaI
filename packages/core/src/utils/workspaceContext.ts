@@ -8,6 +8,7 @@
 import { isNodeError } from '../utils/errors.js';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import * as os from 'node:os';
 import { debugLogger } from './debugLogger.js';
 
 export type Unsubscribe = () => void;
@@ -17,21 +18,38 @@ export type Unsubscribe = () => void;
  * against them. This allows the CLI to operate on files from multiple directories
  * in a single session.
  */
+export interface WorkspaceContextOptions {
+  targetDir: string;
+  includeHomeDirectory?: boolean;
+}
+
 export class WorkspaceContext {
+  public readonly targetDir: string;
   private directories = new Set<string>();
   private initialDirectories: Set<string>;
   private onDirectoriesChangedListeners = new Set<() => void>();
 
   /**
    * Creates a new WorkspaceContext with the given initial directory and optional additional directories.
-   * @param targetDir The initial working directory (usually cwd)
+   * @param options Target directory path or options object
    * @param additionalDirectories Optional array of additional directories to include
    */
   constructor(
-    readonly targetDir: string,
+    options: WorkspaceContextOptions | string,
     additionalDirectories: string[] = [],
   ) {
-    this.addDirectory(targetDir);
+    if (typeof options === 'string') {
+      this.targetDir = options;
+    } else {
+      this.targetDir = options.targetDir;
+    }
+
+    this.addDirectory(this.targetDir);
+
+    if (typeof options !== 'string' && options.includeHomeDirectory) {
+      this.addDirectory(os.homedir());
+    }
+
     for (const additionalDirectory of additionalDirectories) {
       this.addDirectory(additionalDirectory);
     }
@@ -108,6 +126,24 @@ export class WorkspaceContext {
 
   getInitialDirectories(): readonly string[] {
     return Array.from(this.initialDirectories);
+  }
+
+  /**
+   * Registers an additional system directory to the workspace.
+   * @param dir The directory path to register
+   */
+  registerSystemDirectory(dir: string): void {
+    try {
+      const resolved = this.resolveAndValidateDir(dir);
+      if (!this.directories.has(resolved)) {
+        this.directories.add(resolved);
+        this.notifyDirectoriesChanged();
+      }
+    } catch (err) {
+      debugLogger.warn(
+        `[WorkspaceContext] Failed to register system directory ${dir}: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
   }
 
   setDirectories(directories: readonly string[]): void {

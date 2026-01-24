@@ -501,6 +501,24 @@ export async function main() {
 
     // Inject the runtime context into the config for safety checks
     config.setRuntimeContext(runtimeContext);
+    const policyRuntime = runtimeContext as unknown as {
+      setPolicyServices?: (options: {
+        approvalMode: ReturnType<typeof config.getApprovalMode>;
+        approvalPin: ReturnType<typeof config.getApprovalPin>;
+        isInteractive: boolean;
+        auditLedger?: ReturnType<typeof config.getAuditLedger>;
+        sessionId?: string;
+      }) => void;
+    };
+    if (typeof policyRuntime.setPolicyServices === 'function') {
+      policyRuntime.setPolicyServices({
+        approvalMode: config.getApprovalMode(),
+        approvalPin: config.getApprovalPin(),
+        isInteractive: config.isInteractive(),
+        auditLedger: config.getAuditLedger(),
+        sessionId: config.getSessionId(),
+      });
+    }
 
     if (argv.dumpConfig) {
       const getCircularReplacer = () => {

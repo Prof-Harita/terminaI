@@ -52,8 +52,8 @@ This harness will:
 | 01  | Disk full root-cause and safe cleanup                 |         |         | ⏳     |          |         |
 | 02  | Folder cleanup in an arbitrary path                   | 52s     |         | ❌     | too slow |         |
 | 03  | Large directory enumeration without context blow-ups  |         |         | ⏳     |          |         |
-| 04  | Duplicate file detection (safe)                       |         |         | ⏳     |          |         |
-| 05  | Zip/archive workflow                                  |         |         | ⏳     |          |         |
+| 04  | Duplicate file detection (safe)                    | 134s    | f6d506e4-59d2-4887-8e98-367451733bed | ⚠️     | Struggled at the beginning, then found its footing. i want to know what exactly happened | why did it struggle at the beginnning |
+| 05  | Zip/archive workflow                               | 226s    | 54d54cc6-22a0-447c-b489-520eaca7d69b | ⚠️     | struggled at the start |                      |
 | 06  | Restore from mistake (reversibility)                  |         |         | ⏳     |          |         |
 | 07  | Explain and fix "Docker is slow"                      |         |         | ⏳     |          |         |
 | 08  | Network diagnosis (DNS/TCP)                           |         |         | ⏳     |          |         |

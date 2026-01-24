@@ -31,14 +31,16 @@ import type {
  */
 export class ContainerRuntimeContext implements RuntimeContext {
   readonly type = 'container';
+  readonly executionEnvironment = 'container';
   readonly isIsolated = true;
   readonly displayName = 'Docker Container';
 
-  // Python path in the container (from Dockerfile)
   readonly pythonPath = '/opt/terminai/venv/bin/python3';
   readonly taptsVersion: string;
 
   private containerId: string | null = null;
+  private workspacePath: string | null = null;
+  private mountMappings: Map<string, string> = new Map();
   private readonly imageName = 'terminai-sandbox:latest';
 
   constructor(cliVersion: string) {
@@ -55,8 +57,12 @@ export class ContainerRuntimeContext implements RuntimeContext {
     }
   }
 
-  async initialize(): Promise<void> {
+  async initialize(workspacePath?: string): Promise<void> {
     const { execSync } = await import('node:child_process');
+
+    this.workspacePath = workspacePath || process.cwd();
+    // Register mount mapping (host:container for identity mount)
+    this.mountMappings.set(this.workspacePath, this.workspacePath);
 
     // 1. Check Docker availability
     try {
@@ -67,9 +73,11 @@ export class ContainerRuntimeContext implements RuntimeContext {
 
     // 2. Start the container
     try {
+      // Add bind mount for workspace
+      const mountFlag = `-v "${this.workspacePath}:${this.workspacePath}"`;
       // Run detached, clean up on exit, init process, override entrypoint to keep alive
       this.containerId = execSync(
-        `docker run -d --rm --init --entrypoint tail ${this.imageName} -f /dev/null`,
+        `docker run -d --rm --init ${mountFlag} --entrypoint tail ${this.imageName} -f /dev/null`,
         { encoding: 'utf-8' },
       ).trim();
     } catch (e) {
@@ -101,11 +109,26 @@ export class ContainerRuntimeContext implements RuntimeContext {
       throw new Error('Container not initialized. Call initialize() first.');
     }
 
+    const hostCwd = options?.cwd || this.workspacePath || '/home/node';
+    const containerCwd = this.translatePath(hostCwd);
+
+    // Preflight check: verify cwd exists in container
+    const checkResult = await this.rawExec(
+      `test -d "${containerCwd}" && echo OK`,
+    );
+    if (!checkResult.stdout.includes('OK')) {
+      return {
+        stdout: '',
+        stderr: `Container error: directory "${containerCwd}" does not exist. Ensure bind mount is configured.`,
+        exitCode: 1,
+      };
+    }
+
     return new Promise((resolve) => {
       const args = ['exec'];
 
       // Working directory
-      args.push('-w', options?.cwd || '/home/node');
+      args.push('-w', containerCwd);
 
       // Environment variables
       if (options?.env) {
@@ -125,6 +148,19 @@ export class ContainerRuntimeContext implements RuntimeContext {
         args,
         { encoding: 'utf-8' },
         (error, stdout, stderr) => {
+          const combinedOutput = `${stdout}${stderr}`;
+          const runtimeError = this.detectRuntimeError(combinedOutput);
+
+          if (runtimeError) {
+            resolve({
+              stdout: '',
+              stderr: runtimeError,
+              exitCode: 126, // "Command invoked cannot execute"
+              runtimeError,
+            });
+            return;
+          }
+
           resolve({
             stdout,
             stderr,
@@ -134,6 +170,55 @@ export class ContainerRuntimeContext implements RuntimeContext {
         },
       );
     });
+  }
+
+  private translatePath(hostPath: string): string {
+    for (const [hostPrefix, containerPrefix] of this.mountMappings) {
+      if (hostPath.startsWith(hostPrefix)) {
+        return hostPath.replace(hostPrefix, containerPrefix);
+      }
+    }
+
+    // Path not mounted - this will likely fail
+    console.warn(`[Container] Path "${hostPath}" is not mounted in container`);
+    return hostPath;
+  }
+
+  private async rawExec(command: string): Promise<ExecutionResult> {
+    const { execFile } = await import('node:child_process');
+    if (!this.containerId) {
+      throw new Error('Container not initialized');
+    }
+    return new Promise((resolve) => {
+      execFile(
+        'docker',
+        ['exec', this.containerId!, '/bin/sh', '-c', command],
+        (error, stdout, stderr) => {
+          resolve({
+            stdout,
+            stderr,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            exitCode: error ? ((error as any).code ?? 1) : 0,
+          });
+        },
+      );
+    });
+  }
+
+  private detectRuntimeError(output: string): string | null {
+    const OCI_RUNTIME_ERROR_PATTERNS = [
+      'OCI runtime exec failed',
+      'container process: chdir to cwd',
+      'no such file or directory',
+      'docker: Error response from daemon',
+    ];
+
+    for (const pattern of OCI_RUNTIME_ERROR_PATTERNS) {
+      if (output.toLowerCase().includes(pattern.toLowerCase())) {
+        return `Container runtime error detected: ${output.trim()}`;
+      }
+    }
+    return null;
   }
 
   async spawn(

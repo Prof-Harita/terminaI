@@ -138,6 +138,35 @@ interface ActivePty {
   headlessTerminal: pkg.Terminal;
 }
 
+const RUNTIME_ERROR_SIGNATURES = [
+  { pattern: 'OCI runtime exec failed', code: 126 },
+  { pattern: 'docker: Error response from daemon', code: 125 },
+  { pattern: 'unable to start container process', code: 126 },
+  { pattern: 'execvp(3) failed', code: 126 },
+  { pattern: 'container process:', code: 126 },
+];
+
+function processOutput(
+  output: string,
+  originalExitCode: number | null,
+): {
+  output: string;
+  exitCode: number | null;
+  detectedError: string | null;
+} {
+  for (const sig of RUNTIME_ERROR_SIGNATURES) {
+    if (output.includes(sig.pattern)) {
+      return {
+        output,
+        exitCode: sig.code,
+        detectedError: `Runtime error: ${sig.pattern}`,
+      };
+    }
+  }
+
+  return { output, exitCode: originalExitCode, detectedError: null };
+}
+
 const getFullBufferText = (terminal: pkg.Terminal): string => {
   const buffer = terminal.buffer.active;
   const lines: string[] = [];
@@ -270,7 +299,7 @@ export class ShellExecutionService {
           output: res.stdout + res.stderr,
           exitCode: res.exitCode,
           signal: null,
-          error: null,
+          error: res.runtimeError ? new Error(res.runtimeError) : null,
           aborted: false,
           pid: undefined,
           executionMethod: 'child_process' as const,
@@ -498,6 +527,16 @@ export class ShellExecutionService {
 
           const finalStrippedOutput = stripAnsi(combinedOutput).trim();
 
+          let processedExitCode = code;
+          let processedError = error;
+
+          // Apply runtime error detection
+          const processed = processOutput(finalStrippedOutput, code);
+          if (processed.detectedError) {
+            processedExitCode = processed.exitCode;
+            processedError = new Error(processed.detectedError);
+          }
+
           if (isStreamingRawContent) {
             if (finalStrippedOutput) {
               onOutputEvent({ type: 'data', chunk: finalStrippedOutput });
@@ -509,9 +548,9 @@ export class ShellExecutionService {
           resolve({
             rawOutput: finalBuffer,
             output: finalStrippedOutput,
-            exitCode: code,
+            exitCode: processedExitCode,
             signal: signal ? os.constants.signals[signal] : null,
-            error,
+            error: processedError,
             aborted: abortSignal.aborted,
             pid: child.pid,
             executionMethod: 'child_process',

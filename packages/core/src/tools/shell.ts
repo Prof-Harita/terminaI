@@ -136,11 +136,26 @@ export class ShellToolInvocation extends BaseToolInvocation<
       '../safety/approval-ladder/computeMinimumReviewLevel.js'
     );
 
+    // Detect outside-workspace operation
+    let outsideWorkspaceWarning: string | null = null;
+    if (this.params.dir_path) {
+      const resolvedPath = path.resolve(
+        this.config.getTargetDir(),
+        this.params.dir_path,
+      );
+      const workspaceContext = this.config.getWorkspaceContext();
+
+      if (!workspaceContext.isPathWithinWorkspace(resolvedPath)) {
+        outsideWorkspaceWarning = `Operating outside workspace: ${resolvedPath}`;
+      }
+    }
+
     const invocationProvenance = this.getProvenance();
     const actionProfile = buildShellActionProfile({
       command: this.params.command,
       cwd: this.params.dir_path ?? process.cwd(),
       workspaces: [this.config.getWorkspaceContext().targetDir],
+      outsideWorkspace: outsideWorkspaceWarning !== null,
       provenance:
         invocationProvenance.length > 0 ? invocationProvenance : undefined,
     });
@@ -150,6 +165,14 @@ export class ShellToolInvocation extends BaseToolInvocation<
       ...reviewResult,
       reasons: [...reviewResult.reasons],
     };
+
+    // Inject outside-workspace warning into reasons
+    if (outsideWorkspaceWarning) {
+      effectiveReview.reasons.unshift(outsideWorkspaceWarning);
+      if (effectiveReview.level === 'A') {
+        effectiveReview.level = 'B'; // Bump to at least level B
+      }
+    }
 
     const brainAuthority = this.config.getBrainAuthority();
     if (reviewResult.level !== 'A' || brainAuthority !== 'advisory') {
@@ -481,7 +504,7 @@ export class ShellToolInvocation extends BaseToolInvocation<
         ? {
             error: {
               message: result.error.message,
-              type: ToolErrorType.SHELL_EXECUTE_ERROR,
+              type: this.attributeErrorType(result.error.message),
             },
           }
         : {};
@@ -534,6 +557,19 @@ export class ShellToolInvocation extends BaseToolInvocation<
 
     const invocation = { params: { command } } as unknown as AnyToolInvocation;
     return isShellInvocationAllowlisted(invocation, allowedTools);
+  }
+
+  private attributeErrorType(message: string): ToolErrorType {
+    if (
+      message.includes('OCI runtime exec failed') ||
+      message.includes('error during container execution')
+    ) {
+      return ToolErrorType.CONTAINER_RUNTIME_ERROR;
+    }
+    if (message.includes('MicroVM runtime error')) {
+      return ToolErrorType.MICROVM_RUNTIME_ERROR;
+    }
+    return ToolErrorType.SHELL_EXECUTE_ERROR;
   }
 }
 
@@ -641,6 +677,29 @@ export class ShellTool extends BaseDeclarativeTool<
         params.dir_path,
       );
       const workspaceContext = this.config.getWorkspaceContext();
+
+      // NEW: System Operator mode allows common user directories
+      if (this.config.isSystemOperatorMode()) {
+        const ALLOWED_SYSTEM_PATHS = [
+          os.homedir(), // ~/
+          path.join(os.homedir(), 'Downloads'), // ~/Downloads
+          path.join(os.homedir(), 'Documents'), // ~/Documents
+          path.join(os.homedir(), 'Desktop'), // ~/Desktop
+          os.tmpdir(), // /tmp or C:\Temp
+          path.join(os.homedir(), 'Archives'), // ~/Archives
+        ];
+
+        const isAllowedSystemPath = ALLOWED_SYSTEM_PATHS.some(
+          (allowed) =>
+            resolvedPath === allowed ||
+            resolvedPath.startsWith(allowed + path.sep),
+        );
+
+        if (isAllowedSystemPath) {
+          return null; // Allow execution, confirmation will gate risk
+        }
+      }
+
       if (!workspaceContext.isPathWithinWorkspace(resolvedPath)) {
         return `Directory '${resolvedPath}' is not within any of the registered workspace directories.`;
       }
