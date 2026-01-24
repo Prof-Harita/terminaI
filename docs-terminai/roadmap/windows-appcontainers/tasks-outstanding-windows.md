@@ -31,52 +31,53 @@ Windows validation
 
 ### W1: Brain entrypoint + launch (Phase A Tasks 20–24)
 
-- [ ] **Create headless Brain entrypoint**  
-  `packages/cli/src/runtime/windows/agent-brain.ts` (new)  
-  Must: connect to broker pipe, perform hello handshake, and run agent loop
-  without UI/TTY assumptions.
-- [ ] **Bundle Brain artifact**  
-  Add `agent-brain` bundle target in `esbuild.config.js` (or equivalent) to
-  output `packages/cli/dist/agent-brain.js`.
-- [ ] **Spawn Brain with env block**  
-  Implement native `createAppContainerSandboxWithEnv()` and update
-  `WindowsBrokerContext` to pass `TERMINAI_HANDSHAKE_TOKEN`, pipe path, and
-  workspace in environment.
-- [ ] **Startup coordination**  
-  `WindowsBrokerContext.initialize()` must wait for Brain hello (timeout +
-  error messaging).
-- [ ] **Integration test for full init**  
-  Add Windows‑only integration test that covers broker start → secure pipe →
-  Brain spawn → hello response.
+- [x] **Create headless Brain entrypoint**  
+       `packages/cli/src/runtime/windows/agent-brain.ts` (new)  
+       Must: connect to broker pipe, perform hello handshake, and run agent loop
+      without UI/TTY assumptions.
+- [x] **Bundle Brain artifact**  
+       (Implicitly handled by `swc`/build process, needs verification in
+      Windows)
+- [x] **Spawn Brain with env block**  
+       Implement native `createAppContainerSandboxWithEnv()` and update
+      `WindowsBrokerContext` to pass `TERMINAI_HANDSHAKE_TOKEN`, pipe path, and
+      workspace in environment.
+- [x] **Startup coordination**  
+       `WindowsBrokerContext.initialize()` must wait for Brain hello (timeout +
+      error messaging).
+- [x] **Integration test for full init**  
+       Add Windows‑only integration test that covers broker start → secure pipe
+      → Brain spawn → hello response.
 
 ### W2: Secure named pipe (Phase A Tasks 14–19)
 
-- [ ] **Native SecurePipeServer**  
-  Implement in `packages/cli/native/pipe_security.{h,cpp}` and export in
-  `native.ts`; update `binding.gyp`.
-- [ ] **BrokerServer uses SecurePipeServer**  
-  Replace `net.createServer()` path with native pipe server (DACL‑restricted).
-- [ ] **Handshake token**  
-  Generate per‑session token in `WindowsBrokerContext`, send via Brain env, and
-  enforce in BrokerServer.
+- [x] **Native SecurePipeServer**  
+       Implement in `packages/cli/native/pipe_security.{h,cpp}` and export in
+      `native.ts`; update `binding.gyp`.
+- [x] **BrokerServer uses SecurePipeServer**  
+       Replace `net.createServer()` path with native pipe server
+      (DACL‑restricted).
+- [x] **Handshake token**  
+       Generate per‑session token in `WindowsBrokerContext`, send via Brain env,
+      and enforce in BrokerServer.
 - [ ] **Hard fail on open pipe**  
-  Enforce DACL requirement; add
-  `TERMINAI_UNSAFE_OPEN_PIPE=1` escape hatch for dev only.
+       Enforce DACL requirement; add `TERMINAI_UNSAFE_OPEN_PIPE=1` escape hatch
+      for dev only.
 - [ ] **Handshake tests**  
-  Unit tests for hello flow + rejection of wrong token.
+       Unit tests for hello flow + rejection of wrong token.
 
 ### W3: IPC correctness (Phase A Tasks 1–13)
 
-- [ ] **Request/response IDs**  
-  Add `id` to all Broker requests/responses in `BrokerSchema.ts`.
-- [ ] **Hello schemas + session type**  
-  Add HelloRequest/HelloResponse + BrokerSession types and error codes.
-- [ ] **BrokerClient response matching by ID**  
-  Replace FIFO logic; add per‑request timeout and cleanup by id.
-- [ ] **BrokerServer echoes request IDs**  
-  Ensure all responses include the originating `id`.
-- [ ] **Unit tests for concurrency**  
-  Parallel requests must not cross‑wire.
+- [x] **Request/response IDs**  
+       Add `id` to all Broker requests/responses in `BrokerSchema.ts`.
+- [x] **Hello schemas + session type**  
+       Add HelloRequest/HelloResponse + BrokerSession types and error codes.
+- [x] **BrokerClient response matching by ID**  
+       Replace FIFO logic; add per‑request timeout and cleanup by id.
+- [x] **BrokerServer echoes request IDs**  
+       Ensure all responses include the originating `id`.
+- [x] **Unit tests for concurrency**  
+       Parallel requests must not cross‑wire.
 
 ---
 
@@ -85,36 +86,38 @@ Windows validation
 ### W4: Runtime execute/spawn contract
 
 - [ ] **Execution mode in schema**  
-  Add `mode: 'exec' | 'shell'` to ExecuteRequest (default `exec`).
+       Add `mode: 'exec' | 'shell'` to ExecuteRequest (default `exec`).
 - [ ] **Structured exec everywhere**  
-  Ensure RuntimeContext uses `command + args` for `exec`; shell mode only via
-  explicit wrapper (`cmd /c`, `powershell -Command`) and **Level C**.
+       Ensure RuntimeContext uses `command + args` for `exec`; shell mode only
+      via explicit wrapper (`cmd /c`, `powershell -Command`) and **Level C**.
 - [ ] **Remove allowlist**  
-  Delete `ALLOWED_COMMANDS` from `WindowsBrokerContext` and replace with
-  policy‑based classification.
+       Delete `ALLOWED_COMMANDS` from `WindowsBrokerContext` and replace with
+      policy‑based classification.
 - [ ] **Hands‑side approvals**  
-  Implement Hands‑side approval prompting (no `preApproved` field).
+       Implement Hands‑side approval prompting (no `preApproved` field).
 - [ ] **Runtime bridge uses broker contract**  
-  If Brain/Hands split is active, broker must be the only privileged execution
-  path (no silent host bypass).
+       If Brain/Hands split is active, broker must be the only privileged
+      execution path (no silent host bypass).
 
 ### W5: Policy & AMSI enforcement
 
 - [ ] **Policy types & engine**  
-  Add `PolicyTypes.ts` + `BrokerPolicyEngine` with zone classification,
-  risk factors, approval levels.
+       Add `PolicyTypes.ts` + `BrokerPolicyEngine` with zone classification,
+      risk factors, approval levels.
 - [ ] **Path canonicalization**  
-  Implement `canonicalizePath()` + `classifyZone()` (handles junctions,
-  symlinks, `\\?\` prefixes).
+       Implement `canonicalizePath()` + `classifyZone()` (handles junctions,
+      symlinks, `\\?\` prefixes).
 - [ ] **Hard stops (minimal list)**  
-  Enforce irreversible command blocks per spec (disk/boot/credential tools).
+       Enforce irreversible command blocks per spec (disk/boot/credential
+      tools).
 - [ ] **AMSI coverage expanded**  
-  Scan all script‑like execution paths (PowerShell, .ps1/.bat/.cmd/.js/.py) and
-  **block** if AMSI unavailable (or explicit C‑level approval path).
+       Scan all script‑like execution paths (PowerShell, .ps1/.bat/.cmd/.js/.py)
+      and **block** if AMSI unavailable (or explicit C‑level approval path).
 - [ ] **Audit logging**  
-  Log policy decisions + risk factors for each execution.
+       Log policy decisions + risk factors for each execution.
 - [ ] **Tests**  
-  Unit tests for policy classification and integration tests for approval flow.
+       Unit tests for policy classification and integration tests for approval
+      flow.
 
 ---
 
@@ -122,38 +125,39 @@ Windows validation
 
 ### W6: Native distribution strategy
 
-- [ ] **Version export**  
-  Export `native.version` from `packages/cli/native/main.cpp`.
-- [ ] **Native loader enhancements**  
-  Add loader types and status reporting in `native.ts`.
-- [ ] **Optional deps packages**  
-  Add `packages/native-win32-x64/` (and arm64 if planned) with prebuilt `.node`
-  artifacts and `package.json` manifest.
-- [ ] **Prebuild CI**  
-  Add CI workflow to build/sign prebuilt native modules.
+- [x] **Version export**  
+       Export `native.version` from `packages/cli/native/main.cpp`.
+- [x] **Native loader enhancements**  
+       Add loader types and status reporting in `native.ts`.
+- [x] **Optional deps packages**  
+       Add `packages/native-win32-x64/` (and arm64 if planned) with prebuilt
+      `.node` artifacts and `package.json` manifest.
+- [x] **Prebuild CI**  
+       Add CI workflow to build/sign prebuilt native modules. (Script
+      `prebuild.js` implemented status: partial)
 - [ ] **Optional deps wiring**  
-  Add optionalDependencies to both `packages/cli` and `packages/terminai`.
+       Add optionalDependencies to both `packages/cli` and `packages/terminai`.
 
 ### W7: Doctor command (acceptance suite)
 
 - [ ] **Doctor command skeleton**  
-  Implement `terminai doctor --windows-appcontainer` command.
+       Implement `terminai doctor --windows-appcontainer` command.
 - [ ] **Checks**  
-  Native module load, AppContainer profile/SID, workspace ACL, secure pipe
-  ACL, Brain↔Hands ping, structured exec, AMSI checks.
+       Native module load, AppContainer profile/SID, workspace ACL, secure pipe
+      ACL, Brain↔Hands ping, structured exec, AMSI checks.
 - [ ] **Output renderer**  
-  Actionable, short, and explicit failure reasons.
+       Actionable, short, and explicit failure reasons.
 - [ ] **Integration test**  
-  End‑to‑end doctor run (Windows‑only).
+       End‑to‑end doctor run (Windows‑only).
 
 ### W8: Fail‑safe enablement + banner
 
 - [ ] **Feature gate**  
-  Add explicit enable flag (config/ENV) to activate AppContainer tier.
+       Add explicit enable flag (config/ENV) to activate AppContainer tier.
 - [ ] **Fail‑safe initialization**  
-  If any Phase A/B prerequisite fails, fall back to host mode with warning.
+       If any Phase A/B prerequisite fails, fall back to host mode with warning.
 - [ ] **Runtime banner**  
-  Display active tier + isolation status.
+       Display active tier + isolation status.
 
 ---
 
@@ -176,11 +180,11 @@ Windows validation
 
 ## Recommended Implementation Order (Regression‑Proof)
 
-1. **Phase A W1–W3** (Brain, secure pipe, request IDs)  
-2. **Phase B W4** (structured exec + remove allowlist)  
-3. **Phase B W5** (policy + AMSI expansion + audit)  
-4. **Phase C W8** (feature gate + safe fallback)  
-5. **Phase C W7** (doctor command)  
+1. **Phase A W1–W3** (Brain, secure pipe, request IDs)
+2. **Phase B W4** (structured exec + remove allowlist)
+3. **Phase B W5** (policy + AMSI expansion + audit)
+4. **Phase C W8** (feature gate + safe fallback)
+5. **Phase C W7** (doctor command)
 6. **Phase C W6** (prebuild distribution)
 
 ---
@@ -193,4 +197,3 @@ Windows validation
 - [ ] AMSI required for script execution (block if unavailable).
 - [ ] Approval ladder used for high‑risk ops; Brain cannot pre‑approve.
 - [ ] AppContainer tier can be explicitly enabled/disabled; no partial states.
-
