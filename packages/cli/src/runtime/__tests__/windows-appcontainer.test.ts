@@ -392,7 +392,7 @@ describe('WindowsBrokerContext', () => {
     );
 
     // This depends on whether native module is built
-    const available = WindowsBrokerContext.isAvailable();
+    const available = await WindowsBrokerContext.isAvailable();
     expect(typeof available).toBe('boolean');
   });
 

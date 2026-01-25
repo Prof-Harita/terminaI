@@ -434,7 +434,7 @@ Napi::Value GetAppContainerSid(const Napi::CallbackInfo& info) {
 Napi::Value DeleteAppContainerProfile(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
 
-    HRESULT hr = DeleteAppContainerProfile(CONTAINER_PROFILE_NAME);
+    HRESULT hr = ::DeleteAppContainerProfile(CONTAINER_PROFILE_NAME);
 
     // Clear cached SID
     if (g_appContainerSid != nullptr) {

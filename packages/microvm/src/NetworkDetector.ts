@@ -1,13 +1,20 @@
 /**
+ * @license
+ * Copyright 2025 Google LLC
+ * Portions Copyright 2025 TerminaI Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/**
  * NetworkDetector: Utilities for detecting network connectivity in Micro-VM.
  *
  * Since Firecracker VMs may have various network configurations (NAT, bridge, none),
  * this module provides methods to detect and report connectivity status.
  */
 
-import * as http from 'http';
-import * as https from 'https';
-import * as dns from 'dns';
+import * as http from 'node:http';
+import * as https from 'node:https';
+import * as dns from 'node:dns';
 
 export interface NetworkStatus {
   hasInternetAccess: boolean;
@@ -69,7 +76,7 @@ export class NetworkDetector {
       const req = client.request(
         url,
         { method: 'HEAD', timeout: timeoutMs },
-        (res) => {
+        (res: http.IncomingMessage) => {
           resolve(res.statusCode !== undefined && res.statusCode < 500);
         },
       );
