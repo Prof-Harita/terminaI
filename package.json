@@ -131,7 +131,7 @@
   "dependencies": {
     "ink": "npm:@jrichman/ink@6.4.6",
     "latest-version": "^9.0.0",
-    "simple-git": "^3.28.0"
+    "simple-git": "^3.32.3"
   },
   "optionalDependencies": {
     "@lydell/node-pty": "1.1.0",
