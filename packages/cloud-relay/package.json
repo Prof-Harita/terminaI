@@ -11,7 +11,7 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "uuid": "^11.1.0",
+    "uuid": "^14.0.0",
     "ws": "^8.18.0"
   },
   "devDependencies": {
