@@ -35,7 +35,7 @@
     "tar": "^7.5.2",
     "uuid": "^11.1.0",
     "winston": "^3.17.0",
-    "ws": "^8.18.3"
+    "ws": "^8.21.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",

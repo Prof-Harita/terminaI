@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "uuid": "^11.1.0",
-    "ws": "^8.18.0"
+    "ws": "^8.21.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
