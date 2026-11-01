@@ -74,7 +74,7 @@
     "tree-sitter-bash": "^0.25.0",
     "undici": "^7.10.0",
     "web-tree-sitter": "^0.25.10",
-    "zod": "^3.25.76"
+    "zod": "^4.6.7"
   },
   "optionalDependencies": {
     "@lydell/node-pty": "1.1.0",
